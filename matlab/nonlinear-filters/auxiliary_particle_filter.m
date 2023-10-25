@@ -1,9 +1,9 @@
-function [LIK,lik] = auxiliary_particle_filter(ReducedForm,Y,start,ParticleOptions,ThreadsOptions, DynareOptions, Model)
-
+function [LIK,lik] = auxiliary_particle_filter(ReducedForm,Y,start,ParticleOptions,ThreadsOptions, options_, M_)
+% [LIK,lik] = auxiliary_particle_filter(ReducedForm,Y,start,ParticleOptions,ThreadsOptions, options_, M_)
 % Evaluates the likelihood of a nonlinear model with the auxiliary particle filter
 % allowing eventually resampling.
 %
-% Copyright © 2011-2022 Dynare Team
+% Copyright © 2011-2023 Dynare Team
 %
 % This file is part of Dynare (particles module).
 %
@@ -25,7 +25,7 @@ if isempty(start)
     start = 1;
 end
 % Get perturbation order
-order = DynareOptions.order;
+order = options_.order;
 
 % Set flag for prunning
 pruning = ParticleOptions.pruning;
@@ -77,7 +77,7 @@ state_variance_rank = size(StateVectorVarianceSquareRoot,2);
 Q_lower_triangular_cholesky = chol(Q)';
 
 % Set seed for randn().
-DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
+options_=set_dynare_seed_local_options(options_,'default');
 
 % Initialization of the likelihood.
 const_lik = log(2*pi)*number_of_observed_variables+log(det(H));
@@ -119,7 +119,7 @@ for t=1:sample_size
         end
     else
         if ReducedForm.use_k_order_solver
-            tmp = local_state_space_iteration_k(yhat, zeros(number_of_structural_innovations,number_of_particles), dr, Model, DynareOptions, udr);
+            tmp = local_state_space_iteration_k(yhat, zeros(number_of_structural_innovations,number_of_particles), dr, M_, options_, udr);
         else
             if order == 2
                 tmp = local_state_space_iteration_2(yhat,zeros(number_of_structural_innovations,number_of_particles),ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);
@@ -152,7 +152,7 @@ for t=1:sample_size
         StateVectors_ = tmp_(mf0_,:);
     else
         if ReducedForm.use_k_order_solver
-            tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
+            tmp = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_, udr);
         else
             if order == 2
                 tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);

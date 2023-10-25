@@ -1,6 +1,7 @@
-function ipnames = get_estimated_parameters_indices(params, pnames, eqname, DynareModel)
+function ipnames = get_estimated_parameters_indices(params, pnames, eqname, M_)
+% ipnames = get_estimated_parameters_indices(params, pnames, eqname, M_)
 
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,5 +37,5 @@ end
 
 ipnames = zeros(size(list_of_parameters));
 for i=1:length(ipnames)
-    ipnames(i) = find(strcmp(list_of_parameters{i}, DynareModel.param_names));
+    ipnames(i) = find(strcmp(list_of_parameters{i}, M_.param_names));
 end

@@ -1,11 +1,11 @@
-function disp_steady_state(M,oo,options)
-% function disp_steady_state(M,oo,options)
+function disp_steady_state(M_,oo_,options_)
+% function disp_steady_state(M_,oo_,options_)
 % computes and prints the steady state calculations
 %
 % INPUTS
-%   M      structure of parameters
-%   oo     structure of results
-%   options structure of options
+%   M_       structure of parameters
+%   oo_      structure of results
+%   options_ structure of options
 %
 % OUTPUTS
 %   none
@@ -13,7 +13,7 @@ function disp_steady_state(M,oo,options)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2001-2020 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -31,15 +31,15 @@ function disp_steady_state(M,oo,options)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 skipline()
-if options.loglinear
+if options_.loglinear
     disp('STEADY-STATE RESULTS FOR THE UNLOGGED VARIABLES:')
 else
     disp('STEADY-STATE RESULTS:')
 end
 skipline()
-endo_names = char(M.endo_names);
-steady_state = oo.steady_state;
+endo_names = char(M_.endo_names);
+steady_state = oo_.steady_state;
 
-for i = 1:M.orig_endo_nbr
+for i = 1:M_.orig_endo_nbr
     fprintf('%s \t\t %g\n', endo_names(i,:), steady_state(i));
 end

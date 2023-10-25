@@ -1,5 +1,5 @@
-function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,DynareModel,DynareOptions,opts_decomp)
-%function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,DynareModel,DynareOptions)
+function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,M_,options_,opts_decomp)
+% WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,M_,options_,opts_decomp)
 % Saves the results from the shock_decomposition command to xls
 %
 % Inputs
@@ -8,10 +8,11 @@ function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,Dyna
 %   endo_names      [exo_nbr*string length]         variable names from M_.endo_names
 %   i_var           [n_var*1]                       vector indices of requested variables in M_.endo_names and z
 %   initial_date    [dseries object]                first period of decomposition to plot
-%   DynareModel     [structure]                     Dynare model structure
-%   DynareOptions   [structure]                     Dynare options structure
+%   M_              [structure]                     Dynare model structure
+%   options_        [structure]                     Dynare options structure
+%   opts_decomp     [structure]                     decomposition options structure
 
-% Copyright © 2016-2022 Dynare Team
+% Copyright © 2016-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,16 +29,16 @@ function WriteShockDecomp2Excel(z,shock_names,endo_names,i_var,initial_date,Dyna
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-OutputDirectoryName = CheckPath('Output',DynareModel.dname);
+OutputDirectoryName = CheckPath('Output',M_.dname);
 
-SteadyState=zeros(DynareModel.endo_nbr,1);
+SteadyState=zeros(M_.endo_nbr,1);
 fig_mode='';
 fig_mode1='';
 fig_name='';
 screen_shocks=0;
-use_shock_groups = DynareOptions.plot_shock_decomp.use_shock_groups;
+use_shock_groups = options_.plot_shock_decomp.use_shock_groups;
 if use_shock_groups
-    shock_groups = DynareModel.shock_groups.(use_shock_groups);
+    shock_groups = M_.shock_groups.(use_shock_groups);
     shock_ind = fieldnames(shock_groups);
 end
 
@@ -120,9 +121,9 @@ for j=1:nvar
     fig_name1 = strrep(fig_name1,'.','');
     
     if ~ismac
-        STATUS = xlswrite([OutputDirectoryName,filesep,DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
+        STATUS = xlswrite([OutputDirectoryName,filesep,M_.fname,'_shock_decomposition',fig_mode,fig_name1],d0,endo_names{i_var(j)});
     else
-        writetable(cell2table(d0), [OutputDirectoryName,filesep,DynareModel.fname,'_shock_decomposition',fig_mode,fig_name1 '.xls'], 'Sheet', endo_names{i_var(j)},'WriteVariableNames',false);
+        writetable(cell2table(d0), [OutputDirectoryName,filesep,M_.fname,'_shock_decomposition',fig_mode,fig_name1 '.xls'], 'Sheet', endo_names{i_var(j)},'WriteVariableNames',false);
     end
     warning_config;
 

@@ -36,7 +36,7 @@ objTypes = objTypes(I);
 for i=1:length(objNames)
     switch objTypes(i)
       case 1
-        expression = strrep(expression, objNames{i}, sprintf('DynareModel.params(%u)', objIndex(i)));
+        expression = strrep(expression, objNames{i}, sprintf('M_.params(%u)', objIndex(i)));
       case 2
         k = find(strcmp(objNames{i}, data.name));
         if isempty(k)

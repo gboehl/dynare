@@ -1,5 +1,5 @@
 function forecasts = backward_model_forecast(initialcondition, listofvariables, periods, withuncertainty)
-
+%function forecasts = backward_model_forecast(initialcondition, listofvariables, periods, withuncertainty)
 % Returns unconditional forecasts.
 %
 % INPUTS
@@ -63,7 +63,7 @@ for i=1:M_.exo_nbr
 end
 
 % Set up initial conditions
-[initialcondition, periods, innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, dynamic_resid, dynamic_g1, y] = ...
+[initialcondition, periods, innovations, options_local, M_local, oo_local, endonames, exonames, dynamic_resid, dynamic_g1, y] = ...
     simul_backward_model_init(initialcondition, periods, options_, M_, oo_, zeros(periods, M_.exo_nbr));
 
 % Get vector of indices for the selected endogenous variables.
@@ -90,9 +90,9 @@ end
 
 % Compute forecast without shock
 if options_.linear
-    [ysim__0, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1);
+    [ysim__0, errorflag] = simul_backward_linear_model_(initialcondition, periods, options_local, M_local, oo_local, innovations, dynamic_resid, dynamic_g1);
 else
-    [ysim__0, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1);
+    [ysim__0, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, options_local, M_local, oo_local, innovations, dynamic_resid, dynamic_g1);
 end
 
 if errorflag
@@ -110,9 +110,9 @@ if withuncertainty
     for i=1:B
         innovations = transpose(sigma*randn(M_.exo_nbr, periods));
         if options_.linear
-            [ysim__, xsim__, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1);
+            [ysim__, xsim__, errorflag] = simul_backward_linear_model_(initialcondition, periods, options_local, M_local, oo_local, innovations, dynamic_resid, dynamic_g1);
         else
-            [ysim__, xsim__, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1);
+            [ysim__, xsim__, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, options_local, M_local, oo_local, innovations, dynamic_resid, dynamic_g1);
         end
         if errorflag
             error('Simulation failed.')

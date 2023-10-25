@@ -1,9 +1,9 @@
-function print_moments_implied_prior(ModelInfo, mm, vm, mv, vv)
-%function print_moments_implied_prior(ModelInfo, mm, vm, mv, vv)
+function print_moments_implied_prior(M_, mm, vm, mv, vv)
+%function print_moments_implied_prior(M_, mm, vm, mv, vv)
 % This routine prints in the command window some descriptive statistics
 % about the endogenous variables implied prior moments.
 % Inputs:
-%   - ModelInfo     [structure]             Dynare's model structure
+%   - M_            [structure]             Dynare's model structure
 %   - mm            [endo_nbr*1]            mean first moments of the endogenous
 %                                           variables
 %   - vm            [endo_nbr*1]            variance of the first moments of the
@@ -14,7 +14,7 @@ function print_moments_implied_prior(ModelInfo, mm, vm, mv, vv)
 %                                           endogenous variables
 
 
-% Copyright © 2016-2018 Dynare Team
+% Copyright © 2016-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,14 +39,14 @@ disp(printline(64, '-'))
 T1 = 'VARIABLE ';
 T2 = sprintf('Prior mean \t Prior st. dev.');
 
-for i=1:ModelInfo.orig_endo_nbr
-    Name = ModelInfo.endo_names{i};
+for i=1:M_.orig_endo_nbr
+    Name = M_.endo_names{i};
     T1 = strvcat(T1, Name);
     str = sprintf(' %6.4f \t %6.4f', mm(i), sqrt(vm(i)));
     T2 = strvcat(T2, str);
 end
 
-T0 = repmat('  ', ModelInfo.orig_endo_nbr+1, 1);
+T0 = repmat('  ', M_.orig_endo_nbr+1, 1);
 
 TT = [T1, T0, T2];
 l0 = printline(size(TT, 2)+1, '-');
@@ -64,10 +64,10 @@ T1b = 'VARIABLE-2';
 T2a = 'Prior mean';
 T2b = 'Prior st.dev.';
 
-for i=1:ModelInfo.orig_endo_nbr
-    for j=i:ModelInfo.orig_endo_nbr
-        Name1 = ModelInfo.endo_names{i};
-        Name2 = ModelInfo.endo_names{j};
+for i=1:M_.orig_endo_nbr
+    for j=i:M_.orig_endo_nbr
+        Name1 = M_.endo_names{i};
+        Name2 = M_.endo_names{j};
         T1a = strvcat(T1a, Name1);
         T1b = strvcat(T1b, Name2);
         sta = sprintf('%12.8f', mv(i,j));
@@ -77,7 +77,7 @@ for i=1:ModelInfo.orig_endo_nbr
     end
 end
 
-T0 = repmat('  ', ModelInfo.orig_endo_nbr*(ModelInfo.orig_endo_nbr+1)/2+1, 1);
+T0 = repmat('  ', M_.orig_endo_nbr*(M_.orig_endo_nbr+1)/2+1, 1);
 
 TT = [T1a, T0, T1b, T0, T2a, T0, T2b];
 l0 = printline(size(TT, 2)+1, '-');

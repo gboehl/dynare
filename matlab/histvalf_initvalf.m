@@ -1,10 +1,10 @@
-function [series, p] = histvalf_initvalf(caller, DynareModel, options)
-
+function [series, p] = histvalf_initvalf(caller, M_, options)
+% [series, p] = histvalf_initvalf(caller, M_, options)
 % Handles options for histval_file and initval_file
 %
 % INPUTS
 % - caller           [char]      row array, name of calling function
-% - DynareModel      [struct]    model description, a.k.a M_
+% - M_               [struct]    model description, a.k.a
 % - options          [struct]    options specific to histval_file and initval_file
 %
 % OUTPUTS
@@ -79,23 +79,23 @@ end
 
 % checking that all variable are present
 error_flag = false;
-for i = 1:DynareModel.orig_endo_nbr
-    if ~series.exist(DynareModel.endo_names{i})
-        dprintf('%s_FILE: endogenous variable %s is missing', caller, DynareModel.endo_names{i})
+for i = 1:M_.orig_endo_nbr
+    if ~series.exist(M_.endo_names{i})
+        dprintf('%s_FILE: endogenous variable %s is missing', caller, M_.endo_names{i})
         error_flag = true;
     end
 end
 
-for i = 1:DynareModel.exo_nbr
-    if ~series.exist(DynareModel.exo_names{i})
-        dprintf('%s_FILE: exogenous variable %s is missing', caller, DynareModel.exo_names{i})
+for i = 1:M_.exo_nbr
+    if ~series.exist(M_.exo_names{i})
+        dprintf('%s_FILE: exogenous variable %s is missing', caller, M_.exo_names{i})
         error_flag = true;
     end
 end
 
-for i = 1:DynareModel.exo_det_nbr
-    if ~series.exist(DynareModel.exo_det_names{i})
-        dprintf('%s_FILE: exo_det variable %s is missing', caller, DynareModel.exo_det_names{i})
+for i = 1:M_.exo_det_nbr
+    if ~series.exist(M_.exo_det_names{i})
+        dprintf('%s_FILE: exo_det variable %s is missing', caller, M_.exo_det_names{i})
         error_flag = true;
     end
 end
@@ -104,8 +104,8 @@ if error_flag
     error('%s_FILE: some variables are missing', caller)
 end
 
-if exist(sprintf('+%s/dynamic_set_auxiliary_series.m', DynareModel.fname), 'file')
-    series = feval(sprintf('%s.dynamic_set_auxiliary_series', DynareModel.fname), series, DynareModel.params);
+if exist(sprintf('+%s/dynamic_set_auxiliary_series.m', M_.fname), 'file')
+    series = feval(sprintf('%s.dynamic_set_auxiliary_series', M_.fname), series, M_.params);
 end
 
 % selecting observations
@@ -129,18 +129,18 @@ if isfield(options, 'first_obs') && ~isempty(options.first_obs)
         error('%s_FILE: first_obs = %d is larger than the number of observations in the data file (%d)', ...
                       caller, options.first_obs, nobs0)
     elseif isfield(options, 'first_simulation_period')
-        if  options.first_obs == options.first_simulation_period - DynareModel.orig_maximum_lag
+        if  options.first_obs == options.first_simulation_period - M_.orig_maximum_lag
             first_obs = periods(options.first_obs);
         else
             error('%s_FILE: first_obs = %d and first_simulation_period = %d have values inconsistent with a maximum lag of %d periods', ...
-                  caller, options.first_obs, options.first_simulation_period, DynareModel.orig_maximum_lag)
+                  caller, options.first_obs, options.first_simulation_period, M_.orig_maximum_lag)
         end
     elseif isfield(options, 'firstsimulationperiod')
-        if  periods(options.first_obs) == options.firstsimulationperiod - DynareModel.orig_maximum_lag
+        if  periods(options.first_obs) == options.firstsimulationperiod - M_.orig_maximum_lag
             first_obs = periods(options.first_obs);
         else
             error('%s_FILE: first_obs = %d and first_simulation_period = %s have values inconsistent with a maximum lag of %d periods', ...
-                  caller, options.first_obs, options.firstsimulationperiod, DynareModel.orig_maximum_lag)
+                  caller, options.first_obs, options.firstsimulationperiod, M_.orig_maximum_lag)
         end
     else
         first_obs = periods(options.first_obs);
@@ -150,18 +150,18 @@ end
 
 if isfield(options, 'firstobs') && ~isempty(options.firstobs)
     if isfield(options, 'first_simulation_period')
-        if  options.firstobs == periods(options.first_simulation_period) - DynareModel.orig_maximum_lag
+        if  options.firstobs == periods(options.first_simulation_period) - M_.orig_maximum_lag
             first_obs = options.firstobs;
         else
             error('%s_FILE: first_obs = %s and first_simulation_period = %d have values inconsistent with a maximum lag of %d periods', ...
-                  caller, options.firstobs, options.first_simulation_period, DynareModel.orig_maximum_lag)
+                  caller, options.firstobs, options.first_simulation_period, M_.orig_maximum_lag)
         end
     elseif isfield(options, 'firstsimulationperiod')
-        if  options.firstobs == options.firstsimulationperiod - DynareModel.orig_maximum_lag
+        if  options.firstobs == options.firstsimulationperiod - M_.orig_maximum_lag
             first_obs = options.firstobs;
         else
             error('%s_FILE: firstobs = %s and first_simulation_period = %s have values inconsistent with a maximum lag of %d periods', ...
-                  caller, options.firstobs, options.firstsimulationperiod, DynareModel.orig_maximum_lag)
+                  caller, options.firstobs, options.firstsimulationperiod, M_.orig_maximum_lag)
         end
     else
         first_obs = options.firstobs;
@@ -171,18 +171,18 @@ end
 
 if ~first_obs_ispresent
     if isfield(options, 'first_simulation_period')
-        if options.first_simulation_period < DynareModel.orig_maximum_lag
+        if options.first_simulation_period < M_.orig_maximum_lag
             error('%s_FILE: first_simulation_period = %d must be larger than the maximum lag (%d)', ...
-                  caller, options.first_simulation_period, DynareModel.orig_maximum_lag)
+                  caller, options.first_simulation_period, M_.orig_maximum_lag)
         elseif options.first_simulation_period > nobs0
             error('%s_FILE: first_simulations_period = %d is larger than the number of observations in the data file (%d)', ...
                           caller, options.first_obs, nobs0)
         else
-            first_obs = periods(options.first_simulation_period) - DynareModel.orig_maximum_lag;
+            first_obs = periods(options.first_simulation_period) - M_.orig_maximum_lag;
         end
         first_obs_ispresent = true;
     elseif isfield(options, 'firstsimulationperiod')
-        first_obs = options.firstsimulationperiod - DynareModel.orig_maximum_lag;
+        first_obs = options.firstsimulationperiod - M_.orig_maximum_lag;
         first_obs_ispresent = true;
     end
 end
@@ -237,8 +237,8 @@ end
 
 
 if exist('lastsimulationperiod', 'var')
-    if lastsimulationperiod<=last_obs-DynareModel.orig_maximum_lead
-        last_obs = lastsimulationperiod+DynareModel.orig_maximum_lead;
+    if lastsimulationperiod<=last_obs-M_.orig_maximum_lead
+        last_obs = lastsimulationperiod+M_.orig_maximum_lead;
     else
         error('%s_FILE: LAST_SIMULATION_PERIOD is too large compared to the available data.', caller)
     end
@@ -247,11 +247,11 @@ end
 if exist('lastsimulationperiod', 'var') && exist('firstsimulationperiod', 'var')
     p = lastsimulationperiod-firstsimulationperiod+1;
 elseif exist('lastsimulationperiod', 'var')
-    p = lastsimulationperiod-(first_obs+DynareModel.orig_maximum_lag)+1;
+    p = lastsimulationperiod-(first_obs+M_.orig_maximum_lag)+1;
 elseif exist('firstsimulationperiod', 'var')
-    p = (last_obs-DynareModel.orig_maximum_lead)-firstsimulationperiod+1;
+    p = (last_obs-M_.orig_maximum_lead)-firstsimulationperiod+1;
 else
-    p = (last_obs-DynareModel.orig_maximum_lead)-(first_obs+DynareModel.orig_maximum_lag)+1;
+    p = (last_obs-M_.orig_maximum_lead)-(first_obs+M_.orig_maximum_lag)+1;
 end
 
 series = series(first_obs:last_obs);

@@ -1,16 +1,16 @@
-function message = get_error_message(info, DynareOptions)
+function message = get_error_message(info, options_)
 % Returns error messages
 %
 % INPUTS
 %   info              [double]     vector returned by resol.m
-%   DynareOptions     [structure]  --> options_
+%   options_          [structure]  Dynare options
 % OUTPUTS
 %    message          [string]     corresponding error message
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2005-2020 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -43,7 +43,7 @@ switch info(1)
     case 6
         message = 'The Jacobian matrix evaluated at the steady state contains elements that are not real or are infinite.';
     case 7
-        message = sprintf('One of the eigenvalues is close to 0/0 (the absolute value of numerator and denominator is smaller than %5.4f!\n If you believe that the model has a unique solution you can try to reduce the value of qz_zero_threshold.',DynareOptions.qz_zero_threshold);
+        message = sprintf('One of the eigenvalues is close to 0/0 (the absolute value of numerator and denominator is smaller than %5.4f!\n If you believe that the model has a unique solution you can try to reduce the value of qz_zero_threshold.',options_.qz_zero_threshold);
     case 8
         if size(info,2)>=2 && info(2)~=0
             global M_;
@@ -66,7 +66,7 @@ switch info(1)
     case 19
         message = 'The steadystate file did not compute the steady state';
     case 20
-        if DynareOptions.linear
+        if options_.linear
             message = sprintf('Impossible to find the steady state (the sum of squared residuals of the static equations is %5.4f). Either the model doesn''t have a steady state or there are an infinity of steady states. Check whether your model is truly linear or whether there is a mistake in linearization.', info(2));
         else
             message = sprintf('Impossible to find the steady state (the sum of squared residuals of the static equations is %5.4f). Either the model doesn''t have a steady state, there are an infinity of steady states, or the guess values are too far from the solution', info(2));

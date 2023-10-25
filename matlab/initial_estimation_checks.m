@@ -7,7 +7,7 @@ function oo_ = initial_estimation_checks(objective_function,xparam1,dataset_,dat
 %   xparam1             [vector] of parameters to be estimated
 %   dataset_            [dseries] object storing the dataset
 %   dataset_info        [structure] storing informations about the sample.
-%   M_                  [structure] decribing the model
+%   M_                  [structure] describing the model
 %   estim_params_       [structure] characterizing parameters to be estimated
 %   options_            [structure] describing the options
 %   bayestopt_          [structure] describing the priors

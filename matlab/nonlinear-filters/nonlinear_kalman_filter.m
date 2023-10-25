@@ -1,4 +1,4 @@
-function [LIK,lik] = nonlinear_kalman_filter(ReducedForm, Y, start, ParticleOptions, ThreadsOptions, DynareOptions, Model)
+function [LIK,lik] = nonlinear_kalman_filter(ReducedForm, Y, start, ParticleOptions, ThreadsOptions, options_, M_)
 
 % Evaluates the likelihood of a non-linear model approximating the
 % predictive (prior) and filtered (posterior) densities for state variables
@@ -54,7 +54,7 @@ if isempty(start)
     start = 1;
 end
 
-order = DynareOptions.order;
+order = options_.order;
 
 if ReducedForm.use_k_order_solver
     dr = ReducedForm.dr;
@@ -105,7 +105,7 @@ else
 end
 
 if ParticleOptions.distribution_approximation.montecarlo
-    DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
+    options_=set_dynare_seed_local_options(options_,'default');
 end
 
 % Get covariance matrices
@@ -130,7 +130,7 @@ for t=1:sample_size
     epsilon = sigma_points(number_of_state_variables+1:number_of_state_variables+number_of_structural_innovations,:);
     yhat = bsxfun(@minus,StateVectors,state_variables_steady_state);
     if ReducedForm.use_k_order_solver
-        tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
+        tmp = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_, udr);
     else
         if order == 2
             tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);

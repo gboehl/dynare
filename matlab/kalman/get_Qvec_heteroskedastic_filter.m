@@ -1,14 +1,14 @@
-function Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,Model)
-% function Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,Model)
+function Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,M_)
+% function Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,M_)
 % 
 % INPUTS
 %   Q:      baseline non-heteroskadastic covariance matrix of shocks
 %   smpl:   scalar storing end of sample
-%   Model:  structure storing the model information
+%   M_:     structure storing the model information
 % Outputs:
 %   Qvec:   [n_exo by n_exo by smpl] array of covariance matrices
 
-% Copyright © 2020-21 Dynare Team
+% Copyright © 2020-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,31 +28,31 @@ function Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,Model)
 isqdiag = all(all(abs(Q-diag(diag(Q)))<1e-14)); % ie, the covariance matrix is diagonal...
 Qvec=repmat(Q,[1 1 smpl+1]);
 for k=1:smpl
-    inx = ~isnan(Model.heteroskedastic_shocks.Qvalue(:,k));
+    inx = ~isnan(M_.heteroskedastic_shocks.Qvalue(:,k));
     if any(inx)
         if isqdiag
-            Qvec(inx,inx,k)=diag(Model.heteroskedastic_shocks.Qvalue(inx,k));
+            Qvec(inx,inx,k)=diag(M_.heteroskedastic_shocks.Qvalue(inx,k));
         else
             inx = find(inx);
             for s=1:length(inx)
                 if Q(inx(s),inx(s))>1.e-14
-                    tmpscale = sqrt(Model.heteroskedastic_shocks.Qvalue(inx(s),k)./Q(inx(s),inx(s)));
+                    tmpscale = sqrt(M_.heteroskedastic_shocks.Qvalue(inx(s),k)./Q(inx(s),inx(s)));
                     Qvec(inx(s),:,k) = Qvec(inx(s),:,k).*tmpscale;
                     Qvec(:,inx(s),k) = Qvec(:,inx(s),k).*tmpscale;
                 else
-                    Qvec(inx(s),inx(s),k)=Model.heteroskedastic_shocks.Qvalue(inx(s),k);
+                    Qvec(inx(s),inx(s),k)=M_.heteroskedastic_shocks.Qvalue(inx(s),k);
                 end
             end
         end
     end
-    inx = ~isnan(Model.heteroskedastic_shocks.Qscale(:,k));
+    inx = ~isnan(M_.heteroskedastic_shocks.Qscale(:,k));
     if any(inx)
         if isqdiag
-            Qvec(inx,inx,k)=Qvec(inx,inx,k).*diag(Model.heteroskedastic_shocks.Qscale(inx,k));
+            Qvec(inx,inx,k)=Qvec(inx,inx,k).*diag(M_.heteroskedastic_shocks.Qscale(inx,k));
         else
             inx = find(inx);
             for s=1:length(inx)
-                tmpscale = sqrt(Model.heteroskedastic_shocks.Qscale(inx(s),k));
+                tmpscale = sqrt(M_.heteroskedastic_shocks.Qscale(inx(s),k));
                 Qvec(inx(s),:,k) = Qvec(inx(s),:,k).*tmpscale;
                 Qvec(:,inx(s),k) = Qvec(:,inx(s),k).*tmpscale;
             end

@@ -2,7 +2,7 @@ function [StateMuPrior,StateSqrtPPrior,StateWeightsPrior,StateMuPost,StateSqrtPP
     gaussian_mixture_filter_bank(ReducedForm, obs, StateMu, StateSqrtP, StateWeights, ...
                                  StructuralShocksMu, StructuralShocksSqrtP, StructuralShocksWeights, ...
                                  ObservationShocksWeights, H, H_lower_triangular_cholesky, normfactO, ...
-                                 ParticleOptions, ThreadsOptions, DynareOptions, Model)
+                                 ParticleOptions, ThreadsOptions, options_, M_)
 
 % Computes the proposal with a gaussian approximation for importance
 % sampling
@@ -41,7 +41,7 @@ function [StateMuPrior,StateSqrtPPrior,StateWeightsPrior,StateMuPost,StateSqrtPP
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-order = DynareOptions.order;
+order = options_.order;
 
 if ReducedForm.use_k_order_solver
     dr = ReducedForm.dr;
@@ -91,7 +91,7 @@ epsilon = bsxfun(@plus, StructuralShocksSqrtP*nodes3(:,number_of_state_variables
 StateVectors = bsxfun(@plus, StateSqrtP*nodes3(:,1:number_of_state_variables)', StateMu);
 yhat = bsxfun(@minus, StateVectors, state_variables_steady_state);
 if ReducedForm.use_k_order_solver
-    tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
+    tmp = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_, udr);
 else
     if order == 2
         tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);

@@ -28,14 +28,14 @@ function [xparam1, hh, gg, fval, igg, hess_info] = newrat(func0, x, bounds, anal
 %  - parameter_names        [cell] names of parameters for error messages
 %  - varargin               other inputs
 %                           e.g. in dsge_likelihood and others:
-%                           varargin{1} --> DynareDataset
-%                           varargin{2} --> DatasetInfo
-%                           varargin{3} --> DynareOptions
-%                           varargin{4} --> Model
-%                           varargin{5} --> EstimatedParameters
-%                           varargin{6} --> BayesInfo
-%                           varargin{7} --> Bounds
-%                           varargin{8} --> DynareResults
+%                           varargin{1} --> dataset_
+%                           varargin{2} --> dataset_info
+%                           varargin{3} --> options_
+%                           varargin{4} --> M_
+%                           varargin{5} --> estim_params_
+%                           varargin{6} --> bayestopt_
+%                           varargin{7} --> BoundsInfo
+%                           varargin{8} --> oo_
 %
 % Outputs
 % - xparam1                 parameter vector at optimum

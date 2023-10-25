@@ -1,10 +1,10 @@
-function [lhs, rhs, json] = get_lhs_and_rhs(eqname, DynareModel, original, json)
-
+function [lhs, rhs, json] = get_lhs_and_rhs(eqname, M_, original, json)
+% [lhs, rhs, json] = get_lhs_and_rhs(eqname, M_, original, json)
 % Returns the left and right handsides of an equation.
 %
 % INPUTS
 % - eqname       [char]            Name of the equation.
-% - DynareModel  [struct]          Structure describing the current model (M_).
+% - M_           [struct]          Structure describing the current model.
 % - original     [logical]         fetch equation in modfile-original.json or modfile.json
 % - json         [char]            content of the JSON file
 %
@@ -23,7 +23,7 @@ function [lhs, rhs, json] = get_lhs_and_rhs(eqname, DynareModel, original, json)
 %      [name='Phillips curve']
 %      pi = beta*pi(1) + slope*y + lam;
 
-% Copyright © 2018-2020 Dynare Team
+% Copyright © 2018-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -47,9 +47,9 @@ end
 % Load JSON file if nargin<4
 if nargin<4
     if original
-        json = loadjson_([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json']);
+        json = loadjson_([M_.fname filesep() 'model' filesep() 'json' filesep() 'modfile-original.json']);
     else
-        json = loadjson_([DynareModel.fname filesep() 'model' filesep() 'json' filesep() 'modfile.json']);
+        json = loadjson_([M_.fname filesep() 'model' filesep() 'json' filesep() 'modfile.json']);
     end
 end
 

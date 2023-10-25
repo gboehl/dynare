@@ -1,4 +1,4 @@
-function [info_convergence, endo_simul] = extended_path_homotopy(endo_simul, exo_simul, M, options, oo, pfm, ep, order, algo, method, debug)
+function [info_convergence, endo_simul] = extended_path_homotopy(endo_simul, exo_simul, M_, options_, oo_, pfm, ep, order, algo, method, debug)
 
 % Copyright © 2016-2023 Dynare Team
 %
@@ -31,11 +31,11 @@ if ismember(method, [1, 2])
     oldweight = weight;
     while noconvergence
         iteration = iteration + 1;
-        oo.endo_simul = endo_simul;
-        oo.endo_simul(:,1) = oo.steady_state + weight*(endo_simul0(:,1) - oo.steady_state);
-        oo.exo_simul = bsxfun(@plus, weight*exo_simul, (1-weight)*transpose(oo.exo_steady_state));
+        oo_.endo_simul = endo_simul;
+        oo_.endo_simul(:,1) = oo_.steady_state + weight*(endo_simul0(:,1) - oo_.steady_state);
+        oo_.exo_simul = bsxfun(@plus, weight*exo_simul, (1-weight)*transpose(oo_.exo_steady_state));
         if order==0
-            [endo_simul_new, success] = perfect_foresight_solver_core(oo.endo_simul, oo.exo_simul, oo.steady_state, oo.exo_steady_state, M, options);
+            [endo_simul_new, success] = perfect_foresight_solver_core(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
         else
             switch(algo)
               case 0
@@ -43,7 +43,7 @@ if ismember(method, [1, 2])
                     solve_stochastic_perfect_foresight_model(endo_simul, exo_simul, pfm, ep.stochastic.quadrature.nodes, ep.stochastic.order);
               case 1
                 [flag, endo_simul_new] = ...
-                    solve_stochastic_perfect_foresight_model_1(endo_simul, exo_simul, options, pfm, ep.stochastic.order);
+                    solve_stochastic_perfect_foresight_model_1(endo_simul, exo_simul, options_, pfm, ep.stochastic.order);
             end
         end
         if isequal(order, 0)
@@ -99,10 +99,10 @@ if isequal(method, 3) || (isequal(method, 2) && noconvergence)
     nweights = length(weights);
     while noconvergence
         weight = weights(index);
-        oo.endo_simul = endo_simul;
-        oo.exo_simul = bsxfun(@plus, weight*exo_simul, (1-weight)*transpose(oo.exo_steady_state));
+        oo_.endo_simul = endo_simul;
+        oo_.exo_simul = bsxfun(@plus, weight*exo_simul, (1-weight)*transpose(oo_.exo_steady_state));
         if order==0
-            [endo_simul_new, success] = perfect_foresight_solver_core(oo.endo_simul, oo.exo_simul, oo.steady_state, oo.exo_steady_state, M, options);
+            [endo_simul_new, success] = perfect_foresight_solver_core(oo_.endo_simul, oo_.exo_simul, oo_.steady_state, oo_.exo_steady_state, M_, options_);
         else
             switch(algo)
               case 0
@@ -110,7 +110,7 @@ if isequal(method, 3) || (isequal(method, 2) && noconvergence)
                     solve_stochastic_perfect_foresight_model(endo_simul, exo_simul, pfm, ep.stochastic.quadrature.nodes, ep.stochastic.order);
               case 1
                 [flag, endo_simul_new] = ...
-                    solve_stochastic_perfect_foresight_model_1(endo_simul, exo_simul, options, pfm, ep.stochastic.order);
+                    solve_stochastic_perfect_foresight_model_1(endo_simul, exo_simul, options_, pfm, ep.stochastic.order);
             end
         end
         if isequal(order, 0)

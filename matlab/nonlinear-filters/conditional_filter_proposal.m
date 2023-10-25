@@ -1,5 +1,5 @@
 function [ProposalStateVector, Weights, flag] = conditional_filter_proposal(ReducedForm, y, StateVectors, SampleWeights, Q_lower_triangular_cholesky, H_lower_triangular_cholesky, ...
-                                                  H, ParticleOptions, ThreadsOptions, DynareOptions, Model)
+                                                  H, ParticleOptions, ThreadsOptions, options_, M_)
 
 % Computes the proposal for each past particle using Gaussian approximations
 % for the state errors and the Kalman filter
@@ -14,8 +14,8 @@ function [ProposalStateVector, Weights, flag] = conditional_filter_proposal(Redu
 % - H
 % - ParticleOptions
 % - ThreadsOptions
-% - DynareOptions
-% - Model
+% - options_
+% - M_
 %
 % OUTPUTS
 % - ProposalStateVector
@@ -41,7 +41,7 @@ function [ProposalStateVector, Weights, flag] = conditional_filter_proposal(Redu
 
 flag = false;
 
-order = DynareOptions.order;
+order = options_.order;
 
 if ReducedForm.use_k_order_solver
     dr = ReducedForm.dr;
@@ -93,7 +93,7 @@ epsilon = Q_lower_triangular_cholesky*nodes';
 yhat = repmat(StateVectors-state_variables_steady_state, 1, size(epsilon, 2));
 
 if ReducedForm.use_k_order_solver
-    tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
+    tmp = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_, udr);
 else
     if order == 2
         tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, ThreadsOptions.local_state_space_iteration_2);
@@ -159,6 +159,6 @@ if ParticleOptions.cpf_weights_method.murrayjonesparslow
     end
     Prior = probability2(PredictedStateMean, PredictedStateVarianceSquareRoot, ProposalStateVector);
     Posterior = probability2(StateVectorMean, StateVectorVarianceSquareRoot, ProposalStateVector);
-    Likelihood = probability2(y, H_lower_triangular_cholesky, measurement_equations(ProposalStateVector, ReducedForm, ThreadsOptions, DynareOptions, Model));
+    Likelihood = probability2(y, H_lower_triangular_cholesky, measurement_equations(ProposalStateVector, ReducedForm, ThreadsOptions, options_, M_));
     Weights = SampleWeights.*Likelihood.*(Prior./Posterior);
 end

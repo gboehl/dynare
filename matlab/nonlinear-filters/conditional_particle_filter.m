@@ -1,4 +1,4 @@
-function [LIK,lik] = conditional_particle_filter(ReducedForm, Y, s, ParticleOptions, ThreadsOptions, DynareOptions, Model)
+function [LIK,lik] = conditional_particle_filter(ReducedForm, Y, s, ParticleOptions, ThreadsOptions, options_, M_)
 
 % Evaluates the likelihood of a non-linear model with a particle filter
 %
@@ -8,8 +8,8 @@ function [LIK,lik] = conditional_particle_filter(ReducedForm, Y, s, ParticleOpti
 % - s                  [integer]      scalar, likelihood evaluation starts at s (has to be smaller than T, the sample length provided in Y).
 % - ParticlesOptions   [struct]
 % - ThreadsOptions     [struct]
-% - DynareOptions      [struct]
-% - Model              [struct]
+% - options_           [struct]
+% - M_                 [struct]
 %
 % OUTPUTS
 % - LIK                [double]    scalar, likelihood
@@ -78,7 +78,7 @@ state_variance_rank = size(StateVectorVarianceSquareRoot, 2);
 Q_lower_triangular_cholesky = chol(Q)';
 
 % Set seed for randn().
-DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
+options_=set_dynare_seed_local_options(options_,'default');
 
 % Initialization of the likelihood.
 lik = NaN(T, 1);
@@ -90,7 +90,7 @@ for t=1:T
     flags = false(n, 1);
     for i=1:n
         [StateParticles(:,i), SampleWeights(i), flags(i)] = ...
-            conditional_filter_proposal(ReducedForm, Y(:,t), StateParticles(:,i), SampleWeights(i), Q_lower_triangular_cholesky, H_lower_triangular_cholesky, H, ParticleOptions, ThreadsOptions, DynareOptions, Model);
+            conditional_filter_proposal(ReducedForm, Y(:,t), StateParticles(:,i), SampleWeights(i), Q_lower_triangular_cholesky, H_lower_triangular_cholesky, H, ParticleOptions, ThreadsOptions, options_, M_);
     end
     if any(flags)
         LIK = -Inf;

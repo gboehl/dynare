@@ -1,12 +1,12 @@
-function [trend_addition, trend_coeff]=compute_trend_coefficients(M_,DynareOptions,nvarobs,ntobs)
-% [trend_addition, trend_coeff]=compute_trend_coefficients(M_,DynareOptions,nvarobs,ntobs)
+function [trend_addition, trend_coeff]=compute_trend_coefficients(M_,options_,nvarobs,ntobs)
+% [trend_addition, trend_coeff]=compute_trend_coefficients(M_,options_,nvarobs,ntobs)
 % Computes the trend coefficiencts and the trend, accounting for
 % prefiltering
 %
 % INPUTS
 %   M_              [structure] describing the model; called in the eval
 %                               statement
-%   DynareOptions   [structure] describing the options
+%   options_        [structure] describing the options
 %   nvarobs         [scalar]    number of observed variables
 %   ntobs           [scalar]    length of data sample for estimation
 %
@@ -18,7 +18,7 @@ function [trend_addition, trend_coeff]=compute_trend_coefficients(M_,DynareOptio
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2014-2016 Dynare Team
+% Copyright © 2014-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -37,13 +37,13 @@ function [trend_addition, trend_coeff]=compute_trend_coefficients(M_,DynareOptio
 
 
 trend_coeff = zeros(nvarobs,1);
-t = DynareOptions.trend_coeffs;
+t = options_.trend_coeffs;
 for i=1:length(t)
     if ~isempty(t{i})
         trend_coeff(i) = eval(t{i});
     end
 end
-trend_addition=trend_coeff*[DynareOptions.first_obs:DynareOptions.first_obs+ntobs-1];
-if DynareOptions.prefilter
+trend_addition=trend_coeff*[options_.first_obs:options_.first_obs+ntobs-1];
+if options_.prefilter
     trend_addition = bsxfun(@minus,trend_addition,mean(trend_addition,2));
 end

@@ -1,15 +1,15 @@
-function forecast = dyn_forecast(var_list,M,options,oo,task,dataset_info)
-% function forecast = dyn_forecast(var_list,M,options,oo,task,dataset_info)
+function forecast = dyn_forecast(var_list,M_,options_,oo_,task,dataset_info)
+% function forecast = dyn_forecast(var_list,M_,options_,oo_,task,dataset_info)
 %   computes mean forecast for a given value of the parameters
 %   computes also confidence bands for the forecast
 %
 % INPUTS
-%   var_list:    list of variables (character matrix)
-%   M:           Dynare model structure
-%   options:     Dynare options structure
-%   oo:          Dynare results structure
-%   task:        indicates how to initialize the forecast
-%                either 'simul' or 'smoother'
+%   var_list:     list of variables (character matrix)
+%   M_:           Dynare model structure
+%   options_:     Dynare options structure
+%   oo_:          Dynare results structure
+%   task:         indicates how to initialize the forecast
+%                 either 'simul' or 'smoother'
 %   dataset_info:   Various informations about the dataset (descriptive statistics and missing observations).
 
 % OUTPUTS
@@ -27,7 +27,7 @@ function forecast = dyn_forecast(var_list,M,options,oo,task,dataset_info)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2003-2022 Dynare Team
+% Copyright © 2003-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,23 +44,23 @@ function forecast = dyn_forecast(var_list,M,options,oo,task,dataset_info)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if ~isfield(oo,'dr') || isempty(oo.dr)
+if ~isfield(oo_,'dr') || isempty(oo_.dr)
   error('dyn_forecast: the decision rules have not been computed. Did you forget a stoch_simul-command?')
 end
 
-if nargin<6 && options.prefilter
+if nargin<6 && options_.prefilter
     error('The prefiltering option is not allowed without providing a dataset')
 elseif nargin==6
     mean_varobs=dataset_info.descriptive.mean';
 end
 
-oo=make_ex_(M,options,oo);
+oo_=make_ex_(M_,options_,oo_);
 
-maximum_lag = M.maximum_lag;
+maximum_lag = M_.maximum_lag;
 
-endo_names = M.endo_names;
+endo_names = M_.endo_names;
 if isempty(var_list)
-    var_list = endo_names(1:M.orig_endo_nbr);
+    var_list = endo_names(1:M_.orig_endo_nbr);
 end
 i_var = [];
 for i = 1:length(var_list)
@@ -76,108 +76,108 @@ n_var = length(i_var);
 trend = 0;
 switch task
   case 'simul'
-    horizon = options.periods;
+    horizon = options_.periods;
     if horizon == 0
         horizon = 5;
     end
-    if isempty(M.endo_histval)
-        if options.loglinear && ~options.logged_steady_state
-            y0 = repmat(log(oo.dr.ys),1,maximum_lag);
+    if isempty(M_.endo_histval)
+        if options_.loglinear && ~options_.logged_steady_state
+            y0 = repmat(log(oo_.dr.ys),1,maximum_lag);
         else
-            y0 = repmat(oo.dr.ys,1,maximum_lag);
+            y0 = repmat(oo_.dr.ys,1,maximum_lag);
         end
     else
-        if options.loglinear
-            y0 = log_variable(1:M.endo_nbr,M.endo_histval,M);
+        if options_.loglinear
+            y0 = log_variable(1:M_.endo_nbr,M_.endo_histval,M_);
         else
-            y0 = M.endo_histval;
+            y0 = M_.endo_histval;
         end
     end
   case 'smoother'
-    horizon = options.forecast;
-    if isnan(options.first_obs)
+    horizon = options_.forecast;
+    if isnan(options_.first_obs)
         first_obs=1;
     else
-        first_obs=options.first_obs;
+        first_obs=options_.first_obs;
     end
-    if isfield(oo.SmoothedVariables,'Mean')
-        y_smoothed = oo.SmoothedVariables.Mean;
+    if isfield(oo_.SmoothedVariables,'Mean')
+        y_smoothed = oo_.SmoothedVariables.Mean;
     else
-        y_smoothed = oo.SmoothedVariables;
+        y_smoothed = oo_.SmoothedVariables;
     end
-    y0 = zeros(M.endo_nbr,maximum_lag);
-    for i = 1:M.endo_nbr
-        v_name = M.endo_names{i};
+    y0 = zeros(M_.endo_nbr,maximum_lag);
+    for i = 1:M_.endo_nbr
+        v_name = M_.endo_names{i};
         y0(i,:) = y_smoothed.(v_name)(end-maximum_lag+1:end); %includes steady state or mean, but simult_ will subtract only steady state
                                                               % 2. Subtract mean/steady state and add steady state; takes care of prefiltering
-        if isfield(oo.Smoother,'Constant') && isfield(oo.Smoother.Constant,v_name)
-            y0(i,:)=y0(i,:)-oo.Smoother.Constant.(v_name)(end-maximum_lag+1:end); %subtract mean or steady state
-            if options.loglinear
-                y0(i,:)=y0(i,:)+log_variable(i,oo.dr.ys,M);
+        if isfield(oo_.Smoother,'Constant') && isfield(oo_.Smoother.Constant,v_name)
+            y0(i,:)=y0(i,:)-oo_.Smoother.Constant.(v_name)(end-maximum_lag+1:end); %subtract mean or steady state
+            if options_.loglinear
+                y0(i,:)=y0(i,:)+log_variable(i,oo_.dr.ys,M_);
             else
-                y0(i,:)=y0(i,:)+oo.dr.ys(strmatch(v_name, M.endo_names, 'exact'));
+                y0(i,:)=y0(i,:)+oo_.dr.ys(strmatch(v_name, M_.endo_names, 'exact'));
             end
         end
         % 2. Subtract trend
-        if isfield(oo.Smoother,'Trend') && isfield(oo.Smoother.Trend,v_name)
-            y0(i,:)=y0(i,:)-oo.Smoother.Trend.(v_name)(end-maximum_lag+1:end); %subtract trend, which is not subtracted by simult_
+        if isfield(oo_.Smoother,'Trend') && isfield(oo_.Smoother.Trend,v_name)
+            y0(i,:)=y0(i,:)-oo_.Smoother.Trend.(v_name)(end-maximum_lag+1:end); %subtract trend, which is not subtracted by simult_
         end
     end
-    gend = options.nobs;
-    if isfield(oo.Smoother,'TrendCoeffs')
-        var_obs = options.varobs;
-        endo_names = M.endo_names;
+    gend = options_.nobs;
+    if isfield(oo_.Smoother,'TrendCoeffs')
+        var_obs = options_.varobs;
+        endo_names = M_.endo_names;
         i_var_obs = [];
         trend_coeffs = [];
         for i=1:length(var_obs)
             tmp = strmatch(var_obs{i}, endo_names(i_var), 'exact');
-            trend_var_index = strmatch(var_obs{i}, M.endo_names, 'exact');
+            trend_var_index = strmatch(var_obs{i}, M_.endo_names, 'exact');
             if ~isempty(tmp)
                 i_var_obs = [ i_var_obs; tmp];
-                trend_coeffs = [trend_coeffs; oo.Smoother.TrendCoeffs(trend_var_index)];
+                trend_coeffs = [trend_coeffs; oo_.Smoother.TrendCoeffs(trend_var_index)];
             end
         end
         if ~isempty(trend_coeffs)
-            trend = trend_coeffs*(first_obs+gend-1+(1-M.maximum_lag:horizon));
-            if options.prefilter
+            trend = trend_coeffs*(first_obs+gend-1+(1-M_.maximum_lag:horizon));
+            if options_.prefilter
                 trend = trend - repmat(mean(trend_coeffs*[first_obs:first_obs+gend-1],2),1,horizon+1); %subtract mean trend
             end
         end
     else
-        trend_coeffs=zeros(length(options.varobs),1);
+        trend_coeffs=zeros(length(options_.varobs),1);
     end
   otherwise
     error('Wrong flag value')
 end
 
-if M.exo_det_nbr == 0
-    if isequal(M.H,0)
-        [yf,int_width] = forcst(oo.dr,y0,horizon,var_list,M,oo,options);
+if M_.exo_det_nbr == 0
+    if isequal(M_.H,0)
+        [yf,int_width] = forcst(oo_.dr,y0,horizon,var_list,M_,oo_,options_);
     else
-        [yf,int_width,int_width_ME] = forcst(oo.dr,y0,horizon,var_list,M,oo,options);
+        [yf,int_width,int_width_ME] = forcst(oo_.dr,y0,horizon,var_list,M_,oo_,options_);
     end
 else
-    exo_det_length = size(oo.exo_det_simul,1)-M.maximum_lag;
+    exo_det_length = size(oo_.exo_det_simul,1)-M_.maximum_lag;
     if horizon > exo_det_length
-        ex = zeros(horizon,M.exo_nbr);
-        oo.exo_det_simul = [ oo.exo_det_simul;...
-                            repmat(oo.exo_det_steady_state',...
+        ex = zeros(horizon,M_.exo_nbr);
+        oo_.exo_det_simul = [ oo_.exo_det_simul;...
+                            repmat(oo_.exo_det_steady_state',...
                                    horizon- ...
                                    exo_det_length,1)];
     elseif horizon <= exo_det_length
-        ex = zeros(exo_det_length,M.exo_nbr);
+        ex = zeros(exo_det_length,M_.exo_nbr);
     end
-    if options.linear
+    if options_.linear
         iorder = 1;
     else
-        iorder = options.order;
+        iorder = options_.order;
     end
-    if isequal(M.H,0)
-        [yf,int_width] = simultxdet(y0,ex,oo.exo_det_simul,...
-                                    iorder,var_list,M,oo,options);
+    if isequal(M_.H,0)
+        [yf,int_width] = simultxdet(y0,ex,oo_.exo_det_simul,...
+                                    iorder,var_list,M_,oo_,options_);
     else
-        [yf,int_width,int_width_ME] = simultxdet(y0,ex,oo.exo_det_simul,...
-                                                 iorder,var_list,M,oo,options);
+        [yf,int_width,int_width_ME] = simultxdet(y0,ex,oo_.exo_det_simul,...
+                                                 iorder,var_list,M_,oo_,options_);
     end
 end
 
@@ -185,13 +185,13 @@ if ~isscalar(trend) %add trend back to forecast
     yf(i_var_obs,:) = yf(i_var_obs,:) + trend;
 end
 
-if options.loglinear
-    if options.prefilter == 1 %subtract steady state and add mean for observables
-        yf(i_var_obs,:)=yf(i_var_obs,:)-repmat(log(oo.dr.ys(i_var_obs)),1,horizon+M.maximum_lag)+ repmat(mean_varobs,1,horizon+M.maximum_lag);
+if options_.loglinear
+    if options_.prefilter == 1 %subtract steady state and add mean for observables
+        yf(i_var_obs,:)=yf(i_var_obs,:)-repmat(log(oo_.dr.ys(i_var_obs)),1,horizon+M_.maximum_lag)+ repmat(mean_varobs,1,horizon+M_.maximum_lag);
     end
 else
-    if options.prefilter == 1 %subtract steady state and add mean for observables
-        yf(i_var_obs,:)=yf(i_var_obs,:)-repmat(oo.dr.ys(i_var_obs),1,horizon+M.maximum_lag)+ repmat(mean_varobs,1,horizon+M.maximum_lag);
+    if options_.prefilter == 1 %subtract steady state and add mean for observables
+        yf(i_var_obs,:)=yf(i_var_obs,:)-repmat(oo_.dr.ys(i_var_obs),1,horizon+M_.maximum_lag)+ repmat(mean_varobs,1,horizon+M_.maximum_lag);
     end
 end
 
@@ -200,17 +200,17 @@ for i=1:n_var
     forecast.Mean.(vname) = yf(i,maximum_lag+(1:horizon))';
     forecast.HPDinf.(vname)= yf(i,maximum_lag+(1:horizon))' - int_width(1:horizon,i);
     forecast.HPDsup.(vname) = yf(i,maximum_lag+(1:horizon))' + int_width(1:horizon,i);
-    if ~isequal(M.H,0) && ismember(var_list{i},options.varobs)
+    if ~isequal(M_.H,0) && ismember(var_list{i},options_.varobs)
         forecast.HPDinf_ME.(vname)= yf(i,maximum_lag+(1:horizon))' - int_width_ME(1:horizon,i);
         forecast.HPDsup_ME.(vname) = yf(i,maximum_lag+(1:horizon))' + int_width_ME(1:horizon,i);
     end
 end
 
-for i=1:M.exo_det_nbr
-    forecast.Exogenous.(M.exo_det_names{i}) = oo.exo_det_simul(maximum_lag+(1:horizon),i);
+for i=1:M_.exo_det_nbr
+    forecast.Exogenous.(M_.exo_det_names{i}) = oo_.exo_det_simul(maximum_lag+(1:horizon),i);
 end
 
-if ~options.nograph
-    oo.forecast = forecast;
-    forecast_graphs(var_list, M, oo, options)
+if ~options_.nograph
+    oo_.forecast = forecast;
+    forecast_graphs(var_list, M_, oo_, options_)
 end

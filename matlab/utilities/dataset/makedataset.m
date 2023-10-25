@@ -1,20 +1,18 @@
-function [DynareDataset, DatasetInfo, newdatainterface] = makedataset(DynareOptions, initialconditions, gsa_flag)
-
+function [dataset_, dataset_info, newdatainterface] = makedataset(options_, initialconditions, gsa_flag)
+%[dataset_, dataset_info, newdatainterface] = makedataset(options_, initialconditions, gsa_flag)
 % Initialize a dataset as a dseries object.
-%
-%
 % INPUTS
 % ======
 %
-%     DynareOptions         [struct]    Structure of options built by Dynare's preprocessor.
+%     options_              [struct]    Structure of options built by Dynare's preprocessor.
 %     initialconditions     [double]    number of lags for VAR and DSGE_VAR
 %     gsa_flag              [integer]   1: GSA, 0: other
 %
 % OUTPUTS
 % =======
 %
-%     DynareDataset [dseries]  The dataset.
-%     DatasetInfo   [struct]   Various informations about the dataset (descriptive statistics and missing observations).
+%     dataset_       [dseries]  The dataset.
+%     dataset_info   [struct]   Various informations about the dataset (descriptive statistics and missing observations).
 %
 % EXAMPLE
 % =======
@@ -24,7 +22,7 @@ function [DynareDataset, DatasetInfo, newdatainterface] = makedataset(DynareOpti
 %
 % See also dynare_estimation_init
 
-% Copyright © 2014-2018 Dynare Team
+% Copyright © 2014-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,10 +50,10 @@ if nargin<2 || isempty(initialconditions)
     initialconditions = 0;
 end
 
-if isempty(DynareOptions.datafile) && isempty(DynareOptions.dataset.file) && isempty(DynareOptions.dataset.series)
+if isempty(options_.datafile) && isempty(options_.dataset.file) && isempty(options_.dataset.series)
     if gsa_flag
-        DynareDataset = dseries();
-        DatasetInfo = struct('missing', struct('state', 0, 'aindex', [], 'vindex', [], 'number_of_observations', NaN, 'no_more_missing_observations', NaN), ...
+        dataset_ = dseries();
+        dataset_info = struct('missing', struct('state', 0, 'aindex', [], 'vindex', [], 'number_of_observations', NaN, 'no_more_missing_observations', NaN), ...
                              'descriptive', struct('mean', [], 'covariance', [], 'correlation', [], 'autocovariance', []));
         newdatainterface=0;
         return
@@ -64,24 +62,24 @@ if isempty(DynareOptions.datafile) && isempty(DynareOptions.dataset.file) && ise
     end
 end
 
-if isempty(DynareOptions.datafile) && ~isempty(DynareOptions.dataset.file)
-    datafile = DynareOptions.dataset.file;
+if isempty(options_.datafile) && ~isempty(options_.dataset.file)
+    datafile = options_.dataset.file;
     newdatainterface = 1;
-elseif isempty(DynareOptions.datafile) && ~isempty(DynareOptions.dataset.series)
+elseif isempty(options_.datafile) && ~isempty(options_.dataset.series)
     try
-        dseriesobjectforuserdataset = evalin('base', DynareOptions.dataset.series);
+        dseriesobjectforuserdataset = evalin('base', options_.dataset.series);
     catch
-        error(sprintf('makedataset: %s is unknown!', DynareOptions.dataset.series))
+        error(sprintf('makedataset: %s is unknown!', options_.dataset.series))
     end
     if ~isdseries(dseriesobjectforuserdataset)
-        error(sprintf('makedataset: %s has to be a dseries object!', DynareOptions.dataset.series))
+        error(sprintf('makedataset: %s has to be a dseries object!', options_.dataset.series))
     end
     datafile = [];
     newdatainterface = 1;
-elseif ~isempty(DynareOptions.datafile) && isempty(DynareOptions.dataset.file)
-    datafile = DynareOptions.datafile;
+elseif ~isempty(options_.datafile) && isempty(options_.dataset.file)
+    datafile = options_.datafile;
     newdatainterface = 0;
-elseif ~isempty(DynareOptions.datafile) && ~isempty(DynareOptions.dataset.file)
+elseif ~isempty(options_.datafile) && ~isempty(options_.dataset.file)
     error('makedataset: You cannot simultaneously use the data command and the datafile option (in the estimation command)!')
 else
     error('makedataset: You have to specify the datafile!')
@@ -119,42 +117,42 @@ end
 % Load the data in a dseries object.
 if ~isempty(datafile)
     if ~(newdatainterface==0 && ((length(datafile)>2 && strcmp(datafile(end-1:end),'.m')) || (length(datafile)>4 && strcmp(datafile(end-3:end),'.mat'))))
-        DynareDataset = dseries(datafile);
+        dataset_ = dseries(datafile);
     else
         if length(datafile)>2 && strcmp(datafile(end-1:end),'.m')
             % Load an m file with the old interface.
-            DynareDataset = load_m_file_data_legacy(datafile, DynareOptions.varobs);
+            dataset_ = load_m_file_data_legacy(datafile, options_.varobs);
         elseif length(datafile)>4 && strcmp(datafile(end-3:end),'.mat')
             % Load a mat file with the old interface.
-            DynareDataset = load_mat_file_data_legacy(datafile, DynareOptions.varobs);
+            dataset_ = load_mat_file_data_legacy(datafile, options_.varobs);
         end
     end
 else
-    DynareDataset = dseriesobjectforuserdataset;
+    dataset_ = dseriesobjectforuserdataset;
     clear('dseriesobjectforuserdataset');
 end
 
-if size(unique(DynareDataset.name),1)~=size(DynareDataset.name,1)
+if size(unique(dataset_.name),1)~=size(dataset_.name,1)
     error('makedataset: the data set must not contain two variables with the same name and must not contain empty/non-named columns.')
 end
 
 % Select a subset of the variables.
-DynareDataset = DynareDataset{DynareOptions.varobs{:}};
+dataset_ = dataset_{options_.varobs{:}};
 
 % Apply log function if needed.
-if DynareOptions.loglinear && ~DynareOptions.logdata
-    DynareDataset = DynareDataset.log();
+if options_.loglinear && ~options_.logdata
+    dataset_ = dataset_.log();
 end
 
 % Test if an initial period (different from its default value) is explicitely defined in the datafile.
-if isequal(DynareDataset.init, dates(1,1))
+if isequal(dataset_.init, dates(1,1))
     dataset_default_initial_period = 1;
 else
     dataset_default_initial_period = 0;
 end
 
 %  Test if an initial period (different from its default value) is explicitely defined in the mod file with the set_time command.
-if ~isdates(DynareOptions.initial_period) && isnan(DynareOptions.initial_period)
+if ~isdates(options_.initial_period) && isnan(options_.initial_period)
     set_time_default_initial_period = 1;
 else
     set_time_default_initial_period = 0;
@@ -164,42 +162,42 @@ if ~set_time_default_initial_period && dataset_default_initial_period
     % Overwrite the initial period in dataset (it was set to default).
     % Note that the updates of freq and time members are auto-magically
     % done by dseries::subsasgn overloaded method.
-    DynareDataset.init = DynareOptions.initial_period;
+    dataset_.init = options_.initial_period;
 end
 
 if set_time_default_initial_period && ~dataset_default_initial_period
     % Overwrite the global initial period defined by set_time (it was set to default).
-    DynareOptions.initial_period = DynareDataset.init;
+    options_.initial_period = dataset_.init;
 end
 
 if ~set_time_default_initial_period && ~dataset_default_initial_period
     % Check if dataset.init and options_.initial_period are identical.
-    if DynareOptions.initial_period<DynareDataset.init
+    if options_.initial_period<dataset_.init
         error('makedataset: The date as defined by the set_time command is not consistent with the initial period in the database!')
     end
 end
 
 % Set firstobs, lastobs and nobs
 if newdatainterface
-    if isempty(DynareOptions.dataset.firstobs)
+    if isempty(options_.dataset.firstobs)
         % first_obs option was not used in the data command.
-        firstobs = DynareDataset.init;
+        firstobs = dataset_.init;
     else
-        firstobs = DynareOptions.dataset.firstobs;
+        firstobs = options_.dataset.firstobs;
     end
-    if isnan(DynareOptions.dataset.nobs)
+    if isnan(options_.dataset.nobs)
         % nobs option was not used in the data command.
-        if isempty(DynareOptions.dataset.lastobs)
+        if isempty(options_.dataset.lastobs)
             % last_obs option was not used in the data command.
-            nobs = DynareDataset.nobs;
-            lastobs = DynareDataset.dates(end);
+            nobs = dataset_.nobs;
+            lastobs = dataset_.dates(end);
         else
-            lastobs = DynareOptions.dataset.lastobs;
+            lastobs = options_.dataset.lastobs;
             nobs = lastobs-firstobs+1;
         end
     else
-        nobs = DynareOptions.dataset.nobs;
-        if isempty(DynareOptions.dataset.lastobs)
+        nobs = options_.dataset.nobs;
+        if isempty(options_.dataset.lastobs)
             % last_obs option was not used in the data command.
             lastobs = firstobs+(nobs-1);
         else
@@ -210,16 +208,16 @@ if newdatainterface
         end
     end
 else
-    if isnan(DynareOptions.first_obs)
-        firstobs = DynareDataset.init;
+    if isnan(options_.first_obs)
+        firstobs = dataset_.init;
     else
-        firstobs = DynareDataset.dates(DynareOptions.first_obs);
+        firstobs = dataset_.dates(options_.first_obs);
     end
-    if isnan(DynareOptions.nobs)
-        lastobs = DynareDataset.dates(end);
+    if isnan(options_.nobs)
+        lastobs = dataset_.dates(end);
         nobs = lastobs-firstobs+1;
     else
-        nobs = DynareOptions.nobs;
+        nobs = options_.nobs;
         lastobs = firstobs+(nobs-1);
     end
 end
@@ -227,62 +225,62 @@ end
 % Add initial conditions if needed
 FIRSTOBS = firstobs-initialconditions;
 
-% Check that firstobs belongs to DynareDataset.dates
-if firstobs<DynareDataset.init
-    error(sprintf('makedataset: first_obs (%s) cannot be less than the first date in the dataset (%s)!',char(firstobs),char(DynareDataset.init)))
+% Check that firstobs belongs to dataset_.dates
+if firstobs<dataset_.init
+    error(sprintf('makedataset: first_obs (%s) cannot be less than the first date in the dataset (%s)!',char(firstobs),char(dataset_.init)))
 end
 
-% Check that FIRSTOBS belongs to DynareDataset.dates
-if initialconditions && FIRSTOBS<DynareDataset.init
-    error(sprintf('makedataset: first_obs (%s) - %i cannot be less than the first date in the dataset (%s)!\nReduce the number of lags in the VAR model or increase the value of first_obs\nto at least first_obs=%i.', char(firstobs), initialconditions, char(DynareDataset.init),initialconditions+1));
+% Check that FIRSTOBS belongs to dataset_.dates
+if initialconditions && FIRSTOBS<dataset_.init
+    error(sprintf('makedataset: first_obs (%s) - %i cannot be less than the first date in the dataset (%s)!\nReduce the number of lags in the VAR model or increase the value of first_obs\nto at least first_obs=%i.', char(firstobs), initialconditions, char(dataset_.init),initialconditions+1));
 end
 
-% Check that lastobs belongs to DynareDataset.dates...
+% Check that lastobs belongs to dataset_.dates...
 if newdatainterface
-    if lastobs>DynareDataset.dates(end)
-        error(sprintf('makedataset: last_obs (%s) cannot be greater than the last date in the dataset (%s)!',char(lastobs),char(DynareDataset.dates(end))))
+    if lastobs>dataset_.dates(end)
+        error(sprintf('makedataset: last_obs (%s) cannot be greater than the last date in the dataset (%s)!',char(lastobs),char(dataset_.dates(end))))
     end
 else
-    % ...  or check that nobs is smaller than the number of observations in DynareDataset.
-    if nobs>DynareDataset.nobs
-        error(sprintf('makedataset: nobs (%s) cannot be greater than the last date in the dataset (%s)!', num2str(nobs), num2str(DynareDataset.nobs)))
+    % ...  or check that nobs is smaller than the number of observations in dataset_.
+    if nobs>dataset_.nobs
+        error(sprintf('makedataset: nobs (%s) cannot be greater than the last date in the dataset (%s)!', num2str(nobs), num2str(dataset_.nobs)))
     end
 end
 
 % Select a subsample.
-DynareDataset = DynareDataset(FIRSTOBS:lastobs);
+dataset_ = dataset_(FIRSTOBS:lastobs);
 
-% Initialize DatasetInfo structure.
-DatasetInfo = struct('missing', struct('state', NaN, 'aindex', [], 'vindex', [], 'number_of_observations', NaN, 'no_more_missing_observations', NaN), ...
+% Initialize dataset_info structure.
+dataset_info = struct('missing', struct('state', NaN, 'aindex', [], 'vindex', [], 'number_of_observations', NaN, 'no_more_missing_observations', NaN), ...
                      'descriptive', struct('mean', [], 'covariance', [], 'correlation', [], 'autocovariance', []));
 
-% Fill DatasetInfo.missing if some observations are missing
-DatasetInfo.missing.state = isanynan(DynareDataset.data);
-if DatasetInfo.missing.state
-    [DatasetInfo.missing.aindex, DatasetInfo.missing.number_of_observations, DatasetInfo.missing.no_more_missing_observations, DatasetInfo.missing.vindex] = ...
-        describe_missing_data(DynareDataset.data);
+% Fill dataset_info.missing if some observations are missing
+dataset_info.missing.state = isanynan(dataset_.data);
+if dataset_info.missing.state
+    [dataset_info.missing.aindex, dataset_info.missing.number_of_observations, dataset_info.missing.no_more_missing_observations, dataset_info.missing.vindex] = ...
+        describe_missing_data(dataset_.data);
 else
-    DatasetInfo.missing.aindex = num2cell(transpose(repmat(1:DynareDataset.vobs,DynareDataset.nobs,1)),1);
-    DatasetInfo.missing.no_more_missing_observations = 1;
+    dataset_info.missing.aindex = num2cell(transpose(repmat(1:dataset_.vobs,dataset_.nobs,1)),1);
+    dataset_info.missing.no_more_missing_observations = 1;
 end
 
 % Compute the empirical mean of the observed variables.
-DatasetInfo.descriptive.mean = nanmean(DynareDataset.data,1);
+dataset_info.descriptive.mean = nanmean(dataset_.data,1);
 
 % Compute the empirical covariance matrix of the observed variables.
-DatasetInfo.descriptive.covariance = nancovariance(DynareDataset.data);
+dataset_info.descriptive.covariance = nancovariance(dataset_.data);
 
 % Compute the empirical correlation matrix of the observed variables.
-normalization_matrix = diag(1./sqrt(diag(DatasetInfo.descriptive.covariance)));
-DatasetInfo.descriptive.correlation = normalization_matrix*DatasetInfo.descriptive.covariance*normalization_matrix;
+normalization_matrix = diag(1./sqrt(diag(dataset_info.descriptive.covariance)));
+dataset_info.descriptive.correlation = normalization_matrix*dataset_info.descriptive.covariance*normalization_matrix;
 
 % Compute autocorrelation function.
-DatasetInfo.descriptive.autocovariance = nanautocovariance(DynareDataset.data, DynareOptions.ar);
+dataset_info.descriptive.autocovariance = nanautocovariance(dataset_.data, options_.ar);
 
 % Save raw data.
-DatasetInfo.rawdata = DynareDataset.data;
+dataset_info.rawdata = dataset_.data;
 
 % Prefilter the data if needed (remove the mean).
-if isequal(DynareOptions.prefilter, 1)
-    DynareDataset = DynareDataset.detrend();
+if isequal(options_.prefilter, 1)
+    dataset_ = dataset_.detrend();
 end

@@ -10,8 +10,8 @@ function simulation = simul_static_model(samplesize, innovations)
 % - simulation          [dseries]     Simulated endogenous and exogenous variables.
 %
 % REMARKS
-% [1] The innovations used for the simulation are saved in DynareOutput.exo_simul, and the resulting paths for the endogenous
-%     variables are saved in DynareOutput.endo_simul.
+% [1] The innovations used for the simulation are saved in oo_.exo_simul, and the resulting paths for the endogenous
+%     variables are saved in oo_.endo_simul.
 % [2] The last input argument is not mandatory. If absent we use random draws and rescale them with the informations provided
 %     through the shocks block.
 
@@ -62,7 +62,7 @@ if nargin<2 || isempty(innovations)
       otherwise
         error('%s distribution for the structural innovations is not (yet) implemented!', options_.bnlms.innovation_distribution)
     end
-    % Put the simulated innovations in DynareOutput.exo_simul.
+    % Put the simulated innovations in oo_.exo_simul.
     oo_.exo_simul = zeros(samplesize, number_of_shocks);
     oo_.exo_simul(:,positive_var_indx) = oo_.bnlms.shocks;
     innovations = [];

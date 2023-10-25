@@ -1,23 +1,23 @@
-function [info, Model, DynareOptions, DynareResults, ReducedForm] = ...
-    solve_model_for_online_filter(setinitialcondition, xparam1, DynareDataset, DynareOptions, Model, EstimatedParameters, BayesInfo, bounds, DynareResults)
+function [info, M_, options_, oo_, ReducedForm] = ...
+    solve_model_for_online_filter(setinitialcondition, xparam1, dataset_, options_, M_, estim_params_, bayestopt_, bounds, oo_)
 
 % Solves the dsge model for an particular parameters set.
 %
 % INPUTS
 % - setinitialcondition      [logical]    return initial condition if true.
 % - xparam1                  [double]     n×1 vector, parameter values.
-% - DynareDataset            [struct]     Dataset for estimation (dataset_).
-% - DynareOptions            [struct]     Dynare options (options_).
-% - Model                    [struct]     Model description (M_).
-% - EstimatedParameters      [struct]     Estimated parameters (estim_params_).
-% - BayesInfo                [struct]     Prior definition (bayestopt_).
-% - DynareResults            [struct]     Dynare results (oo_).
+% - dataset_                 [struct]     Dataset for estimation.
+% - options_                 [struct]     Dynare options.
+% - M_                       [struct]     Model description.
+% - estim_params_            [struct]     Estimated parameters.
+% - bayestopt_               [struct]     Prior definition.
+% - oo_                      [struct]     Dynare results.
 %
 % OUTPUTS
 % - info                     [integer]    scalar, nonzero if any problem occur when computing the reduced form.
-% - Model                    [struct]     Model description (M_).
-% - DynareOptions            [struct]     Dynare options (options_).
-% - DynareResults            [struct]     Dynare results (oo_).
+% - M_                       [struct]     M_ description.
+% - options_                 [struct]     Dynare options.
+% - oo_                      [struct]     Dynare results.
 % - ReducedForm              [struct]     Reduced form model.
 
 % Copyright © 2013-2023 Dynare Team
@@ -58,27 +58,27 @@ if any(xparam1>bounds.ub)
 end
 
 % Get the diagonal elements of the covariance matrices for the structural innovations (Q) and the measurement error (H).
-Q = Model.Sigma_e;
-H = Model.H;
-for i=1:EstimatedParameters.nvx
-    k =EstimatedParameters.var_exo(i,1);
+Q = M_.Sigma_e;
+H = M_.H;
+for i=1:estim_params_.nvx
+    k =estim_params_.var_exo(i,1);
     Q(k,k) = xparam1(i)*xparam1(i);
 end
-offset = EstimatedParameters.nvx;
-if EstimatedParameters.nvn
-    for i=1:EstimatedParameters.nvn
+offset = estim_params_.nvx;
+if estim_params_.nvn
+    for i=1:estim_params_.nvn
         H(i,i) = xparam1(i+offset)*xparam1(i+offset);
     end
-    offset = offset+EstimatedParameters.nvn;
+    offset = offset+estim_params_.nvn;
 else
-    H = zeros(size(DynareDataset.data, 2));
+    H = zeros(size(dataset_.data, 2));
 end
 
 % Get the off-diagonal elements of the covariance matrix for the structural innovations. Test if Q is positive definite.
-if EstimatedParameters.ncx
-    for i=1:EstimatedParameters.ncx
-        k1 =EstimatedParameters.corrx(i,1);
-        k2 =EstimatedParameters.corrx(i,2);
+if estim_params_.ncx
+    for i=1:estim_params_.ncx
+        k1 =estim_params_.corrx(i,1);
+        k2 =estim_params_.corrx(i,2);
         Q(k1,k2) = xparam1(i+offset)*sqrt(Q(k1,k1)*Q(k2,k2));
         Q(k2,k1) = Q(k1,k2);
     end
@@ -89,13 +89,13 @@ if EstimatedParameters.ncx
         info = 43;
         return
     end
-    offset = offset+EstimatedParameters.ncx;
+    offset = offset+estim_params_.ncx;
 end
 
 % Get the off-diagonal elements of the covariance matrix for the measurement errors. Test if H is positive definite.
-if EstimatedParameters.ncn
-    corrn_observable_correspondence = EstimatedParameters.corrn_observable_correspondence;
-    for i=1:EstimatedParameters.ncn
+if estim_params_.ncn
+    corrn_observable_correspondence = estim_params_.corrn_observable_correspondence;
+    for i=1:estim_params_.ncn
         k1 = corrn_observable_correspondence(i,1);
         k2 = corrn_observable_correspondence(i,2);
         H(k1,k2) = xparam1(i+offset)*sqrt(H(k1,k1)*H(k2,k2));
@@ -108,25 +108,25 @@ if EstimatedParameters.ncn
         info = 44;
         return
     end
-    offset = offset+EstimatedParameters.ncn;
+    offset = offset+estim_params_.ncn;
 end
 
 % Update estimated structural parameters in Mode.params.
-if EstimatedParameters.np > 0
-    Model.params(EstimatedParameters.param_vals(:,1)) = xparam1(offset+1:end);
+if estim_params_.np > 0
+    M_.params(estim_params_.param_vals(:,1)) = xparam1(offset+1:end);
 end
 
-% Update Model.Sigma_e and Model.H.
-Model.Sigma_e = Q;
-Model.H = H;
+% Update M_.Sigma_e and M_.H.
+M_.Sigma_e = Q;
+M_.H = H;
 
 %------------------------------------------------------------------------------
 % 2. call model setup & reduction program
 %------------------------------------------------------------------------------
 
 warning('off', 'MATLAB:nearlySingularMatrix')
-[~, ~, ~, info, DynareResults.dr, Model.params] = ...
-    dynare_resolve(Model, DynareOptions, DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state, 'restrict');
+[~, ~, ~, info, oo_.dr, M_.params] = ...
+    dynare_resolve(M_, options_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, 'restrict');
 warning('on', 'MATLAB:nearlySingularMatrix')
 
 if info(1)~=0
@@ -137,12 +137,12 @@ if info(1)~=0
 end
 
 % Get decision rules and transition equations.
-dr = DynareResults.dr;
+dr = oo_.dr;
 
 % Set persistent variables (first call).
 if isempty(init_flag)
-    mf0 = BayesInfo.mf0;
-    mf1 = BayesInfo.mf1;
+    mf0 = bayestopt_.mf0;
+    mf1 = bayestopt_.mf1;
     restrict_variables_idx  = dr.restrict_var_list;
     state_variables_idx = restrict_variables_idx(mf0);
     number_of_state_variables = length(mf0);
@@ -155,17 +155,17 @@ if nargout>4
     ReducedForm.ghx = dr.ghx(restrict_variables_idx,:);
     ReducedForm.ghu = dr.ghu(restrict_variables_idx,:);
     ReducedForm.steadystate = dr.ys(dr.order_var(restrict_variables_idx));
-    if DynareOptions.order==2
+    if options_.order==2
         ReducedForm.use_k_order_solver = false;
         ReducedForm.ghxx = dr.ghxx(restrict_variables_idx,:);
         ReducedForm.ghuu = dr.ghuu(restrict_variables_idx,:);
         ReducedForm.ghxu = dr.ghxu(restrict_variables_idx,:);
         ReducedForm.constant = ReducedForm.steadystate + .5*dr.ghs2(restrict_variables_idx);
         ReducedForm.ghs2 = dr.ghs2(restrict_variables_idx,:);
-    elseif DynareOptions.order>=3
+    elseif options_.order>=3
         ReducedForm.use_k_order_solver = true;
         ReducedForm.dr = dr;
-        ReducedForm.udr = folded_to_unfolded_dr(dr, Model, DynareOptions);
+        ReducedForm.udr = folded_to_unfolded_dr(dr, M_, options_);
     else
         n_states=size(dr.ghx,2);
         n_shocks=size(dr.ghu,2);
@@ -184,28 +184,28 @@ end
 
 % Set initial condition
 if setinitialcondition
-    switch DynareOptions.particle.initialization
+    switch options_.particle.initialization
       case 1% Initial state vector covariance is the ergodic variance associated to the first order Taylor-approximation of the model.
         StateVectorMean = ReducedForm.state_variables_steady_state;%.constant(mf0);
         [A,B] = kalman_transition_matrix(dr,dr.restrict_var_list,dr.restrict_columns);
-        StateVectorVariance = lyapunov_symm(A, B*ReducedForm.Q*B', DynareOptions.lyapunov_fixed_point_tol, ...
-                                        DynareOptions.qz_criterium, DynareOptions.lyapunov_complex_threshold, [], DynareOptions.debug);
+        StateVectorVariance = lyapunov_symm(A, B*ReducedForm.Q*B', options_.lyapunov_fixed_point_tol, ...
+                                        options_.qz_criterium, options_.lyapunov_complex_threshold, [], options_.debug);
         StateVectorVariance = StateVectorVariance(mf0,mf0);
       case 2% Initial state vector covariance is a monte-carlo based estimate of the ergodic variance (consistent with a k-order Taylor-approximation of the model).
         StateVectorMean = ReducedForm.state_variables_steady_state;%.constant(mf0);
-        old_DynareOptionsperiods = DynareOptions.periods;
-        DynareOptions.periods = 5000;
-        old_DynareOptionspruning =  DynareOptions.pruning;
-        DynareOptions.pruning = DynareOptions.particle.pruning;
-        y_ = simult(dr.ys, dr, Model, DynareOptions);
-        y_ = y_(dr.order_var(state_variables_idx),2001:DynareOptions.periods);
+        old_DynareOptionsperiods = options_.periods;
+        options_.periods = 5000;
+        old_DynareOptionspruning =  options_.pruning;
+        options_.pruning = options_.particle.pruning;
+        y_ = simult(dr.ys, dr, M_, options_);
+        y_ = y_(dr.order_var(state_variables_idx),2001:options_.periods);
         StateVectorVariance = cov(y_');
-        DynareOptions.periods = old_DynareOptionsperiods;
-        DynareOptions.pruning = old_DynareOptionspruning;
+        options_.periods = old_DynareOptionsperiods;
+        options_.pruning = old_DynareOptionspruning;
         clear('old_DynareOptionsperiods','y_');
       case 3% Initial state vector covariance is a diagonal matrix.
         StateVectorMean = ReducedForm.state_variables_steady_state;%.constant(mf0);
-        StateVectorVariance = DynareOptions.particle.initial_state_prior_std*eye(number_of_state_variables);
+        StateVectorVariance = options_.particle.initial_state_prior_std*eye(number_of_state_variables);
       otherwise
         error('Unknown initialization option!')
     end

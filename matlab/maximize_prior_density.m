@@ -1,5 +1,5 @@
 function [xparams,lpd,hessian_mat] = ...
-    maximize_prior_density(iparams, prior_shape, prior_hyperparameter_1, prior_hyperparameter_2, prior_inf_bound, prior_sup_bound,DynareOptions,DynareModel,BayesInfo,EstimatedParams,DynareResults)
+    maximize_prior_density(iparams, prior_shape, prior_hyperparameter_1, prior_hyperparameter_2, prior_inf_bound, prior_sup_bound,options_,M_,bayestopt_,estim_params_,oo_)
 % Maximizes the logged prior density using Chris Sims' optimization routine.
 %
 % INPUTS
@@ -9,13 +9,18 @@ function [xparams,lpd,hessian_mat] = ...
 %   prior_hyperparameter_2         [double]   vector, second hyperparameter.
 %   prior_inf_bound                [double]   vector, prior's lower bound.
 %   prior_sup_bound                [double]   vector, prior's upper bound.
+%   options_                       [structure] describing the options
+%   bayestopt_                     [structure] describing the priors
+%   M_                             [structure] describing the model
+%   estim_params_                  [structure] characterizing parameters to be estimated
+%   oo_                            [structure] storing the results
 %
 % OUTPUTS
 %   xparams       [double]  vector, prior mode.
 %   lpd           [double]  scalar, value of the logged prior density at the mode.
 %   hessian_mat   [double]  matrix, Hessian matrix at the prior mode.
 
-% Copyright © 2009-2017 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,9 +38,9 @@ function [xparams,lpd,hessian_mat] = ...
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 [xparams, lpd, exitflag, hessian_mat]=dynare_minimize_objective('minus_logged_prior_density', ...
-                                                  iparams, DynareOptions.mode_compute, DynareOptions, [prior_inf_bound, prior_sup_bound], ...
-                                                  BayesInfo.name, BayesInfo, [], ...
+                                                  iparams, options_.mode_compute, options_, [prior_inf_bound, prior_sup_bound], ...
+                                                  bayestopt_.name, bayestopt_, [], ...
                                                   prior_shape, prior_hyperparameter_1, prior_hyperparameter_2, prior_inf_bound, prior_sup_bound, ...
-                                                  DynareOptions,DynareModel,EstimatedParams,DynareResults);
+                                                  options_,M_,estim_params_,oo_);
 
 lpd = -lpd;

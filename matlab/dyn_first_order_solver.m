@@ -1,12 +1,12 @@
-function [dr, info] = dyn_first_order_solver(jacobia, DynareModel, dr, DynareOptions, task)
-
+function [dr, info] = dyn_first_order_solver(jacobia, M_, dr, options_, task)
+% [dr, info] = dyn_first_order_solver(jacobia, M_, dr, options_, task)
 % Computes the first order reduced form of a DSGE model.
 %
 % INPUTS
 % - jacobia       [double]    matrix, the jacobian of the dynamic model.
-% - DynareModel   [struct]    Matlab's structre describing the model, M_ global.
+% - M_            [struct]    Matlab's structre describing the model
 % - dr            [struct]    Matlab's structure describing the reduced form model.
-% - DynareOptions [struct]    Matlab's structure containing the current state of the options, oo_ global.
+% - options_      [struct]    Matlab's structure containing the current state of the options
 % - task          [integer]   scalar, if task = 0 then decision rules are computed and if task = 1 then only eigenvales are computed.
 %
 % OUTPUTS
@@ -21,7 +21,7 @@ function [dr, info] = dyn_first_order_solver(jacobia, DynareModel, dr, DynareOpt
 %                                     info=5 -> Blanchard and Kahn conditions are not satisfied: indeterminacy due to rank failure,
 %                                     info=7 -> One of the eigenvalues is close to 0/0 (infinity of complex solutions)
 
-% Copyright © 2001-2020 Dynare Team
+% Copyright © 2001-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,24 +53,24 @@ if ~nargin
     return
 end
 
-exo_nbr = DynareModel.exo_nbr;
+exo_nbr = M_.exo_nbr;
 
 if isempty(reorder_jacobian_columns)
 
-    maximum_lag = DynareModel.maximum_endo_lag;
-    nfwrd    = DynareModel.nfwrd;
-    nboth    = DynareModel.nboth;
-    npred    = DynareModel.npred;
-    nstatic  = DynareModel.nstatic;
-    ndynamic = DynareModel.ndynamic;
-    nsfwrd   = DynareModel.nsfwrd;
+    maximum_lag = M_.maximum_endo_lag;
+    nfwrd    = M_.nfwrd;
+    nboth    = M_.nboth;
+    npred    = M_.npred;
+    nstatic  = M_.nstatic;
+    ndynamic = M_.ndynamic;
+    nsfwrd   = M_.nsfwrd;
 
     k1 = 1:(npred+nboth);
     k2 = 1:(nfwrd+nboth);
 
     order_var = dr.order_var;
     nd = npred+nfwrd+2*nboth;
-    lead_lag_incidence = DynareModel.lead_lag_incidence;
+    lead_lag_incidence = M_.lead_lag_incidence;
     nz = nnz(lead_lag_incidence);
 
     lead_id = find(lead_lag_incidence(maximum_lag+2,:));
@@ -141,12 +141,12 @@ B(:,cols_b) = aa(:,index_c);  % Jacobian matrix for contemporaneous endogeneous 
 C = aa(:,index_p);  % Jacobain matrix for led endogeneous variables
 
 info = 0;
-if task ~= 1 && (DynareOptions.dr_cycle_reduction || DynareOptions.dr_logarithmic_reduction)
-    if n_current < DynareModel.endo_nbr
-        if DynareOptions.dr_cycle_reduction
+if task ~= 1 && (options_.dr_cycle_reduction || options_.dr_logarithmic_reduction)
+    if n_current < M_.endo_nbr
+        if options_.dr_cycle_reduction
             error(['The cycle reduction algorithme can''t be used when the ' ...
                    'coefficient matrix for current variables isn''t invertible'])
-        elseif DynareOptions.dr_logarithmic_reduction
+        elseif options_.dr_logarithmic_reduction
             error(['The logarithmic reduction algorithme can''t be used when the ' ...
                    'coefficient matrix for current variables isn''t invertible'])
         end
@@ -154,10 +154,10 @@ if task ~= 1 && (DynareOptions.dr_cycle_reduction || DynareOptions.dr_logarithmi
     A1 = [aa(row_indx,index_m ) zeros(ndynamic,nfwrd)];
     B1 = [aa(row_indx,index_0m) aa(row_indx,index_0p) ];
     C1 = [zeros(ndynamic,npred) aa(row_indx,index_p)];
-    if DynareOptions.dr_cycle_reduction
-        [ghx, info] = cycle_reduction(A1, B1, C1, DynareOptions.dr_cycle_reduction_tol);
+    if options_.dr_cycle_reduction
+        [ghx, info] = cycle_reduction(A1, B1, C1, options_.dr_cycle_reduction_tol);
     else
-        [ghx, info] = logarithmic_reduction(C1, B1, A1, DynareOptions.dr_logarithmic_reduction_tol, DynareOptions.dr_logarithmic_reduction_maxiter);
+        [ghx, info] = logarithmic_reduction(C1, B1, A1, options_.dr_logarithmic_reduction_tol, options_.dr_logarithmic_reduction_maxiter);
     end
     if info
         % cycle_reduction or logarithmic redution failed and set info
@@ -174,7 +174,7 @@ else
     E(row_indx_de_1,index_e1) = -aa(row_indx,index_e);
     E(row_indx_de_2,index_e2) = eye(nboth);
 
-    [ss, tt, w, sdim, dr.eigval, info1] = mjdgges(E, D, DynareOptions.qz_criterium, DynareOptions.qz_zero_threshold);
+    [ss, tt, w, sdim, dr.eigval, info1] = mjdgges(E, D, options_.qz_criterium, options_.qz_zero_threshold);
 
     if info1
         if info1 == -30
@@ -204,10 +204,10 @@ else
     if nba ~= nsfwrd
         temp = sort(abs(dr.eigval));
         if nba > nsfwrd
-            temp = temp(nd-nba+1:nd-nsfwrd)-1-DynareOptions.qz_criterium;
+            temp = temp(nd-nba+1:nd-nsfwrd)-1-options_.qz_criterium;
             info(1) = 3;
         elseif nba < nsfwrd
-            temp = temp(nd-nsfwrd+1:nd-nba)-1-DynareOptions.qz_criterium;
+            temp = temp(nd-nsfwrd+1:nd-nba)-1-options_.qz_criterium;
             info(1) = 4;
         end
         info(2) = temp'*temp;
@@ -262,7 +262,7 @@ if nstatic > 0
     b11 = b(1:nstatic, nstatic+1:end);
     temp(:,index_m) = temp(:,index_m)-A(1:nstatic,:);
     temp = b10\(temp-b11*ghx);
-    if DynareOptions.debug
+    if options_.debug
         if any(any(~isfinite(temp)))
             fprintf('\ndyn_first_order_solver: infinite/NaN elements encountered when solving for the static variables\n')
             fprintf('dyn_first_order_solver: This often arises if there is a singularity.\n\n')
@@ -288,7 +288,7 @@ end
 dr.ghx = ghx;
 dr.ghu = ghu;
 
-if DynareOptions.aim_solver ~= 1
+if options_.aim_solver ~= 1
     % Necessary when using Sims' routines for QZ
     dr.ghx = real(ghx);
     dr.ghu = real(ghu);

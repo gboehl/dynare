@@ -1,17 +1,18 @@
-function print_info(info, noprint, DynareOptions)
+function print_info(info, noprint, options_)
+% print_info(info, noprint, options_)
 % Prints error messages
 %
 % INPUTS
 %   info              [double]     vector returned by resol.m
 %   noprint           [integer]    equal to 0 if the error message has to be printed.
-%   DynareOptions     [structure]  --> options_
+%   options_          [structure]  Dynare options
 % OUTPUTS
 %    none
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2005-2020 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,6 +29,6 @@ function print_info(info, noprint, DynareOptions)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 if ~noprint
-    message = get_error_message(info, DynareOptions);
+    message = get_error_message(info, options_);
     error(message);
 end

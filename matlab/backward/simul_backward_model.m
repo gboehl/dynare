@@ -12,8 +12,8 @@ function [simulation, errorflag] = simul_backward_model(initialconditions, sampl
 % - errorflag           [logical]     scalar, equal to false iff the simulation did not fail.
 %
 % REMARKS
-% [1] The innovations used for the simulation are saved in DynareOutput.exo_simul, and the resulting paths for the endogenous
-%     variables are saved in DynareOutput.endo_simul.
+% [1] The innovations used for the simulation are saved in oo_.exo_simul, and the resulting paths for the endogenous
+%     variables are saved in oo_.endo_simul.
 % [2] The last input argument is not mandatory. If absent we use random draws and rescale them with the informations provided
 %     through the shocks block.
 % [3] If the first input argument is empty, the endogenous variables are initialized with 0, or if available with the informations

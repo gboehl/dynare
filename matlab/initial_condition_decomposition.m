@@ -99,10 +99,10 @@ if ~isfield(oo_,'initval_decomposition') || isequal(varlist,0)
     with_epilogue = options_.initial_condition_decomp.with_epilogue;
     options_.selected_variables_only = 0; %make sure all variables are stored
     options_.plot_priors=0;
-    [oo,M,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+    [oo_local,M,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
 
     % reduced form
-    dr = oo.dr;
+    dr = oo_local.dr;
 
     % data reordering
     order_var = dr.order_var;
@@ -114,7 +114,7 @@ if ~isfield(oo_,'initval_decomposition') || isequal(varlist,0)
     B = dr.ghu;
 
     % initialization
-    gend = length(oo.SmoothedShocks.(M_.exo_names{1})); %+options_.forecast;
+    gend = length(oo_local.SmoothedShocks.(M_.exo_names{1})); %+options_.forecast;
     z = zeros(endo_nbr,endo_nbr+2,gend);
     z(:,end,:) = Smoothed_Variables_deviation_from_mean;
 
@@ -155,15 +155,15 @@ end
 if ~isequal(varlist,0)
 
     % if ~options_.no_graph.shock_decomposition
-    oo=oo_;
-    oo.shock_decomposition = oo_.initval_decomposition;
+    oo_local=oo_;
+    oo_local.shock_decomposition = oo_.initval_decomposition;
     if ~isempty(init2shocks)
         init2shocks = M_.init2shocks.(init2shocks);
         n=size(init2shocks,1);
         for i=1:n
             j=strmatch(init2shocks{i}{1},M_.endo_names,'exact');
-            oo.shock_decomposition(:,end-1,:)=oo.shock_decomposition(:,j,:)+oo.shock_decomposition(:,end-1,:);
-            oo.shock_decomposition(:,j,:)=0;
+            oo_local.shock_decomposition(:,end-1,:)=oo_local.shock_decomposition(:,j,:)+oo_local.shock_decomposition(:,end-1,:);
+            oo_local.shock_decomposition(:,j,:)=0;
         end
     end
     M_.exo_names = M_.endo_names;
@@ -173,5 +173,5 @@ if ~isequal(varlist,0)
     options_.plot_shock_decomp.use_shock_groups = '';
     options_.plot_shock_decomp.init_cond_decomp = 1; % private flag to plotting utilities
 
-    plot_shock_decomposition(M_,oo,options_,varlist);
+    plot_shock_decomposition(M_,oo_local,options_,varlist);
 end

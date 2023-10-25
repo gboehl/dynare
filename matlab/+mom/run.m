@@ -554,7 +554,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     [xparam1, oo_, Woptflag] = mom.mode_compute_gmm_smm(xparam0, objective_function, oo_, M_, options_mom_, estim_params_, bayestopt_, Bounds);
     % compute standard errors at mode
     options_mom_.mom.vector_output = false; % make sure flag is reset
-    M_ = set_all_parameters(xparam1,estim_params_,M_); % update M_ and DynareResults (in particular to get oo_.mom.model_moments)
+    M_ = set_all_parameters(xparam1,estim_params_,M_); % update M_ and oo_ (in particular to get oo_.mom.model_moments)
     if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
         options_mom_.mom.compute_derivs = true; % for GMM we compute derivatives analytically in the objective function with this flag
     end

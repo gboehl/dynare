@@ -1,4 +1,4 @@
-function indmcf = scatter_analysis(lpmat, xdata, options_scatter, DynareOptions)
+function indmcf = scatter_analysis(lpmat, xdata, options_scatter, options_)
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -25,7 +25,7 @@ function indmcf = scatter_analysis(lpmat, xdata, options_scatter, DynareOptions)
 
 param_names = options_scatter.param_names;
 
-if DynareOptions.TeX
+if options_.TeX
     if ~isfield(options_scatter,'param_names_tex')
         param_names_tex = options_scatter.param_names;
     else
@@ -42,11 +42,11 @@ if isfield(options_scatter,'xparam1')
 end
 OutputDirectoryName = options_scatter.OutputDirectoryName;
 
-if ~DynareOptions.nograph
+if ~options_.nograph
     skipline()
     xx=[];
     if ~isempty(xparam1)
         xx=xparam1;
     end
-    scatter_plots(lpmat, xdata, param_names, '.', [fname_, '_', amcf_name], OutputDirectoryName, amcf_title, xx, DynareOptions)
+    scatter_plots(lpmat, xdata, param_names, '.', [fname_, '_', amcf_name], OutputDirectoryName, amcf_title, xx, options_)
 end

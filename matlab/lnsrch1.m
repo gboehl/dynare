@@ -56,18 +56,18 @@ if ~isfinite(summ)
         end
         eq_number_string=[eq_number_string, num2str(j1(end))];
         var_string=[];
-        Model=evalin('base','M_');
+        M_=evalin('base','M_');
         for ii=1:length(j2)-1
-            var_string=[var_string, Model.endo_names{j2(ii)}, ', '];
+            var_string=[var_string, M_.endo_names{j2(ii)}, ', '];
         end
-        var_string=[var_string, Model.endo_names{j2(end)}];
+        var_string=[var_string, M_.endo_names{j2(end)}];
         fprintf('\nAn infinite element was encountered when trying to solve equation(s) %s \n',eq_number_string)
         fprintf('with respect to the variable(s): %s.\n',var_string)
         fprintf('The values of the endogenous variables when the problem was encountered were:\n')
-        label_width=size(char(Model.endo_names),2)+2;
+        label_width=size(char(M_.endo_names),2)+2;
         label_string=sprintf('%%-%us %%8.4g \\n',label_width);
         for ii=1:length(xold)
-            fprintf(label_string, Model.endo_names{ii}, xold(ii));
+            fprintf(label_string, M_.endo_names{ii}, xold(ii));
         end
         skipline();
     end

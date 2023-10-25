@@ -1,11 +1,14 @@
-function [endogenousvariables, exogenousvariables] = static_model_inversion(constraints, exogenousvariables, endo_names, exo_names, freeinnovations, DynareModel, DynareOptions, DynareOutput)
-
+function [endogenousvariables, exogenousvariables] = static_model_inversion(constraints, exogenousvariables, endo_names, exo_names, freeinnovations, M_, options_, oo_)
+% [endogenousvariables, exogenousvariables] = static_model_inversion(constraints, exogenousvariables, endo_names, exo_names, freeinnovations, M_, options_, oo_)
 % INPUTS
 % - constraints         [dseries]        with N constrained endogenous variables from t1 to t2.
 % - exogenousvariables  [dseries]        with Q exogenous variables.
 % - endo_names          [cell]           list of endogenous variable names.
 % - exo_names           [cell]           list of exogenous variable names.
 % - freeinstruments     [cell]           list of exogenous variable names used to control the constrained endogenous variables.
+% - M_                  [structure]      Definition of the model
+% - options_            [structure]      Options
+% - oo_                 [structure]      Storage of results
 %
 % OUTPUTS
 % - endogenous          [dseries]
@@ -32,7 +35,7 @@ function [endogenousvariables, exogenousvariables] = static_model_inversion(cons
 
 % Get indices for the free innovations.
 freeinnovations_id = zeros(length(freeinnovations), 1);
-if length(freeinnovations)<DynareModel.exo_nbr
+if length(freeinnovations)<M_.exo_nbr
     for i=1:length(freeinnovations)
         freeinnovations_id(i) = find(strcmp(freeinnovations{i}, exo_names));
     end
@@ -44,7 +47,7 @@ nxfree = length(freeinnovations_id);
 
 % Get indices for the the controlled and free endogenous variables.
 controlledendogenousvariables_id = zeros(length(freeinnovations), 1);
-if length(freeinnovations)<DynareModel.endo_nbr
+if length(freeinnovations)<M_.endo_nbr
     for i=1:length(freeinnovations)
         controlledendogenousvariables_id(i) = find(strcmp(constraints.name{i}, endo_names));
     end
@@ -64,14 +67,14 @@ ModelInversion.nxfree = nxfree;
 ModelInversion.y_constrained_id = controlledendogenousvariables_id;
 ModelInversion.y_free_id = freeendogenousvariables_id;
 ModelInversion.x_free_id = freeinnovations_id;
-ModelInversion.J_id = [DynareModel.endo_nbr+ModelInversion.y_free_id ; 3*DynareModel.endo_nbr+ModelInversion.x_free_id];
+ModelInversion.J_id = [M_.endo_nbr+ModelInversion.y_free_id ; 3*M_.endo_nbr+ModelInversion.x_free_id];
 
 % Get function handles to the dynamic model routines.
-dynamic_resid = str2func([DynareModel.fname '.sparse.dynamic_resid']);
-dynamic_g1 = str2func([DynareModel.fname '.sparse.dynamic_g1']);
+dynamic_resid = str2func([M_.fname '.sparse.dynamic_resid']);
+dynamic_g1 = str2func([M_.fname '.sparse.dynamic_g1']);
 
 % Initialization of the returned simulations (endogenous variables).
-Y = NaN(DynareModel.endo_nbr, nobs(constraints));
+Y = NaN(M_.endo_nbr, nobs(constraints));
 
 for i=1:nyctrl
     Y(controlledendogenousvariables_id(i),1:end) = transpose(constraints.data(:,i));
@@ -84,7 +87,7 @@ X = exogenousvariables.data;
 
 ity = 1;
 itx = find(exogenousvariables.dates==constraints.dates(1));
-DynareOptions.solve_algo=4;
+options_.solve_algo=4;
 
 for t = 1:nobs(constraints)
     % Set the current values of the constrained endogenous variables.
@@ -93,8 +96,8 @@ for t = 1:nobs(constraints)
     % values) and the free exogenous variables (initialized with 0).
     z = [Y(freeendogenousvariables_id,ity); zeros(nxfree, 1)];
     % Solves for z.
-    [z, errorflag, ~, ~, errorcode] = dynare_solve(@static_model_for_inversion, z, DynareOptions.simul.maxit, DynareOptions.dynatol.f, DynareOptions.dynatol.x, ...
-                                                   DynareOptions, dynamic_resid, dynamic_g1, ycur, X(itx, :), DynareModel.params, DynareOutput.steady_state, DynareModel.dynamic_g1_sparse_rowval, DynareModel.dynamic_g1_sparse_colval, DynareModel.dynamic_g1_sparse_colptr, ModelInversion);
+    [z, errorflag, ~, ~, errorcode] = dynare_solve(@static_model_for_inversion, z, options_.simul.maxit, options_.dynatol.f, options_.dynatol.x, ...
+                                                   options_, dynamic_resid, dynamic_g1, ycur, X(itx, :), M_.params, oo_.steady_state, M_.dynamic_g1_sparse_rowval, M_.dynamic_g1_sparse_colval, M_.dynamic_g1_sparse_colptr, ModelInversion);
 
     if errorflag
         error('Enable to solve the system of equations (with error code %i).', errorcode)

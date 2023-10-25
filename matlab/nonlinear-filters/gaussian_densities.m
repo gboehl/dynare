@@ -1,5 +1,5 @@
-function IncrementalWeights = gaussian_densities(obs,mut_t,sqr_Pss_t_t,st_t_1,sqr_Pss_t_t_1,particles,H,normconst,weigths1,weigths2,ReducedForm,ThreadsOptions,DynareOptions, Model)
-%
+function IncrementalWeights = gaussian_densities(obs,mut_t,sqr_Pss_t_t,st_t_1,sqr_Pss_t_t_1,particles,H,normconst,weigths1,weigths2,ReducedForm,ThreadsOptions,options_, M_)
+% IncrementalWeights = gaussian_densities(obs,mut_t,sqr_Pss_t_t,st_t_1,sqr_Pss_t_t_1,particles,H,normconst,weigths1,weigths2,ReducedForm,ThreadsOptions,options_, M_)
 % Elements to calculate the importance sampling ratio
 %
 % INPUTS
@@ -20,7 +20,7 @@ function IncrementalWeights = gaussian_densities(obs,mut_t,sqr_Pss_t_t,st_t_1,sq
 % NOTES
 %   The vector "lik" is used to evaluate the jacobian of the likelihood.
 
-% Copyright © 2009-2019 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,7 +44,7 @@ proposal = probability2(mut_t, sqr_Pss_t_t, particles);
 prior = probability2(st_t_1, sqr_Pss_t_t_1, particles);
 
 % likelihood
-yt_t_1_i = measurement_equations(particles, ReducedForm, ThreadsOptions, DynareOptions, Model);
+yt_t_1_i = measurement_equations(particles, ReducedForm, ThreadsOptions, options_, M_);
 likelihood = probability2(obs, sqrt(H), yt_t_1_i);
 
 IncrementalWeights = likelihood.*prior./proposal;
