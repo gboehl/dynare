@@ -1,12 +1,12 @@
-function [dbase, info] = checkdatabase(dbase, DynareModel, inversionflag, simulationflag)
-
+function [dbase, info] = checkdatabase(dbase, M_, inversionflag, simulationflag)
+% [dbase, info] = checkdatabase(dbase, M_, inversionflag, simulationflag)
 % Check that dbase contains all the endogenous variables of the model, and
 % reorder the endogenous variables as declared in the mod file. If Dynare
 % adds auxiliary variables, for lags greater than 1 on endogenous variables,
 % endogenous variables in difference (which may be lagged), or lags on the
 % exogenous variables, then thee routine complete the database.
 
-% Copyright © 2018-2021 Dynare Team
+% Copyright © 2018-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -23,42 +23,42 @@ function [dbase, info] = checkdatabase(dbase, DynareModel, inversionflag, simula
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-% if DynareModel.maximum_endo_lead
-%    error('The model (%s) is assumed to be backward!', DynareModel.fname)
+% if M_.maximum_endo_lead
+%    error('The model (%s) is assumed to be backward!', M_.fname)
 % end
 
 if nargin<3
     inversionflag = false;
 end
 
-if exist(sprintf('+%s/dynamic_set_auxiliary_series.m', DynareModel.fname), 'file')
-    dbase = feval(sprintf('%s.dynamic_set_auxiliary_series', DynareModel.fname), dbase, DynareModel.params);
+if exist(sprintf('+%s/dynamic_set_auxiliary_series.m', M_.fname), 'file')
+    dbase = feval(sprintf('%s.dynamic_set_auxiliary_series', M_.fname), dbase, M_.params);
 end
 
 listoflaggedexogenousvariables = {};
-if ~isempty(DynareModel.aux_vars)
-    listoflaggedexogenousvariables = DynareModel.exo_names([DynareModel.aux_vars(find([DynareModel.aux_vars.type]==3)).orig_index]);
+if ~isempty(M_.aux_vars)
+    listoflaggedexogenousvariables = M_.exo_names([M_.aux_vars(find([M_.aux_vars.type]==3)).orig_index]);
 end
 
 listoflaggedendogenousvariables = {};
-laggedendogenousvariablesidx = find(DynareModel.lead_lag_incidence(1,1:DynareModel.orig_endo_nbr));
+laggedendogenousvariablesidx = find(M_.lead_lag_incidence(1,1:M_.orig_endo_nbr));
 if ~isempty(laggedendogenousvariablesidx)
-    listoflaggedendogenousvariables = DynareModel.endo_names(laggedendogenousvariablesidx);
+    listoflaggedendogenousvariables = M_.endo_names(laggedendogenousvariablesidx);
 end
-if ~isempty(DynareModel.aux_vars)
-    laggedendogenousvariablesidx = find([DynareModel.aux_vars.type]==1);
+if ~isempty(M_.aux_vars)
+    laggedendogenousvariablesidx = find([M_.aux_vars.type]==1);
     if ~isempty(laggedendogenousvariablesidx)
-        listoflaggedendogenousvariables = union(listoflaggedendogenousvariables, DynareModel.endo_names([DynareModel.aux_vars(laggedendogenousvariablesidx).orig_index]));
+        listoflaggedendogenousvariables = union(listoflaggedendogenousvariables, M_.endo_names([M_.aux_vars(laggedendogenousvariablesidx).orig_index]));
     end
-    laggedendogenousvariablesidx = find([DynareModel.aux_vars.type]==8);
+    laggedendogenousvariablesidx = find([M_.aux_vars.type]==8);
     if ~isempty(laggedendogenousvariablesidx)
-        listoflaggedendogenousvariables = union(listoflaggedendogenousvariables, DynareModel.endo_names([DynareModel.aux_vars(laggedendogenousvariablesidx).orig_index]));
+        listoflaggedendogenousvariables = union(listoflaggedendogenousvariables, M_.endo_names([M_.aux_vars(laggedendogenousvariablesidx).orig_index]));
     end
 end
 
 info = struct;
-info.endonames = DynareModel.endo_names;
-info.exonames = DynareModel.exo_names;
+info.endonames = M_.endo_names;
+info.exonames = M_.exo_names;
 info.computeresiduals = false;
 
 % Check that all the endogenous variables are defined in dbase.

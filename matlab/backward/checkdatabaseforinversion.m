@@ -1,11 +1,11 @@
-function [dbase, info] = checkdatabaseforinversion(dbase, DynareModel)
-
+function [dbase, info] = checkdatabaseforinversion(dbase, M_)
+% [dbase, info] = checkdatabaseforinversion(dbase, M_)
 % Check that dbase contains all the endogenous variables of the model, and
 % reorder the endogenous variables as declared in the mod file. If Dynare
 % adds auxiliary variables, for lags greater than 1 on endogebnous variables
 % or lags on the exogenous variables.
 
-% Copyright © 2017-2018 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,4 +22,4 @@ function [dbase, info] = checkdatabaseforinversion(dbase, DynareModel)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[dbase, info] = checkdatabase(dbase, DynareModel, true, false);
+[dbase, info] = checkdatabase(dbase, M_, true, false);

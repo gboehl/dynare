@@ -1,10 +1,10 @@
-% [dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,DynareModel,DynareOptions)
+% [dynpp_derivs, dyn_derivs] = k_order_perturbation(dr,M_,options_)
 % computes a k-th order perturbation solution
 %
 % INPUTS
 % dr:            struct   describing the reduced form solution of the model.
-% DynareModel:   struct   jobs's parameters
-% DynareOptions: struct   job's options
+% M_:            struct   jobs's parameters
+% options_:      struct   job's options
 %
 % OUTPUTS
 % dynpp_derivs   struct   Derivatives of the decision rule in Dynare++ format.
@@ -25,7 +25,7 @@
 % dynare/mex/sources/k_order_perturbation.cc and it uses code provided by
 % dynare++
 
-% Copyright © 2013-2021 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %

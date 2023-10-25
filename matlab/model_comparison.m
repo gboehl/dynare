@@ -1,17 +1,17 @@
-function oo = model_comparison(ModelNames,ModelPriors,oo,options_,fname)
-% function oo = model_comparison(ModelNames,ModelPriors,oo,options_,fname)
+function oo_ = model_comparison(ModelNames,ModelPriors,oo_,options_,fname)
+% function oo_ = model_comparison(ModelNames,ModelPriors,oo_,options_,fname)
 % Conducts Bayesian model comparison. This function computes Odds ratios and
 % estimates a posterior density over a collection of models.
 %
 % INPUTS
 %    ModelNames       [string]     m*1 cell array of string.
 %    ModelPriors      [double]     m*1 vector of prior probabilities
-%    oo               [struct]     Dynare results structure
+%    oo_              [struct]     Dynare results structure
 %    options_         [struct]     Dynare options structure
 %    fname            [string]     name of the current mod-file
 %
 % OUTPUTS
-%    oo               [struct]    Dynare results structure containing the
+%    oo_              [struct]     Dynare results structure containing the
 %                                   results in a field PosteriorOddsTable
 %
 % ALGORITHM
@@ -20,7 +20,7 @@ function oo = model_comparison(ModelNames,ModelPriors,oo,options_,fname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2007-2018 Dynare Team
+% Copyright © 2007-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -78,7 +78,7 @@ iname = strmatch(fname,ShortModelNames,'exact');
 
 for i=1:NumberOfModels
     if i==iname
-        mstruct.oo_ = oo;
+        mstruct.oo_ = oo_;
     else
         if length(ModelNames{i})>3 && (strcmpi(ModelNames{i}(end-3:end),'.mod') || strcmpi(ModelNames{i}(end-3:end),'.dyn'))
             mstruct = load([ModelNames{i}(1:end-4) filesep 'Output' ModelNames{i}(1:end-4) '_results.mat' ],'oo_');
@@ -127,7 +127,7 @@ end
 
 for model_iter = 1:NumberOfModels
     for var_iter = 1:length(labels)
-        oo.Model_Comparison.(headers{1+model_iter}).(field_labels{var_iter}) = values(var_iter, model_iter);
+        oo_.Model_Comparison.(headers{1+model_iter}).(field_labels{var_iter}) = values(var_iter, model_iter);
     end
 end
 

@@ -1,4 +1,4 @@
-function [LIK,lik] = sequential_importance_particle_filter(ReducedForm,Y,start,ParticleOptions,ThreadsOptions, DynareOptions, Model)
+function [LIK,lik] = sequential_importance_particle_filter(ReducedForm,Y,start,ParticleOptions,ThreadsOptions, options_, M_)
 
 % Evaluates the likelihood of a nonlinear model with a particle filter (optionally with resampling).
 
@@ -37,7 +37,7 @@ steadystate = ReducedForm.steadystate;
 constant = ReducedForm.constant;
 state_variables_steady_state = ReducedForm.state_variables_steady_state;
 
-order = DynareOptions.order;
+order = options_.order;
 
 % Set persistent variables (if needed).
 if isempty(init_flag)
@@ -101,7 +101,7 @@ state_variance_rank = size(StateVectorVarianceSquareRoot,2);
 Q_lower_triangular_cholesky = chol(Q)';
 
 % Set seed for randn().
-DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
+options_=set_dynare_seed_local_options(options_,'default');
 
 % Initialization of the weights across particles.
 weights = ones(1,number_of_particles)/number_of_particles ;
@@ -139,7 +139,7 @@ for t=1:sample_size
         end
     else
         if ReducedForm.use_k_order_solver
-            tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
+            tmp = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_, udr);
         else
             if order == 2
                 tmp = local_state_space_iteration_2(yhat,epsilon,ghx,ghu,constant,ghxx,ghuu,ghxu,ThreadsOptions.local_state_space_iteration_2);

@@ -1,16 +1,16 @@
-function [pmean, pmode, pmedian, pstdev, p025, p975, covariance] = online_auxiliary_filter(xparam1, DynareDataset, DynareOptions, Model, EstimatedParameters, BayesInfo, DynareResults)
-
+function [pmean, pmode, pmedian, pstdev, p025, p975, covariance] = online_auxiliary_filter(xparam1, dataset_, options_, M_, estim_params_, bayestopt_, oo_)
+% [pmean, pmode, pmedian, pstdev, p025, p975, covariance] = online_auxiliary_filter(xparam1, dataset_, options_, M_, estim_params_, bayestopt_, oo_)
 % Liu & West particle filter = auxiliary particle filter including Liu & West filter on parameters.
 %
 % INPUTS
 % - xparam1                  [double]    n×1 vector, Initial condition for the estimated parameters.
-% - DynareDataset            [dseries]   Sample used for estimation.
+% - dataset_                 [dseries]   Sample used for estimation.
 % - dataset_info             [struct]    Description of the sample.
-% - DynareOptions            [struct]    Option values (options_).
-% - Model                    [struct]    Description of the model (M_).
-% - EstimatedParameters      [struct]    Description of the estimated parameters (estim_params_).
-% - BayesInfo                [struct]    Prior definition (bayestopt_).
-% - DynareResults            [struct]    Results (oo_).
+% - options_                 [struct]    Option values.
+% - M_                       [struct]    Description of the model.
+% - estim_params_            [struct]    Description of the estimated parameters.
+% - bayestopt_               [struct]    Prior definition.
+% - oo_                      [struct]    Results.
 %
 % OUTPUTS
 % - pmean                    [double]    n×1 vector, mean of the particles at the end of the sample (for the parameters).
@@ -39,26 +39,26 @@ function [pmean, pmode, pmedian, pstdev, p025, p975, covariance] = online_auxili
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Set seed for randn().
-DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
-pruning = DynareOptions.particle.pruning;
-second_resample = DynareOptions.particle.resampling.status.systematic;
+options_=set_dynare_seed_local_options(options_,'default');
+pruning = options_.particle.pruning;
+second_resample = options_.particle.resampling.status.systematic;
 variance_update = true;
 
-bounds = prior_bounds(BayesInfo, DynareOptions.prior_trunc); % Reset bounds as lb and ub must only be operational during mode-finding
+bounds = prior_bounds(bayestopt_, options_.prior_trunc); % Reset bounds as lb and ub must only be operational during mode-finding
 
 % initialization of state particles
-[~, Model, DynareOptions, DynareResults, ReducedForm] = solve_model_for_online_filter(true, xparam1, DynareDataset, DynareOptions, Model, EstimatedParameters, BayesInfo, bounds, DynareResults);
+[~, M_, options_, oo_, ReducedForm] = solve_model_for_online_filter(true, xparam1, dataset_, options_, M_, estim_params_, bayestopt_, bounds, oo_);
 
-order = DynareOptions.order;
+order = options_.order;
 mf0 = ReducedForm.mf0;
 mf1 = ReducedForm.mf1;
-number_of_particles = DynareOptions.particle.number_of_particles;
+number_of_particles = options_.particle.number_of_particles;
 number_of_parameters = size(xparam1,1);
-Y = DynareDataset.data;
+Y = dataset_.data;
 sample_size = size(Y,1);
 number_of_observed_variables = length(mf1);
 number_of_structural_innovations = length(ReducedForm.Q);
-liu_west_delta = DynareOptions.particle.liu_west_delta;
+liu_west_delta = options_.particle.liu_west_delta;
 
 % Get initial conditions for the state particles
 StateVectorMean = ReducedForm.StateVectorMean;
@@ -81,12 +81,12 @@ b_square = 1-small_a*small_a;
 
 % Initialization of parameter particles
 xparam = zeros(number_of_parameters,number_of_particles);
-Prior = dprior(BayesInfo, DynareOptions.prior_trunc);
+Prior = dprior(bayestopt_, options_.prior_trunc);
 for i=1:number_of_particles
     info = 12042009;
     while info
         candidate = Prior.draw();
-        [info, Model, DynareOptions, DynareResults] = solve_model_for_online_filter(false, xparam1, DynareDataset, DynareOptions, Model, EstimatedParameters, BayesInfo, bounds, DynareResults);
+        [info, M_, options_, oo_] = solve_model_for_online_filter(false, xparam1, dataset_, options_, M_, estim_params_, bayestopt_, bounds, oo_);
         if ~info
             xparam(:,i) = candidate(:);
         end
@@ -124,8 +124,8 @@ for t=1:sample_size
     tau_tilde = zeros(1,number_of_particles);
     for i=1:number_of_particles
         % model resolution
-        [info, Model, DynareOptions, DynareResults, ReducedForm] = ...
-            solve_model_for_online_filter(false, fore_xparam(:,i), DynareDataset, DynareOptions, Model, EstimatedParameters, BayesInfo, bounds, DynareResults);
+        [info, M_, options_, oo_, ReducedForm] = ...
+            solve_model_for_online_filter(false, fore_xparam(:,i), dataset_, options_, M_, estim_params_, bayestopt_, bounds, oo_);
         if ~info(1)
             steadystate = ReducedForm.steadystate;
             state_variables_steady_state = ReducedForm.state_variables_steady_state;
@@ -167,22 +167,22 @@ for t=1:sample_size
             % particle likelihood contribution
             yhat = bsxfun(@minus, StateVectors(:,i), state_variables_steady_state);
             if ReducedForm.use_k_order_solver
-                tmp = local_state_space_iteration_k(yhat, zeros(number_of_structural_innovations, 1), dr, Model, DynareOptions, udr);
+                tmp = local_state_space_iteration_k(yhat, zeros(number_of_structural_innovations, 1), dr, M_, options_, udr);
             else
                 if pruning
                     yhat_ = bsxfun(@minus,StateVectors_(:,i),state_variables_steady_state_);
                     if order == 2
-                        [tmp, ~] = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_2);
+                        [tmp, ~] = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, options_.threads.local_state_space_iteration_2);
                     elseif order == 3
-                        [tmp, tmp_] = local_state_space_iteration_3(yhat_, zeros(number_of_structural_innovations, 1), ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, DynareOptions.threads.local_state_space_iteration_3, pruning);
+                        [tmp, tmp_] = local_state_space_iteration_3(yhat_, zeros(number_of_structural_innovations, 1), ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, options_.threads.local_state_space_iteration_3, pruning);
                     else
                         error('Pruning is not available for orders > 3');
                     end
                 else
                     if order == 2
-                        tmp = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, DynareOptions.threads.local_state_space_iteration_2);
+                        tmp = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, options_.threads.local_state_space_iteration_2);
                     elseif order == 3
-                        tmp = local_state_space_iteration_3(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, DynareOptions.threads.local_state_space_iteration_3, pruning);
+                        tmp = local_state_space_iteration_3(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, options_.threads.local_state_space_iteration_3, pruning);
                     else
                         error('Order > 3: use_k_order_solver should be set to true');
                     end
@@ -196,7 +196,7 @@ for t=1:sample_size
     end
     % particles selection
     tau_tilde = tau_tilde/sum(tau_tilde);
-    indx = resample(0, tau_tilde', DynareOptions.particle);
+    indx = resample(0, tau_tilde', options_.particle);
     StateVectors = StateVectors(:,indx);
     xparam = fore_xparam(:,indx);
     if pruning
@@ -208,13 +208,13 @@ for t=1:sample_size
     for i=1:number_of_particles
         info = 12042009;
         counter=0;
-        while info(1) && counter <DynareOptions.particle.liu_west_max_resampling_tries
+        while info(1) && counter <options_.particle.liu_west_max_resampling_tries
             counter=counter+1;
             candidate = xparam(:,i) + chol_sigma_bar*randn(number_of_parameters, 1);
             if all(candidate>=bounds.lb) && all(candidate<=bounds.ub)
                 % model resolution for new parameters particles
-                [info, Model, DynareOptions, DynareResults, ReducedForm] = ...
-                    solve_model_for_online_filter(false, candidate, DynareDataset, DynareOptions, Model, EstimatedParameters, BayesInfo, bounds, DynareResults) ;
+                [info, M_, options_, oo_, ReducedForm] = ...
+                    solve_model_for_online_filter(false, candidate, dataset_, options_, M_, estim_params_, bayestopt_, bounds, oo_) ;
                 if ~info(1)
                     xparam(:,i) = candidate ;
                     steadystate = ReducedForm.steadystate;
@@ -263,23 +263,23 @@ for t=1:sample_size
                     % compute particles likelihood contribution
                     yhat = bsxfun(@minus,StateVectors(:,i), state_variables_steady_state);
                     if ReducedForm.use_k_order_solver
-                        tmp = local_state_space_iteration_k(yhat, epsilon, dr, Model, DynareOptions, udr);
+                        tmp = local_state_space_iteration_k(yhat, epsilon, dr, M_, options_, udr);
                     else
                         if pruning
                             yhat_ = bsxfun(@minus,StateVectors_(:,i), state_variables_steady_state_);
                             if order == 2
-                                [tmp, tmp_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, DynareOptions.threads.local_state_space_iteration_2);
+                                [tmp, tmp_] = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, options_.threads.local_state_space_iteration_2);
                             elseif order == 3
-                                [tmp, tmp_] = local_state_space_iteration_3(yhat_, epsilon, ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, DynareOptions.threads.local_state_space_iteration_3, pruning);
+                                [tmp, tmp_] = local_state_space_iteration_3(yhat_, epsilon, ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, options_.threads.local_state_space_iteration_3, pruning);
                             else
                                 error('Pruning is not available for orders > 3');
                             end
                             StateVectors_(:,i) = tmp_(mf0_,:);
                         else
                             if order == 2
-                                tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, DynareOptions.threads.local_state_space_iteration_2);
+                                tmp = local_state_space_iteration_2(yhat, epsilon, ghx, ghu, constant, ghxx, ghuu, ghxu, options_.threads.local_state_space_iteration_2);
                             elseif order == 3
-                                tmp = local_state_space_iteration_3(yhat, epsilon, ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, DynareOptions.threads.local_state_space_iteration_3, pruning);
+                                tmp = local_state_space_iteration_3(yhat, epsilon, ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, options_.threads.local_state_space_iteration_3, pruning);
                             else
                                 error('Order > 3: use_k_order_solver should be set to true');
                             end
@@ -290,8 +290,8 @@ for t=1:sample_size
                     wtilde(i) = w_stage1(i)*exp(-.5*(const_lik+log(det(ReducedForm.H))+sum(PredictionError.*(ReducedForm.H\PredictionError), 1)));
                 end
             end
-            if counter==DynareOptions.particle.liu_west_max_resampling_tries
-                fprintf('\nLiu & West particle filter: I haven''t been able to solve the model in %u tries.\n',DynareOptions.particle.liu_west_max_resampling_tries)
+            if counter==options_.particle.liu_west_max_resampling_tries
+                fprintf('\nLiu & West particle filter: I haven''t been able to solve the model in %u tries.\n',options_.particle.liu_west_max_resampling_tries)
                 fprintf('Liu & West particle filter: The last error message was: %s\n',get_error_message(info))
                 fprintf('Liu & West particle filter: You can try to increase liu_west_max_resampling_tries, but most\n')
                 fprintf('Liu & West particle filter: likely there is an issue with the model.\n')
@@ -301,14 +301,14 @@ for t=1:sample_size
     end
     % normalization
     weights = wtilde/sum(wtilde);
-    if variance_update && (neff(weights)<DynareOptions.particle.resampling.threshold*sample_size)
+    if variance_update && (neff(weights)<options_.particle.resampling.threshold*sample_size)
         variance_update = false;
     end
     % final resampling (not advised)
     if second_resample
         [~, idmode] = max(weights);
         mode_xparam(:,t) = xparam(:,idmode);
-        indx = resample(0, weights,DynareOptions.particle);
+        indx = resample(0, weights,options_.particle);
         StateVectors = StateVectors(:,indx) ;
         if pruning
             StateVectors_ = StateVectors_(:,indx);
@@ -372,24 +372,24 @@ pmedian = median_xparam(:,sample_size) ;
 covariance = mat_var_cov;
 
 %% Plot parameters trajectory
-TeX = DynareOptions.TeX;
+TeX = options_.TeX;
 
 nr = ceil(sqrt(number_of_parameters)) ;
 nc = floor(sqrt(number_of_parameters));
 nbplt = 1 ;
 
 if TeX
-    fidTeX = fopen([Model.fname '_param_traj.tex'],'w');
+    fidTeX = fopen([M_.fname '_param_traj.tex'],'w');
     fprintf(fidTeX,'%% TeX eps-loader file generated by online_auxiliary_filter.m (Dynare).\n');
     fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
     fprintf(fidTeX,' \n');
 end
 
 for plt = 1:nbplt
-    hh_fig = dyn_figure(DynareOptions.nodisplay,'Name','Parameters Trajectories');
+    hh_fig = dyn_figure(options_.nodisplay,'Name','Parameters Trajectories');
     for k=1:length(pmean)
         subplot(nr,nc,k)
-        [name,texname] = get_the_name(k,TeX,Model,EstimatedParameters,DynareOptions);
+        [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
         % Draw the surface for an interval containing 95% of the particles.
         area(1:sample_size, ub95_xparam(k,:), 'FaceColor', [.9 .9 .9], 'BaseValue', min(lb95_xparam(k,:)));
         hold on
@@ -405,12 +405,12 @@ for plt = 1:nbplt
         axis tight
         drawnow
     end
-    dyn_saveas(hh_fig, [Model.fname '_param_traj' int2str(plt)], DynareOptions.nodisplay, DynareOptions.graph_format);
+    dyn_saveas(hh_fig, [M_.fname '_param_traj' int2str(plt)], options_.nodisplay, options_.graph_format);
     if TeX
         % TeX eps loader file
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');
-        fprintf(fidTeX,'\\includegraphics[scale=0.5]{%s_ParamTraj%s}\n',Model.fname,int2str(plt));
+        fprintf(fidTeX,'\\includegraphics[scale=0.5]{%s_ParamTraj%s}\n',M_.fname,int2str(plt));
         fprintf(fidTeX,'\\caption{Parameters trajectories.}');
         fprintf(fidTeX,'\\label{Fig:ParametersPlots:%s}\n',int2str(plt));
         fprintf(fidTeX,'\\end{figure}\n');
@@ -423,10 +423,10 @@ number_of_grid_points = 2^9;      % 2^9 = 512 !... Must be a power of two.
 bandwidth = 0;                    % Rule of thumb optimal bandwidth parameter.
 kernel_function = 'gaussian';     % Gaussian kernel for Fast Fourier Transform approximation.
 for plt = 1:nbplt
-    hh_fig = dyn_figure(DynareOptions.nodisplay,'Name','Parameters Densities');
+    hh_fig = dyn_figure(options_.nodisplay,'Name','Parameters Densities');
     for k=1:length(pmean)
         subplot(nr,nc,k)
-        [name,texname] = get_the_name(k,TeX,Model,EstimatedParameters,DynareOptions);
+        [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
         optimal_bandwidth = mh_optimal_bandwidth(xparam(k,:)',number_of_particles,bandwidth,kernel_function);
         [density(:,1),density(:,2)] = kernel_density_estimate(xparam(k,:)', number_of_grid_points, ...
                                                           number_of_particles, optimal_bandwidth, kernel_function);
@@ -441,8 +441,8 @@ for plt = 1:nbplt
         axis tight
         drawnow
     end
-    dyn_saveas(hh_fig,[ Model.fname '_param_density' int2str(plt) ],DynareOptions.nodisplay,DynareOptions.graph_format);
-    if TeX && any(strcmp('eps',cellstr(DynareOptions.graph_format)))
+    dyn_saveas(hh_fig,[ M_.fname '_param_density' int2str(plt) ],options_.nodisplay,options_.graph_format);
+    if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         % TeX eps loader file
         fprintf(fidTeX, '\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');

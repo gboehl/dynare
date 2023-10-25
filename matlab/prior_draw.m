@@ -1,5 +1,5 @@
-function pdraw = prior_draw(BayesInfo, prior_trunc, uniform)
-
+function pdraw = prior_draw(bayestopt_, prior_trunc, uniform)
+% pdraw = prior_draw(bayestopt_, prior_trunc, uniform)
 % This function generate one draw from the joint prior distribution and
 % allows sampling uniformly from the prior support (uniform==1 when called with init==1)
 %
@@ -48,18 +48,18 @@ persistent uniform_index gaussian_index gamma_index beta_index inverse_gamma_1_i
 persistent uniform_draws gaussian_draws gamma_draws beta_draws inverse_gamma_1_draws inverse_gamma_2_draws weibull_draws
 
 if nargin>0
-    p6 = BayesInfo.p6;
-    p7 = BayesInfo.p7;
-    p3 = BayesInfo.p3;
-    p4 = BayesInfo.p4;
-    bounds = prior_bounds(BayesInfo, prior_trunc);
+    p6 = bayestopt_.p6;
+    p7 = bayestopt_.p7;
+    p3 = bayestopt_.p3;
+    p4 = bayestopt_.p4;
+    bounds = prior_bounds(bayestopt_, prior_trunc);
     lb = bounds.lb;
     ub = bounds.ub;
     number_of_estimated_parameters = length(p6);
     if nargin>2 && uniform
         prior_shape = repmat(5,number_of_estimated_parameters,1);
     else
-        prior_shape = BayesInfo.pshape;
+        prior_shape = bayestopt_.pshape;
     end
     beta_index = find(prior_shape==1);
     if isempty(beta_index)
@@ -238,23 +238,23 @@ for i=1:14
     end
 end
 
-BayesInfo.pshape = p0;
-BayesInfo.p1 = p1;
-BayesInfo.p2 = p2;
-BayesInfo.p3 = p3;
-BayesInfo.p4 = p4;
-BayesInfo.p5 = p5;
-BayesInfo.p6 = p6;
-BayesInfo.p7 = p7;
+bayestopt_.pshape = p0;
+bayestopt_.p1 = p1;
+bayestopt_.p2 = p2;
+bayestopt_.p3 = p3;
+bayestopt_.p4 = p4;
+bayestopt_.p5 = p5;
+bayestopt_.p6 = p6;
+bayestopt_.p7 = p7;
 
 ndraws = 1e5;
-m0 = BayesInfo.p1; %zeros(14,1);
-v0 = diag(BayesInfo.p2.^2); %zeros(14);
+m0 = bayestopt_.p1; %zeros(14,1);
+v0 = diag(bayestopt_.p2.^2); %zeros(14);
 
 % Call the tested routine
 try
     % Initialization of prior_draws.
-    prior_draw(BayesInfo, prior_trunc, false);
+    prior_draw(bayestopt_, prior_trunc, false);
     % Do simulations in a loop and estimate recursively the mean and teh variance.
     for i = 1:ndraws
          draw = transpose(prior_draw());
@@ -269,8 +269,8 @@ catch
 end
 
 if t(1)
-    t(2) = all(abs(m0-BayesInfo.p1)<3e-3);
-    t(3) = all(all(abs(v0-diag(BayesInfo.p2.^2))<5e-3));
+    t(2) = all(abs(m0-bayestopt_.p1)<3e-3);
+    t(3) = all(all(abs(v0-diag(bayestopt_.p2.^2))<5e-3));
 end
 T = all(t);
 %@eof:1

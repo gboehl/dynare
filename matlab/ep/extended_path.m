@@ -1,5 +1,5 @@
-function [ts, DynareResults] = extended_path(initialconditions, samplesize, exogenousvariables, DynareOptions, DynareModel, DynareResults)
-
+function [ts, oo_] = extended_path(initialconditions, samplesize, exogenousvariables, options_, M_, oo_)
+% [ts, oo_] = extended_path(initialconditions, samplesize, exogenousvariables, options_, M_, oo_)
 % Stochastic simulation of a non linear DSGE model using the Extended Path method (Fair and Taylor 1983). A time
 % series of size T  is obtained by solving T perfect foresight models.
 %
@@ -7,9 +7,9 @@ function [ts, DynareResults] = extended_path(initialconditions, samplesize, exog
 %  o initialconditions      [double]    m*1 array, where m is the number of endogenous variables in the model.
 %  o samplesize             [integer]   scalar, size of the sample to be simulated.
 %  o exogenousvariables     [double]    T*n array, values for the structural innovations.
-%  o DynareOptions          [struct]    options_
-%  o DynareModel            [struct]    M_
-%  o DynareResults          [struct]    oo_
+%  o options_               [struct]    options_
+%  o M_                     [struct]    Dynare's model structure
+%  o oo_                    [struct]    Dynare's results structure
 %
 % OUTPUTS
 %  o ts                     [dseries]   m*samplesize array, the simulations.
@@ -36,13 +36,13 @@ function [ts, DynareResults] = extended_path(initialconditions, samplesize, exog
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[initialconditions, innovations, pfm, ep, verbosity, DynareOptions, DynareResults] = ...
-    extended_path_initialization(initialconditions, samplesize, exogenousvariables, DynareOptions, DynareModel, DynareResults);
+[initialconditions, innovations, pfm, ep, verbosity, options_, oo_] = ...
+    extended_path_initialization(initialconditions, samplesize, exogenousvariables, options_, M_, oo_);
 
-[shocks, spfm_exo_simul, innovations, DynareResults] = extended_path_shocks(innovations, ep, exogenousvariables, samplesize,DynareModel,DynareOptions,DynareResults);
+[shocks, spfm_exo_simul, innovations, oo_] = extended_path_shocks(innovations, ep, exogenousvariables, samplesize,M_,options_,oo_);
 
 % Initialize the matrix for the paths of the endogenous variables.
-endogenous_variables_paths = NaN(DynareModel.endo_nbr,samplesize+1);
+endogenous_variables_paths = NaN(M_.endo_nbr,samplesize+1);
 endogenous_variables_paths(:,1) = initialconditions;
 
 % Set waitbar (graphic or text  mode)
@@ -63,18 +63,18 @@ while (t <= samplesize)
     if t>2
         % Set initial guess for the solver (using the solution of the
         % previous period problem).
-        initialguess = [endogenousvariablespaths(:, 2:end), DynareResults.steady_state];
+        initialguess = [endogenousvariablespaths(:, 2:end), oo_.steady_state];
     else
         initialguess = [];
     end
-    [endogenous_variables_paths(:,t), info_convergence, endogenousvariablespaths] = extended_path_core(ep.periods, DynareModel.endo_nbr, DynareModel.exo_nbr, innovations.positive_var_indx, ...
+    [endogenous_variables_paths(:,t), info_convergence, endogenousvariablespaths] = extended_path_core(ep.periods, M_.endo_nbr, M_.exo_nbr, innovations.positive_var_indx, ...
                                                       spfm_exo_simul, ep.init, endogenous_variables_paths(:,t-1), ...
-                                                      DynareResults.steady_state, ...
+                                                      oo_.steady_state, ...
                                                       verbosity, ep.stochastic.order, ...
-                                                      DynareModel, pfm, ep.stochastic.algo, ep.solve_algo, ep.stack_solve_algo, ...
-                                                      DynareOptions.lmmcp, ...
-                                                      DynareOptions, ...
-                                                      DynareResults, initialguess);
+                                                      M_, pfm, ep.stochastic.algo, ep.solve_algo, ep.stack_solve_algo, ...
+                                                      options_.lmmcp, ...
+                                                      options_, ...
+                                                      oo_, initialguess);
     if ~info_convergence
         msg = sprintf('No convergence of the (stochastic) perfect foresight solver (in period %s)!', int2str(t));
         warning(msg)
@@ -86,13 +86,13 @@ end % (while) loop over t
 dyn_waitbar_close(hh_fig);
 
 % Set the initial period.
-if isdates(DynareOptions.initial_period)
-    if ischar(DynareOptions.initial_period)
-        initial_period = dates(DynareOptions.initial_period);
+if isdates(options_.initial_period)
+    if ischar(options_.initial_period)
+        initial_period = dates(options_.initial_period);
     else
-        initial_period = DynareOptions.initial_period;
+        initial_period = options_.initial_period;
     end
-elseif isnan(DynareOptions.initial_period)
+elseif isnan(options_.initial_period)
     initial_period = dates(1,1);
 else
     error('Type of option initial_period is wrong.')
@@ -104,11 +104,11 @@ if any(isnan(endogenous_variables_paths(:)))
     nn = size(endogenous_variables_paths, 1);
     endogenous_variables_paths = reshape(endogenous_variables_paths(sl), nn, length(sl)/nn);
 end
-ts = dseries(transpose(endogenous_variables_paths), initial_period, DynareModel.endo_names);
+ts = dseries(transpose(endogenous_variables_paths), initial_period, M_.endo_names);
 
-DynareResults.endo_simul = transpose(ts.data);
+oo_.endo_simul = transpose(ts.data);
 assignin('base', 'Simulated_time_series', ts);
 
 if ~nargout || nargout<2
-    assignin('base', 'oo_', DynareResults);
+    assignin('base', 'oo_', oo_);
 end

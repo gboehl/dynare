@@ -1,11 +1,11 @@
-function [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_in_equation(lhs, rhs, DynareModel)
-
+function [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_in_equation(lhs, rhs, M_)
+% [pnames, enames, xnames, pid, eid, xid] = get_variables_and_parameters_in_equation(lhs, rhs, M_)
 % Returns the lists of parameters, endogenous variables and exogenous variables in an equation.
 %
 % INPUTS
 % - lhs         [string]            Left hand side of an equation.
 % - rhs         [string]            Right hand side of an equation.
-% - DynareModel [struct]            Structure describing the current model (M_).
+% - M_          [struct]            Structure describing the current model.
 %
 % OUTPUTS
 % - pnames      [cell]              Cell of row char arrays (p elements), names of the parameters.
@@ -39,33 +39,33 @@ rhs_ = get_variables_and_parameters_in_expression(rhs);
 lhs_ = get_variables_and_parameters_in_expression(lhs);
 
 % Get list of parameters.
-pnames = DynareModel.param_names;
+pnames = M_.param_names;
 pnames = intersect([rhs_, lhs_], pnames);
 
 if nargout>1
     % Get list of endogenous variables.
-    enames = DynareModel.endo_names;
+    enames = M_.endo_names;
     enames = intersect([rhs_, lhs_], enames);
     if nargout>2
         % Get list of exogenous variables
-        xnames = DynareModel.exo_names;
+        xnames = M_.exo_names;
         xnames = intersect([rhs_,lhs_], xnames);
         if nargout>3
             % Returns vector of indices for parameters endogenous and exogenous variables if required.
             p = length(pnames);
             pid = zeros(p, 1);
             for i = 1:p
-                pid(i) = find(strcmp(pnames{i}, DynareModel.param_names));
+                pid(i) = find(strcmp(pnames{i}, M_.param_names));
             end
             p = length(enames);
             eid = zeros(p, 1);
             for i = 1:p
-                eid(i) = find(strcmp(enames{i}, DynareModel.endo_names));
+                eid(i) = find(strcmp(enames{i}, M_.endo_names));
             end
             p = length(xnames);
             xid = zeros(p, 1);
             for i = 1:p
-                xid(i) = find(strcmp(xnames{i}, DynareModel.exo_names));
+                xid(i) = find(strcmp(xnames{i}, M_.exo_names));
             end
         end
     end

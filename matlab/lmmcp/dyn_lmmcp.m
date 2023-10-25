@@ -1,6 +1,7 @@
-function [endo_simul,info] = dyn_lmmcp(M,options,oo)
+function [endo_simul,info] = dyn_lmmcp(M_,options,oo_)
+% [endo_simul,info] = dyn_lmmcp(M_,options,oo_)
 
-% Copyright © 2014 Dynare Team
+% Copyright © 2014-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,13 +18,13 @@ function [endo_simul,info] = dyn_lmmcp(M,options,oo)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[lb,ub,eq_index] = get_complementarity_conditions(M);
+[lb,ub,eq_index] = get_complementarity_conditions(M_);
 
-lead_lag_incidence = M.lead_lag_incidence;
+lead_lag_incidence = M_.lead_lag_incidence;
 
-ny = M.endo_nbr;
+ny = M_.endo_nbr;
 
-max_lag = M.maximum_endo_lag;
+max_lag = M_.maximum_endo_lag;
 
 nyp = nnz(lead_lag_incidence(1,:)) ;
 iyp = find(lead_lag_incidence(1,:)>0) ;
@@ -42,10 +43,10 @@ stop = 0 ;
 iz = [1:ny+nyp+nyf];
 
 periods = options.periods;
-steady_state = oo.steady_state;
-params = M.params;
-endo_simul = oo.endo_simul;
-exo_simul = oo.exo_simul;
+steady_state = oo_.steady_state;
+params = M_.params;
+endo_simul = oo_.endo_simul;
+exo_simul = oo_.exo_simul;
 i_cols_1 = nonzeros(lead_lag_incidence(2:3,:)');
 i_cols_A1 = find(lead_lag_incidence(2:3,:)');
 i_cols_T = nonzeros(lead_lag_incidence(1:2,:)');
@@ -54,7 +55,7 @@ i_upd = ny+(1:periods*ny);
 
 x = endo_simul(:);
 
-model_dynamic = str2func([M.fname,'.dynamic']);
+model_dynamic = str2func([M_.fname,'.dynamic']);
 z = x(find(lead_lag_incidence'));
 [res,A] = model_dynamic(z, exo_simul, params, steady_state,2);
 nnzA = nnz(A);

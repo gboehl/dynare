@@ -55,9 +55,9 @@ solve_algo:
 stack_solve_algo:
 ut: (unscented free parameter)
 
-pfm.stochastic_order = DynareOptions.ep.stochastic.order;
-pfm.periods = DynareOptions.ep.periods;
-pfm.verbose = DynareOptions.ep.verbosity;
+pfm.stochastic_order = options_.ep.stochastic.order;
+pfm.periods = options_.ep.periods;
+pfm.verbose = options_.ep.verbosity;
 
 
 * in extended_path_core, one passes options.ep and individual options

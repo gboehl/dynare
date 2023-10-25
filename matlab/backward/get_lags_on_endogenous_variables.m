@@ -1,8 +1,8 @@
-function l = get_lags_on_endogenous_variables(DynareModel)
-
+function l = get_lags_on_endogenous_variables(M_)
+% l = get_lags_on_endogenous_variables(M_)
 % Returns a vector with the max lag for each endogenous variable.
 
-% Copyright © 2017 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -19,13 +19,13 @@ function l = get_lags_on_endogenous_variables(DynareModel)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-l = zeros(DynareModel.orig_endo_nbr, 1);
-l(find(DynareModel.lead_lag_incidence(1,1:DynareModel.orig_endo_nbr))) = -1;
+l = zeros(M_.orig_endo_nbr, 1);
+l(find(M_.lead_lag_incidence(1,1:M_.orig_endo_nbr))) = -1;
 
-if ~isempty(DynareModel.aux_vars)
-    aux_var_for_lagged_endogenous = find([DynareModel.aux_vars(:).type]==1);
+if ~isempty(M_.aux_vars)
+    aux_var_for_lagged_endogenous = find([M_.aux_vars(:).type]==1);
     for i=1:length(aux_var_for_lagged_endogenous)
-        l(DynareModel.aux_vars(aux_var_for_lagged_endogenous(i)).orig_index) = ...
-            DynareModel.aux_vars(aux_var_for_lagged_endogenous(i)).orig_lead_lag;
+        l(M_.aux_vars(aux_var_for_lagged_endogenous(i)).orig_index) = ...
+            M_.aux_vars(aux_var_for_lagged_endogenous(i)).orig_lead_lag;
     end
 end

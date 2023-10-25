@@ -1,15 +1,15 @@
 function eqnumber = get_equation_number_by_tag(eqname, M_)
-
+% eqnumber = get_equation_number_by_tag(eqname, M_)
 % Translates an equation name into an equation number.
 %
 % INPUTS
 % - eqname        [char]     1×n array, name of the equation.
-% - DynareModel   [struct]   Structure describing the model, aka M_.
+% - M_            [struct]   Structure describing the model
 %
 % OUTPUTS
 % - eqnumber      [integer]  Equation number.
 
-% Copyright © 2018-2022 Dynare Team
+% Copyright © 2018-2023 Dynare Team
 %
 % This file is part of Dynare.
 %

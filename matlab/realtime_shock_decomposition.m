@@ -135,8 +135,8 @@ for j=presample+1:nobs
     %    evalin('base',['options_.nobs=' int2str(j) ';'])
     options_.nobs=j;
     if isequal(fast_realtime,0)
-        [oo,M_,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
-        gend = size(oo.SmoothedShocks.(M_.exo_names{1}),1);
+        [oo_local,M_,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+        gend = size(oo_local.SmoothedShocks.(M_.exo_names{1}),1);
     else
         if j<min(fast_realtime) && gend0<j
             options_.nobs=min(fast_realtime);
@@ -146,10 +146,10 @@ for j=presample+1:nobs
         end
         
         if ismember(j,fast_realtime) && gend0<j
-            [oo,M_,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
-            gend = size(oo.SmoothedShocks.(M_.exo_names{1}),1);
+            [oo_local,M_,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+            gend = size(oo_local.SmoothedShocks.(M_.exo_names{1}),1);
             gend0 = gend;
-            oo0=oo;
+            oo0=oo_local;
             Smoothed_Variables_deviation_from_mean0=Smoothed_Variables_deviation_from_mean;
         else
             if j>gend0
@@ -164,13 +164,13 @@ for j=presample+1:nobs
             end
             
             gend = j;
-            oo=oo0;
+            oo_local=oo0;
             Smoothed_Variables_deviation_from_mean = Smoothed_Variables_deviation_from_mean0(:,1:gend);
         end
         
     end
     % reduced form
-    dr = oo.dr;
+    dr = oo_local.dr;
 
     % data reordering
     order_var = dr.order_var;
@@ -194,7 +194,7 @@ for j=presample+1:nobs
     % initialization
     epsilon=NaN(nshocks,gend);
     for i = 1:nshocks
-        epsilon(i,:) = oo.SmoothedShocks.(M_.exo_names{i})(1:gend);
+        epsilon(i,:) = oo_local.SmoothedShocks.(M_.exo_names{i})(1:gend);
     end
     epsilon=[epsilon zeros(nshocks,forecast_)];
 

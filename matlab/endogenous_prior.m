@@ -1,11 +1,11 @@
-function [lnpriormom] = endogenous_prior(data,dataset_info, Pstar,BayesInfo,H)
+function [lnpriormom] = endogenous_prior(data,dataset_info, Pstar,bayestopt_,H)
 % Computes the endogenous log prior addition to the initial prior
 %
 % INPUTS
 %    data           [double]     n*T vector of data observations
 %    dataset_info   [structure]  various information about the dataset
 %    Pstar          [double]     k*k matrix of
-%    BayesInfo      [structure]
+%    bayestopt_     [structure]
 %
 % OUTPUTS
 %    lnpriormom     [double]     scalar of log endogenous prior value
@@ -80,7 +80,7 @@ Shat=C0 +(1-1/(2+1))*(C1+C1')...
      +(1-2/(2+1))*(C2+C2');
 
 % Model variances below:
-mf=BayesInfo.mf1;
+mf=bayestopt_.mf1;
 II=eye(size(Pstar,2));
 Z=II(mf,:);
 % This is Ftheta, variance of model variables, given param vector theta:

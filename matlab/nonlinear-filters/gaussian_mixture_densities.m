@@ -1,6 +1,6 @@
 function  IncrementalWeights = gaussian_mixture_densities(obs, StateMuPrior, StateSqrtPPrior, StateWeightsPrior, ...
                                                       StateMuPost, StateSqrtPPost, StateWeightsPost, StateParticles, H, ...
-                                                      ReducedForm, ThreadsOptions, DynareOptions, Model)
+                                                      ReducedForm, ThreadsOptions, options_, M_)
 
 % Elements to calculate the importance sampling ratio
 %
@@ -22,7 +22,7 @@ function  IncrementalWeights = gaussian_mixture_densities(obs, StateMuPrior, Sta
 % NOTES
 %   The vector "lik" is used to evaluate the jacobian of the likelihood.
 
-% Copyright © 2009-2019 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,7 +48,7 @@ prior = prior';
 proposal = proposal';
 
 % Compute the density of the current observation conditionally to each particle
-yt_t_1_i = measurement_equations(StateParticles, ReducedForm, ThreadsOptions, DynareOptions, Model);
+yt_t_1_i = measurement_equations(StateParticles, ReducedForm, ThreadsOptions, options_, M_);
 
 % likelihood
 likelihood = probability2(obs, sqrt(H), yt_t_1_i);

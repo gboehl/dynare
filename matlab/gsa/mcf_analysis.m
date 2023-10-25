@@ -1,12 +1,13 @@
-function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, DynareOptions)
-%
+function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, options_)
+% indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, options_)
+
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 %
 
 % Copyright © 2014 European Commission
-% Copyright © 2016-2018 Dynare Team
+% Copyright © 2016-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,7 +29,7 @@ pvalue_corr = options_mcf.pvalue_corr;
 alpha2 = options_mcf.alpha2;
 param_names = options_mcf.param_names;
 
-if DynareOptions.TeX
+if options_.TeX
     if ~isfield(options_mcf,'param_names_tex')
         param_names_tex = options_mcf.param_names;
     else
@@ -60,7 +61,7 @@ if ~isempty(indmcf)
     data_mat=[dproba(indmcf)' proba(indmcf)'];
     options_temp.noprint=0;
     dyntable(options_temp,['Smirnov statistics in driving ', title],headers,labels,data_mat,size(labels,2)+2,16,3);
-    if DynareOptions.TeX
+    if options_.TeX
         labels_TeX=param_names_tex(indmcf);
         M_temp.dname=OutputDirectoryName ;
         M_temp.fname=fname_;
@@ -76,11 +77,11 @@ if length(ibeha)>10 && length(inobeha)>10
     indcorr = indcorr(~ismember(indcorr(:),indmcf));
     indmcf = [indmcf(:); indcorr(:)];
 end
-if ~isempty(indmcf) && ~DynareOptions.nograph
+if ~isempty(indmcf) && ~options_.nograph
     skipline()
     xx=[];
     if ~ isempty(xparam1), xx=xparam1(indmcf); end
     scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names_tex(indmcf), ...
-                '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, DynareOptions, ...
+                '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, options_, ...
                 beha_title, nobeha_title)
 end

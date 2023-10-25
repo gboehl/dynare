@@ -1,19 +1,19 @@
-function DynareModel = update_parameters(varexpectationmodelname, DynareModel, DynareOutput)
-
+function M_ = update_parameters(varexpectationmodelname, M_, oo_)
+% function M_ = update_parameters(varexpectationmodelname, M_, oo_)
 % Updates the VAR expectation reduced form parameters.
 %
 % INPUTS
 % - varexpectationmodelname       [string]    Name of the pac equation.
-% - DynareModel                   [struct]    M_ global structure (model properties)
-% - DynareOutput                  [struct]    oo_ global structure (model results)
+% - M_                            [struct]    global structure (model properties)
+% - oo_                           [struct]    oo_ global structure (model results)
 %
 % OUTPUTS
-% - DynareModel                   [struct]    M_ global structure (with updated params field)
+% - M_                            [struct]    M_ global structure (with updated params field)
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2018-2021 Dynare Team
+% Copyright © 2018-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,26 +36,26 @@ if ~isrow(varexpectationmodelname)==1 || ~ischar(varexpectationmodelname)
 end
 
 % Check that the model exists.
-if ~isfield(DynareModel.var_expectation, varexpectationmodelname)
+if ~isfield(M_.var_expectation, varexpectationmodelname)
     error('VAR_EXPECTATION_MODEL %s is not defined!', varexpectationmodelname)
 end
 
 % Get the VAR model description
-varexpectationmodel = DynareModel.var_expectation.(varexpectationmodelname);
+varexpectationmodel = M_.var_expectation.(varexpectationmodelname);
 
 % Get the name of the associated VAR model and test its existence.
-if ~isfield(DynareModel.(varexpectationmodel.auxiliary_model_type), varexpectationmodel.auxiliary_model_name)
+if ~isfield(M_.(varexpectationmodel.auxiliary_model_type), varexpectationmodel.auxiliary_model_name)
     error('Unknown VAR (%s) in VAR_EXPECTATION_MODEL (%s)!', varexpectationmodel.auxiliary_model_name, varexpectationmodelname)
 end
 
-auxmodel = DynareModel.(varexpectationmodel.auxiliary_model_type).(varexpectationmodel.auxiliary_model_name);
+auxmodel = M_.(varexpectationmodel.auxiliary_model_type).(varexpectationmodel.auxiliary_model_name);
 
 % Check that we have the values of the VAR matrices.
-if ~isfield(DynareOutput.(varexpectationmodel.auxiliary_model_type), varexpectationmodel.auxiliary_model_name)
+if ~isfield(oo_.(varexpectationmodel.auxiliary_model_type), varexpectationmodel.auxiliary_model_name)
     error('Auxiliary model %s has to be estimated or calibrated first!', varexpectationmodel.auxiliary_model_name)
 end
 
-auxcalib = DynareOutput.(varexpectationmodel.auxiliary_model_type).(varexpectationmodel.auxiliary_model_name);
+auxcalib = oo_.(varexpectationmodel.auxiliary_model_type).(varexpectationmodel.auxiliary_model_name);
 
 if ~isfield(auxcalib, 'CompanionMatrix') || any(isnan(auxcalib.CompanionMatrix(:)))
     message = sprintf('Auxiliary model %s has to be estimated first.', varexpectationmodel.auxiliary_model_name);
@@ -68,7 +68,7 @@ if isfield(varexpectationmodel, 'discount_value')
     discountfactor = varexpectationmodel.discount_value;
 else
     if isfield(varexpectationmodel, 'discount_index')
-        discountfactor = DynareModel.params(varexpectationmodel.discount_index);
+        discountfactor = M_.params(varexpectationmodel.discount_index);
     else
         error('This is most likely a bug. Pleasse conntact the Dynare Team.')
     end
@@ -100,11 +100,11 @@ end
 m = length(varexpectationmodel.expr.vars);
 variables_id_in_var = NaN(m,1);
 for i = 1:m
-    j = find(strcmp(auxmodel.list_of_variables_in_companion_var, DynareModel.endo_names{varexpectationmodel.expr.vars(i)}));
+    j = find(strcmp(auxmodel.list_of_variables_in_companion_var, M_.endo_names{varexpectationmodel.expr.vars(i)}));
     if isempty(j)
-        error('Cannot find variable %s in the companion VAR', DynareModel.endo_names{varexpectationmodel.expr.vars(i)})
+        error('Cannot find variable %s in the companion VAR', M_.endo_names{varexpectationmodel.expr.vars(i)})
     else
-        variables_id_in_var(i) = find(strcmp(auxmodel.list_of_variables_in_companion_var, DynareModel.endo_names{varexpectationmodel.expr.vars(i)}));
+        variables_id_in_var(i) = find(strcmp(auxmodel.list_of_variables_in_companion_var, M_.endo_names{varexpectationmodel.expr.vars(i)}));
     end
 end
 
@@ -210,12 +210,12 @@ end
 
 % Update reduced form parameters in M_.params.
 if isequal(varexpectationmodel.auxiliary_model_type, 'var')
-    if DynareModel.var.(varexpectationmodel.auxiliary_model_name).isconstant
-        DynareModel.params(varexpectationmodel.param_indices) = parameters;
+    if M_.var.(varexpectationmodel.auxiliary_model_name).isconstant
+        M_.params(varexpectationmodel.param_indices) = parameters;
     else
-        DynareModel.params(varexpectationmodel.param_indices(1)) = .0;
-        DynareModel.params(varexpectationmodel.param_indices(2:end)) = parameters;
+        M_.params(varexpectationmodel.param_indices(1)) = .0;
+        M_.params(varexpectationmodel.param_indices(2:end)) = parameters;
     end
 else
-    DynareModel.params(varexpectationmodel.param_indices) = parameters;
+    M_.params(varexpectationmodel.param_indices) = parameters;
 end

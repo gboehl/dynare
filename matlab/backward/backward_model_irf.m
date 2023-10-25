@@ -139,7 +139,7 @@ if ~isempty(innovationbaseline)
 end
 
 % Set up initial conditions
-[initialcondition, periods, Innovations, DynareOptions, DynareModel, DynareOutput, endonames, exonames, dynamic_resid, dynamic_g1, y] = ...
+[initialcondition, periods, Innovations, options_local, M_local, oo_local, endonames, exonames, dynamic_resid, dynamic_g1, y] = ...
     simul_backward_model_init(initialcondition, periods, options_, M_, oo_, Innovations);
 
 % Get the covariance matrix of the shocks.
@@ -161,9 +161,9 @@ irfs = struct();
 % Baseline paths (get transition paths induced by the initial condition and
 % baseline innovations).
 if options_.linear
-    [ysim__0, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, Innovations, dynamic_resid, dynamic_g1);
+    [ysim__0, errorflag] = simul_backward_linear_model_(initialcondition, periods, options_local, M_local, oo_local, Innovations, dynamic_resid, dynamic_g1);
 else
-    [ysim__0, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, Innovations, dynamic_resid, dynamic_g1);
+    [ysim__0, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, options_local, M_local, oo_local, Innovations, dynamic_resid, dynamic_g1);
 end
 
 if errorflag
@@ -200,9 +200,9 @@ for i=1:length(listofshocks)
         innovations(1,:) = innovations(1,:) + transpose(C(:,j));
     end
     if options_.linear
-        [ysim__1, errorflag] = simul_backward_linear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1);
+        [ysim__1, errorflag] = simul_backward_linear_model_(initialcondition, periods, options_local, M_local, oo_local, innovations, dynamic_resid, dynamic_g1);
     else
-        [ysim__1, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, DynareOptions, DynareModel, DynareOutput, innovations, dynamic_resid, dynamic_g1);
+        [ysim__1, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, options_local, M_local, oo_local, innovations, dynamic_resid, dynamic_g1);
     end
     if errorflag
         warning('Simulation failed. Cannot compute IRF for %s.', listofshocks{i})
@@ -215,9 +215,9 @@ for i=1:length(listofshocks)
         endo_simul__1 = feval(transform, ysim__1);
     end
     % Instantiate a dseries object (with all the endogenous variables)
-    alldeviations = dseries(transpose(endo_simul__1-endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), DynareModel.endo_names_tex(1:M_.orig_endo_nbr));
+    alldeviations = dseries(transpose(endo_simul__1-endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), M_local.endo_names_tex(1:M_.orig_endo_nbr));
     if nargout>2
-        allirfs = dseries(transpose(endo_simul__1), initialcondition.init, endonames(1:M_.orig_endo_nbr), DynareModel.endo_names_tex(1:M_.orig_endo_nbr));
+        allirfs = dseries(transpose(endo_simul__1), initialcondition.init, endonames(1:M_.orig_endo_nbr), M_local.endo_names_tex(1:M_.orig_endo_nbr));
     end
     % Extract a sub-dseries object
     if deterministicshockflag
@@ -234,6 +234,6 @@ for i=1:length(listofshocks)
 end
 
 if nargout>1
-    baseline = dseries(transpose(endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), DynareModel.endo_names_tex(1:M_.orig_endo_nbr));
+    baseline = dseries(transpose(endo_simul__0), initialcondition.init, endonames(1:M_.orig_endo_nbr), M_local.endo_names_tex(1:M_.orig_endo_nbr));
     baseline = merge(baseline, innovationbaseline);
 end

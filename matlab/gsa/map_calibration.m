@@ -1,5 +1,6 @@
-function map_calibration(OutputDirectoryName, Model, DynareOptions, DynareResults, EstimatedParameters, BayesInfo)
-% map_calibration(OutputDirectoryName, Model, DynareOptions, DynareResults, EstimatedParameters, BayesInfo)
+function map_calibration(OutputDirectoryName, M_, options_, oo_, estim_params_, bayestopt_)
+% map_calibration(OutputDirectoryName, M_, options_, oo_, estim_params_, bayestopt_)
+
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -23,33 +24,33 @@ function map_calibration(OutputDirectoryName, Model, DynareOptions, DynareResult
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-fname_ = Model.fname;
+fname_ = M_.fname;
 
-np = EstimatedParameters.np;
-nshock = EstimatedParameters.nvx + EstimatedParameters.nvn + EstimatedParameters.ncx + EstimatedParameters.ncn;
+np = estim_params_.np;
+nshock = estim_params_.nvx + estim_params_.nvn + estim_params_.ncx + estim_params_.ncn;
 pnames=cell(np,1);
 pnames_tex=cell(np,1);
 for jj=1:np
-    if DynareOptions.TeX
-        [param_name_temp, param_name_tex_temp]= get_the_name(nshock+jj, DynareOptions.TeX, Model, EstimatedParameters, DynareOptions);
+    if options_.TeX
+        [param_name_temp, param_name_tex_temp]= get_the_name(nshock+jj, options_.TeX, M_, estim_params_, options_);
         pnames_tex{jj,1} = strrep(param_name_tex_temp,'$','');
         pnames{jj,1} = param_name_temp;
     else
-        param_name_temp = get_the_name(nshock+jj, DynareOptions.TeX, Model, EstimatedParameters, DynareOptions);
+        param_name_temp = get_the_name(nshock+jj, options_.TeX, M_, estim_params_, options_);
         pnames{jj,1} = param_name_temp;
     end
 end
 
-pvalue_ks = DynareOptions.opt_gsa.pvalue_ks;
+pvalue_ks = options_.opt_gsa.pvalue_ks;
 indx_irf = [];
 indx_moment = [];
-init = ~DynareOptions.opt_gsa.load_stab;
+init = ~options_.opt_gsa.load_stab;
 
-options_mcf.pvalue_ks = DynareOptions.opt_gsa.pvalue_ks;
-options_mcf.pvalue_corr = DynareOptions.opt_gsa.pvalue_corr;
-options_mcf.alpha2 = DynareOptions.opt_gsa.alpha2_stab;
+options_mcf.pvalue_ks = options_.opt_gsa.pvalue_ks;
+options_mcf.pvalue_corr = options_.opt_gsa.pvalue_corr;
+options_mcf.alpha2 = options_.opt_gsa.alpha2_stab;
 options_mcf.param_names = pnames;
-if DynareOptions.TeX
+if options_.TeX
     options_mcf.param_names_tex = pnames_tex;
 end
 options_mcf.fname_ = fname_;
@@ -58,17 +59,17 @@ options_mcf.OutputDirectoryName = OutputDirectoryName;
 skipline()
 disp('Sensitivity analysis for calibration criteria')
 
-if DynareOptions.opt_gsa.ppost
-    filetoload=dir([Model.dname filesep 'metropolis' filesep fname_ '_param_irf*.mat']);
+if options_.opt_gsa.ppost
+    filetoload=dir([M_.dname filesep 'metropolis' filesep fname_ '_param_irf*.mat']);
     lpmat=[];
     for j=1:length(filetoload)
-        load([Model.dname filesep 'metropolis' filesep fname_ '_param_irf',int2str(j),'.mat'])
+        load([M_.dname filesep 'metropolis' filesep fname_ '_param_irf',int2str(j),'.mat'])
         lpmat = [lpmat; stock];
         clear stock
     end
     type = 'post';
 else
-    if DynareOptions.opt_gsa.pprior
+    if options_.opt_gsa.pprior
         filetoload=[OutputDirectoryName '/' fname_ '_prior'];
         load(filetoload,'lpmat','lpmat0','istable','iunstable','iindeterm','iwrong' ,'infox')
         lpmat = [lpmat0 lpmat];
@@ -84,31 +85,31 @@ end
 npar = size(pnames,1);
 nshock = np - npar;
 
-nbr_irf_restrictions = size(DynareOptions.endogenous_prior_restrictions.irf,1);
-nbr_moment_restrictions = size(DynareOptions.endogenous_prior_restrictions.moment,1);
+nbr_irf_restrictions = size(options_.endogenous_prior_restrictions.irf,1);
+nbr_moment_restrictions = size(options_.endogenous_prior_restrictions.moment,1);
 
 if init
     mat_irf=cell(nbr_irf_restrictions,1);
     for ij=1:nbr_irf_restrictions
-        mat_irf{ij}=NaN(Nsam,length(DynareOptions.endogenous_prior_restrictions.irf{ij,3}));
+        mat_irf{ij}=NaN(Nsam,length(options_.endogenous_prior_restrictions.irf{ij,3}));
     end
 
     mat_moment=cell(nbr_moment_restrictions,1);
     for ij=1:nbr_moment_restrictions
-        mat_moment{ij}=NaN(Nsam,length(DynareOptions.endogenous_prior_restrictions.moment{ij,3}));
+        mat_moment{ij}=NaN(Nsam,length(options_.endogenous_prior_restrictions.moment{ij,3}));
     end
 
     irestrictions = [1:Nsam];
     h = dyn_waitbar(0,'Please wait...');
     for j=1:Nsam
-        Model = set_all_parameters(lpmat(j,:)',EstimatedParameters,Model);
+        M_ = set_all_parameters(lpmat(j,:)',estim_params_,M_);
         if nbr_moment_restrictions
-            [Tt,Rr,SteadyState,info,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state);
+            [Tt,Rr,SteadyState,info,oo_.dr, M_.params] = dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
         else
-            [Tt,Rr,SteadyState,info,DynareResults.dr, Model.params] = dynare_resolve(Model,DynareOptions,DynareResults.dr, DynareResults.steady_state, DynareResults.exo_steady_state, DynareResults.exo_det_steady_state,'restrict');
+            [Tt,Rr,SteadyState,info,oo_.dr, M_.params] = dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state,'restrict');
         end
         if info(1)==0
-            [info, info_irf, info_moment, data_irf, data_moment]=endogenous_prior_restrictions(Tt,Rr,Model,DynareOptions,DynareResults.dr,DynareResults.steady_state,DynareResults.exo_steady_state,DynareResults.exo_det_steady_state);
+            [info, info_irf, info_moment, data_irf, data_moment]=endogenous_prior_restrictions(Tt,Rr,M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
             if ~isempty(info_irf)
                 for ij=1:nbr_irf_restrictions
                     mat_irf{ij}(j,:)=data_irf{ij}(:,2)';
@@ -131,7 +132,7 @@ if init
     irestrictions=irestrictions(find(irestrictions));
     xmat=lpmat(irestrictions,:);
     skipline()
-    endo_prior_restrictions=DynareOptions.endogenous_prior_restrictions;
+    endo_prior_restrictions=options_.endogenous_prior_restrictions;
     save([OutputDirectoryName,filesep,fname_,'_',type,'_restrictions'],'xmat','mat_irf','mat_moment','irestrictions','indx_irf','indx_moment','endo_prior_restrictions');
 else
     load([OutputDirectoryName,filesep,fname_,'_',type,'_restrictions'],'xmat','mat_irf','mat_moment','irestrictions','indx_irf','indx_moment','endo_prior_restrictions');
@@ -190,8 +191,8 @@ if ~isempty(indx_irf)
     iplot_indx = ones(size(plot_indx));
 
     indx_irf = indx_irf(irestrictions,:);
-    if ~DynareOptions.nograph
-        h1=dyn_figure(DynareOptions.nodisplay,'name',[type ' evaluation of irf restrictions']);
+    if ~options_.nograph
+        h1=dyn_figure(options_.nodisplay,'name',[type ' evaluation of irf restrictions']);
         nrow=ceil(sqrt(nbr_irf_couples));
         ncol=nrow;
         if nrow*(nrow-1)>nbr_irf_couples
@@ -204,7 +205,7 @@ if ~isempty(indx_irf)
         indx_irf_matrix(:,plot_indx(ij)) = indx_irf_matrix(:,plot_indx(ij)) + indx_irf(:,ij);
         for ik=1:size(mat_irf{ij},2)
             [Mean,Median,Var,HPD,Distrib] = ...
-                posterior_moments(mat_irf{ij}(:,ik),0,DynareOptions.mh_conf_sig);
+                posterior_moments(mat_irf{ij}(:,ik),0,options_.mh_conf_sig);
             irf_mean{plot_indx(ij)} = [irf_mean{plot_indx(ij)}; Mean];
             irf_median{plot_indx(ij)} = [irf_median{plot_indx(ij)}; Median];
             irf_var{plot_indx(ij)} = [irf_var{plot_indx(ij)}; Var];
@@ -218,7 +219,7 @@ if ~isempty(indx_irf)
             aleg = [aleg,'-' ,num2str(endo_prior_restrictions.irf{ij,3}(end))];
             iplot_indx(ij)=0;
         end
-        if ~DynareOptions.nograph && length(time_matrix{plot_indx(ij)})==1
+        if ~options_.nograph && length(time_matrix{plot_indx(ij)})==1
             set(0,'currentfigure',h1),
             subplot(nrow,ncol, plot_indx(ij)),
             hc = cumplot(mat_irf{ij}(:,ik));
@@ -258,7 +259,7 @@ if ~isempty(indx_irf)
         options_mcf.nobeha_title = 'NO IRF restriction';
         options_mcf.title = atitle0;
         if ~isempty(indx1) && ~isempty(indx2)
-            mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, DynareOptions);
+            mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, options_);
         end
 
         %         [proba, dproba] = stab_map_1(xmat, indx1, indx2, aname, 0);
@@ -269,7 +270,7 @@ if ~isempty(indx_irf)
     end
     for ij=1:nbr_irf_couples
         if length(time_matrix{ij})>1
-            if ~DynareOptions.nograph
+            if ~options_.nograph
                 set(0,'currentfigure',h1);
                 subplot(nrow,ncol, ij)
                 itmp = (find(plot_indx==ij));
@@ -319,14 +320,14 @@ if ~isempty(indx_irf)
                 options_mcf.nobeha_title = 'NO IRF restriction';
                 options_mcf.title = atitle0;
                 if ~isempty(indx1) && ~isempty(indx2)
-                    mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, DynareOptions);
+                    mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, options_);
                 end
             end
         end
     end
-    if ~DynareOptions.nograph
-        dyn_saveas(h1,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],DynareOptions.nodisplay,DynareOptions.graph_format);
-        create_TeX_loader(DynareOptions,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],[type ' evaluation of irf restrictions'],'irf_restrictions',type,DynareOptions.figures.textwidth*min(ij/ncol,1))
+    if ~options_.nograph
+        dyn_saveas(h1,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],options_.nodisplay,options_.graph_format);
+        create_TeX_loader(options_,[OutputDirectoryName,filesep,fname_,'_',type,'_irf_restrictions'],[type ' evaluation of irf restrictions'],'irf_restrictions',type,options_.figures.textwidth*min(ij/ncol,1))
     end
     skipline()
 end
@@ -362,24 +363,24 @@ if ~isempty(indx_moment)
     skipline()
 
     %get parameter names including standard deviations
-    np=size(BayesInfo.name,1);
+    np=size(bayestopt_.name,1);
     name=cell(np,1);
     name_tex=cell(np,1);
     for jj=1:np
-        if DynareOptions.TeX
-            [param_name_temp, param_name_tex_temp]= get_the_name(jj,DynareOptions.TeX,Model,EstimatedParameters,DynareOptions);
+        if options_.TeX
+            [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
             name_tex{jj,1} = strrep(param_name_tex_temp,'$','');
             name{jj,1} = param_name_temp;
         else
-            param_name_temp = get_the_name(jj,DynareOptions.TeX,Model,EstimatedParameters,DynareOptions);
+            param_name_temp = get_the_name(jj,options_.TeX,M_,estim_params_,options_);
             name{jj,1} = param_name_temp;
         end
     end
     options_mcf.param_names = name;
-    if DynareOptions.TeX
+    if options_.TeX
         options_mcf.param_names_tex = name_tex;
     end
-    options_mcf.param_names = BayesInfo.name;
+    options_mcf.param_names = bayestopt_.name;
     all_moment_couples = cellstr([char(endo_prior_restrictions.moment(:,1)) char(endo_prior_restrictions.moment(:,2))]);
     moment_couples = unique(all_moment_couples);
     nbr_moment_couples = size(moment_couples,1);
@@ -405,8 +406,8 @@ if ~isempty(indx_moment)
     iplot_indx = ones(size(plot_indx));
 
     indx_moment = indx_moment(irestrictions,:);
-    if ~DynareOptions.nograph
-        h2=dyn_figure(DynareOptions.nodisplay,'name',[type ' evaluation of moment restrictions']);
+    if ~options_.nograph
+        h2=dyn_figure(options_.nodisplay,'name',[type ' evaluation of moment restrictions']);
         nrow=ceil(sqrt(nbr_moment_couples));
         ncol=nrow;
         if nrow*(nrow-1)>nbr_moment_couples
@@ -420,7 +421,7 @@ if ~isempty(indx_moment)
         indx_moment_matrix(:,plot_indx(ij)) = indx_moment_matrix(:,plot_indx(ij)) + indx_moment(:,ij);
         for ik=1:size(mat_moment{ij},2)
             [Mean,Median,Var,HPD,Distrib] = ...
-                posterior_moments(mat_moment{ij}(:,ik),0,DynareOptions.mh_conf_sig);
+                posterior_moments(mat_moment{ij}(:,ik),0,options_.mh_conf_sig);
             moment_mean{plot_indx(ij)} = [moment_mean{plot_indx(ij)}; Mean];
             moment_median{plot_indx(ij)} = [moment_median{plot_indx(ij)}; Median];
             moment_var{plot_indx(ij)} = [moment_var{plot_indx(ij)}; Var];
@@ -434,7 +435,7 @@ if ~isempty(indx_moment)
             aleg = [aleg,'_' ,num2str(endo_prior_restrictions.moment{ij,3}(end))];
             iplot_indx(ij)=0;
         end
-        if ~DynareOptions.nograph && length(time_matrix{plot_indx(ij)})==1
+        if ~options_.nograph && length(time_matrix{plot_indx(ij)})==1
             set(0,'currentfigure',h2);
             subplot(nrow,ncol,plot_indx(ij)),
             hc = cumplot(mat_moment{ij}(:,ik));
@@ -469,7 +470,7 @@ if ~isempty(indx_moment)
         options_mcf.nobeha_title = 'NO moment restriction';
         options_mcf.title = atitle0;
         if ~isempty(indx1) && ~isempty(indx2)
-            mcf_analysis(xmat, indx1, indx2, options_mcf, DynareOptions);
+            mcf_analysis(xmat, indx1, indx2, options_mcf, options_);
         end
 
         %         [proba, dproba] = stab_map_1(xmat, indx1, indx2, aname, 0);
@@ -481,7 +482,7 @@ if ~isempty(indx_moment)
     for ij=1:nbr_moment_couples
         time_matrix{ij} = sort(time_matrix{ij});
         if length(time_matrix{ij})>1
-            if ~DynareOptions.nograph
+            if ~options_.nograph
                 itmp = (find(plot_indx==ij));
                 set(0,'currentfigure',h2);
                 subplot(nrow,ncol, ij)
@@ -531,14 +532,14 @@ if ~isempty(indx_moment)
                 options_mcf.nobeha_title = 'NO moment restriction';
                 options_mcf.title = atitle0;
                 if ~isempty(indx1) && ~isempty(indx2)
-                    mcf_analysis(xmat, indx1, indx2, options_mcf, DynareOptions);
+                    mcf_analysis(xmat, indx1, indx2, options_mcf, options_);
                 end
             end
         end
     end
-    if ~DynareOptions.nograph
-        dyn_saveas(h2,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],DynareOptions.nodisplay,DynareOptions.graph_format);
-        create_TeX_loader(DynareOptions,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],[type ' evaluation of moment restrictions'],'moment_restrictions',type,DynareOptions.figures.textwidth*min(ij/ncol,1))
+    if ~options_.nograph
+        dyn_saveas(h2,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],options_.nodisplay,options_.graph_format);
+        create_TeX_loader(options_,[OutputDirectoryName,filesep,fname_,'_',type,'_moment_restrictions'],[type ' evaluation of moment restrictions'],'moment_restrictions',type,options_.figures.textwidth*min(ij/ncol,1))
     end
 
     skipline()

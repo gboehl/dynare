@@ -1,17 +1,17 @@
-function DynareModel = set_observed_exogenous_variables(DynareModel)
-
+function M_ = set_observed_exogenous_variables(M_)
+% M_ = set_observed_exogenous_variables(M_)
 % Appends the list of observed exogenous variables in Dynare's model structure (if any).
 %
 % INPUTS
-% - DynareModel   [struct]    Dynare's model global structure, M_.
+% - M_   [struct]    Dynare's model global structure.
 %
 % OUTPUTS
-% - DynareModel   [struct]    Dynare's model global structure, M_.
+% - M_   [struct]    Dynare's model global structure.
 %
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2019 Dynare Team
+% Copyright © 2019-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,8 +28,8 @@ function DynareModel = set_observed_exogenous_variables(DynareModel)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if isfield(DynareModel, 'exo_partitions')
-    if isfield(DynareModel.exo_partitions, 'status')
-        DynareModel.observed_exo_names = DynareModel.exo_names(strcmpi('observed', DynareModel.exo_partitions.status));
+if isfield(M_, 'exo_partitions')
+    if isfield(M_.exo_partitions, 'status')
+        M_.observed_exo_names = M_.exo_names(strcmpi('observed', M_.exo_partitions.status));
     end
 end

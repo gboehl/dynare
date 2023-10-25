@@ -46,7 +46,7 @@ if isempty(init_flag)
     init_flag = 1;
 end
 
-order = DynareOptions.order;
+order = options_.order;
 
 % Set local state space model (first order approximation).
 ghx  = ReducedForm.ghx;
@@ -83,7 +83,7 @@ state_variance_rank = size(StateVectorVarianceSquareRoot,2);
 %end
 
 % Set seed for randn().
-DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
+options_=set_dynare_seed_local_options(options_,'default');
 
 % Initialization of the likelihood.
 const_lik = log(2*pi)*number_of_observed_variables;

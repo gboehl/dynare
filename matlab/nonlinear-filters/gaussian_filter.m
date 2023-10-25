@@ -1,5 +1,5 @@
-function [LIK,lik] = gaussian_filter(ReducedForm, Y, start, ParticleOptions, ThreadsOptions, DynareOptions, Model)
-
+function [LIK,lik] = gaussian_filter(ReducedForm, Y, start, ParticleOptions, ThreadsOptions, options_, M_)
+% [LIK,lik] = gaussian_filter(ReducedForm, Y, start, ParticleOptions, ThreadsOptions, options_, M_)
 % Evaluates the likelihood of a non-linear model approximating the
 % predictive (prior) and filtered (posterior) densities for state variables
 % by gaussian distributions.
@@ -74,7 +74,7 @@ else
 end
 
 if ParticleOptions.distribution_approximation.montecarlo
-    DynareOptions=set_dynare_seed_local_options(DynareOptions,'default');
+    options_=set_dynare_seed_local_options(options_,'default');
 end
 
 % Get covariance matrices
@@ -101,20 +101,20 @@ LIK  = NaN;
 for t=1:sample_size
     [PredictedStateMean, PredictedStateVarianceSquareRoot, StateVectorMean, StateVectorVarianceSquareRoot] = ...
         gaussian_filter_bank(ReducedForm, Y(:,t), StateVectorMean, StateVectorVarianceSquareRoot, Q_lower_triangular_cholesky, H_lower_triangular_cholesky, ...
-                             H, ParticleOptions, ThreadsOptions, DynareOptions, Model);
+                             H, ParticleOptions, ThreadsOptions, options_, M_);
     if ParticleOptions.distribution_approximation.cubature || ParticleOptions.distribution_approximation.unscented
         StateParticles = bsxfun(@plus, StateVectorMean, StateVectorVarianceSquareRoot*nodes2');
         IncrementalWeights = gaussian_densities(Y(:,t), StateVectorMean, StateVectorVarianceSquareRoot, PredictedStateMean, ...
                                                 PredictedStateVarianceSquareRoot, StateParticles, H, const_lik, ...
                                                 weights2, weights_c2, ReducedForm, ThreadsOptions, ...
-                                                DynareOptions, Model);
+                                                options_, M_);
         SampleWeights = weights2.*IncrementalWeights;
     else
         StateParticles = bsxfun(@plus, StateVectorVarianceSquareRoot*randn(state_variance_rank, number_of_particles), StateVectorMean) ;
         IncrementalWeights = gaussian_densities(Y(:,t), StateVectorMean, StateVectorVarianceSquareRoot, PredictedStateMean, ...
                                                 PredictedStateVarianceSquareRoot,StateParticles,H,const_lik, ...
                                                 1/number_of_particles,1/number_of_particles,ReducedForm,ThreadsOptions, ...
-                                                DynareOptions, Model);
+                                                options_, M_);
         SampleWeights = IncrementalWeights/number_of_particles;
     end
     SampleWeights = SampleWeights + 1e-6*ones(size(SampleWeights, 1), 1);

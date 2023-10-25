@@ -1,5 +1,5 @@
-function [residuals, info] = calibrateresiduals(dbase, info, DynareModel)
-
+function [residuals, info] = calibrateresiduals(dbase, info, M_)
+% [residuals, info] = calibrateresiduals(dbase, info, M_)
 % Compute residuals in a backward model. Residuals are unobserved exogenous
 % variables appearing additively in equations and without lags. An equation
 % cannot have more than one residual, and a residual cannot appear in more
@@ -8,7 +8,7 @@ function [residuals, info] = calibrateresiduals(dbase, info, DynareModel)
 % INPUTS
 % - dbase       [dseries]   Object containing all the endogenous and observed exogenous variables.
 % - info        [struct]    Informations about the residuals.
-% - DynareModel [struct]    M_ as produced by the preprocessor.
+% - M_          [struct]    M_ as produced by the preprocessor.
 %
 % OUTPUTS
 % - residuals   [dseries]   Object containing the identified residuals.
@@ -38,13 +38,13 @@ function [residuals, info] = calibrateresiduals(dbase, info, DynareModel)
 displayresidualsequationmapping = false;
 
 % Get function handle for the dynamic model
-dynamic_resid = str2func([DynareModel.fname,'.sparse.dynamic_resid']);
+dynamic_resid = str2func([M_.fname,'.sparse.dynamic_resid']);
 
 % Get data for all the endogenous variables.
 ydata = dbase{info.endonames{:}}.data;
 
 % Define function to retrieve an equation name
-eqname = @(z) DynareModel.equations_tags{cellfun(@(x) x==z, DynareModel.equations_tags(:,1)) & cellfun(@(x) isequal(x, 'name'), DynareModel.equations_tags(:,2)),3};
+eqname = @(z) M_.equations_tags{cellfun(@(x) x==z, M_.equations_tags(:,1)) & cellfun(@(x) isequal(x, 'name'), M_.equations_tags(:,2)),3};
 
 % Get data for all the exogenous variables. Missing exogenous variables, to be solved for, have NaN values.
 exogenousvariablesindbase = intersect(info.exonames, dbase.name);
@@ -56,7 +56,7 @@ xdata = allexogenousvariables.data;
 % Evaluate the dynamic equation
 n = size(ydata, 2);
 y = [ydata(1,:)'; ydata(2,:)'; NaN(n, 1)];
-r = dynamic_resid(y, xdata(2,:), DynareModel.params, zeros(n, 1));
+r = dynamic_resid(y, xdata(2,:), M_.params, zeros(n, 1));
 
 % Check that the number of equations evaluating to NaN matches the number of residuals
 idr = find(isnan(r));
@@ -102,7 +102,7 @@ for i = 1:residuals.vobs
     info.residualindex(i) = {strmatch(residualname, allexogenousvariables.name, 'exact')};
     tmpxdata = xdata;
     tmpxdata(2, info.residualindex{i}) = 0;
-    r = dynamic_resid(y, tmpxdata(2,:), DynareModel.params, zeros(n, 1));
+    r = dynamic_resid(y, tmpxdata(2,:), M_.params, zeros(n, 1));
     info.equations(i) = { idr(find(~isnan(r(idr))))};
 end
 
@@ -130,7 +130,7 @@ xdata(:,cell2mat(info.residualindex)) = 0;
 rdata = NaN(residuals.nobs, residuals.vobs);
 for t=2:size(xdata, 1)
     y = [ydata(t-1,:)'; ydata(t,:)'; NaN(n, 1)];
-    r = dynamic_resid(y, xdata(t,:), DynareModel.params, zeros(n, 1));
+    r = dynamic_resid(y, xdata(t,:), M_.params, zeros(n, 1));
     rdata(t,:) = transpose(r(cell2mat(info.equations)));
 end
 residuals = dseries(rdata, dbase.init, info.residuals);

@@ -25,11 +25,11 @@ classdef dprior
 
     methods
 
-        function o = dprior(BayesInfo, PriorTrunc, Uniform)
+        function o = dprior(bayestopt_, PriorTrunc, Uniform)
         % Class constructor.
         %
         % INPUTS
-        % - BayesInfo    [struct]   Informations about the prior distribution, aka bayestopt_.
+        % - bayestopt_    [struct]   Informations about the prior distribution, aka bayestopt_.
         % - PriorTrunc   [double]   scalar, probability mass to be excluded, aka options_.prior_trunc
         % - Uniform      [logical]  scalar, produce uniform random deviates on the prior support.
         %
@@ -38,17 +38,17 @@ classdef dprior
         %
         % REQUIREMENTS
         % None.
-            o.p6 = BayesInfo.p6;
-            o.p7 = BayesInfo.p7;
-            o.p3 = BayesInfo.p3;
-            o.p4 = BayesInfo.p4;
-            bounds = prior_bounds(BayesInfo, PriorTrunc);
+            o.p6 = bayestopt_.p6;
+            o.p7 = bayestopt_.p7;
+            o.p3 = bayestopt_.p3;
+            o.p4 = bayestopt_.p4;
+            bounds = prior_bounds(bayestopt_, PriorTrunc);
             o.lb = bounds.lb;
             o.ub = bounds.ub;
             if nargin>2 && Uniform
                 prior_shape = repmat(5, length(o.p6), 1);
             else
-                prior_shape = BayesInfo.pshape;
+                prior_shape = bayestopt_.pshape;
             end
             o.beta_index = find(prior_shape==1);
             if ~isempty(o.beta_index)
@@ -246,23 +246,23 @@ end % classdef --*-- Unit tests --*--
 %$    end
 %$ end
 %$
-%$ BayesInfo.pshape = p0;
-%$ BayesInfo.p1 = p1;
-%$ BayesInfo.p2 = p2;
-%$ BayesInfo.p3 = p3;
-%$ BayesInfo.p4 = p4;
-%$ BayesInfo.p5 = p5;
-%$ BayesInfo.p6 = p6;
-%$ BayesInfo.p7 = p7;
+%$ bayestopt_.pshape = p0;
+%$ bayestopt_.p1 = p1;
+%$ bayestopt_.p2 = p2;
+%$ bayestopt_.p3 = p3;
+%$ bayestopt_.p4 = p4;
+%$ bayestopt_.p5 = p5;
+%$ bayestopt_.p6 = p6;
+%$ bayestopt_.p7 = p7;
 %$
 %$ ndraws = 1e5;
-%$ m0 = BayesInfo.p1; %zeros(14,1);
-%$ v0 = diag(BayesInfo.p2.^2); %zeros(14);
+%$ m0 = bayestopt_.p1; %zeros(14,1);
+%$ v0 = diag(bayestopt_.p2.^2); %zeros(14);
 %$
 %$ % Call the tested routine
 %$ try
 %$    % Instantiate dprior object
-%$    o = dprior(BayesInfo, prior_trunc, false);
+%$    o = dprior(bayestopt_, prior_trunc, false);
 %$    % Do simulations in a loop and estimate recursively the mean and the variance.
 %$    for i = 1:ndraws
 %$         draw = o.draw();
@@ -277,8 +277,8 @@ end % classdef --*-- Unit tests --*--
 %$ end
 %$
 %$ if t(1)
-%$     t(2) = all(abs(m0-BayesInfo.p1)<3e-3);
-%$     t(3) = all(all(abs(v0-diag(BayesInfo.p2.^2))<5e-3));
+%$     t(2) = all(abs(m0-bayestopt_.p1)<3e-3);
+%$     t(3) = all(all(abs(v0-diag(bayestopt_.p2.^2))<5e-3));
 %$ end
 %$ T = all(t);
 %@eof:1
@@ -345,21 +345,21 @@ end % classdef --*-- Unit tests --*--
 %$    end
 %$ end
 %$
-%$ BayesInfo.pshape = p0;
-%$ BayesInfo.p1 = p1;
-%$ BayesInfo.p2 = p2;
-%$ BayesInfo.p3 = p3;
-%$ BayesInfo.p4 = p4;
-%$ BayesInfo.p5 = p5;
-%$ BayesInfo.p6 = p6;
-%$ BayesInfo.p7 = p7;
+%$ bayestopt_.pshape = p0;
+%$ bayestopt_.p1 = p1;
+%$ bayestopt_.p2 = p2;
+%$ bayestopt_.p3 = p3;
+%$ bayestopt_.p4 = p4;
+%$ bayestopt_.p5 = p5;
+%$ bayestopt_.p6 = p6;
+%$ bayestopt_.p7 = p7;
 %$
 %$ ndraws = 1e5;
 %$
 %$ % Call the tested routine
 %$ try
 %$    % Instantiate dprior object.
-%$    o = dprior(BayesInfo, prior_trunc, false);
+%$    o = dprior(bayestopt_, prior_trunc, false);
 %$    X = o.draws(ndraws);
 %$    m = mean(X, 2);
 %$    v = var(X, 0, 2);
@@ -369,8 +369,8 @@ end % classdef --*-- Unit tests --*--
 %$ end
 %$
 %$ if t(1)
-%$     t(2) = all(abs(m-BayesInfo.p1)<3e-3);
-%$     t(3) = all(all(abs(v-BayesInfo.p2.^2)<5e-3));
+%$     t(2) = all(abs(m-bayestopt_.p1)<3e-3);
+%$     t(3) = all(all(abs(v-bayestopt_.p2.^2)<5e-3));
 %$ end
 %$ T = all(t);
 %@eof:2
