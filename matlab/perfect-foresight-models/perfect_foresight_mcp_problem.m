@@ -23,15 +23,15 @@ function [residuals,JJacobian] = perfect_foresight_mcp_problem(y, dynamic_functi
 %   maximum_lag         [scalar] maximum lag present in the model
 %   T                   [scalar] number of simulation periods
 %   ny                  [scalar] number of endogenous variables
-%   i_cols              [double] indices of variables appearing in M.lead_lag_incidence
+%   i_cols              [double] indices of variables appearing in M_.lead_lag_incidence
 %                                and that need to be passed to _dynamic-file
 %   i_cols_J1           [double] indices of contemporaneous and forward looking variables
-%                                appearing in M.lead_lag_incidence
+%                                appearing in M_.lead_lag_incidence
 %   i_cols_1            [double] indices of contemporaneous and forward looking variables in
-%                                M.lead_lag_incidence in dynamic Jacobian (relevant in first period)
+%                                M_.lead_lag_incidence in dynamic Jacobian (relevant in first period)
 %   i_cols_T            [double] columns of dynamic Jacobian related to contemporaneous and backward-looking
 %                                variables (relevant in last period)
-%   i_cols_j            [double] indices of variables in M.lead_lag_incidence
+%   i_cols_j            [double] indices of variables in M_.lead_lag_incidence
 %                                in dynamic Jacobian (relevant in intermediate periods)
 %   eq_index            [double] N*1 array, index vector describing residual mapping resulting
 %                                from complementarity setup

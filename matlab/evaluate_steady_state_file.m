@@ -1,13 +1,13 @@
-function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,steady_state_checkflag)
-% function [ys,params1,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,steady_state_checkflag)
+function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M_,options_,steady_state_checkflag)
+% function [ys,params1,info] = evaluate_steady_state_file(ys_init,exo_ss,M_,options_,steady_state_checkflag)
 % Evaluates steady state files
 %
 % INPUTS
 %   ys_init                   vector           initial values used to compute the steady
 %                                                 state
 %   exo_ss                    vector           exogenous steady state (incl. deterministic exogenous)
-%   M                         struct           model parameters
-%   options                   struct           options
+%   M_                        struct           model parameters
+%   options_                  struct           options
 %   steady_state_checkflag    boolean          indicator whether to check steady state returned
 % OUTPUTS
 %   ys                        vector           steady state
@@ -36,17 +36,17 @@ function [ys,params,info] = evaluate_steady_state_file(ys_init,exo_ss,M,options,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-params = M.params;
+params = M_.params;
 info = 0;
 
-fname = M.fname;
+fname = M_.fname;
 
-if options.steadystate_flag == 1
+if options_.steadystate_flag == 1
     % old format
     assignin('base','tmp_00_',params);
     evalin('base','M_.params=tmp_00_; clear(''tmp_00_'')');
     h_steadystate = str2func([fname '_steadystate']);
-    [ys,params1,check] = h_steadystate(ys_init, exo_ss,M,options);
+    [ys,params1,check] = h_steadystate(ys_init, exo_ss,M_,options_);
 else % steadystate_flag == 2
      % new format
     h_steadystate = str2func([fname '.steadystate']);
@@ -59,19 +59,19 @@ if check
     return
 end
 
-if M.param_nbr > 0
+if M_.param_nbr > 0
     updated_params_flag = max(abs(params1-params)) > 1e-12 ...
         || ~isequal(isnan(params1),isnan(params)); %checks whether numbers or NaN changed
 else
     updated_params_flag = 0;
 end
 
-h_set_auxiliary_variables = str2func([M.fname '.set_auxiliary_variables']);
+h_set_auxiliary_variables = str2func([M_.fname '.set_auxiliary_variables']);
 
 if  isnan(updated_params_flag) || (updated_params_flag  && any(isnan(params(~isnan(params))-params1(~isnan(params))))) %checks if new NaNs were added
     info(1) = 24;
     info(2) = NaN;
-    if M.set_auxiliary_variables
+    if M_.set_auxiliary_variables
         ys = h_set_auxiliary_variables(ys,exo_ss,params);
     end
     return
@@ -80,7 +80,7 @@ end
 if updated_params_flag && ~isreal(params1)
     info(1) = 23;
     info(2) = sum(imag(params).^2,'omitnan');
-    if M.set_auxiliary_variables
+    if M_.set_auxiliary_variables
         ys = h_set_auxiliary_variables(ys,exo_ss,params);
     end
     return
@@ -91,21 +91,21 @@ if updated_params_flag
 end
 
 % adding values for auxiliary variables
-if ~isempty(M.aux_vars) && ~options.ramsey_policy
-    if M.set_auxiliary_variables
+if ~isempty(M_.aux_vars) && ~options_.ramsey_policy
+    if M_.set_auxiliary_variables
         ys = h_set_auxiliary_variables(ys,exo_ss,params);
     end
 end
 
 if steady_state_checkflag
     % Check whether the steady state obtained from the _steadystate file is a steady state.
-    [residuals, check] = evaluate_static_model(ys, exo_ss, params, M, options);
+    [residuals, check] = evaluate_static_model(ys, exo_ss, params, M_, options_);
     if check
         info(1) = 19;
         info(2) = check; % to be improved
         return
     end
-    if max(abs(residuals)) > options.solve_tolf
+    if max(abs(residuals)) > options_.solve_tolf
         info(1) = 19;
         info(2) = residuals'*residuals;
         return

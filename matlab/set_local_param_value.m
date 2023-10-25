@@ -1,6 +1,7 @@
-function M = set_local_param_value(pname,value,M)
+function M_ = set_local_param_value(pname,value,M_)
+% M_ = set_local_param_value(pname,value,M_)
 
-% Copyright © 2017-2018 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,10 +19,10 @@ function M = set_local_param_value(pname,value,M)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
-i = strmatch(pname, M.param_names, 'exact');
+i = strmatch(pname, M_.param_names, 'exact');
 
 if isempty(i)
     error(['Parameter name ' pname ' doesn''t exist'])
 end
 
-M.params(i) = value;
+M_.params(i) = value;

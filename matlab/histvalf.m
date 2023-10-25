@@ -1,5 +1,5 @@
-function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
-%function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
+function [endo_histval, exo_histval, exo_det_histval] = histvalf(M_, options_)
+%function [endo_histval, exo_histval, exo_det_histval] = histvalf(M_, options_)
 % Sets initial values for simulation using values contained in `fname`, a
 % file possibly created by a call to `smoother2histval`
 %
@@ -30,33 +30,33 @@ function [endo_histval, exo_histval, exo_det_histval] = histvalf(M, options)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-series = histvalf_initvalf('HISTVAL', M, options);
-k = M.orig_maximum_lag - M.maximum_lag + 1;
+series = histvalf_initvalf('HISTVAL', M_, options_);
+k = M_.orig_maximum_lag - M_.maximum_lag + 1;
 
 if ~isoctave && matlab_ver_less_than('9.7')
     % Workaround for MATLAB bug described in dseries#45
     % The solution is to avoid using the "end" keyword
     myend = nobs(series);
 
-    endo_histval  = series{M.endo_names{:}}.data(k:myend, :)';
+    endo_histval  = series{M_.endo_names{:}}.data(k:myend, :)';
 
     exo_histval  = [];
-    if M.exo_nbr
-        exo_histval  = series{M.exo_names{:}}.data(k:myend, :)';
+    if M_.exo_nbr
+        exo_histval  = series{M_.exo_names{:}}.data(k:myend, :)';
     end
     exo_det_histval  = [];
-    if M.exo_det_nbr
-        exo_det_histval  = series{M.exo_names{:}}.data(k:myend, :)';
+    if M_.exo_det_nbr
+        exo_det_histval  = series{M_.exo_names{:}}.data(k:myend, :)';
     end
 else
-    endo_histval  = series{M.endo_names{:}}.data(k:end, :)';
+    endo_histval  = series{M_.endo_names{:}}.data(k:end, :)';
 
     exo_histval  = [];
-    if M.exo_nbr
-        exo_histval  = series{M.exo_names{:}}.data(k:end, :)';
+    if M_.exo_nbr
+        exo_histval  = series{M_.exo_names{:}}.data(k:end, :)';
     end
     exo_det_histval  = [];
-    if M.exo_det_nbr
-        exo_det_histval  = series{M.exo_names{:}}.data(k:end, :)';
+    if M_.exo_det_nbr
+        exo_det_histval  = series{M_.exo_names{:}}.data(k:end, :)';
     end
 end

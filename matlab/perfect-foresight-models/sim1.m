@@ -1,16 +1,16 @@
-function [endogenousvariables, success, err, iter] = sim1(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, success, err, iter] = sim1(endogenousvariables, exogenousvariables, steadystate, M_, options_)
 % Performs deterministic simulations with lead or lag of one period, using
 % a basic Newton solver on sparse matrices.
 % Uses perfect_foresight_problem DLL to construct the stacked problem.
 %
 % INPUTS
-%   - endogenousvariables [double] N*(T+M.maximum_lag+M.maximum_lead) array, paths for the endogenous variables (initial condition + initial guess + terminal condition).
+%   - endogenousvariables [double] N*(T+M_.maximum_lag+M_.maximum_lead) array, paths for the endogenous variables (initial condition + initial guess + terminal condition).
 %   - exogenousvariables  [double] T*M array, paths for the exogenous variables.
 %   - steadystate         [double] N*1 array, steady state for the endogenous variables.
-%   - M                   [struct] contains a description of the model.
-%   - options             [struct] contains various options.
+%   - M_                  [struct] contains a description of the model.
+%   - options_            [struct] contains various options.
 % OUTPUTS
-%   - endogenousvariables [double] N*(T+M.maximum_lag+M.maximum_lead) array, paths for the endogenous variables (solution of the perfect foresight model).
+%   - endogenousvariables [double] N*(T+M_.maximum_lag+M_.maximum_lead) array, paths for the endogenous variables (solution of the perfect foresight model).
 %   - success             [logical] Whether a solution was found
 %   - err                 [double] ∞-norm of the residual
 %   - iter                [integer] Number of iterations
@@ -32,25 +32,25 @@ function [endogenousvariables, success, err, iter] = sim1(endogenousvariables, e
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-verbose = options.verbosity && ~options.noprint;
+verbose = options_.verbosity && ~options_.noprint;
 
-ny = M.endo_nbr;
-periods = options.periods;
-vperiods = periods*ones(1,options.simul.maxit);
+ny = M_.endo_nbr;
+periods = options_.periods;
+vperiods = periods*ones(1,options_.simul.maxit);
 
-if M.maximum_lag > 0
-    y0 = endogenousvariables(:, M.maximum_lag);
+if M_.maximum_lag > 0
+    y0 = endogenousvariables(:, M_.maximum_lag);
 else
     y0 = NaN(ny, 1);
 end
 
-if M.maximum_lead > 0
-    yT = endogenousvariables(:, M.maximum_lag+periods+1);
+if M_.maximum_lead > 0
+    yT = endogenousvariables(:, M_.maximum_lag+periods+1);
 else
     yT = NaN(ny, 1);
 end
 
-y = reshape(endogenousvariables(:, M.maximum_lag+(1:periods)), ny*periods, 1);
+y = reshape(endogenousvariables(:, M_.maximum_lag+(1:periods)), ny*periods, 1);
 
 stop = false;
 
@@ -63,13 +63,13 @@ end
 
 h1 = clock;
 
-for iter = 1:options.simul.maxit
+for iter = 1:options_.simul.maxit
     h2 = clock;
 
-    [res, A] = perfect_foresight_problem(y, y0, yT, exogenousvariables, M.params, steadystate, periods, M, options);
+    [res, A] = perfect_foresight_problem(y, y0, yT, exogenousvariables, M_.params, steadystate, periods, M_, options_);
     % A is the stacked Jacobian with period x equations alongs the rows and
     % periods times variables (in declaration order) along the columns
-    if options.debug && iter==1
+    if options_.debug && iter==1
         [row,col]=find(A);
         row=setdiff(1:periods*ny,row);
         column=setdiff(1:periods*ny,col);
@@ -91,14 +91,14 @@ for iter = 1:options.simul.maxit
             end            
         end
     end
-    if options.endogenous_terminal_period && iter > 1
+    if options_.endogenous_terminal_period && iter > 1
         for it = 1:periods
-            if max(abs(res((it-1)*ny+(1:ny)))) < options.dynatol.f/1e7
+            if max(abs(res((it-1)*ny+(1:ny)))) < options_.dynatol.f/1e7
                 if it < periods
                     res = res(1:(it*ny));
                     A = A(1:(it*ny), 1:(it*ny));
                     yT = y(it*ny+(1:ny));
-                    endogenousvariables(:, M.maximum_lag+((it+1):periods)) = reshape(y(it*ny+(1:(ny*(periods-it)))), ny, periods-it);
+                    endogenousvariables(:, M_.maximum_lag+((it+1):periods)) = reshape(y(it*ny+(1:(ny*(periods-it)))), ny, periods-it);
                     y = y(1:(it*ny));
                     periods = it;
                 end
@@ -109,7 +109,7 @@ for iter = 1:options.simul.maxit
     end
 
     err = max(abs(res));
-    if options.debug
+    if options_.debug
         fprintf('\nLargest absolute residual at iteration %d: %10.3f\n',iter,err);
         if any(isnan(res)) || any(isinf(res)) || any(any(isnan(endogenousvariables))) || any(any(isinf(endogenousvariables)))
             fprintf('\nWARNING: NaN or Inf detected in the residuals or endogenous variables.\n');
@@ -119,28 +119,28 @@ for iter = 1:options.simul.maxit
     if verbose
         fprintf('Iter: %d,\t err. = %g,\t time = %g\n', iter, err, etime(clock,h2));
     end
-    if err < options.dynatol.f
+    if err < options_.dynatol.f
         stop = true;
         break
     end
-    if options.simul.robust_lin_solve
-        dy = -lin_solve_robust(A, res, verbose, options);
+    if options_.simul.robust_lin_solve
+        dy = -lin_solve_robust(A, res, verbose, options_);
     else
         dy = -lin_solve(A, res, verbose);
     end
     if any(isnan(dy)) || any(isinf(dy))
         if verbose
-            display_critical_variables(reshape(dy,[ny periods])', M, options.noprint);
+            display_critical_variables(reshape(dy,[ny periods])', M_, options_.noprint);
         end
     end
     y = y + dy;
 end
 
-endogenousvariables(:, M.maximum_lag+(1:periods)) = reshape(y, ny, periods);
+endogenousvariables(:, M_.maximum_lag+(1:periods)) = reshape(y, ny, periods);
 
-if options.endogenous_terminal_period
-    periods = options.periods;
-    err = evaluate_max_dynamic_residual(str2func([M.fname,'.dynamic']), endogenousvariables, exogenousvariables, M.params, steadystate, periods, ny, M.maximum_endo_lag, M.lead_lag_incidence);
+if options_.endogenous_terminal_period
+    periods = options_.periods;
+    err = evaluate_max_dynamic_residual(str2func([M_.fname,'.dynamic']), endogenousvariables, exogenousvariables, M_.params, steadystate, periods, ny, M_.maximum_endo_lag, M_.lead_lag_incidence);
 end
 
 if stop
@@ -152,7 +152,7 @@ if stop
             skipline()
             fprintf('Total time of simulation: %g.\n', etime(clock,h1))
             disp('Simulation terminated with NaN or Inf in the residuals or endogenous variables.')
-            display_critical_variables(reshape(dy,[ny periods])', M, options.noprint);
+            display_critical_variables(reshape(dy,[ny periods])', M_, options_.noprint);
             disp('There is most likely something wrong with your model. Try model_diagnostics or another simulation method.')
             printline(105)
         end
@@ -191,7 +191,7 @@ if relres > 1e-6 && verbose
     fprintf('WARNING : Failed to find a solution to the linear system.\n');
 end
 
-function [ x, flag, relres ] = lin_solve_robust(A, b ,verbose, options)
+function [ x, flag, relres ] = lin_solve_robust(A, b ,verbose, options_)
 if norm(b) < sqrt(eps) % then x = 0 is a solution
     x = 0;
     flag = 0;
@@ -206,7 +206,7 @@ if flag == 0
     return
 end
 
-if ~options.noprint
+if ~options_.noprint
     disp( relres );
 end
 
@@ -261,7 +261,7 @@ if flag ~= 0 && verbose
     fprintf('WARNING : Failed to find a solution to the linear system\n');
 end
 
-function display_critical_variables(dyy, M, noprint)
+function display_critical_variables(dyy, M_, noprint)
 
 if noprint
     return
@@ -269,14 +269,14 @@ end
 
 if any(isnan(dyy))
     indx = find(any(isnan(dyy)));
-    endo_names= M.endo_names(indx);
+    endo_names= M_.endo_names(indx);
     disp('Last iteration provided NaN for the following variables:')
     fprintf('%s, ', endo_names{:}),
     fprintf('\n'),
 end
 if any(isinf(dyy))
     indx = find(any(isinf(dyy)));
-    endo_names = M.endo_names(indx);
+    endo_names = M_.endo_names(indx);
     disp('Last iteration diverged (Inf) for the following variables:')
     fprintf('%s, ', endo_names{:}),
     fprintf('\n'),

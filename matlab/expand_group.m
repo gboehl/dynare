@@ -32,16 +32,16 @@ if nargin<4
 end
 filename = get(gcf,'filename');
 [filepath, name, ext]=fileparts(filename);
-M = evalin('base','M_');
-oo = evalin('base','oo_');
-options = evalin('base','options_');
+M_ = evalin('base','M_');
+oo_ = evalin('base','oo_');
+options_ = evalin('base','options_');
 mydata=get(findobj(gcf,'tag',['group' int2str(ic)]),'userdata');
 if isfield(mydata,'shock_decomp')
-    options.shock_decomp=mydata.shock_decomp;
+    options_.shock_decomp=mydata.shock_decomp;
 end
-options.plot_shock_decomp=mydata.plot_shock_decomp;
-options.first_obs=mydata.first_obs;
-options.nobs=mydata.nobs;
+options_.plot_shock_decomp=mydata.plot_shock_decomp;
+options_.first_obs=mydata.first_obs;
+options_.nobs=mydata.nobs;
 % define expanded group
 label = mydata.shock_group.label;
 label = strrep(label,' ','_');
@@ -50,32 +50,32 @@ label = strrep(label,'(','');
 label = strrep(label,')','');
 label = strrep(label,'.','');
 shocks = mydata.shock_group.shocks;
-options.plot_shock_decomp.fig_name = [mydata.fig_name '. Expand'];
-options.plot_shock_decomp.use_shock_groups = label; %[use_shock_groups_old int2str(ic)];
-options.plot_shock_decomp.filepath = filepath;
+options_.plot_shock_decomp.fig_name = [mydata.fig_name '. Expand'];
+options_.plot_shock_decomp.use_shock_groups = label; %[use_shock_groups_old int2str(ic)];
+options_.plot_shock_decomp.filepath = filepath;
 for j=1:length(shocks)
-    M.shock_groups.(options.plot_shock_decomp.use_shock_groups).(['group' int2str(j)]).label=shocks{j};
-    M.shock_groups.(options.plot_shock_decomp.use_shock_groups).(['group' int2str(j)]).shocks=shocks(j);
+    M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups).(['group' int2str(j)]).label=shocks{j};
+    M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups).(['group' int2str(j)]).shocks=shocks(j);
 end
-M.exo_names = mydata.exo_names;
+M_.exo_names = mydata.exo_names;
 
-options.plot_shock_decomp.interactive=0;
-options.plot_shock_decomp.expand=1;
-options.plot_shock_decomp.nodisplay=0;
+options_.plot_shock_decomp.interactive=0;
+options_.plot_shock_decomp.expand=1;
+options_.plot_shock_decomp.nodisplay=0;
 if no_graph
-    options.no_graph.plot_shock_decomposition=1;
-    options.plot_shock_decomp.write_xls=1;
+    options_.no_graph.plot_shock_decomposition=1;
+    options_.plot_shock_decomp.write_xls=1;
 else
-    options.plot_shock_decomp.write_xls=0;
+    options_.plot_shock_decomp.write_xls=0;
 end
 %% set optimal colormap
 func = @(x) colorspace('RGB->Lab',x);
 MAP = distinguishable_colors(length(shocks)+1,'w',func);
 MAP(end,:) = [0.7 0.7 0.7];
 
-options.plot_shock_decomp.colormap = MAP;
+options_.plot_shock_decomp.colormap = MAP;
 
-options.plot_shock_decomp.endo_names = mydata.endo_names;
-options.plot_shock_decomp.endo_names_tex = mydata.endo_names_tex;
+options_.plot_shock_decomp.endo_names = mydata.endo_names;
+options_.plot_shock_decomp.endo_names_tex = mydata.endo_names_tex;
 
-plot_shock_decomposition(M,oo,options,{var_list_});
+plot_shock_decomposition(M_,oo_,options_,{var_list_});

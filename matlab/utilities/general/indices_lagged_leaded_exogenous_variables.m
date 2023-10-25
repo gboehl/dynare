@@ -1,10 +1,11 @@
-function [il,l1,ik,k1] = indices_lagged_leaded_exogenous_variables(k,M)
+function [il,l1,ik,k1] = indices_lagged_leaded_exogenous_variables(k,M_)
+% [il,l1,ik,k1] = indices_lagged_leaded_exogenous_variables(k,M_)
 % returns indices of all endogenous variables split between auxiliary
 % variables for lagged or leaded exogenous variables and all other ones
 %
 % INPUT
 % k: vector of endogenous variables ID
-% M: model structure
+% M_: model structure
 %
 % OUTPUT
 % il: indices of lagged or leaded variable in vector k
@@ -31,14 +32,14 @@ function [il,l1,ik,k1] = indices_lagged_leaded_exogenous_variables(k,M)
 
 il = [];
 l1 = [];
-if isempty(M.aux_vars)
+if isempty(M_.aux_vars)
     ik = 1:length(k);
     k1 = k;
 else
     ik = [];
     k1 = [];
-    orig_endo_nbr = M.orig_endo_nbr;
-    type = [M.aux_vars.type];
+    orig_endo_nbr = M_.orig_endo_nbr;
+    type = [M_.aux_vars.type];
     for j=1:length(k)
         if (k(j) > orig_endo_nbr)
             ty = type(k(j) - orig_endo_nbr);

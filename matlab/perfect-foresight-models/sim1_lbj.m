@@ -1,4 +1,4 @@
-function [endogenousvariables, success, err, iter] = sim1_lbj(endogenousvariables, exogenousvariables, steadystate, M, options)
+function [endogenousvariables, success, err, iter] = sim1_lbj(endogenousvariables, exogenousvariables, steadystate, M_, options_)
 
 % Performs deterministic simulations with lead or lag on one period using the historical LBJ algorithm
 %
@@ -32,7 +32,7 @@ function [endogenousvariables, success, err, iter] = sim1_lbj(endogenousvariable
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-lead_lag_incidence = M.lead_lag_incidence;
+lead_lag_incidence = M_.lead_lag_incidence;
 
 ny = size(endogenousvariables,1);
 nyp = nnz(lead_lag_incidence(1,:));
@@ -51,17 +51,17 @@ iz = [1:ny+nyp+nyf];
 function [r, g1] = bytecode_wrapper(y, xpath, params, ys, it_)
     ypath = NaN(ny, 3);
     ypath(find(lead_lag_incidence')) = y;
-    [r, s] = bytecode('dynamic', 'evaluate', M, options, ypath, xpath(it_+(-1:1), :), params, ys, 1);
+    [r, s] = bytecode('dynamic', 'evaluate', M_, options_, ypath, xpath(it_+(-1:1), :), params, ys, 1);
     g1 = s.g1;
 end
 
-if options.bytecode
+if options_.bytecode
     dynamicmodel = @bytecode_wrapper;
 else
-    dynamicmodel = str2func(sprintf('%s.dynamic', M.fname));
+    dynamicmodel = str2func(sprintf('%s.dynamic', M_.fname));
 end
 
-verbose = options.verbosity;
+verbose = options_.verbosity;
 
 if verbose
     printline(56)
@@ -69,37 +69,37 @@ if verbose
     skipline()
 end
 
-it_init = M.maximum_lag+1;
+it_init = M_.maximum_lag+1;
 h1 = clock;
 
-for iter = 1:options.simul.maxit
+for iter = 1:options_.simul.maxit
     h2 = clock;
-    c = zeros(ny*options.periods, nrc);
+    c = zeros(ny*options_.periods, nrc);
     it_ = it_init;
     z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
-    [d1, jacobian] = dynamicmodel(z, exogenousvariables, M.params, steadystate, it_);
+    [d1, jacobian] = dynamicmodel(z, exogenousvariables, M_.params, steadystate, it_);
     jacobian = [jacobian(:,iz), -d1];
     ic = [1:ny];
     icp = iyp;
     c (ic,:) = jacobian(:,is)\jacobian(:,isf1);
-    for it_ = it_init+(1:options.periods-1)
+    for it_ = it_init+(1:options_.periods-1)
         z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
-        [d1, jacobian] = dynamicmodel(z, exogenousvariables, M.params, steadystate, it_);
+        [d1, jacobian] = dynamicmodel(z, exogenousvariables, M_.params, steadystate, it_);
         jacobian = [jacobian(:,iz), -d1];
         jacobian(:,[isf nrs]) = jacobian(:,[isf nrs])-jacobian(:,isp)*c(icp,:);
         ic = ic + ny;
         icp = icp + ny;
         c (ic,:) = jacobian(:,is)\jacobian(:,isf1);
     end
-    c = bksup1(c, ny, nrc, iyf, options.periods);
-    c = reshape(c, ny, options.periods);
-    endogenousvariables(:,it_init+(0:options.periods-1)) = endogenousvariables(:,it_init+(0:options.periods-1))+c;
+    c = bksup1(c, ny, nrc, iyf, options_.periods);
+    c = reshape(c, ny, options_.periods);
+    endogenousvariables(:,it_init+(0:options_.periods-1)) = endogenousvariables(:,it_init+(0:options_.periods-1))+c;
     err = max(max(abs(c)));
     if verbose
         str = sprintf('Iter: %s,\t err. = %s, \t time = %s', num2str(iter), num2str(err), num2str(etime(clock, h2)));
         disp(str);
     end
-    if err < options.dynatol.f
+    if err < options_.dynatol.f
         stop = true;
         if verbose
             skipline()

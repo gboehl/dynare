@@ -1,9 +1,9 @@
-function metropolis_run_analysis(M,basetopt,j)
-%function metropolis_run_analysis(M)
+function metropolis_run_analysis(M_,basetopt,j)
+%function metropolis_run_analysis(M_,basetopt,j
 % analizes Metropolis runs
 %
 % INPUTS
-%   M:         (struct)  Model structure
+%   M_:        (struct)  Model structure
 %   basetopt:  (struct)  Estimated parameters structure
 %   j:         (int)     Index of estimated paramter
 %
@@ -30,7 +30,7 @@ function metropolis_run_analysis(M,basetopt,j)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-load([M.fname '/metropolis/' M.fname '_mh_history'])
+load([M_.fname '/metropolis/' M_.fname '_mh_history'])
 nblck = record.Nblck;
 ndraws = sum(record.MhDraws(:,1));
 
@@ -38,7 +38,7 @@ logPost = [];
 params = [];
 blck = 1;
 for i=1:record.LastFileNumber
-    fname = [M.fname '/metropolis/' M.fname '_mh' int2str(i) '_blck' ...
+    fname = [M_.fname '/metropolis/' M_.fname '_mh' int2str(i) '_blck' ...
              int2str(blck) '.mat'];
     if exist(fname,'file')
         o=load(fname);

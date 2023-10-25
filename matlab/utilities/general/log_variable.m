@@ -1,11 +1,11 @@
-function y = log_variable(ivar,x,M)
+function y = log_variable(ivar,x,M_)
 % returns the log of an endogenous variables except if
 % it is a lagged/leaded exogenous variable
 %
 % INPUT
 % ivar: vector of variable indices (in declaration order)
 % x:    vector of variables value
-% M:    model structure
+% M_:   model structure
 %
 % OUTPUT
 % y:    log of the selected variables if there are not auxiliary variables
@@ -29,8 +29,8 @@ function y = log_variable(ivar,x,M)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-orig_endo_nbr = M.orig_endo_nbr;
-aux_vars = M.aux_vars;
+orig_endo_nbr = M_.orig_endo_nbr;
+aux_vars = M_.aux_vars;
 
 y = zeros(length(ivar),1);
 for i = 1:length(ivar)

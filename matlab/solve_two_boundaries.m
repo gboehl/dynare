@@ -1,4 +1,4 @@
-function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, params, steady_state, T, y_index, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo,options,M)
+function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, params, steady_state, T, y_index, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo,options_,M_)
 % Computes the deterministic simulation of a block of equation containing
 % both lead and lag variables using relaxation methods
 %
@@ -27,7 +27,8 @@ function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, params,
 %                                            - 2 GMRES
 %                                            - 3 BicGStab
 %                                            - 4 Optimal path length
-%   M                   [structure]     Model description
+%   options_             [structure]     storing the options
+%   M_                   [structure]     Model description
 %
 % OUTPUTS
 %   y                   [matrix]        All endogenous variables of the model
@@ -56,7 +57,7 @@ function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, params,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-verbose = options.verbosity;
+verbose = options_.verbosity;
 
 cvg=false;
 iter=0;
@@ -76,11 +77,11 @@ while ~(cvg || iter>maxit_)
     r = NaN(Blck_size, periods);
     g1a = spalloc(Blck_size*periods, Blck_size*periods, nze*periods);
     for it_ = y_kmin+(1:periods)
-        [yy, T(:, it_), r(:, it_-y_kmin), g1]=fh(dynendo(y, it_, M), x(it_, :), params, steady_state, ...
-                                                 M.block_structure.block(Block_Num).g1_sparse_rowval, ...
-                                                 M.block_structure.block(Block_Num).g1_sparse_colval, ...
-                                                 M.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
-        y(:, it_) = yy(M.endo_nbr+(1:M.endo_nbr));
+        [yy, T(:, it_), r(:, it_-y_kmin), g1]=fh(dynendo(y, it_, M_), x(it_, :), params, steady_state, ...
+                                                 M_.block_structure.block(Block_Num).g1_sparse_rowval, ...
+                                                 M_.block_structure.block(Block_Num).g1_sparse_colval, ...
+                                                 M_.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
+        y(:, it_) = yy(M_.endo_nbr+(1:M_.endo_nbr));
         if periods == 1
             g1a = g1(:, Blck_size+(1:Blck_size));
         elseif it_ == y_kmin+1
@@ -110,7 +111,7 @@ while ~(cvg || iter>maxit_)
         if iter>0
             if ~isreal(max_res) || isnan(max_res) || (max_resa<max_res && iter>1)
                 if verbose && ~isreal(max_res)
-                    disp(['Variable ' M.endo_names{max_indx} ' (' int2str(max_indx) ') returns an undefined value']);
+                    disp(['Variable ' M_.endo_names{max_indx} ' (' int2str(max_indx) ') returns an undefined value']);
                 end
                 if isnan(max_res)
                     detJ=det(g1aa);
@@ -308,7 +309,7 @@ while ~(cvg || iter>maxit_)
             g = (ra'*g1a)';
             f = 0.5*ra'*ra;
             p = -g1a\ra;
-            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,@lnsrch1_wrapper_two_boundaries,nn,nn, options.solve_tolx, fh, Block_Num, y, y_index,x, params, steady_state, T, periods, Blck_size, M);
+            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,@lnsrch1_wrapper_two_boundaries,nn,nn, options_.solve_tolx, fh, Block_Num, y, y_index,x, params, steady_state, T, periods, Blck_size, M_);
             dx = ya - yn;
             y(y_index, y_kmin+(1:periods))=reshape(yn',length(y_index),periods);
         end
@@ -331,14 +332,14 @@ end
 success = true;
 
 
-function y3n = dynendo(y, it_, M)
-    y3n = reshape(y(:, it_+(-1:1)), 3*M.endo_nbr, 1);
+function y3n = dynendo(y, it_, M_)
+    y3n = reshape(y(:, it_+(-1:1)), 3*M_.endo_nbr, 1);
 
 function ra = lnsrch1_wrapper_two_boundaries(ya, fh, Block_Num, y, y_index, x, ...
                                              params, steady_state, T, periods, ...
-                                             y_size, M)
-    y(y_index, M.maximum_lag+(1:periods)) = reshape(ya',length(y_index),periods);
+                                             y_size, M_)
+    y(y_index, M_.maximum_lag+(1:periods)) = reshape(ya',length(y_index),periods);
     ra = NaN(periods*y_size, 1);
-    for it_ = M.maximum_lag+(1:periods)
-        [~, ~, ra((it_-M.maximum_lag-1)*y_size+(1:y_size)), g1] = fh(dynendo(y, it_, M), x(it_, :), params, steady_state, M.block_structure.block(Block_Num).g1_sparse_rowval, M.block_structure.block(Block_Num).g1_sparse_colval, M.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
+    for it_ = M_.maximum_lag+(1:periods)
+        [~, ~, ra((it_-M_.maximum_lag-1)*y_size+(1:y_size)), g1] = fh(dynendo(y, it_, M_), x(it_, :), params, steady_state, M_.block_structure.block(Block_Num).g1_sparse_rowval, M_.block_structure.block(Block_Num).g1_sparse_colval, M_.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
     end
