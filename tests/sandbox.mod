@@ -1,6 +1,8 @@
 // --+ options: json=compute, stochastic +--
 
+@#ifndef simulate
 @#define simulate = false
+@#endif
 
 var x1 x2 x1bar x2bar z y x u v s azertyuiopiop z1 z2 z3;
 
