@@ -127,10 +127,12 @@ pac.update.expectation('pacman');
 
 @#if simulate
 verbatim;
-// Simulate the model to create an artificial sample.
-initialconditions = dseries(zeros(10, M_.endo_nbr+M_.exo_nbr), 2000Q1, vertcat(M_.endo_names,M_.exo_names));
-TrueData = simul_backward_model(initialconditions, 300);
-TrueData.save('simulateddata', 'm')
+  % Simulate the model to create an artificial sample.
+  initialconditions = dseries(zeros(10, M_.endo_nbr+M_.exo_nbr), dates('2000Q1'), vertcat(M_.endo_names,M_.exo_names));
+  TrueData = simul_backward_model(initialconditions, 300);
+  ds = sandbox.dynamic_set_auxiliary_series(TrueData, M_.params);
+  TrueData.rototo = ds.rototo;
+  TrueData.save('simulateddata', 'm');
 end;
 
 @#endif
