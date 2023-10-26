@@ -1,7 +1,9 @@
 debug = false;
 
-source_dir = getenv('source_root');
-addpath([source_dir filesep 'matlab']);
+if ~debug
+    source_dir = getenv('source_root');
+    addpath([source_dir filesep 'matlab']);
+end
 
 dynare_config;
 
@@ -36,9 +38,11 @@ end
 
 t1 = clock;
 
-fprintf('\n*** Elapsed time (in seconds): %.1f\n\n', etime(t1, t0));
+if ~debug
+    fprintf('\n*** Elapsed time (in seconds): %.1f\n\n', etime(t1, t0));
+    quit(testFailed > 0)
+end
 
-quit(testFailed > 0)
 %
 % END OF TEST
 %
