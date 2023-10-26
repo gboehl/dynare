@@ -109,8 +109,8 @@ function dcontrib(varargin)
         lastperiod = baseline.dates(end);
         baseline = baseline{M_.exo_names{:}};
     else
-        % Set default baseline (exogenous variable levels in firstperiod-1)
-        baseline = xvariables(firstperiod-1);
+        % Set default baseline (exogenous variable levels in firstperiod)
+        baseline = xvariables(firstperiod);
         baseline = repmat(baseline.data, lastperiod-firstperiod+1, 1);
         baseline = dseries(baseline, firstperiod, M_.exo_names);
     end
