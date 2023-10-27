@@ -18,6 +18,7 @@ function dcontrib(varargin)
 % --database             dseries object
 % --baseline             dseries object (path for the exogenous variables)
 % --range                followed by a dates range
+% --method               followed by cumulate (default) or diff.
 %
 % REMARKS
 % [1] --baseline and --range are not compatible.
@@ -50,6 +51,7 @@ function dcontrib(varargin)
         disp('--database  followed by dseries object [mandatory]')
         disp('--baseline  followed by dseries object (path for the exogenous variables)')
         disp('--range     followed by a dates range')
+        disp('--method    followed by keywords cumulate or diff')
         disp('--output    followed by a name for the structure holding the results [mandatory]')
         skipline()
         return
@@ -115,6 +117,9 @@ function dcontrib(varargin)
         baseline = dseries(baseline, firstperiod, M_.exo_names);
     end
 
+    % get method for computing contributions
+    method = getmethod(varargin);
+
     % Restrict the observations for the exogenous variables to the pertinent tim range
     xvariables = xvariables(firstperiod:lastperiod);
 
@@ -126,27 +131,49 @@ function dcontrib(varargin)
 
     % contributions is a dseries object holding the marginal contribution of the baseline and
     % each exogenous variable to endogenous variable z
-    % contributions.baseline = S.baseline(firstperiod:lastperiod);
 
-    % Add exogenous variables one by one and simulate the model (-> cumulated contributions)
-    for i=1:xvariables.vobs
-        name = xvariables.name{i};
-        baseline{name} = xvariables{name};
-        S.(name) = simul_backward_model(initialconditions, lastperiod-firstperiod+1, baseline);
-    end
-
-    % Compute marginal contributions
-    for j=1:length(variables)
-        cumulatedcontribs = S.baseline{variables{j}}(firstperiod:lastperiod).data;
-        contributions.(variables{j}) = dseries(cumulatedcontribs, firstperiod, 'baseline');
+    switch method
+      case 'cumulate'
+        % Add exogenous variables one by one and simulate the model (-> cumulated contributions)
         for i=1:xvariables.vobs
             name = xvariables.name{i};
-            ts = S.(name);
-            data = ts{variables{j}}(firstperiod:lastperiod).data;
-            contributions.(variables{j}) = [contributions.(variables{j}), dseries(data-cumulatedcontribs, firstperiod, name)];
-            cumulatedcontribs = data;
+            baseline{name} = xvariables{name};
+            S.(name) = simul_backward_model(initialconditions, lastperiod-firstperiod+1, baseline);
         end
-        contributions.(variables{j}) = contributions.(variables{j})(firstperiod:lastperiod);
+        % Compute marginal contributions
+        for j=1:length(variables)
+            cumulatedcontribs = S.baseline{variables{j}}(firstperiod:lastperiod).data;
+            contributions.(variables{j}) = dseries(cumulatedcontribs, firstperiod, 'baseline');
+            for i=1:xvariables.vobs
+                name = xvariables.name{i};
+                ts = S.(name);
+                data = ts{variables{j}}(firstperiod:lastperiod).data;
+                contributions.(variables{j}) = [contributions.(variables{j}), dseries(data-cumulatedcontribs, firstperiod, name)];
+                cumulatedcontribs = data;
+            end
+            contributions.(variables{j}) = contributions.(variables{j})(firstperiod:lastperiod);
+        end
+      case 'diff'
+        for i=1:xvariables.vobs
+            name = xvariables.name{i};
+            Baseline = baseline;
+            Baseline{name} = xvariables{name};
+            S.(name) = simul_backward_model(initialconditions, lastperiod-firstperiod+1, Baseline);
+        end
+        % Compute marginal contributions (removing baseline)
+        for j=1:length(variables)
+            cumulatedcontribs = S.baseline{variables{j}}(firstperiod:lastperiod).data;
+            contributions.(variables{j}) = dseries(cumulatedcontribs, firstperiod, 'baseline');
+            for i=1:xvariables.vobs
+                name = xvariables.name{i};
+                ts = S.(name);
+                data = ts{variables{j}}(firstperiod:lastperiod).data;
+                contributions.(variables{j}) = [contributions.(variables{j}), dseries(data-cumulatedcontribs, firstperiod, name)];
+            end
+            contributions.(variables{j}) = contributions.(variables{j})(firstperiod:lastperiod);
+        end
+      otherwise
+        error('Unknown method (%s)', method)
     end
 
     % Save output in caller workspace
@@ -188,7 +215,7 @@ function eqtags = geteqtags(cellarray)
 % OUTPUTS
 % - eqtags        [char]      1×p cell array of row char arrays.
 
-    [~, vpos, ~, ~, ~, ~, indices] = positions(cellarray);
+    [~, vpos, ~, ~, ~, ~, ~, indices] = positions(cellarray);
 
     lastvalue = indices(find(indices==vpos)+1)-1;
 
@@ -279,7 +306,30 @@ function oname = getoutputname(cellarray)
 end
 
 
-function [mpos, vpos, dpos, rpos, bpos, opos, indices] = positions(cellarray)
+function method = getmethod(cellarray)
+
+% Return the method for computing the dynaamic contributions.
+%
+% INPUTS
+% - cellarray     [char]      1×n cell array of row char arrays.
+%
+% OUTPUTS
+% - method        [char]      method: 'cumulate' or 'diff'
+
+    [~, ~, ~, ~, ~, ~, kpos] = positions(cellarray);
+
+
+
+    if isempty(kpos)
+        method = 'cumulate';
+    else
+        method = cellarray{kpos+1};
+    end
+
+end
+
+
+function [mpos, vpos, dpos, rpos, bpos, opos, kpos, indices] = positions(cellarray)
 
     % Return  positions of the arguments.
     %
@@ -293,6 +343,7 @@ function [mpos, vpos, dpos, rpos, bpos, opos, indices] = positions(cellarray)
     % - rpos          [integer]   scalar, index for the --range argument.
     % - bpos          [integer]   scalar. index for the --baseline argument.
     % - opos          [integer]   scalar, index for the --output argument.
+    % - kpos          [integer]   scalar, index for the --method argument.
 
     % Index for --model argument
     mpos = find(strcmp('--model', cellarray));
@@ -342,7 +393,13 @@ function [mpos, vpos, dpos, rpos, bpos, opos, indices] = positions(cellarray)
         error('dplot::positions: Only one --periods argument is allowed.')
     end
 
+    % Index for --method argument
+    kpos = find(strcmp('--method', cellarray));
+    if length(kpos)>1
+        error('dplot::positions: Only one --method argument is allowed.')
+    end
+
     % Sorted vector of indices
-    indices = sort([mpos; vpos; dpos; rpos; bpos; opos]);
+    indices = sort([mpos; vpos; dpos; rpos; bpos; opos; kpos]);
 
 end
