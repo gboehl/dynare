@@ -267,7 +267,7 @@ while notsteady && t<=last
         end
         if info
             if options_.debug
-                fprintf('\nmissing_observations_kalman_filter:PKF failed with: %s\n', get_error_message(info,options_));
+                fprintf('\nmissing_observations_kalman_filter:PKF failed in period %u with: %s\n', t, get_error_message(info,options_));
             end
             return
         end
