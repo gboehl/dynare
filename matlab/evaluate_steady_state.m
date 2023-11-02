@@ -426,7 +426,7 @@ elseif options_.bytecode
             % Also update the temporary terms vector (needed for the dynare_solve case)
             try
                 [~, ~, ys, T] = bytecode(M_, options_, ys, exo_ss, params, ys, 1, ys, T, 'evaluate', 'static', ...
-                                         'block_decomposed', ['block = ' int2str(b)]);
+                                         'block_decomposed', ['block=' int2str(b)]);
             catch ME
                 if options_.verbosity >= 1
                     disp(ME.message);
@@ -521,5 +521,5 @@ function [r, g1] = block_bytecode_mfs_steadystate(y, b, y_all, exo, params, T, M
 % Wrapper around the static files, for bytecode with block
 mfs_idx = M_.block_structure_stat.block(b).variable(end-M_.block_structure_stat.block(b).mfs+1:end);
 y_all(mfs_idx) = y;
-[r, g1] = bytecode(M_, options_, y_all, exo, params, y_all, 1, y_all, T, 'evaluate', 'static', 'block_decomposed', ['block = ' int2str(b) ]);
+[r, g1] = bytecode(M_, options_, y_all, exo, params, y_all, 1, y_all, T, 'evaluate', 'static', 'block_decomposed', ['block=' int2str(b) ]);
 g1 = g1(:,end-M_.block_structure_stat.block(b).mfs+1:end); % Make Jacobian square if mfs>0

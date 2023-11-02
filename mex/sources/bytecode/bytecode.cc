@@ -65,7 +65,6 @@ Get_Arguments_and_global_variables(int nrhs,
                                    bool *extended_path, mxArray **ep_struct)
 {
   int count_array_argument {0};
-  size_t pos;
   *extended_path = false;
   for (int i = 0; i < nrhs; i++)
     {
@@ -132,15 +131,16 @@ Get_Arguments_and_global_variables(int nrhs,
           print = true;
         else
           {
-            pos = 0;
-            if (Get_Argument(prhs[i]).substr(0, 5) == "block")
+            if (Get_Argument(prhs[i]).substr(0, 6) == "block=")
               {
-                size_t pos1 = Get_Argument(prhs[i]).find("=", pos + 5);
-                if (pos1 != string::npos)
-                  pos = pos1 + 1;
-                else
-                  pos += 5;
-                block = atoi(Get_Argument(prhs[i]).substr(pos, string::npos).c_str())-1;
+                try
+                  {
+                    block = stoi(Get_Argument(prhs[i]).substr(6))-1;
+                  }
+                catch (...)
+                  {
+                    throw FatalException{"ERROR: incorrect syntax for the 'block=' option"};
+                  }
               }
             else if (Get_Argument(prhs[i]).substr(0, 13) == "extended_path")
               {
