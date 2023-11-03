@@ -93,7 +93,7 @@ private:
 public:
   Evaluate(const filesystem::path &codfile, bool steady_state_arg, const BasicSymbolTable &symbol_table_arg);
 
-  void evaluateBlock(int it_, double *__restrict__ y, const double *__restrict__ ya, int y_size, double *__restrict__ x, int nb_row_x, double *__restrict__ params, const double *__restrict__ steady_y, double *__restrict__ u, int Per_u_, double *__restrict__ T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *__restrict__ r, double *__restrict__ g1, double *__restrict__ jacob, double *__restrict__ jacob_exo, double *__restrict__ jacob_exo_det, bool evaluate, bool no_derivatives);
+  void evaluateBlock(int it_, int y_kmin, double *__restrict__ y, const double *__restrict__ ya, int y_size, double *__restrict__ x, int nb_row_x, double *__restrict__ params, const double *__restrict__ steady_y, double *__restrict__ u, int Per_u_, double *__restrict__ T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *__restrict__ r, double *__restrict__ g1, double *__restrict__ jacob, double *__restrict__ jacob_exo, double *__restrict__ jacob_exo_det, bool evaluate, bool no_derivatives);
 
   // Prints current block
   void printCurrentBlock();

@@ -152,7 +152,6 @@ private:
   int verbosity; // Corresponds to options_.verbosity
 
   vector<int> previous_block_exogenous;
-  bool global_temporary_terms;
   bool print; // Whether the “print” command is requested
   int col_x, col_y;
   vector<double> residual;
@@ -161,7 +160,6 @@ private:
   void solve_simple_one_periods();
   void solve_simple_over_periods(bool forward);
   void compute_complete_2b();
-  void initializeTemporaryTerms();
   void evaluate_a_block(bool initialization, bool single_block, const string &bin_base_name);
   int simulate_a_block(const vector_table_conditional_local_type &vector_table_conditional_local, bool single_block, const string &bin_base_name);
   static string elastic(string str, unsigned int len, bool left);
@@ -237,7 +235,7 @@ public:
               int nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
               int maxit_arg_, double solve_tolf_arg, double markowitz_c_arg,
               int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
-              bool global_temporary_terms_arg, bool print_arg, mxArray *GlobalTemporaryTerms_arg,
+              bool print_arg, const mxArray *GlobalTemporaryTerms_arg,
               bool steady_state_arg, bool block_decomposed_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg, int verbosity_arg);
   pair<bool, vector<int>> extended_path(const string &file_name, bool evaluate, int block, int nb_periods, const vector<s_plan> &sextended_path, const vector<s_plan> &sconstrained_extended_path, const vector<string> &dates, const table_conditional_global_type &table_conditional_global);
   pair<bool, vector<int>> compute_blocks(const string &file_name, bool evaluate, int block);

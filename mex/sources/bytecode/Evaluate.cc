@@ -981,7 +981,7 @@ Evaluate::print_expression(const Evaluate::it_code_type &expr_begin, const optio
 }
 
 void
-Evaluate::evaluateBlock(int it_, double *__restrict__ y, const double *__restrict__ ya, int y_size, double *__restrict__ x, int nb_row_x, double *__restrict__ params, const double *__restrict__ steady_y, double *__restrict__ u, int Per_u_, double *__restrict__ T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *__restrict__ r, double *__restrict__ g1, double *__restrict__ jacob, double *__restrict__ jacob_exo, double *__restrict__ jacob_exo_det, bool evaluate, bool no_derivatives)
+Evaluate::evaluateBlock(int it_, int y_kmin, double *__restrict__ y, const double *__restrict__ ya, int y_size, double *__restrict__ x, int nb_row_x, double *__restrict__ params, const double *__restrict__ steady_y, double *__restrict__ u, int Per_u_, double *__restrict__ T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *__restrict__ r, double *__restrict__ g1, double *__restrict__ jacob, double *__restrict__ jacob_exo, double *__restrict__ jacob_exo_det, bool evaluate, bool no_derivatives)
 {
   auto it_code { currentBlockBeginning() };
   int var{0}, lag{0};
@@ -1199,10 +1199,10 @@ Evaluate::evaluateBlock(int it_, double *__restrict__ y, const double *__restric
           //load a temporary variable in the processor
           var = static_cast<FLDT_ *>(*it_code)->get_pos();
 #ifdef DEBUG
-          mexPrintf("FLDT T[it_=%d var=%d, y_kmin=%d, y_kmax=%d == %d]=>%f\n", it_, var, y_kmin, y_kmax, var*T_nrows+it_, T[var*T_nrows+it_]);
-          tmp_out << " T[" << it_ << ", " << var << "](" << T[var*T_nrows+it_] << ")";
+          mexPrintf("FLDT T[it_=%d var=%d, y_kmin=%d, y_kmax=%d == %d]=>%f\n", it_, var, y_kmin, y_kmax, var*T_nrows+it_, T[var*T_nrows+it_-y_kmin]);
+          tmp_out << " T[" << it_ << ", " << var << "](" << T[var*T_nrows+it_-y_kmin] << ")";
 #endif
-          Stack.push(T[var*T_nrows+it_]);
+          Stack.push(T[var*T_nrows+it_-y_kmin]);
           break;
         case Tags::FLDST:
           //load a temporary variable in the processor
@@ -1347,10 +1347,10 @@ Evaluate::evaluateBlock(int it_, double *__restrict__ y, const double *__restric
           mexPrintf("FSTPT\n");
 #endif
           var = static_cast<FSTPT_ *>(*it_code)->get_pos();
-          T[var*T_nrows+it_] = Stack.top();
+          T[var*T_nrows+it_-y_kmin] = Stack.top();
 #ifdef DEBUG
           tmp_out << "=>";
-          mexPrintf(" T[%d, %d](%f)=%s\n", it_, var, T[var*T_nrows+it_], tmp_out.str().c_str());
+          mexPrintf(" T[%d, %d](%f)=%s\n", it_, var, T[var*T_nrows+it_-y_kmin], tmp_out.str().c_str());
           tmp_out.str("");
 #endif
 

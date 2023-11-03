@@ -59,9 +59,9 @@ Get_Arguments_and_global_variables(int nrhs,
                                    mxArray **block_structur,
                                    bool &steady_state, bool &block_decomposed,
                                    bool &evaluate, int &block,
-                                   const mxArray **M_, const mxArray **options_, bool &global_temporary_terms,
+                                   const mxArray **M_, const mxArray **options_,
                                    bool &print,
-                                   mxArray **GlobalTemporaryTerms,
+                                   const mxArray **GlobalTemporaryTerms,
                                    bool *extended_path, mxArray **ep_struct)
 {
   int count_array_argument {0};
@@ -107,8 +107,7 @@ Get_Arguments_and_global_variables(int nrhs,
               *block_structur = mxDuplicateArray(prhs[i]);
               break;
             case 8:
-              global_temporary_terms = true;
-              *GlobalTemporaryTerms = mxDuplicateArray(prhs[i]);
+              *GlobalTemporaryTerms = prhs[i];
               break;
             default:
               mexPrintf("Unknown argument count_array_argument=%d\n", count_array_argument);
@@ -125,8 +124,6 @@ Get_Arguments_and_global_variables(int nrhs,
           block_decomposed = true;
         else if (Get_Argument(prhs[i]) == "evaluate")
           evaluate = true;
-        else if (Get_Argument(prhs[i]) == "global_temporary_terms")
-          global_temporary_terms = true;
         else if (Get_Argument(prhs[i]) == "print")
           print = true;
         else
@@ -176,7 +173,7 @@ void
 mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   const mxArray *M_, *options_;
-  mxArray *GlobalTemporaryTerms;
+  const mxArray *GlobalTemporaryTerms {nullptr};
   mxArray *block_structur = nullptr;
   size_t i, row_y = 0, col_y = 0, row_x = 0, col_x = 0;
   size_t steady_row_y, steady_col_y;
@@ -189,7 +186,6 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   int block = -1;
   double *params = nullptr;
   double *yd = nullptr, *xd = nullptr;
-  bool global_temporary_terms = false;
   bool print = false; // Whether the “print” command is requested
   int verbosity {1}; // Corresponds to options_.verbosity
   double *steady_yd = nullptr;
@@ -218,7 +214,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
                                          periods,
                                          &block_structur,
                                          steady_state, block_decomposed, evaluate, block,
-                                         &M_, &options_, global_temporary_terms,
+                                         &M_, &options_,
                                          print, &GlobalTemporaryTerms,
                                          &extended_path, &extended_path_struct);
     }
@@ -501,7 +497,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   Interpreter interprete {evaluator, params, y, ya, x, steady_yd, direction, static_cast<int>(row_y), static_cast<int>(row_x),
                           periods, y_kmin, y_kmax, maxit_, solve_tolf,
                           markowitz_c, minimal_solving_periods, stack_solve_algo,
-                          solve_algo, global_temporary_terms, print, GlobalTemporaryTerms,
+                          solve_algo, print, GlobalTemporaryTerms,
                           steady_state, block_decomposed, static_cast<int>(col_x), static_cast<int>(col_y), symbol_table, verbosity};
   bool r;
   vector<int> blocks;
@@ -593,15 +589,7 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
               for (i = 0; i < row_y*col_y; i++)
                 pind[i] = y[i];
               if (nlhs > 3)
-                {
-                  mxArray *GlobalTemporaryTerms = interprete.get_Temporary_Terms();
-                  size_t nb_temp_terms = mxGetM(GlobalTemporaryTerms);
-                  plhs[3] = mxCreateDoubleMatrix(nb_temp_terms, 1, mxREAL);
-                  pind = mxGetPr(plhs[3]);
-                  double *tt = mxGetPr(GlobalTemporaryTerms);
-                  for (i = 0; i < nb_temp_terms; i++)
-                    pind[i] = tt[i];
-                }
+                plhs[3] = interprete.get_Temporary_Terms();
             }
 
         }

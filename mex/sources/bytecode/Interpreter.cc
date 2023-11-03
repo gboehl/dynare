@@ -25,6 +25,7 @@
 #include <type_traits>
 #include <chrono>
 #include <limits>
+#include <cassert>
 
 #include "Interpreter.hh"
 
@@ -35,7 +36,7 @@ Interpreter::Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_
                          int nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
                          int maxit_arg_, double solve_tolf_arg, double markowitz_c_arg,
                          int minimal_solving_periods_arg, int stack_solve_algo_arg, int solve_algo_arg,
-                         bool global_temporary_terms_arg, bool print_arg, mxArray *GlobalTemporaryTerms_arg,
+                         bool print_arg, const mxArray *GlobalTemporaryTerms_arg,
                          bool steady_state_arg, bool block_decomposed_arg, int col_x_arg, int col_y_arg, const BasicSymbolTable &symbol_table_arg, int verbosity_arg) :
   symbol_table {symbol_table_arg},
   steady_state {steady_state_arg},
@@ -74,15 +75,30 @@ Interpreter::Interpreter(Evaluate &evaluator_arg, double *params_arg, double *y_
   slowc = 1;
   slowc_save = 1;
   markowitz_c = markowitz_c_arg;
-  T = nullptr;
   minimal_solving_periods = minimal_solving_periods_arg;
   stack_solve_algo = stack_solve_algo_arg;
   solve_algo = solve_algo_arg;
-  global_temporary_terms = global_temporary_terms_arg;
   print = print_arg;
   col_x = col_x_arg;
   col_y = col_y_arg;
-  GlobalTemporaryTerms = GlobalTemporaryTerms_arg;
+
+  int ntt { evaluator.getNumberOfTemporaryTerms() };
+  if (GlobalTemporaryTerms_arg)
+    {
+      if (steady_state)
+        assert(ntt == static_cast<int>(mxGetNumberOfElements(GlobalTemporaryTerms_arg)));
+      else
+        assert(periods*ntt == static_cast<int>(mxGetNumberOfElements(GlobalTemporaryTerms_arg)));
+      GlobalTemporaryTerms = mxDuplicateArray(GlobalTemporaryTerms_arg);
+    }
+  else
+    {
+      if (steady_state)
+        GlobalTemporaryTerms = mxCreateDoubleMatrix(ntt, 1, mxREAL);
+      else
+        GlobalTemporaryTerms = mxCreateDoubleMatrix(periods, ntt, mxREAL);
+    }
+  T = mxGetPr(GlobalTemporaryTerms);
 }
 
 void
@@ -669,8 +685,6 @@ Interpreter::check_for_controlled_exo_validity(const vector<s_plan> &sconstraine
 pair<bool, vector<int>>
 Interpreter::MainLoop(const string &bin_basename, bool evaluate, int block, bool constrained, const vector<s_plan> &sconstrained_extended_path, const vector_table_conditional_local_type &vector_table_conditional_local)
 {
-  initializeTemporaryTerms();
-
   int nb_blocks {evaluator.getTotalBlockNumber()};
 
   if (block >= nb_blocks)
@@ -911,8 +925,7 @@ Interpreter::extended_path(const string &file_name, bool evaluate, int block, in
     mxFree(y_save);
   if (x_save)
     mxFree(x_save);
-  if (T && !global_temporary_terms)
-    mxFree(T);
+
   return {true, blocks};
 }
 
@@ -925,44 +938,7 @@ Interpreter::compute_blocks(const string &file_name, bool evaluate, int block)
 
   auto [r, blocks] = MainLoop(file_name, evaluate, block, false, s_plan_junk, vector_table_conditional_local_junk);
 
-  if (T && !global_temporary_terms)
-    mxFree(T);
   return {true, blocks};
-}
-
-void
-Interpreter::initializeTemporaryTerms()
-{
-  int ntt { evaluator.getNumberOfTemporaryTerms() };
-
-  if (steady_state)
-    {
-      if (T)
-        mxFree(T);
-      if (global_temporary_terms)
-        {
-          if (!GlobalTemporaryTerms)
-            {
-              mexPrintf("GlobalTemporaryTerms is nullptr\n");
-              mexEvalString("drawnow;");
-            }
-          if (ntt != static_cast<int>(mxGetNumberOfElements(GlobalTemporaryTerms)))
-            GlobalTemporaryTerms = mxCreateDoubleMatrix(ntt, 1, mxREAL);
-          T = mxGetPr(GlobalTemporaryTerms);
-        }
-      else
-        {
-          T = static_cast<double *>(mxMalloc(ntt*sizeof(double)));
-          test_mxMalloc(T, __LINE__, __FILE__, __func__, ntt*sizeof(double));
-        }
-    }
-  else
-    {
-      if (T)
-        mxFree(T);
-      T = static_cast<double *>(mxMalloc(ntt*(periods+y_kmin+y_kmax)*sizeof(double)));
-      test_mxMalloc(T, __LINE__, __FILE__, __func__, ntt*(periods+y_kmin+y_kmax)*sizeof(double));
-    }
 }
 
 int
@@ -2595,7 +2571,7 @@ Interpreter::compute_block_time(int my_Per_u_, bool evaluate, bool no_derivative
 
   try
     {
-      evaluator.evaluateBlock(it_, y, ya, y_size, x, nb_row_x, params, steady_y, u, my_Per_u_, T, periods+y_kmin+y_kmax, TEF, TEFD, TEFDD, r, g1, jacob, jacob_exo, jacob_exo_det, evaluate, no_derivatives);
+      evaluator.evaluateBlock(it_, y_kmin, y, ya, y_size, x, nb_row_x, params, steady_y, u, my_Per_u_, T, periods, TEF, TEFD, TEFDD, r, g1, jacob, jacob_exo, jacob_exo_det, evaluate, no_derivatives);
     }
   catch (FloatingPointException &e)
     {
