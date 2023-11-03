@@ -472,6 +472,9 @@ mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (stack_solve_algo == 7 && !steady_state && !print)
     mexErrMsgTxt("Bytecode: Can't use option stack_solve_algo=7");
 
+  if ((stack_solve_algo == 1 || stack_solve_algo == 6) && !steady_state && !print && !evaluate)
+    mexErrMsgTxt("Bytecode: Can't use option stack_solve_algo=1 or 6");
+
   if (steady_state && !evaluate && !print && (solve_algo < 5 || solve_algo > 8))
     mexErrMsgTxt("Bytecode: solve_algo must be between 5 and 8 when using the internal steady state solver");
 

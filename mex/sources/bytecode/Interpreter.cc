@@ -2831,261 +2831,6 @@ Interpreter::golden(double ax, double bx, double cx, double tol)
 }
 
 void
-Interpreter::Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m)
-{
-  double *b_m_d = mxGetPr(b_m);
-  if (!b_m_d)
-    throw FatalException{"In Solve_Matlab_Relaxation, can't retrieve b_m vector"};
-  mwIndex *A_m_i = mxGetIr(A_m);
-  if (!A_m_i)
-    throw FatalException{"In Solve_Matlab_Relaxation, can't retrieve Ir vector of matrix A"};
-  mwIndex *A_m_j = mxGetJc(A_m);
-  if (!A_m_j)
-    throw FatalException{"In Solve_Matlab_Relaxation, can't retrieve Jc vectior of matrix A"};
-  double *A_m_d = mxGetPr(A_m);
-  if (!A_m_d)
-    throw FatalException{"In Solve_Matlab_Relaxation, can't retrieve double float data of matrix A"};
-
-  /* Extract submatrices from the upper-left corner of A and subvectors at the
-     beginning of b, so that the system looks like:
-     ⎛B1 C1 …⎞   ⎛b1⎞
-     ⎢A2 B2 …⎥   ⎢b2⎥
-     ⎢   A3 …⎥ = ⎢ …⎥
-     ⎢    … …⎥   ⎢ …⎥
-     ⎝      …⎠   ⎝ …⎠
-  */
-  mxArray *B1 = mxCreateSparse(size, size, size*size, mxREAL);
-  mwIndex *B1_i = mxGetIr(B1);
-  mwIndex *B1_j = mxGetJc(B1);
-  double *B1_d = mxGetPr(B1);
-  mxArray *C1 = mxCreateSparse(size, size, size*size, mxREAL);
-  mwIndex *C1_i = mxGetIr(C1);
-  mwIndex *C1_j = mxGetJc(C1);
-  double *C1_d = mxGetPr(C1);
-  mxArray *A2 = mxCreateSparse(size, size, size*size, mxREAL);
-  mwIndex *A2_i = mxGetIr(A2);
-  mwIndex *A2_j = mxGetJc(A2);
-  double *A2_d = mxGetPr(A2);
-  mxArray *B2 = mxCreateSparse(size, size, size*size, mxREAL);
-  mwIndex *B2_i = mxGetIr(B2);
-  mwIndex *B2_j = mxGetJc(B2);
-  double *B2_d = mxGetPr(B2);
-  mxArray *A3 = mxCreateSparse(size, size, size*size, mxREAL);
-  mwIndex *A3_i = mxGetIr(A3);
-  mwIndex *A3_j = mxGetJc(A3);
-  double *A3_d = mxGetPr(A3);
-
-  mxArray *b1 = mxCreateDoubleMatrix(size, 1, mxREAL);
-  double *b1_d = mxGetPr(b1);
-  mxArray *b2 = mxCreateDoubleMatrix(size, 1, mxREAL);
-  double *b2_d = mxGetPr(b2);
-
-  unsigned int nze = 0; // Counter in nonzero elements of A
-  unsigned int B1_nze = 0, C1_nze = 0, A2_nze = 0, B2_nze = 0, A3_nze = 0; // Same for submatrices
-
-  for (size_t var = 0; var < static_cast<size_t>(2*size); var++) // Iterate over columns of A
-    {
-      if (var < static_cast<size_t>(size))
-        {
-          b1_d[var] = b_m_d[var];
-
-          B1_j[var] = B1_nze;
-          A2_j[var] = A2_nze;
-        }
-      else
-        {
-          b2_d[var - size] = b_m_d[var];
-
-          C1_j[var - size] = C1_nze;
-          B2_j[var - size] = B2_nze;
-          A3_j[var - size] = A3_nze;
-        }
-
-      while (static_cast<unsigned int>(A_m_j[var+1]) > nze)
-        {
-          size_t eq = A_m_i[nze];
-          if (var < static_cast<size_t>(size))
-            {
-              if (eq < static_cast<size_t>(size))
-                {
-                  B1_i[B1_nze] = eq;
-                  B1_d[B1_nze] = A_m_d[nze];
-                  B1_nze++;
-                }
-              else // Here we know that eq < 2*size, because of the structure of A
-                {
-                  A2_i[A2_nze] = eq - size;
-                  A2_d[A2_nze] = A_m_d[nze];
-                  A2_nze++;
-                }
-            }
-          else if (var < static_cast<size_t>(2*size))
-            {
-              if (eq < static_cast<size_t>(size))
-                {
-                  C1_i[C1_nze] = eq;
-                  C1_d[C1_nze] = A_m_d[nze];
-                  C1_nze++;
-                }
-              else if (eq < static_cast<size_t>(2*size))
-                {
-                  B2_i[B2_nze] = eq - size;
-                  B2_d[B2_nze] = A_m_d[nze];
-                  B2_nze++;
-                }
-              else // Here we know that eq < 3*size, because of the structure of A
-                {
-                  A3_i[A3_nze] = eq - 2*size;
-                  A3_d[A3_nze] = A_m_d[nze];
-                  A3_nze++;
-                }
-            }
-          nze++;
-        }
-    }
-  B1_j[size] = B1_nze;
-  C1_j[size] = C1_nze;
-  A2_j[size] = A2_nze;
-  B2_j[size] = B2_nze;
-  A3_j[size] = A3_nze;
-
-  vector<pair<mxArray *, mxArray *>> triangular_form;
-  mxArray *d1 = nullptr;
-  for (int t = 1; t <= periods; t++)
-    {
-      mxArray *B1_inv;
-      mexCallMATLAB(1, &B1_inv, 1, &B1, "inv");
-
-      // Compute subvector d1 of the triangularized system.
-      mxArray *B1_inv_t = Sparse_transpose(B1_inv);
-      mxDestroyArray(B1_inv);
-      d1 = mult_SAT_B(B1_inv_t, b1);
-
-      /* Compute block S1 of the triangularized system.
-         Update B1, C1, B2, A2, A3, b1 and b2 for the next relaxation iteration.
-         Save S1 and d1 for the subsequent backward iteration.
-         E.g. at the end of the first iteration, the system will look like:
-         ⎛ I S1  … …⎞   ⎛d1⎞
-         ⎢   B1 C1 …⎥   ⎢b1⎥
-         ⎢   A2 B2 …⎥ = ⎢b2⎥
-         ⎢      A3 …⎥   ⎢ …⎥
-         ⎝         …⎠   ⎝ …⎠
-      */
-      if (t < periods)
-        {
-          // Compute S1
-          mxArray *S1 = Sparse_mult_SAT_SB(B1_inv_t, C1);
-
-          // Update A2, B1, b1
-          mxArray *A2_t = Sparse_transpose(A2);
-          mxArray *tmp = Sparse_mult_SAT_SB(A2_t, S1);
-          mxDestroyArray(B1);
-          B1 = Sparse_subtract_SA_SB(B2, tmp);
-          mxDestroyArray(tmp);
-
-          tmp = mult_SAT_B(A2_t, d1);
-          mxDestroyArray(A2_t);
-          mxDestroyArray(b1);
-          b1 = subtract_A_B(b2, tmp);
-          mxDestroyArray(tmp);
-
-          mxDestroyArray(A2);
-          A2 = mxDuplicateArray(A3);
-
-          // Save S1 and d1
-          triangular_form.emplace_back(S1, d1);
-        }
-
-      mxDestroyArray(B1_inv_t);
-
-      if (t < periods - 1)
-        {
-          // Update C1, B2, A3, b2
-          C1_nze = B2_nze = A3_nze = 0;
-          for (size_t var = (t+1)*size; var < static_cast<size_t>((t+2)*size); var++)
-            {
-              b2_d[var - (t+1)*size] = b_m_d[var];
-
-              C1_j[var - (t+1)*size] = C1_nze;
-              B2_j[var - (t+1)*size] = B2_nze;
-              A3_j[var - (t+1)*size] = A3_nze;
-
-              while (static_cast<unsigned int>(A_m_j[var+1]) > nze)
-                {
-                  size_t eq = A_m_i[nze];
-                  if (eq < static_cast<size_t>((t+1) * size))
-                    {
-                      C1_i[C1_nze] = eq - t*size;
-                      C1_d[C1_nze] = A_m_d[nze];
-                      C1_nze++;
-                    }
-                  else if (eq < static_cast<size_t>((t+2)*size))
-                    {
-                      B2_i[B2_nze] = eq - (t+1)*size;
-                      B2_d[B2_nze] = A_m_d[nze];
-                      B2_nze++;
-                    }
-                  else
-                    {
-                      A3_i[A3_nze] = eq - (t+2)*size;
-                      A3_d[A3_nze] = A_m_d[nze];
-                      A3_nze++;
-                    }
-                  nze++;
-                }
-            }
-          C1_j[size] = C1_nze;
-          B2_j[size] = B2_nze;
-          A3_j[size] = A3_nze;
-        }
-    }
-
-  // At this point, d1 contains the solution for the last period
-  double *d1_d = mxGetPr(d1);
-  for (int i = 0; i < size; i++)
-    {
-      int eq = index_vara[i+size*(y_kmin+periods-1)];
-      double yy = -(d1_d[i] + y[eq]);
-      direction[eq] = yy;
-      y[eq] += slowc * yy;
-    }
-
-  // Perform backward iteration to compute the solution for other periods
-  for (int t = periods-2; t >= 0; t--)
-    {
-      auto [S1, d1_next] = triangular_form.back();
-      triangular_form.pop_back();
-      mxArray *S1_t = Sparse_transpose(S1);
-      mxDestroyArray(S1);
-      mxArray *tmp = mult_SAT_B(S1_t, d1);
-      mxDestroyArray(S1_t);
-      mxDestroyArray(d1);
-      d1 = subtract_A_B(d1_next, tmp);
-      d1_d = mxGetPr(d1);
-      mxDestroyArray(d1_next);
-      mxDestroyArray(tmp);
-      for (int i = 0; i < size; i++)
-        {
-          int eq = index_vara[i+size*(y_kmin+t)];
-          double yy = -(d1_d[i] + y[eq]);
-          direction[eq] = yy;
-          y[eq] += slowc * yy;
-        }
-    }
-
-  mxDestroyArray(B1);
-  mxDestroyArray(C1);
-  mxDestroyArray(A2);
-  mxDestroyArray(B2);
-  mxDestroyArray(A3);
-  mxDestroyArray(b1);
-  mxDestroyArray(b2);
-  mxDestroyArray(A_m);
-  mxDestroyArray(b_m);
-  mxDestroyArray(d1);
-}
-
-void
 Interpreter::End_Solver()
 {
   if (((stack_solve_algo == 0 || stack_solve_algo == 4) && !steady_state)
@@ -4702,6 +4447,9 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
   double *Ax {nullptr}, *b {nullptr};
   SuiteSparse_long *Ap = nullptr, *Ai = nullptr;
 
+  assert(stack_solve_algo == 0 || stack_solve_algo == 2 || stack_solve_algo == 3
+         || stack_solve_algo == 4 || stack_solve_algo == 5);
+
   if (isnan(res1) || isinf(res1) || (res2 > 12*g0 && iter > 0))
     {
       if (iter == 0 || fabs(slowc_save) < 1e-8)
@@ -4832,10 +4580,6 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
             case 0:
               mexPrintf("MODEL SIMULATION: (method=Sparse LU)\n");
               break;
-            case 1:
-            case 6:
-              mexPrintf("MODEL SIMULATION: (method=LBJ)\n");
-              break;
             case 2:
               mexPrintf(preconditioner_print_out("MODEL SIMULATION: (method=GMRES)\n", preconditioner, false).c_str());
               break;
@@ -4888,11 +4632,6 @@ Interpreter::Simulate_Newton_Two_Boundaries(bool cvg, const vector_table_conditi
       if (stack_solve_algo == 0 || stack_solve_algo == 4)
         {
           Solve_LU_UMFPack_Two_Boundaries(Ap, Ai, Ax, b, vector_table_conditional_local);
-          mxDestroyArray(x0_m);
-        }
-      else if (stack_solve_algo == 1 || stack_solve_algo == 6)
-        {
-          Solve_Matlab_Relaxation(A_m, b_m);
           mxDestroyArray(x0_m);
         }
       else if (stack_solve_algo == 2)

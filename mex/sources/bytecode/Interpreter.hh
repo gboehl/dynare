@@ -184,7 +184,6 @@ private:
   pair<bool, double> golden(double ax, double bx, double cx, double tol);
   void Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic);
   bool Solve_ByteCode_Sparse_GaussianElimination();
-  void Solve_Matlab_Relaxation(mxArray *A_m, mxArray *b_m);
   void Solve_LU_UMFPack_Two_Boundaries(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b, const vector_table_conditional_local_type &vector_table_conditional_local);
   void Solve_LU_UMFPack_One_Boundary(SuiteSparse_long *Ap, SuiteSparse_long *Ai, double *Ax, double *b);
 

@@ -63,7 +63,7 @@ if options_.block
     if M_.block_structure.time_recursive
         error('Internal error: can''t perform stacked perfect foresight simulation with time-recursive block decomposition')
     end
-    if options_.bytecode
+    if options_.bytecode && ~ismember(options_.stack_solve_algo, [1 6])
         try
             y = bytecode('dynamic', 'block_decomposed', M_, options_, y, exo_simul, M_.params, steady_state, periods);
             success = true;

@@ -59,7 +59,11 @@ nblocks = length(M_.block_structure.block);
 per_block_status = struct('success', cell(1, nblocks), 'error', cell(1, nblocks), 'iterations', cell(1, nblocks));
 
 for blk = 1:nblocks
-    fh_dynamic = str2func(sprintf('%s.sparse.block.dynamic_%d', M_.fname, blk));
+    if options_.bytecode
+        fh_dynamic = @(y3n, x, params, ys, sparse_rowval, sparse_colval, sparse_colptr, T) bytecode_wrapper(y3n, x, params, ys, T, blk, M_, options_);
+    else
+        fh_dynamic = str2func(sprintf('%s.sparse.block.dynamic_%d', M_.fname, blk));
+    end
 
     switch M_.block_structure.block(blk).Simulation_Type
         case {1, 2} % evaluate{Forward,Backward}
@@ -115,3 +119,16 @@ for blk = 1:nblocks
         return
     end
 end
+
+
+function [y3n, T, r, g1b] = bytecode_wrapper(y3n, x, params, ys, T, blk, M_, options_)
+    ypath = reshape(y3n, M_.endo_nbr, 3);
+    xpath = [ NaN(1, M_.exo_nbr); x; NaN(1, M_.exo_nbr) ];
+    [r, g1, ypath, T] = bytecode('evaluate', 'dynamic', 'block_decomposed', ['block=' int2str(blk) ], M_, options_, ypath, xpath, params, ys, 1, true, T);
+    y3n = vec(ypath);
+    if ismember(M_.block_structure.block(blk).Simulation_Type, [3, 4, 6, 7]) % solve{Forward,Backward}{Simple,Complete}
+        g1b = spalloc(M_.block_structure.block(blk).mfs, M_.block_structure.block(blk).mfs, numel(g1));
+    else
+        g1b = spalloc(M_.block_structure.block(blk).mfs, 3*M_.block_structure.block(blk).mfs, numel(g1));
+    end
+    g1b(:, nonzeros(M_.block_structure.block(blk).bytecode_jacob_cols_to_sparse)) = g1(:, find(M_.block_structure.block(blk).bytecode_jacob_cols_to_sparse));
