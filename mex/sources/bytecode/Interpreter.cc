@@ -457,8 +457,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
         }
       mxFree(r);
       break;
-    case BlockSimulationType::unknown:
-      throw FatalException{"UNKNOWN block simulation type: impossible case"};
     }
 }
 
