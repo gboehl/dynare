@@ -149,10 +149,6 @@ lib64-msys2: tarballs/mingw-w64-x86_64-boost-$(MINGW64_BOOST_VERSION)-any.pkg.ta
 	rm -rf $@
 	mkdir $@
 	for f in $^; do tar xf $$f --directory $@ $(MSYS2_EXCLUDES); done
-	# Workaround for https://sourceforge.net/p/matio/bugs/42/
-	patch -d lib64-msys2/mingw64/lib/pkgconfig/ < matio.pc.patch
-	# Workaround for https://github.com/msys2/MINGW-packages/issues/18554
-	patch -d lib64-msys2/mingw64/lib/pkgconfig/ < hdf5.pc.patch
 	touch $@
 
 mingw64: tarballs/mingw-w64-x86_64-gcc-$(MINGW64_GCC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gcc-libs-$(MINGW64_GCC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-gmp-$(MINGW64_GMP_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-binutils-$(MINGW64_BINUTILS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-headers-git-$(MINGW64_HEADERS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-crt-git-$(MINGW64_CRT_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-winpthreads-git-$(MINGW64_WINPTHREADS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libwinpthread-git-$(MINGW64_WINPTHREADS_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zlib-$(MINGW64_ZLIB_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-zstd-$(MINGW64_ZSTD_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-isl-$(MINGW64_ISL_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-mpc-$(MINGW64_MPC_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-mpfr-$(MINGW64_MPFR_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-libiconv-$(MINGW64_LIBICONV_VERSION)-any.pkg.tar.zst tarballs/mingw-w64-x86_64-windows-default-manifest-$(MINGW64_WINDOWS_DEFAULT_MANIFEST_VERSION)-any.pkg.tar.zst
