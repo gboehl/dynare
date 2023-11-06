@@ -38,7 +38,7 @@ else
     path_remove PATH /opt/homebrew/bin
     MATLAB_ARCH=maci64
     # On x86_64 we need to differentiate between older and newer MATLAB versions
-    OLD_MATLAB_PATH=/Applications/MATLAB_R2016b.app
+    OLD_MATLAB_PATH=/Applications/"$PKG_ARCH"/MATLAB_R2016b.app
 fi
 MATLAB_PATH=/Applications/"$PKG_ARCH"/MATLAB_R2023b.app
 
