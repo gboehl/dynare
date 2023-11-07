@@ -197,6 +197,9 @@ try
                 end
             end
         end
+        if ~isempty(istar)
+            RHS = strrep(RHS, sprintf('pac_target_nonstationary(model_name = %s)', ispac.name), sprintf('%s(-1)', M_.endo_names{M_.pac.(ispac.name).ec.vars(M_.pac.(ispac.name).ec.istarget)}));
+        end
         % Print equation for unrolled PAC/VAR-expectation and update
         % list of parameters and endogenous variables (if any).
         if ~isempty(rhs)
