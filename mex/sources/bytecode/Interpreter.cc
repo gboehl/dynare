@@ -2571,7 +2571,7 @@ Interpreter::compute_block_time(int my_Per_u_, bool evaluate, bool no_derivative
 
   try
     {
-      evaluator.evaluateBlock(it_, y_kmin, y, ya, y_size, x, nb_row_x, params, steady_y, u, my_Per_u_, T, periods, TEF, TEFD, TEFDD, r, g1, jacob, jacob_exo, jacob_exo_det, evaluate, no_derivatives);
+      evaluator.evaluateBlock(it_, y_kmin, y, y_size, x, nb_row_x, params, steady_y, u, my_Per_u_, T, periods, TEF, TEFD, TEFDD, r, g1, jacob, jacob_exo, jacob_exo_det, evaluate, no_derivatives);
     }
   catch (FloatingPointException &e)
     {

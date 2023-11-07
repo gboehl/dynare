@@ -981,7 +981,7 @@ Evaluate::print_expression(const Evaluate::it_code_type &expr_begin, const optio
 }
 
 void
-Evaluate::evaluateBlock(int it_, int y_kmin, double *__restrict__ y, const double *__restrict__ ya, int y_size, double *__restrict__ x, int nb_row_x, double *__restrict__ params, const double *__restrict__ steady_y, double *__restrict__ u, int Per_u_, double *__restrict__ T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *__restrict__ r, double *__restrict__ g1, double *__restrict__ jacob, double *__restrict__ jacob_exo, double *__restrict__ jacob_exo_det, bool evaluate, bool no_derivatives)
+Evaluate::evaluateBlock(int it_, int y_kmin, double *__restrict__ y, int y_size, double *__restrict__ x, int nb_row_x, double *__restrict__ params, const double *__restrict__ steady_y, double *__restrict__ u, int Per_u_, double *__restrict__ T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *__restrict__ r, double *__restrict__ g1, double *__restrict__ jacob, double *__restrict__ jacob_exo, double *__restrict__ jacob_exo_det, bool evaluate, bool no_derivatives)
 {
   auto it_code { currentBlockBeginning() };
   int var{0}, lag{0};
@@ -1078,15 +1078,9 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double *__restrict__ y, const doubl
               var = static_cast<FLDV_ *>(*it_code)->get_pos();
               lag = static_cast<FLDV_ *>(*it_code)->get_lead_lag();
 #ifdef DEBUG
-              if (evaluate)
-                mexPrintf("FLDV y[var=%d, lag=%d, it_=%d], y_size=%d evaluate=%d, ya[%d]=%f\n", var, lag, it_, y_size, evaluate, (it_+lag)*y_size+var, ya[(it_+lag)*y_size+var]);
-              else
-                mexPrintf("FLDV y[var=%d, lag=%d, it_=%d], y_size=%d evaluate=%d, y[%d]=%f\n", var, lag, it_, y_size, evaluate, (it_+lag)*y_size+var, y[(it_+lag)*y_size+var]);
+              mexPrintf("FLDV y[var=%d, lag=%d, it_=%d], y_size=%d evaluate=%d, y[%d]=%f\n", var, lag, it_, y_size, evaluate, (it_+lag)*y_size+var, y[(it_+lag)*y_size+var]);
 #endif
-              if (evaluate)
-                Stack.push(ya[(it_+lag)*y_size+var]);
-              else
-                Stack.push(y[(it_+lag)*y_size+var]);
+              Stack.push(y[(it_+lag)*y_size+var]);
 #ifdef DEBUG
               tmp_out << " y[" << it_+lag << ", " << var << "](" << y[(it_+lag)*y_size+var] << ")";
 #endif
@@ -1128,13 +1122,10 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double *__restrict__ y, const doubl
             case SymbolType::endogenous:
               var = static_cast<FLDSV_ *>(*it_code)->get_pos();
 #ifdef DEBUG
-              mexPrintf("FLDSV y[var=%d]=%f\n", var, ya[var]);
+              mexPrintf("FLDSV y[var=%d]=%f\n", var, y[var]);
               tmp_out << " y[" << var << "](" << y[var] << ")";
 #endif
-              if (evaluate)
-                Stack.push(ya[var]);
-              else
-                Stack.push(y[var]);
+              Stack.push(y[var]);
               break;
             case SymbolType::exogenous:
               var = static_cast<FLDSV_ *>(*it_code)->get_pos();
