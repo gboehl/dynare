@@ -41,12 +41,12 @@ nrs = ny+nyp+nyf+1;
 nrc = nyf+1;
 iyf = find(lead_lag_incidence(3,:)>0);
 iyp = find(lead_lag_incidence(1,:)>0);
-isp = [1:nyp];
-is = [nyp+1:ny+nyp];
+isp = 1:nyp;
+is = nyp+1:ny+nyp;
 isf = iyf+nyp;
-isf1 = [nyp+ny+1:nyf+nyp+ny+1];
-stop = false;
-iz = [1:ny+nyp+nyf];
+isf1 = nyp+ny+1:nyf+nyp+ny+1;
+success = false;
+iz = 1:ny+nyp+nyf;
 
 function [r, g1] = bytecode_wrapper(y, xpath, params, ys, it_)
     ypath = NaN(ny, 3);
@@ -65,24 +65,22 @@ verbose = options_.verbosity;
 
 if verbose
     printline(56)
-    disp(['MODEL SIMULATION :'])
-    skipline()
+    fprintf('MODEL SIMULATION :\n')
 end
 
-it_init = M_.maximum_lag+1;
 h1 = clock;
 
 for iter = 1:options_.simul.maxit
     h2 = clock;
     c = zeros(ny*options_.periods, nrc);
-    it_ = it_init;
+    it_ = M_.maximum_lag+1;
     z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
     [d1, jacobian] = dynamicmodel(z, exogenousvariables, M_.params, steadystate, it_);
     jacobian = [jacobian(:,iz), -d1];
-    ic = [1:ny];
+    ic = 1:ny;
     icp = iyp;
     c (ic,:) = jacobian(:,is)\jacobian(:,isf1);
-    for it_ = it_init+(1:options_.periods-1)
+    for it_ = M_.maximum_lag+(2:options_.periods)
         z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
         [d1, jacobian] = dynamicmodel(z, exogenousvariables, M_.params, steadystate, it_);
         jacobian = [jacobian(:,iz), -d1];
@@ -93,35 +91,23 @@ for iter = 1:options_.simul.maxit
     end
     c = bksup1(c, ny, nrc, iyf, options_.periods);
     c = reshape(c, ny, options_.periods);
-    endogenousvariables(:,it_init+(0:options_.periods-1)) = endogenousvariables(:,it_init+(0:options_.periods-1))+c;
+    endogenousvariables(:,M_.maximum_lag+(1:options_.periods)) = endogenousvariables(:,M_.maximum_lag+(1:options_.periods))+c;
     err = max(max(abs(c)));
     if verbose
-        str = sprintf('Iter: %s,\t err. = %s, \t time = %s', num2str(iter), num2str(err), num2str(etime(clock, h2)));
-        disp(str);
+        fprintf('Iter: %s,\t err. = %s, \t time = %s\n', num2str(iter), num2str(err), num2str(etime(clock, h2)));
     end
     if err < options_.dynatol.f
-        stop = true;
-        if verbose
-            skipline()
-            disp(sprintf('Total time of simulation: %s', num2str(etime(clock,h1))))
-        end
         success = true; % Convergency obtained.
         break
     end
 end
 
-if ~stop
-    if verbose
-        disp(sprintf('Total time of simulation: %s.', num2str(etime(clock,h1))))
-        disp('Maximum number of iterations is reached (modify option maxit).')
-    end
-    success = false; % More iterations are needed.
-end
-
 if verbose
-    if stop
+    fprintf('\nTotal time of simulation: %s\n', num2str(etime(clock,h1)))
+    if success
         printline(56)
     else
+        disp('Maximum number of iterations is reached (modify option maxit).')
         printline(62)
     end
     skipline()
