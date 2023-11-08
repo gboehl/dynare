@@ -38,7 +38,7 @@ function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, params,
 %   iter                [integer]       Number of iterations
 %
 % ALGORITHM
-%   Newton with LU or GMRES or BicGstab
+%   Newton with LU or GMRES or BiCGStab
 
 % Copyright © 1996-2023 Dynare Team
 %
@@ -61,7 +61,6 @@ verbose = options_.verbosity;
 
 cvg=false;
 iter=0;
-Per_u_=0;
 Blck_size=size(y_index,2);
 correcting_factor=0.01;
 ilu_setup.droptol=1e-10;
