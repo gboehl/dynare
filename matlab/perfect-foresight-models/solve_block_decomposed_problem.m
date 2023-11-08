@@ -59,7 +59,6 @@ nblocks = length(M_.block_structure.block);
 per_block_status = struct('success', cell(1, nblocks), 'error', cell(1, nblocks), 'iterations', cell(1, nblocks));
 
 for blk = 1:nblocks
-    y_index = M_.block_structure.block(blk).variable(end-M_.block_structure.block(blk).mfs+1:end);
     fh_dynamic = str2func(sprintf('%s.sparse.block.dynamic_%d', M_.fname, blk));
 
     switch M_.block_structure.block(blk).Simulation_Type
@@ -90,9 +89,10 @@ for blk = 1:nblocks
             iter = [];
         case {3, 4, 6, 7} % solve{Forward,Backward}{Simple,Complete}
             is_forward = M_.block_structure.block(blk).Simulation_Type == 3 || M_.block_structure.block(blk).Simulation_Type == 6;
+            y_index = M_.block_structure.block(blk).variable(end-M_.block_structure.block(blk).mfs+1:end);
             [y, T, success, maxblkerror, iter] = solve_one_boundary(fh_dynamic, y, exo_simul, M_.params, steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, is_forward, true, false, M_, options_);
         case {5, 8} % solveTwoBoundaries{Simple,Complete}
-            [y, T, success, maxblkerror, iter] = solve_two_boundaries(fh_dynamic, y, exo_simul, M_.params, steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, options_, M_);
+            [y, T, success, maxblkerror, iter] = solve_two_boundaries(fh_dynamic, y, exo_simul, steady_state, T, blk, cutoff, options_, M_);
     end
 
     tmp = y(M_.block_structure.block(blk).variable, :);

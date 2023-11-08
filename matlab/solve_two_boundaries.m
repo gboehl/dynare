@@ -1,4 +1,4 @@
-function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, params, steady_state, T, y_index, nze, periods, is_linear, Block_Num, y_kmin, maxit_, solve_tolf, cutoff, stack_solve_algo,options_,M_)
+function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, steady_state, T, Block_Num, cutoff, options_, M_)
 % Computes the deterministic simulation of a block of equation containing
 % both lead and lag variables using relaxation methods
 %
@@ -6,27 +6,11 @@ function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, params,
 %   fh                  [handle]        function handle to the dynamic file for the block
 %   y                   [matrix]        All the endogenous variables of the model
 %   x                   [matrix]        All the exogenous variables of the model
-%   params              [vector]        All the parameters of the model
 %   steady_state        [vector]        steady state of the model
 %   T                   [matrix]        Temporary terms
-%   y_index             [vector of int] The index of the endogenous variables of
-%                                       the block
-%   nze                 [integer]       number of non-zero elements in the
-%                                       jacobian matrix
-%   periods             [integer]       number of simulation periods
-%   is_linear           [logical]       Whether the block is linear
 %   Block_Num           [integer]       block number
-%   y_kmin              [integer]       maximum number of lag in the model
-%   maxit_              [integer]       maximum number of iteration in Newton
-%   solve_tolf          [double]        convergence criteria
 %   cutoff              [double]        cutoff to correct the direction in Newton in case
 %                                       of singular jacobian matrix
-%   stack_solve_algo    [integer]       linear solver method used in the
-%                                       Newton algorithm :
-%                                            - 1 sprse LU
-%                                            - 2 GMRES
-%                                            - 3 BicGStab
-%                                            - 4 Optimal path length
 %   options_             [structure]     storing the options
 %   M_                   [structure]     Model description
 %
@@ -57,11 +41,16 @@ function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, params,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+Blck_size = M_.block_structure.block(Block_Num).mfs;
+y_index = M_.block_structure.block(Block_Num).variable(end-Blck_size+1:end);
+periods = options_.periods;
+y_kmin = M_.maximum_lag;
+stack_solve_algo = options_.stack_solve_algo;
+
 verbose = options_.verbosity;
 
 cvg=false;
 iter=0;
-Blck_size=size(y_index,2);
 correcting_factor=0.01;
 ilu_setup.droptol=1e-10;
 ilu_setup.type = 'ilutp';
@@ -72,11 +61,11 @@ ilu_setup.udiag = 0;
 max_resa=1e100;
 lambda = 1; % Length of Newton step (unused for stack_solve_algo=4)
 reduced = 0;
-while ~(cvg || iter>maxit_)
+while ~(cvg || iter > options_.simul.maxit)
     r = NaN(Blck_size, periods);
-    g1a = spalloc(Blck_size*periods, Blck_size*periods, nze*periods);
+    g1a = spalloc(Blck_size*periods, Blck_size*periods, M_.block_structure.block(Block_Num).NNZDerivatives*periods);
     for it_ = y_kmin+(1:periods)
-        [yy, T(:, it_), r(:, it_-y_kmin), g1]=fh(dynendo(y, it_, M_), x(it_, :), params, steady_state, ...
+        [yy, T(:, it_), r(:, it_-y_kmin), g1]=fh(dynendo(y, it_, M_), x(it_, :), M_.params, steady_state, ...
                                                  M_.block_structure.block(Block_Num).g1_sparse_rowval, ...
                                                  M_.block_structure.block(Block_Num).g1_sparse_colval, ...
                                                  M_.block_structure.block(Block_Num).g1_sparse_colptr, T(:, it_));
@@ -101,10 +90,10 @@ while ~(cvg || iter>maxit_)
     end
     if ~isreal(max_res) || isnan(max_res)
         cvg = false;
-    elseif is_linear && iter>0
+    elseif M_.block_structure.block(Block_Num).is_linear && iter>0
         cvg = true;
     else
-        cvg=(max_res<solve_tolf);
+        cvg = (max_res < options_.dynatol.f);
     end
     if ~cvg
         if iter>0
@@ -308,7 +297,7 @@ while ~(cvg || iter>maxit_)
             g = (ra'*g1a)';
             f = 0.5*ra'*ra;
             p = -g1a\ra;
-            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,@lnsrch1_wrapper_two_boundaries,nn,nn, options_.solve_tolx, fh, Block_Num, y, y_index,x, params, steady_state, T, periods, Blck_size, M_);
+            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,@lnsrch1_wrapper_two_boundaries,nn,nn, options_.solve_tolx, fh, Block_Num, y, y_index,x, M_.params, steady_state, T, periods, Blck_size, M_);
             dx = ya - yn;
             y(y_index, y_kmin+(1:periods))=reshape(yn',length(y_index),periods);
         end
@@ -319,7 +308,7 @@ while ~(cvg || iter>maxit_)
     end
 end
 
-if (iter>maxit_)
+if iter > options_.simul.maxit
     if verbose
         printline(41)
         %disp(['No convergence after ' num2str(iter,'%4d') ' iterations in Block ' num2str(Block_Num,'%d')])
