@@ -92,7 +92,11 @@ for blk = 1:nblocks
             y_index = M_.block_structure.block(blk).variable(end-M_.block_structure.block(blk).mfs+1:end);
             [y, T, success, maxblkerror, iter] = solve_one_boundary(fh_dynamic, y, exo_simul, M_.params, steady_state, T, y_index, M_.block_structure.block(blk).NNZDerivatives, options_.periods, M_.block_structure.block(blk).is_linear, blk, M_.maximum_lag, options_.simul.maxit, options_.dynatol.f, cutoff, options_.stack_solve_algo, is_forward, true, false, M_, options_);
         case {5, 8} % solveTwoBoundaries{Simple,Complete}
-            [y, T, success, maxblkerror, iter] = solve_two_boundaries(fh_dynamic, y, exo_simul, steady_state, T, blk, cutoff, options_, M_);
+            if ismember(options_.stack_solve_algo, [1 6])
+                [y, T, success, maxblkerror, iter] = solve_two_boundaries_lbj(fh_dynamic, y, exo_simul, steady_state, T, blk, options_, M_);
+            else
+                [y, T, success, maxblkerror, iter] = solve_two_boundaries_stacked(fh_dynamic, y, exo_simul, steady_state, T, blk, cutoff, options_, M_);
+            end
     end
 
     tmp = y(M_.block_structure.block(blk).variable, :);

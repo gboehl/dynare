@@ -1,6 +1,7 @@
-function [y, T, success, max_res, iter] = solve_two_boundaries(fh, y, x, steady_state, T, Block_Num, cutoff, options_, M_)
-% Computes the deterministic simulation of a block of equation containing
-% both lead and lag variables using relaxation methods
+function [y, T, success, max_res, iter] = solve_two_boundaries_stacked(fh, y, x, steady_state, T, Block_Num, cutoff, options_, M_)
+% Computes the deterministic simulation of a block of equations containing
+% both lead and lag variables, using a Newton method over the stacked Jacobian
+% (in particular, this excludes LBJ).
 %
 % INPUTS
 %   fh                  [handle]        function handle to the dynamic file for the block
@@ -46,6 +47,10 @@ y_index = M_.block_structure.block(Block_Num).variable(end-Blck_size+1:end);
 periods = options_.periods;
 y_kmin = M_.maximum_lag;
 stack_solve_algo = options_.stack_solve_algo;
+
+if ~ismember(stack_solve_algo, [0 2 3 4])
+    error('Unsupported stack_solve_algo value')
+end
 
 verbose = options_.verbosity;
 
@@ -158,46 +163,6 @@ while ~(cvg || iter > options_.simul.maxit)
             dx = g1a\b- ya;
             ya = ya + lambda*dx;
             y(y_index, y_kmin+(1:periods))=reshape(ya',length(y_index),periods);
-        elseif stack_solve_algo==1 || stack_solve_algo==6
-            for t=1:periods
-                first_elem = (t-1)*Blck_size+1;
-                last_elem = t*Blck_size;
-                next_elem = (t+1)*Blck_size;
-                Elem = first_elem:last_elem;
-                Elem_1 = last_elem+1:next_elem;
-                B1_inv = inv(g1a(Elem, Elem));
-                if (t < periods)
-                    S1 = B1_inv * g1a(Elem, Elem_1);
-                    g1a(Elem, Elem_1) = S1;
-                end
-                b(Elem) = B1_inv * b(Elem);
-                g1a(Elem, Elem) = ones(Blck_size, Blck_size);
-                if t<periods
-                    g1a(Elem_1, Elem_1) = g1a(Elem_1, Elem_1) - g1a(Elem_1, Elem) * S1;
-                    b(Elem_1) = b(Elem_1) - g1a(Elem_1, Elem) * b(Elem);
-                    g1a(Elem_1, Elem) = zeros(Blck_size, Blck_size);
-                end
-            end
-            za = b(Elem);
-            zaa = za;
-            y_Elem = (periods - 1) * Blck_size + 1:(periods) * Blck_size;
-            dx = ya;
-            dx(y_Elem) = za - ya(y_Elem);
-            ya(y_Elem) = ya(y_Elem) + lambda*dx(y_Elem);
-            y(y_index, y_kmin + periods) = ya(y_Elem);
-            for t=periods-1:-1:1
-                first_elem = (t-1)*Blck_size+1;
-                last_elem = t*Blck_size;
-                next_elem = (t+1)*Blck_size;
-                Elem_1 = last_elem+1:next_elem;
-                Elem = first_elem:last_elem;
-                za = b(Elem) - g1a(Elem, Elem_1) * zaa;
-                zaa = za;
-                y_Elem = Blck_size * (t-1)+1:Blck_size * (t);
-                dx(y_Elem) = za - ya(y_Elem);
-                ya(y_Elem) = ya(y_Elem) + lambda*dx(y_Elem);
-                y(y_index, y_kmin + t) = ya(y_Elem);
-            end
         elseif stack_solve_algo==2
             flag1=1;
             while flag1>0

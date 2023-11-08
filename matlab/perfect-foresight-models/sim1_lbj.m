@@ -94,8 +94,7 @@ for iter = 1:options_.simul.maxit
         icp = icp + ny;
         c (ic,:) = jacobian(:,is)\jacobian(:,isf1);
     end
-    c = bksup1(c, ny, nrc, iyf, options_.periods);
-    c = reshape(c, ny, options_.periods);
+    c = back_subst_lbj(c, ny, iyf, options_.periods);
     endogenousvariables(:,M_.maximum_lag+(1:options_.periods)) = endogenousvariables(:,M_.maximum_lag+(1:options_.periods))+c;
     err = max(max(abs(c)));
     if verbose
@@ -117,29 +116,5 @@ if verbose
     end
     skipline()
 end
-
-end
-
-function d = bksup1(c,ny,jcf,iyf,periods)
-% Solves deterministic models recursively by backsubstitution for one lead/lag
-%
-% INPUTS
-%    ny:             number of endogenous variables
-%    jcf:            variables index forward
-%
-% OUTPUTS
-%    d:              vector of backsubstitution results
-
-ir = [(periods-2)*ny+1:ny+(periods-2)*ny];
-irf = iyf+(periods-1)*ny;
-icf = [1:size(iyf,2)];
-
-for i = 2:periods
-    c(ir,jcf) = c(ir,jcf)-c(ir,icf)*c(irf,jcf);
-    ir = ir-ny;
-    irf = irf-ny;
-end
-
-d = c(:,jcf);
 
 end
