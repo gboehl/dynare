@@ -70,7 +70,7 @@ ilu_setup.milu = 'off';
 ilu_setup.thresh = 1;
 ilu_setup.udiag = 0;
 max_resa=1e100;
-lambda = 1; % Length of Newton step
+lambda = 1; % Length of Newton step (unused for stack_solve_algo=4)
 reduced = 0;
 while ~(cvg || iter>maxit_)
     r = NaN(Blck_size, periods);
@@ -136,7 +136,7 @@ while ~(cvg || iter>maxit_)
                             return
                         end
                     end
-                elseif lambda>1e-8
+                elseif lambda>1e-8 && stack_solve_algo ~= 4
                     lambda=lambda/2;
                     reduced = 1;
                     if verbose
@@ -156,7 +156,7 @@ while ~(cvg || iter>maxit_)
                     return
                 end
             else
-                if lambda<1
+                if lambda<1 && stack_solve_algo ~= 4
                     lambda=max(lambda*2, 1);
                 end
             end
