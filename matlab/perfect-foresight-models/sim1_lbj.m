@@ -4,8 +4,13 @@ function [endogenousvariables, success, err, iter] = sim1_lbj(endogenousvariable
 %
 % INPUTS
 %   ...
+%
 % OUTPUTS
-%   ...
+%   endogenousvariables [matrix]        All endogenous variables of the model
+%   success             [logical]       Whether a solution was found
+%   err                 [double]        ∞-norm of Δendogenousvariables
+%   iter                [integer]       Number of iterations
+%
 % ALGORITHM
 %   Laffargue, Boucekkine, Juillard (LBJ)
 %   see Juillard (1996) Dynare: A program for the resolution and
@@ -96,7 +101,7 @@ for iter = 1:options_.simul.maxit
     if verbose
         fprintf('Iter: %s,\t err. = %s, \t time = %s\n', num2str(iter), num2str(err), num2str(etime(clock, h2)));
     end
-    if err < options_.dynatol.f
+    if err < options_.dynatol.x
         success = true; % Convergency obtained.
         break
     end
