@@ -393,6 +393,7 @@ options_.smoothed_state_uncertainty = false;
 options_.first_obs = NaN;
 options_.nobs = NaN;
 options_.kalman_algo = 0;
+options_.kalman_filter_mex = false;
 options_.fast_kalman_filter = false;
 options_.kalman_tol = 1e-10;
 options_.kalman.keep_kalman_algo_if_singularity_is_detected = false;
@@ -508,7 +509,7 @@ options_.posterior_sampler_options.dsmh.K = 50 ;
 options_.posterior_sampler_options.dsmh.lambda1 = 0.1 ;
 options_.posterior_sampler_options.dsmh.nparticles = 20000 ;
 options_.posterior_sampler_options.dsmh.alpha0 = 0.2 ;
-options_.posterior_sampler_options.dsmh.alpha1 = 0.3 ; 
+options_.posterior_sampler_options.dsmh.alpha1 = 0.3 ;
 options_.posterior_sampler_options.dsmh.tau = 10 ;
 
 options_.trace_plot_ma = 200;

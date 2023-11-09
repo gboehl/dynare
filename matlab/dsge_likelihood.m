@@ -122,7 +122,7 @@ if options_.occbin.likelihood.status
         oldoo.restrict_columns = dr.restrict_columns;
         dr.restrict_var_list = bayestopt_.smoother_var_list;
         dr.restrict_columns = bayestopt_.smoother_restrict_columns;
-    
+
         % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
         [T,R,SteadyState,info,M_,dr, M_.params,TTx,RRx,CCx, T0, R0] = ...
             occbin.dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
@@ -149,7 +149,7 @@ if info(1)
         %meaningful second entry of output that can be used
         fval = Inf;
         if isnan(info(2))
-            info(4) = 0.1;           
+            info(4) = 0.1;
         else
             info(4) = info(2);
         end
@@ -235,7 +235,7 @@ singular_diffuse_filter = 0;
 if options_.heteroskedastic_filter
     Qvec=get_Qvec_heteroskedastic_filter(Q,smpl,M_);
 end
-    
+
 switch options_.lik_init
   case 1% Standard initialization with the steady state of the state equation.
     if kalman_algo~=2
@@ -401,7 +401,7 @@ switch options_.lik_init
     Pinf  = [];
     a     = zeros(mm,1);
     a = set_Kalman_starting_values(a,M_,dr,options_,bayestopt_);
-    a_0_given_tm1 = T*a;    
+    a_0_given_tm1 = T*a;
     if options_.occbin.likelihood.status
         Z =zeros(length(bayestopt_.mf),size(T,1));
         for i = 1:length(bayestopt_.mf)
@@ -620,13 +620,20 @@ if ((kalman_algo==1) || (kalman_algo==3))% Multivariate Kalman Filter
                                            T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods, ...
                                            analytic_deriv_info{:});
         else
-            [LIK,lik] = kalman_filter(Y,diffuse_periods+1,size(Y,2), ...
-                                      a_0_given_tm1,Pstar, ...
-                                      kalman_tol, riccati_tol, ...
-                                      options_.rescale_prediction_error_covariance, ...
-                                      options_.presample, ...
-                                      T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods, ...
-                                      analytic_deriv_info{:});
+            if options_.kalman_filter_mex
+                [LIK,lik] = kalman_filter_mex(Y,a_0_given_tm1,Pstar, ...
+                                              kalman_tol, riccati_tol, ...
+                                              T,Q,R,Z,Zflag,H,diffuse_periods, ...
+                                              options_.presample);
+            else
+                [LIK,lik] = kalman_filter(Y,diffuse_periods+1,size(Y,2), ...
+                                          a_0_given_tm1,Pstar, ...
+                                          kalman_tol, riccati_tol, ...
+                                          options_.rescale_prediction_error_covariance, ...
+                                          options_.presample, ...
+                                          T,Q,R,H,Z,mm,pp,rr,Zflag,diffuse_periods, ...
+                                          analytic_deriv_info{:});
+            end
         end
     else
         [LIK,lik] = missing_observations_kalman_filter(dataset_info.missing.aindex,dataset_info.missing.number_of_observations,dataset_info.missing.no_more_missing_observations,Y,diffuse_periods+1,size(Y,2), ...
@@ -858,15 +865,15 @@ end
 
 function a=set_Kalman_starting_values(a,M_,dr,options_,bayestopt_)
 % function a=set_Kalman_starting_values(a,M_,dr,options_,bayestopt_)
-% Sets initial states guess for Kalman filter/smoother based on M_.filter_initial_state 
-% 
-% INPUTS 
+% Sets initial states guess for Kalman filter/smoother based on M_.filter_initial_state
+%
+% INPUTS
 %   o a             [double]   (p*1) vector of states
 %   o M_            [structure] decribing the model
 %   o dr            [structure] storing the decision rules
 %   o options_      [structure] describing the options
 %   o bayestopt_    [structure] describing the priors
-%  
+%
 % OUTPUTS
 %   o a             [double]    (p*1) vector of set initial states
 
