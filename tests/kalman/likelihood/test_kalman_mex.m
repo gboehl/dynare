@@ -23,6 +23,9 @@ Experience.SizeOfTheStateVector = 100;
 Experience.NumberOfStructuralShocks = 12;
 Experience.MeasurementErrors = 0;
 Experience.NumberOfPeriods = 300;
+Experience.Seed = 1;
+Experience.NumberOfSimulations = 100;
+Experience.Scale = 1;
 
 try
     flag = compare_kalman_mex(Experience);
@@ -58,11 +61,7 @@ catch
 end
 
 dprintf('Test 3: measurement error with general variance-covariance matrix')
-Experience.Number0fObservedVariables = 50;
-Experience.SizeOfTheStateVector = 70;
-Experience.NumberOfStructuralShocks = 50;
 Experience.MeasurementErrors = 2;
-Experience.NumberOfPeriods = 300;
 
 try
     flag = compare_kalman_mex(Experience);
