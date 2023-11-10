@@ -49,8 +49,12 @@ build_doc:
   stage: build
   script:
     - meson rewrite kwargs set project / version "$VERSION"
-    - meson setup -Dbuild_for=octave build-doc
+    # Use a local copy of MathJax to avoid using CDN (which are a privacy issue)
+    # NB: Debian 12 “Bookworm” has MathJax 2. The following needs to be updated
+    #     when Debian moves to MathJax 3.
+    - meson setup -Dbuild_for=octave -Dmathjax_path=mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML build-doc
     - meson compile -v -C build-doc doc
+    - cp -dR /usr/share/javascript/mathjax build-doc/dynare-manual.html/_static/
   artifacts:
     paths:
       - build-doc/
@@ -60,7 +64,6 @@ pkg_source:
   stage: pkg
   script:
     - meson rewrite kwargs set project / version "$VERSION"
-    - rm doc/manual/source/_static/mathjax && sed -i "/^mathjax_path *=/d" doc/manual/source/conf.py
     - git commit -a -m "Source for $VERSION"
     - meson setup -Dbuild_for=octave build-src
     - meson dist -C build-src --no-tests
@@ -204,8 +207,6 @@ deploy_manual_unstable:
   dependencies:
     - build_doc
   script:
-    - rm -rf build-doc/dynare-manual.html/_static/mathjax
-    - ln -s /usr/share/javascript/mathjax build-doc/dynare-manual.html/_static/mathjax
     - rsync --recursive --links --delete build-doc/dynare-manual.html/ /srv/www.dynare.org/manual-unstable/
 
 deploy_snapshot_unstable:

@@ -31,8 +31,6 @@ templates_path = ['_templates']
 
 html_static_path = ['_static']
 
-mathjax_path = 'mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
-
 master_doc = 'index'
 
 project = u'Dynare'

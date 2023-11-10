@@ -1,3 +1,4 @@
 # TODO: Rename this file to meson.options when meson ⩾ 1.1 is required
 option('build_for', type : 'combo', choices : [ 'matlab', 'octave' ], description : 'Whether to build for MATLAB or Octave')
 option('matlab_path', type : 'string', description : 'Absolute directory containing the MATLAB installation')
+option('mathjax_path', type : 'string', description : 'Path to the MathJax JavaScript file to include in the HTML documentation produced by Sphinx; leave empty to use the default CDN')

@@ -552,6 +552,10 @@ sphinx_src = [ 'doc/manual/source/conf.py',
 sphinx_defines = [ '-D', 'release=' + meson.project_version(),
                    '-D', 'version=' + meson.project_version() ]
 
+if get_option('mathjax_path') != ''
+  sphinx_defines += [ '-D', 'mathjax_path=' + get_option('mathjax_path') ]
+endif
+
 dynare_manual_html = custom_target('dynare-manual.html',
                                    output : 'dynare-manual.html', input : sphinx_src,
                                    command : [ sphinx_build_exe, '-b', 'html', sphinx_defines,
