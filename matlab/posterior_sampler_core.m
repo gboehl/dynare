@@ -141,31 +141,32 @@ for curr_block = fblck:nblck
         options_=set_dynare_seed_local_options(options_,options_.DynareRandomStreams.seed+curr_block);
     end
     mh_recover_flag=0;
-    if (options_.load_mh_file~=0) && (fline(curr_block)>1) && OpenOldFile(curr_block) %load previous draws and likelihood
-        load([BaseName '_mh' int2str(NewFile(curr_block)) '_blck' int2str(curr_block) '.mat'])
-        x2 = [x2;zeros(InitSizeArray(curr_block)-fline(curr_block)+1,npar)];
-        logpo2 = [logpo2;zeros(InitSizeArray(curr_block)-fline(curr_block)+1,1)];
+    if options_.mh_recover && exist([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat'],'file')==2 && OpenOldFile(curr_block)
+        % this should be done whatever value of load_mh_file
+        load([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat']);
+        draw_iter = size(neval_this_chain,2)+1;
+        draw_index_current_file = draw_iter+fline(curr_block)-1;
+        feval_this_chain = sum(sum(neval_this_chain));
+        feval_this_file = sum(sum(neval_this_chain));
+        if feval_this_chain>draw_index_current_file-fline(curr_block)
+            % non Metropolis type of sampler
+            accepted_draws_this_chain = draw_index_current_file-fline(curr_block);
+            accepted_draws_this_file = draw_index_current_file-fline(curr_block);
+        else
+            accepted_draws_this_chain = 0;
+            accepted_draws_this_file = 0;
+        end
+        mh_recover_flag=1;
+        set_dynare_random_generator_state(LastSeeds.(['file' int2str(NewFile(curr_block))]).Unifor, LastSeeds.(['file' int2str(NewFile(curr_block))]).Normal);
+        last_draw(curr_block,:)=x2(draw_index_current_file-1,:);
+        last_posterior(curr_block)=logpo2(draw_index_current_file-1);
         OpenOldFile(curr_block) = 0;
     else
-        if options_.mh_recover && exist([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat'],'file')==2
-            load([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat']);
-            draw_iter = size(neval_this_chain,2)+1;
-            draw_index_current_file = draw_iter;
-            feval_this_chain = sum(sum(neval_this_chain));
-            feval_this_file = sum(sum(neval_this_chain));
-            if feval_this_chain>draw_iter-1
-                % non Metropolis type of sampler
-                accepted_draws_this_chain = draw_iter-1;
-                accepted_draws_this_file = draw_iter-1;
-            else
-                accepted_draws_this_chain = 0;
-                accepted_draws_this_file = 0;
-            end
-            mh_recover_flag=1;
-            set_dynare_random_generator_state(LastSeeds.(['file' int2str(NewFile(curr_block))]).Unifor, LastSeeds.(['file' int2str(NewFile(curr_block))]).Normal);
-            last_draw(curr_block,:)=x2(draw_iter-1,:);
-            last_posterior(curr_block)=logpo2(draw_iter-1);
-
+        if (options_.load_mh_file~=0) && (fline(curr_block)>1) && OpenOldFile(curr_block) %load previous draws and likelihood
+            load([BaseName '_mh' int2str(NewFile(curr_block)) '_blck' int2str(curr_block) '.mat'])
+            x2 = [x2;zeros(InitSizeArray(curr_block)-fline(curr_block)+1,npar)];
+            logpo2 = [logpo2;zeros(InitSizeArray(curr_block)-fline(curr_block)+1,1)];
+            OpenOldFile(curr_block) = 0;
         else
 
             x2 = zeros(InitSizeArray(curr_block),npar);
