@@ -75,8 +75,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name="mexFunction")
    integer(c_int) :: retval
    integer(blint) :: m, r, p, info, lwork, nb, i, j
    real(real64) :: kalman_tol, riccati_tol, rcond, log_dF, lik
-   real(real64), dimension(:,:), contiguous, pointer :: PP, TT, Q, RR, H, Z, Y, K, K_m, iF_m
-   real(real64), dimension(:), contiguous, pointer :: a, likk, a_m
+   real(real64), dimension(:,:), contiguous, pointer :: PP, TT, Q, RR, H=>null(), Z, Y, K, K_m, iF_m
+   real(real64), dimension(:), contiguous, pointer :: a, likk, a_m, likk_m
    logical :: Zflag, steady_flag, Hflag
    real(real64), allocatable :: v(:), F(:,:), lu(:,:), QQ(:,:),          &
                                &work_rcond(:), work_inv(:), P_next(:,:), &
@@ -86,6 +86,9 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name="mexFunction")
    integer(blint), allocatable :: iwork(:), ipiv(:) 
 
    real(real64), parameter :: pi = 4._real64*DATAN(1._real64)
+
+   ! Initialization to avoid compilation warnings (-Wmaybe-uninitialized flag)
+   Zflag_mx = c_null_ptr
 
    ! Check the number of output arguments
    if (nlhs /= 2) then
@@ -174,6 +177,9 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name="mexFunction")
          call mexErrMsgTxt("Input dimension mismatch in Z")
       end if
       Z(1:p,1:m) => mxGetPr(Z_mx)
+      ! Initialization to avoid compilation warnings 
+      ! (-Wmaybe-uninitialized flag)
+      allocate (indZ(0))
    else
       if (.not. (mxIsDouble(Z_mx) .and. ((mxGetM(Z_mx) == 1) .or. &  
          &(mxGetN(Z_mx) == 1))) .or. mxIsComplex(Z_mx) .or.       &
@@ -188,6 +194,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name="mexFunction")
    end if
 
    ! H
+   Hflag = .false.
    if (nrhs > 10) then
       H_mx = prhs(11)
       if ((mxIsScalar(H_mx) .and. mxIsNumeric(H_mx))) then
@@ -201,8 +208,6 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name="mexFunction")
       else
          call mexErrMsgTxt("11th argument (H) should be a real dense matrix or a zero scalar if no measurement error is set")
       end if
-   else
-      Hflag = .false.
    end if
 
    ! diffuse_periods
@@ -239,7 +244,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name="mexFunction")
 
    allocate(v(p), F(p,p), ipiv(p), work_rcond(4*p), work_inv(lwork), iwork(p), &
            &tmp_m_m(m,m), tmp_m_r(m,r), tmp_m_p(m,p), tmp_m_m_prime(m,m), &
-           &tmp_v(p), old_K(m,p), K(m,p), a_next(m), QQ(m,m))
+           &tmp_v(p), old_K(m,p), K(m,p), a_next(m), QQ(m,m), P_next(m,m), lu(p,p))
 
    ! Compute RQR'
    ! (i) tmp <- RQ
@@ -248,6 +253,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name="mexFunction")
    call matmul_add("N", "T", 1._real64, tmp_m_r, RR, 0._real64, QQ)
 
    t = diffuse_periods+1
+   s = 0
    steady_flag = .false.
    log_dF = huge(log_dF)
    old_K = huge(0._real64)
@@ -255,7 +261,7 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name="mexFunction")
    P_iter = PP
    do 
       if ((t > nper) .or. (steady_flag)) exit
-      s = t-diffuse_periods
+      s = s+1
       ! v <- Y(:,t) - Z*a
       if (Zflag) then
          v = Y(:,t)
@@ -401,7 +407,8 @@ subroutine mexFunction(nlhs, plhs, nrhs, prhs) bind(c, name="mexFunction")
       if (retval /= 0_c_int) then
          call mexErrMsgTxt("Error calling kalman_filter_ss!")
       end if
-      likk(s+1:smpl) = mxGetPr(call_lhs(2))
+      likk_m(s+1:smpl) => mxGetPr(call_lhs(2))
+      likk(s+1:smpl) = likk_m(s+1:smpl)
    end if
 
    ! Compute minus the log-likelihood.
