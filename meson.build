@@ -1287,6 +1287,8 @@ mod_and_m_tests = [
   { 'test' : [ 'deterministic_simulations/rbc_det2.mod' ] },
   { 'test' : [ 'deterministic_simulations/rbc_det3.mod' ] },
   { 'test' : [ 'deterministic_simulations/rbc_det4.mod' ] },
+  { 'test' : [ 'deterministic_simulations/rbc_det4_endval_initval_xfail.mod' ],
+    'should_fail' : true },
   { 'test' : [ 'deterministic_simulations/rbc_det5.mod' ] },
   { 'test' : [ 'deterministic_simulations/rbc_det6.mod' ] },
   { 'test' : [ 'deterministic_simulations/homotopy.mod' ] },
