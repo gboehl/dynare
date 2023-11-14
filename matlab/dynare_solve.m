@@ -244,9 +244,6 @@ elseif ismember(options.solve_algo, [2, 4])
     end
     for i=length(r)-1:-1:1
         blocklength = r(i+1)-r(i);
-        if options.debug
-            dprintf('DYNARE_SOLVE (solve_algo=2|4): solving block %u of size %u.', i, blocklength);
-        end
         j = r(i):r(i+1)-1;
         blockcolumns=s(i+1)-s(i);
         if blockcolumns ~= blocklength

@@ -113,6 +113,12 @@ if options_.logged_steady_state %if steady state was previously logged, undo thi
 end
 [dr.ys,M_.params,check1]=evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,options_.steadystate.nocheck);
 
+if isfield(M_,'occbin')
+    if any(oo_.exo_steady_state)
+        disp('MODEL_DIAGNOSTICS: OccBin was detected in conjunction with a non-zero steady state of the exogenous variables. That will usually create issues.')
+        problem_dummy=1;
+    end
+end
 % testing for problem
 if check1(1)
     problem_dummy=1;
