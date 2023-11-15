@@ -15101,10 +15101,10 @@ Misc commands
 =============
 
 .. command:: set_dynare_seed (INTEGER)
-             set_dynare_seed (`default')
-             set_dynare_seed (`clock')
-             set_dynare_seed (`reset')
-             set_dynare_seed (`ALGORITHM', INTEGER)
+             set_dynare_seed ('default')
+             set_dynare_seed ('clock')
+             set_dynare_seed ('reset')
+             set_dynare_seed ('ALGORITHM', INTEGER)
 
     |br| Sets the seed used for random number generation. It is
     possible to set a given integer value, to use a default value, or
