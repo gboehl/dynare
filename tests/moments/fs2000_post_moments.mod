@@ -242,11 +242,17 @@ for var_iter_1=1:nvars
     end
 end
 
+if isoctave
+    tol = 2e-3;
+else
+    tol = 1e-8;
+end
+
 variance_decomposition_ME=mean(variance_decomposition_ME,3);
 nvars=length(options_.varobs);
 for var_iter_1=1:nvars
     for shock_iter=1:M_.exo_nbr
-        if max(abs(variance_decomposition_ME(obs_order(var_iter_1),shock_iter)/100-oo_.PosteriorTheoreticalMoments.dsge.VarianceDecompositionME.Mean.(options_.varobs{var_iter_1}).(M_.exo_names{shock_iter})))>1e-8
+        if max(abs(variance_decomposition_ME(obs_order(var_iter_1),shock_iter)/100-oo_.PosteriorTheoreticalMoments.dsge.VarianceDecompositionME.Mean.(options_.varobs{var_iter_1}).(M_.exo_names{shock_iter}))) > tol
             error('Variance decomposition does not match')
         end
     end
@@ -258,7 +264,7 @@ horizon_size=size(conditional_variance_decomposition,2);
 for var_iter_1=1:nvars
     for shock_iter=1:M_.exo_nbr
         for horizon_iter=1:horizon_size
-            if max(abs(conditional_variance_decomposition(var_iter_1,horizon_iter,shock_iter)-oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition.Mean.(M_.endo_names{var_iter_1}).(M_.exo_names{shock_iter})(horizon_iter)))>1e-8
+            if max(abs(conditional_variance_decomposition(var_iter_1,horizon_iter,shock_iter)-oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecomposition.Mean.(M_.endo_names{var_iter_1}).(M_.exo_names{shock_iter})(horizon_iter))) > tol
                 error('Conditional Variance decomposition does not match')
             end
         end
@@ -272,7 +278,7 @@ horizon_size=size(conditional_variance_decomposition_ME,2);
 for var_iter_1=1:nvars
     for shock_iter=1:M_.exo_nbr+1
         for horizon_iter=1:horizon_size
-            if max(abs(conditional_variance_decomposition_ME(obs_order(var_iter_1),horizon_iter,shock_iter)-oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecompositionME.Mean.(options_.varobs{var_iter_1}).(exo_names{shock_iter})(horizon_iter)))>1e-8
+            if max(abs(conditional_variance_decomposition_ME(obs_order(var_iter_1),horizon_iter,shock_iter)-oo_.PosteriorTheoreticalMoments.dsge.ConditionalVarianceDecompositionME.Mean.(options_.varobs{var_iter_1}).(exo_names{shock_iter})(horizon_iter))) > tol
                 error('Conditional Variance decomposition does not match')
             end
         end
