@@ -1189,7 +1189,10 @@ The model is declared inside a ``model`` block:
     The equations must be specified by a list of tag values, separated by
     commas. Each element of the list is either a simple quoted string, in which
     case it designates an equation by its ``name`` tag; or a tag name (without
-    quotes), followed by an equal sign, then by the tag value (within quotes).
+    quotes), followed by an equal sign, then by the tag value (within quotes);
+    or a list of tag-equals-value pairs separated by commas and enclosed
+    within brackets, in which case this element removes the equation(s) that
+    has all these tags with the corresponding values.
 
     Each removed equation must either have an ``endogenous`` tag, or have a
     left hand side containing a single endogenous variable. The corresponding
@@ -1201,7 +1204,7 @@ The model is declared inside a ``model`` block:
 
         ::
 
-         var c k dummy1 dummy2;
+         var c k dummy1 dummy2 dummy3;
 
          model;
            c + k - aa*x*k(-1)^alph - (1-delt)*k(-1) + dummy1;
@@ -1210,13 +1213,15 @@ The model is declared inside a ``model`` block:
            c*k = dummy1;
            [ foo = 'eq:dummy2' ]
            log(dummy2) = k + 2;
+           [ name = 'eq:dummy3', bar = 'baz' ]
+           dummy3 = c + 3;
          end;
 
-         model_remove('eq:dummy1', foo = 'eq:dummy2');
+         model_remove('eq:dummy1', foo = 'eq:dummy2', [ name = 'eq:dummy3', bar = 'baz' ]);
 
-        In the above example, the last two equations will be removed,
-        ``dummy1`` will be turned into an exogenous, and ``dummy2`` will be
-        removed.
+        In the above example, the last three equations will be removed,
+        ``dummy1`` will be turned into an exogenous, and ``dummy2`` and
+        ``dummy3`` will be removed.
 
 
 .. block:: model_replace (TAGS...);

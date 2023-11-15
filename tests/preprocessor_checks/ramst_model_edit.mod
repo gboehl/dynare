@@ -15,7 +15,8 @@ bet=0.05;
 aa=0.5;
 
 model;
-  c + k - aa*x*k(-1)^alph - (1-delt)*k(-1);
+  [ name = 'ressource constraint' ]
+  c + k = aa*x*k(-1)^alph;
 end;
 
 model;
@@ -23,7 +24,7 @@ model;
   dummy1 = c + 1;
   [ foo = 'eq:dummy2' ] // Since dummy2 is alone on the LHS, it is considered as the variable set by this equation
   log(dummy2) = k + 2;
-  [ name = 'eq:dummy3' ]
+  [ name = 'eq:dummy3', bar = 'baz' ]
   c(+1) = c;
 end;
 
@@ -31,8 +32,9 @@ model_options(block);
 
 model_remove('eq:dummy1', foo = 'eq:dummy2');
 
-model_replace('eq:dummy3');
-c^(-gam) - (1+bet)^(-1)*(aa*alph*x(+1)*k^(alph-1) + 1 - delt)*c(+1)^(-gam);
+model_replace('ressource constraint', [ name = 'eq:dummy3', bar = 'baz' ]);
+  c + k - aa*x*k(-1)^alph - (1-delt)*k(-1);
+  c^(-gam) - (1+bet)^(-1)*(aa*alph*x(+1)*k^(alph-1) + 1 - delt)*c(+1)^(-gam);
 end;
 
 var_remove dummy3;
