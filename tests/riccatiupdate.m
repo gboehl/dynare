@@ -1,5 +1,3 @@
-debug = true;
-
 source_dir = getenv('source_root');
 addpath([source_dir filesep 'matlab']);
 
@@ -7,10 +5,8 @@ dynare_config;
 
 testFailed = 0;
 
-if ~debug
-    skipline()
-    disp('***  TESTING: riccatiupdate.m ***');
-end
+skipline()
+disp('***  TESTING: riccatiupdate.m ***');
 
 t0 = clock;
 
@@ -57,28 +53,22 @@ try
    R = norm(Ptmp_fortran-Ptmp_matlab,1);
    if (R > tol)
       testFailed = testFailed+1;
-      if debug
-         dprintf('The Fortran Riccati update is wrong')
-      end
+      dprintf('The Fortran Riccati update is wrong')
    end
 catch
    testFailed = testFailed+1;
-   if debug
-      dprintf('Fortran Riccati update failed')
-   end
+   dprintf('Fortran Riccati update failed')
 end
 
 % Compare the Fortran and Matlab execution time
-if debug
-   if tElapsed1<tElapsed2
-      skipline()
-      dprintf('Matlab Riccati update is %5.2f times faster than its Fortran counterpart.', tElapsed2/tElapsed1)
-      skipline()
-   else
-      skipline()
-      dprintf('Fortran Riccati update is %5.2f times faster than its Matlab counterpart.', tElapsed1/tElapsed2)
-      skipline()
-   end
+if tElapsed1<tElapsed2
+    skipline()
+    dprintf('Matlab Riccati update is %5.2f times faster than its Fortran counterpart.', tElapsed2/tElapsed1)
+    skipline()
+else
+    skipline()
+    dprintf('Fortran Riccati update is %5.2f times faster than its Matlab counterpart.', tElapsed1/tElapsed2)
+    skipline()
 end
 
 % Compare results after multiple calls

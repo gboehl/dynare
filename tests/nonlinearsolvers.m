@@ -1,5 +1,3 @@
-debug = false;
-
 source_dir = getenv('source_root');
 addpath([source_dir filesep 'matlab']);
 
@@ -9,10 +7,8 @@ cd solver-test-functions
 
 testFailed = 0;
 
-if ~debug
-    skipline()
-    disp('***  TESTING: nonlinearsolvers.m ***');
-end
+skipline()
+disp('***  TESTING: nonlinearsolvers.m ***');
 
 tolf = 1e-6;
 tolx = 1e-6;
@@ -62,31 +58,23 @@ for i=1:length(objfun)
         if isequal(func2str(objfun{i}), 'powell2')
             if ~errorflag
                 testFailed = testFailed+1;
-                if debug
-                    dprintf('Nonlinear solver is expected to fail on %s function but did not return an error.', func2str(objfun{i}))
-                end
+                dprintf('Nonlinear solver is expected to fail on %s function but did not return an error.', func2str(objfun{i}))
             end
         elseif isequal(func2str(objfun{i}), 'trigonometric')
             % FIXME block_trust_region (mex) fails, with exit code equal to 4, but not trust_region (matlab). Would be nice to undertsand the difference. 
             if ~errorflag
                 testFailed = testFailed+1;
-                if debug
-                    dprintf('Nonlinear solver is expected to fail on %s function but did not return an error.', func2str(objfun{i}))
-                end
+                dprintf('Nonlinear solver is expected to fail on %s function but did not return an error.', func2str(objfun{i}))
             end
         else
             if errorflag || norm(objfun{i}(x))>tolf
                 testFailed = testFailed+1;
-                if debug
-                    dprintf('Nonlinear solver (mex) failed on %s function (norm(f(x))=%s).', func2str(objfun{i}), num2str(norm(objfun{i}(x))))
-                end
+                dprintf('Nonlinear solver (mex) failed on %s function (norm(f(x))=%s).', func2str(objfun{i}), num2str(norm(objfun{i}(x))))
             end
         end
     catch
         testFailed = testFailed+1;
-        if debug
-            dprintf('Nonlinear solver (mex) failed on %s function.', func2str(objfun{i}))
-        end
+        dprintf('Nonlinear solver (mex) failed on %s function.', func2str(objfun{i}))
     end
 end
 
@@ -111,29 +99,21 @@ for i=1:length(objfun)
         if isequal(func2str(objfun{i}), 'powell2')
             if ~errorflag
                 testFailed = testFailed+1;
-                if debug
-                    dprintf('Nonlinear solver is expected to fail on %s function but did not return an error.', func2str(objfun{i}))
-                end
+                dprintf('Nonlinear solver is expected to fail on %s function but did not return an error.', func2str(objfun{i}))
             end
             if info~=3
                 testFailed = testFailed+1;
-                if debug
-                    dprintf('Nonlinear solver is expected to fail on %s function with info==3 but did not the correct value of info.', func2str(objfun{i}))
-                end
+                dprintf('Nonlinear solver is expected to fail on %s function with info==3 but did not the correct value of info.', func2str(objfun{i}))
             end
         else
             if errorflag
                 testFailed = testFailed+1;
-                if debug
-                    dprintf('Nonlinear solver failed on %s function (info=%s).', func2str(objfun{i}), int2str(info))
-                end
+                dprintf('Nonlinear solver failed on %s function (info=%s).', func2str(objfun{i}), int2str(info))
             end
         end
     catch
         testFailed = testFailed+1;
-        if debug
-            dprintf('Nonlinear solver failed on %s function.', func2str(objfun{i}))
-        end
+        dprintf('Nonlinear solver failed on %s function.', func2str(objfun{i}))
     end
 end
 

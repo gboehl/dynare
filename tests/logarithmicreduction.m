@@ -1,5 +1,3 @@
-debug = false;
-
 source_dir = getenv('source_root');
 addpath([source_dir filesep 'matlab']);
 
@@ -7,10 +5,8 @@ dynare_config;
 
 testFailed = 0;
 
-if ~debug
-    skipline()
-    disp('***  TESTING: logarithmicreduction.m ***');
-end
+skipline()
+disp('***  TESTING: logarithmicreduction.m ***');
 
 matlab_cr_path = [source_dir filesep 'matlab' filesep 'missing' filesep 'mex' filesep 'logarithmic_reduction'];
 addpath(matlab_cr_path);
@@ -37,15 +33,11 @@ try
    R = norm(C+B*X1+A*X1*X1,1);
    if (R > cvg_tol)
       testFailed = testFailed+1;
-      if debug
-         dprintf('Matlab logarithmic_reduction solution is wrong')
-      end
+      dprintf('Matlab logarithmic_reduction solution is wrong')
    end
 catch
    testFailed = testFailed+1;
-   if debug
-      dprintf('Matlab logarithmic_reduction failed')
-   end
+   dprintf('Matlab logarithmic_reduction failed')
 end
 
 % 2. Solve the equation with the Fortran logarithmic reduction algorithm
@@ -56,36 +48,28 @@ try
    R = norm(C+B*X2+A*X2*X2,1);
    if (R > cvg_tol)
       testFailed = testFailed+1;
-      if debug
-         dprintf('Fortran logarithmic_reduction solution is wrong')
-      end
+      dprintf('Fortran logarithmic_reduction solution is wrong')
    end
 catch
    testFailed = testFailed+1;
-   if debug
-      dprintf('Fortran logarithmic_reduction failed')
-   end
+   dprintf('Fortran logarithmic_reduction failed')
 end
 
 % 3. Compare solutions of the Fortran and Matlab routines
 if (norm(X1 - X2, 1) > cvg_tol)
    testFailed = testFailed+1;
-   if debug
-      dprintf('Fortran and Matlab logarithmic reduction solutions differ');
-   end
+   dprintf('Fortran and Matlab logarithmic reduction solutions differ');
 end
 
 % Compare the Fortran and Matlab execution time
-if debug
-   if tElapsed1<tElapsed2
-      skipline()
-      dprintf('Matlab logarithmic reduction is %5.2f times faster than its Fortran counterpart.', tElapsed2/tElapsed1)
-      skipline()
-   else
-      skipline()
-      dprintf('Fortran logarithmic reduction is %5.2f times faster than its Matlab counterpart.', tElapsed1/tElapsed2)
-      skipline()
-   end
+if tElapsed1<tElapsed2
+    skipline()
+    dprintf('Matlab logarithmic reduction is %5.2f times faster than its Fortran counterpart.', tElapsed2/tElapsed1)
+    skipline()
+else
+    skipline()
+    dprintf('Fortran logarithmic reduction is %5.2f times faster than its Matlab counterpart.', tElapsed1/tElapsed2)
+    skipline()
 end
 
 t1 = clock;
