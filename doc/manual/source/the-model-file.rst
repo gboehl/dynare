@@ -14354,13 +14354,13 @@ Macro expressions
 Macro-expressions can be used in two places:
 
     * Inside macro directives, directly;
-    * In the body of the ``.mod`` file, between an at-sign and curly
+    * In the body of the ``.mod`` file, between an @-sign and curly
       braces (like ``@{expr}``): the macro processor will substitute
       the expression with its value
 
 It is possible to construct macro-expressions that can be assigned to
 macro-variables or used within a macro-directive. The expressions are
-constructed using literals of the basic types (boolean, real, string, tuple,
+constructed using literals (*i.e.*\ fixed values) of the basic types (boolean, real, string, tuple,
 array), comprehensions, macro-variables, macro-functions, and standard
 operators.
 
@@ -14409,7 +14409,7 @@ The following operators can be used on strings:
 
 .. rubric:: Tuple
 
-Tuples are enclosed by parenthesis and elements separated by commas (like
+Tuples are enclosed by parentheses and elements are separated by commas (like
 ``(a,b,c)`` or ``(1,2,3)``).
 
 The following operators can be used on tuples:
@@ -14503,7 +14503,8 @@ every selected element of an array.
 .. rubric:: Function
 
 Functions can be defined in the macro processor using the ``@#define``
-directive (see below). A function is evaluated at the time it is invoked, not
+directive (see below). A function is evaluated at the time it is invoked during 
+the macroprocessing stage, not
 at define time. Functions can be included in expressions and the operators that
 can be combined with them depend on their return type.
 
@@ -14663,10 +14664,10 @@ Macro directives
     |br| Conditional inclusion of some part of the ``.mod`` file. The lines
     between ``@#if``, ``@#ifdef``, or ``@#ifndef`` and the next ``@#elseif``,
     ``@#else`` or ``@#endif`` is executed only if the condition evaluates to
-    ``true``. Following the ``@#if`` body, you can zero or more ``@#elseif``
-    branches. An ``@#elseif`` condition is only evaluated if the preceding
-    ``@#if`` or ``@#elseif`` condition evaluated to ``false``. The ``@#else``
-    branch is optional and is only evaluated if all ``@#if`` and ``@#elseif``
+    ``true``. Following the ``@#if`` body, zero or more ``@#elseif``
+    branches are allowed. An ``@#elseif`` condition is only evaluated if the preceding
+    ``@#if`` or ``@#elseif`` condition(s) evaluated to ``false``. The ``@#else``
+    branch is optional and only evaluated if all ``@#if`` and ``@#elseif``
     statements evaluate to false.
 
     Note that when using ``@#ifdef``, the condition will evaluate to ``true``
@@ -14685,7 +14686,7 @@ Macro directives
     imprecision of reals, extra care must be taken when testing them in the
     MACRO_EXPRESSION. For example, ``exp(log(5)) == 5`` will evaluate to
     ``false``. Hence, when comparing real values, you should generally use a
-    zero tolerance around the value desired, e.g. ``exp(log(5)) > 5-1e-14 &&
+    non-zero tolerance around the value desired, e.g. ``exp(log(5)) > 5-1e-14 &&
     exp(log(5)) < 5+1e-14``
 
     *Example*
@@ -14716,10 +14717,7 @@ Macro directives
 
         Choose between two alternative monetary policy rules using a
         macro-variable. The only difference between this example and the
-        previous one is the use of ``@#ifdef`` instead of ``@#if``. Even though
-        ``linear_mon_pol`` contains the value ``false`` because ``@#ifdef`` only
-        checks that the variable has been defined, the linear monetary policy
-        is output::
+        previous one is the use of ``@#ifdef`` instead of ``@#if``. 
 
             @#define linear_mon_pol = false // 0 would be treated the same
             ...
@@ -14732,7 +14730,9 @@ Macro directives
             ...
             end;
 
-        This would result in::
+        Although ``linear_mon_pol`` contains the value ``false`` because ``@#ifdef`` only
+        checks that the variable has been defined, the linear monetary policy
+        is output::This would result in::
 
             ...
             model;
@@ -14749,8 +14749,8 @@ Macro directives
               @#endfor
 
     |br| Loop construction for replicating portions of the ``.mod``
-    file. Note that this construct can enclose variable/parameters
-    declaration, computational tasks, but not a model declaration.
+    file. Note that this construct can enclose variable/parameter
+    declarations, computational tasks, but not a model declaration.
 
     *Example*
 
@@ -14871,11 +14871,11 @@ Example setup:
     Includes ``modeldesc.mod``, declares priors on parameters, and runs
     Bayesian estimation.
 
-Dynare can be called on ``simul.mod`` and ``estim.mod`` but it makes
+Dynare can be called on ``simul.mod`` and ``estim.mod``, but it makes
 no sense to run it on ``modeldesc.mod``.
 
-The main advantage is that you don't have to copy/paste the whole model (at the
-beginning) or changes to the model (during development).
+The main advantage is that you don't have to copy/paste the whole model (during initial development) 
+or changes to the model (during development).
 
 
 Indexed sums of products
@@ -14917,7 +14917,7 @@ After macro processing, this is equivalent to::
 Multi-country models
 ^^^^^^^^^^^^^^^^^^^^
 
-Here is a skeleton example for a multi-country model::
+Here is a bare bones example for a multi-country model::
 
     @#define countries = [ "US", "EA", "AS", "JP", "RC" ]
     @#define nth_co = "US"
@@ -14944,33 +14944,33 @@ Here is a skeleton example for a multi-country model::
 Endogeneizing parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-When calibrating the model, it may be useful to consider a parameter as an
-endogenous variable (and vice-versa).
+When calibrating the model, it may be useful to pin down parameters by targeting endogenous objects.
 
 For example, suppose production is defined by a CES function:
 
     .. math::
 
-           y = \left(\alpha^{1/\xi} \ell^{1-1/\xi}+(1-\alpha)^{1/\xi}k^{1-1/\xi}\right)^{\xi/(\xi-1)}
+           y_t = \left(\alpha^{1/\xi} \ell_t^{1-1/\xi}+(1-\alpha)^{1/\xi}k_t^{1-1/\xi}\right)^{\xi/(\xi-1)}
 
 and the labor share in GDP is defined as:
 
     .. math::
 
-        \textrm{lab\_rat} = (w \ell)/(p y)
+        \textrm{lab\_rat}_t = (w_t \ell_t)/(p_t y_t)
 
-In the model, :math:`\alpha` is a (share) parameter and ``lab_rat`` is an
+In the model, :math:`\alpha` is a (share) parameter and :math:`lab\_rat_t` is an
 endogenous variable.
 
-It is clear that calibrating :math:`\alpha` is not straightforward;
-on the contrary, we have real world data for ``lab_rat`` and it
-is clear that these two variables are economically linked.
+It is clear that setting a value for :math:`\alpha` is not straightforward. But 
+we have real world data for :math:`lab\_rat_t` and it
+is clear that these two objects are economically linked.
 
 The solution is to use a method called *variable flipping*, which
 consists in changing the way of computing the steady state. During
 this computation, :math:`\alpha` will be made an endogenous variable
-and ``lab_rat`` will be made a parameter. An economically relevant
-value will be calibrated for ``lab_rat``, and the solution algorithm
+and the steady state value :math:`lab\_rat` of the dynamic variable :math:`lab\_rat_t`
+will be made a parameter. An economically sensible
+value will be calibrated for :math:`lab\_rat`, and the solution algorithm
 will deduce the implied value for :math:`\alpha`.
 
 An implementation could consist of the following files:
@@ -14989,7 +14989,7 @@ An implementation could consist of the following files:
           var lab_rat;
         @#endif
 
-``steady.mod``
+``steadystate.mod``
 
     This file computes the steady state. It begins with::
 
@@ -14999,17 +14999,17 @@ An implementation could consist of the following files:
     Then it initializes parameters (including ``lab_rat``, excluding
     :math:`\alpha`), computes the steady state (using guess values for
     endogenous, including :math:`\alpha`), then saves values of
-    parameters and endogenous at steady state in a file, using the
+    parameters and variables at steady state in a file, using the
     ``save_params_and_steady_state`` command.
 
-``simul.mod``
+``simulate.mod``
 
     This file computes the simulation. It begins with::
 
         @#define steady = 0
         @#include "modeqs.mod"
 
-    Then it loads values of parameters and endogenous at steady state
+    Then it loads values of parameters and variables at steady state
     from file, using the ``load_params_and_steady_state`` command, and
     computes the simulations.
 
@@ -15027,12 +15027,17 @@ to run simulations for three values: :math:`\rho = 0.8, 0.9,
 
         rhos = [ 0.8, 0.9, 1];
         for i = 1:length(rhos)
-          rho = rhos(i);
+          set_param_value('rho',rhos(i));
           stoch_simul(order=1);
+          if info(1)~=0
+            error('Simulation failed for parameter draw')
+          end
         end
 
     Here the loop is not unrolled, MATLAB/Octave manages the
-    iterations. This is interesting when there are a lot of iterations.
+    iterations. This is interesting when there are a lot of iterations. 
+    It is strongly advised to always check whether the error flag ``info(1)==0``
+    to prevent erroneously relying on stale results from previous iterations.
 
 *With a macro processor loop (case 1)*
 
@@ -15040,8 +15045,11 @@ to run simulations for three values: :math:`\rho = 0.8, 0.9,
 
         rhos = [ 0.8, 0.9, 1];
         @#for i in 1:3
-          rho = rhos(@{i});
+          set_param_value('rho',rhos(@{i}));
           stoch_simul(order=1);
+          if info(1)~=0
+            error('Simulation failed for parameter draw')
+          end
         @#endfor
 
     This is very similar to the previous example, except that the loop
@@ -15055,6 +15063,9 @@ to run simulations for three values: :math:`\rho = 0.8, 0.9,
         @#for rho_val in [ 0.8, 0.9, 1]
           rho = @{rho_val};
           stoch_simul(order=1);
+          if info(1)~=0
+            error('Simulation failed for parameter draw')
+          end
         @#endfor
 
     The advantage of this method is that it uses a shorter syntax, since the list
@@ -15095,10 +15106,10 @@ Misc commands
 =============
 
 .. command:: set_dynare_seed (INTEGER)
-             set_dynare_seed (`default')
-             set_dynare_seed (`clock')
-             set_dynare_seed (`reset')
-             set_dynare_seed (`ALGORITHM', INTEGER)
+             set_dynare_seed ('default')
+             set_dynare_seed ('clock')
+             set_dynare_seed ('reset')
+             set_dynare_seed ('ALGORITHM', INTEGER)
 
     |br| Sets the seed used for random number generation. It is
     possible to set a given integer value, to use a default value, or

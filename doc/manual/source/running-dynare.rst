@@ -554,7 +554,7 @@ by the ``dynare`` command.
     executing the ``dynare`` command will leave variables containing
     results in the workspace available for further processing. More
     details are given under the relevant computing tasks. The
-    ``M_``,``oo_``, and ``options_`` structures are saved in a file
+    ``M_``, ``oo_``, and ``options_`` structures are saved in a file
     called ``FILENAME_results.mat`` located in the ``MODFILENAME/Output`` folder.
     If they exist, ``estim_params_``,
     ``bayestopt_``, ``dataset_``, ``oo_recursive_`` and
