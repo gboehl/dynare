@@ -31,4 +31,5 @@
 build-doc
 
 # Emacs stuff
+TAGS
 scripts/dynare.elc

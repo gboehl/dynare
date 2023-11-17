@@ -1825,3 +1825,23 @@ foreach t : mod_and_m_tests
   test(test_name, test_driver_exe, args : test_driver_args, suite : test_suite,
        should_fail : t.get('should_fail', false), timeout : 0)
 endforeach
+
+
+### Developper stuff
+
+## Tag file for Emacs (created in *source* directory)
+
+git_exe = find_program('git', required : false)
+etags_exe = find_program('etags', required : false)
+
+if git_exe.found() and etags_exe.found()
+  all_files = run_command(git_exe,
+                          [ '--git-dir=@0@/.git'.format(meson.project_source_root()),
+                            'ls-files', '--recurse-submodules',
+                            ':/*.cc', ':/*.hh', ':/*.[fF]08', ':/*.[ch]' ],
+                          check : true)
+  all_files = files(all_files.stdout().split())
+
+  custom_target('tags', output : 'tags', # Dummy output argument to make Meson happy
+                command : [etags_exe, '-o', '@0@/TAGS'.format(meson.project_source_root())] + all_files)
+endif
