@@ -1,15 +1,10 @@
 # TODO:
-# - alias_target for MEX files; use it in {windows,macOS}/build.sh
 # - find a way to set GSL_BLAS_LIB to an empty value when querying pkg-config
 #   for gsl; otherwise there is a risk of overriding OpenBLAS/MKL (though
 #   probably not in our current setup); the pkgconfig_define option of
 #   dep.get_variable() is unfortunately not helpful
 #   Close to https://github.com/mesonbuild/meson/issues/3606
-# - add the possibility to customize the integration test names (with a new optional 'name' keyword in the dictionaries)
-# - Add an option to skip the removal of the temporary test directories, for debugging purposes
 # - See what to do with xvfb-run (see #1892). Maybe try to detect it from meson.build, and pass it optionally to the test driver script
-# - Add priorities to have some tests run before the others (e.g. obs_trend_and_prefilter stuff)
-# - Decide whether we want to keep MALLOC_PERTURB_ for the testsuite; it can have a significant performance impact; see the doc of test() for how to do so
 
 project('dynare',
         'cpp', 'fortran', 'c',
