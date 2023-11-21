@@ -31,7 +31,7 @@ function [DirectoryName, info] = CheckPath(type,dname)
 
 info = 0;
 
-DirectoryName = [ dname filesep type ];
+DirectoryName = [ dname '/' type ]; % don't use filesep as it will create issues with LaTeX on Windows
 
 if ~isdir(dname)
     % Make sure there isn't a file with the same name, see trac ticket #47
