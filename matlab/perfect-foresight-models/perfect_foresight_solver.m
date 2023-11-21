@@ -150,6 +150,12 @@ if completed_share == 1
     end
     oo_.deterministic_simulation.status = true;
 elseif options_.simul.homotopy_linearization_fallback && completed_share > 0
+    oo_.deterministic_simulation.sim1.endo_simul = endo_simul;
+    oo_.deterministic_simulation.sim1.exo_simul = exo_simul;
+    oo_.deterministic_simulation.sim1.steady_state = steady_state;
+    oo_.deterministic_simulation.sim1.exo_steady_state = exo_steady_state;
+    oo_.deterministic_simulation.sim1.homotopy_completion_share = completed_share;
+
     oo_.endo_simul = endobase + (endo_simul - endobase)/completed_share;
     if options_.simul.endval_steady
         % The following is needed for the STEADY_STATE() operator to work properly,
@@ -167,6 +173,12 @@ elseif options_.simul.homotopy_linearization_fallback && completed_share > 0
     oo_.deterministic_simulation.status = true;
     oo_.deterministic_simulation.homotopy_linearization = true;
 elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && completed_share > options_.simul.homotopy_marginal_linearization_fallback
+    oo_.deterministic_simulation.sim1.endo_simul = endo_simul;
+    oo_.deterministic_simulation.sim1.exo_simul = exo_simul;
+    oo_.deterministic_simulation.sim1.steady_state = steady_state;
+    oo_.deterministic_simulation.sim1.exo_steady_state = exo_steady_state;
+    oo_.deterministic_simulation.sim1.homotopy_completion_share = completed_share;
+
     % Now compute extra simulation. First try using the first simulation as guess value.
     extra_share = completed_share - options_.simul.homotopy_marginal_linearization_fallback;
     if ~options_.noprint
@@ -183,11 +195,17 @@ elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && completed_
             fprintf('The extra simulation for %.1f%% of the shock did not run when using the first simulation as a guess value. Now trying a full homotopy loop to get that extra simulation working\n\n', extra_share*100)
             fprintf('%s\n\n', repmat('*', 1, 80))
         end
-        [extra_completed_share, extra_endo_simul] = homotopy_loop(extra_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.steady_state, oo_.exo_steady_state);
+        [extra_completed_share, extra_endo_simul, extra_exo_simul, extra_steady_state, extra_exo_steady_state] = homotopy_loop(extra_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.steady_state, oo_.exo_steady_state);
         extra_success = (extra_completed_share == extra_share);
     end
     extra_simul_time_elapsed = toc(extra_simul_time_counter);
     if extra_success
+        oo_.deterministic_simulation.sim2.endo_simul = extra_endo_simul;
+        oo_.deterministic_simulation.sim2.exo_simul = extra_exo_simul;
+        oo_.deterministic_simulation.sim2.steady_state = extra_steady_state;
+        oo_.deterministic_simulation.sim2.exo_steady_state = extra_exo_steady_state;
+        oo_.deterministic_simulation.sim2.homotopy_completion_share = extra_share;
+
         oo_.endo_simul = endo_simul + (endo_simul - extra_endo_simul)*(1-completed_share)/options_.simul.homotopy_marginal_linearization_fallback;
         if options_.simul.endval_steady
             % The following is needed for the STEADY_STATE() operator to work properly,
