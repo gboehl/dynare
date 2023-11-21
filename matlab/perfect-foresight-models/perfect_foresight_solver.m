@@ -135,7 +135,7 @@ exoorig = oo_.exo_simul;
 endoorig = oo_.endo_simul;
 
 % Perform the homotopy loop
-[completed_share, endo_simul, exo_simul, steady_state, exo_steady_state, iteration, maxerror, solver_iter, per_block_status] = homotopy_loop(options_.simul.homotopy_max_completion_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.endo_simul, oo_.steady_state, oo_.exo_steady_state);
+[completed_share, endo_simul, exo_simul, steady_state, exo_steady_state, iteration, maxerror, solver_iter, per_block_status] = homotopy_loop(options_.simul.homotopy_max_completion_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.steady_state, oo_.exo_steady_state);
 
 % Do linearization if needed and requested, and put results and solver status information in oo_
 if completed_share == 1
@@ -183,7 +183,7 @@ elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && completed_
             fprintf('The extra simulation for %.1f%% of the shock did not run when using the first simulation as a guess value. Now trying a full homotopy loop to get that extra simulation working\n\n', extra_share*100)
             fprintf('%s\n\n', repmat('*', 1, 80))
         end
-        [extra_completed_share, extra_endo_simul] = homotopy_loop(extra_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.endo_simul, oo_.steady_state, oo_.exo_steady_state);
+        [extra_completed_share, extra_endo_simul] = homotopy_loop(extra_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.steady_state, oo_.exo_steady_state);
         extra_success = (extra_completed_share == extra_share);
     end
     extra_simul_time_elapsed = toc(extra_simul_time_counter);
@@ -254,10 +254,11 @@ assignin('base', 'Simulated_time_series', ts);
 oo_.gui.ran_perfect_foresight = oo_.deterministic_simulation.status;
 
 
-function [completed_share, endo_simul, exo_simul, steady_state, exo_steady_state, iteration, maxerror, solver_iter, per_block_status] = homotopy_loop(max_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, endo_simul, steady_state, exo_steady_state)
+function [completed_share, endo_simul, exo_simul, steady_state, exo_steady_state, iteration, maxerror, solver_iter, per_block_status] = homotopy_loop(max_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, steady_state, exo_steady_state)
 % INPUTS
 %   share            [double]    the share of the shock that we want to simulate
 %   simperiods       [vector]    period indices of simulation periods (between initial and terminal conditions)
+%   endoorig         [matrix]    path of endogenous corresponding to 100% of the shock (also possibly used as guess value for first iteration if relevant)
 %   …                            other inputs have the same meaning as in the create_scenario function
 %
 % OUTPUTS
@@ -277,6 +278,8 @@ completed_share = 0;  % Share of shock successfully completed so far
 step = min(options_.simul.homotopy_initial_step_size, max_share);
 success_counter = 0;
 iteration = 0;
+
+endo_simul = endoorig;
 
 while step > options_.simul.homotopy_min_step_size
 
@@ -303,7 +306,7 @@ while step > options_.simul.homotopy_min_step_size
         % scenario / initial steady state).
         if completed_share == 0
             if iteration == 1 && new_share == 1
-                endo_simul(:, simperiods) = endoorig(:, simperiods);
+                % Nothing to do, at this point endo_simul(:, simperiods) == endoorig(:, simperiods)
             elseif M_.maximum_lead > 0
                 endo_simul(:, simperiods) = repmat(endo_simul(:, lastperiods(1)), 1, options_.periods);
             else
