@@ -1,5 +1,5 @@
 /* Example that triggers homotopy in perfect foresight simulation with
-   expectation errors. */
+   expectation errors, and tests linearization. */
 
 var Consumption, Capital, LoggedProductivity;
 

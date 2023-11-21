@@ -1,10 +1,15 @@
-function perfect_foresight_solver(no_error_if_learnt_in_is_present)
+function perfect_foresight_solver(no_error_if_learnt_in_is_present, marginal_linearization_previous_raw_sims)
 % Computes deterministic simulations
 %
 % INPUTS
 %   no_error_if_learnt_in_is_present [boolean, optional]
 %       if true, then do not error out if a shocks(learnt_in=…) or endval(learnt_in=…)
 %       block is present
+%   marginal_linearization_previous_raw_sims [struct, optional]
+%       if not empty, contains the two simulations used to compute the extrapolation by marginal
+%       linearization in a previous informational period, in the context of
+%       perfect_foresight_with_expectation_errors in combination with homotopy and marginal
+%       linearization
 %
 % OUTPUTS
 %   none
@@ -35,8 +40,11 @@ global M_ options_ oo_
 
 check_input_arguments(options_, M_, oo_);
 
-if nargin == 0
+if nargin < 1
     no_error_if_learnt_in_is_present = false;
+end
+if nargin < 2
+    marginal_linearization_previous_raw_sims = [];
 end
 if (~isempty(M_.learnt_shocks) || ~isempty(M_.learnt_endval)) && ~no_error_if_learnt_in_is_present
     error('A shocks(learnt_in=...) or endval(learnt_in=...) block is present. You want to call perfect_foresight_with_expectations_error_setup and perfect_foresight_with_expectations_error_solver.')
@@ -130,12 +138,17 @@ else
     recompute_final_steady_state = false;
 end
 
-% Copy the paths for the exogenous and endogenous variables, as given by perfect_foresight_setup
-exoorig = oo_.exo_simul;
-endoorig = oo_.endo_simul;
-
 % Perform the homotopy loop
-[completed_share, endo_simul, exo_simul, steady_state, exo_steady_state, iteration, maxerror, solver_iter, per_block_status] = homotopy_loop(options_.simul.homotopy_max_completion_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.steady_state, oo_.exo_steady_state);
+if isempty(marginal_linearization_previous_raw_sims)
+    shareorig = 1;
+    endoorig = oo_.endo_simul;
+    exoorig = oo_.exo_simul;
+else
+    shareorig = marginal_linearization_previous_raw_sims.sim1.homotopy_completion_share;
+    endoorig = marginal_linearization_previous_raw_sims.sim1.endo_simul;
+    exoorig = marginal_linearization_previous_raw_sims.sim1.exo_simul;
+end
+[completed_share, endo_simul, exo_simul, steady_state, exo_steady_state, iteration, maxerror, solver_iter, per_block_status] = homotopy_loop(options_.simul.homotopy_max_completion_share, shareorig, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.steady_state, oo_.exo_steady_state);
 
 % Do linearization if needed and requested, and put results and solver status information in oo_
 if completed_share == 1
@@ -180,13 +193,22 @@ elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && completed_
     oo_.deterministic_simulation.sim1.homotopy_completion_share = completed_share;
 
     % Now compute extra simulation. First try using the first simulation as guess value.
+    if isempty(marginal_linearization_previous_raw_sims)
+        shareorig = 1;
+        endoorig = oo_.endo_simul;
+        exoorig = oo_.exo_simul;
+    else
+        shareorig = marginal_linearization_previous_raw_sims.sim2.homotopy_completion_share;
+        endoorig = marginal_linearization_previous_raw_sims.sim2.endo_simul;
+        exoorig = marginal_linearization_previous_raw_sims.sim2.exo_simul;
+    end
     extra_share = completed_share - options_.simul.homotopy_marginal_linearization_fallback;
     if ~options_.noprint
         fprintf('Only %.1f%% of the shock could be simulated. Since marginal linearization was requested as a fallback, now running an extra simulation for %.1f%% of the shock\n\n', completed_share*100, extra_share*100)
         fprintf('%s\n\n', repmat('*', 1, 80))
     end
     extra_simul_time_counter = tic;
-    [extra_success, extra_endo_simul, extra_exo_simul, extra_steady_state, extra_exo_steady_state] = create_scenario(extra_share, endoorig, exoorig, endobase, exobase, initperiods, lastperiods, recompute_final_steady_state, endo_simul, steady_state, exo_steady_state);
+    [extra_success, extra_endo_simul, extra_exo_simul, extra_steady_state, extra_exo_steady_state] = create_scenario(extra_share, shareorig, endoorig, exoorig, endobase, exobase, initperiods, lastperiods, recompute_final_steady_state, endo_simul, steady_state, exo_steady_state);
     if extra_success
         [extra_endo_simul, extra_success] = perfect_foresight_solver_core(extra_endo_simul, extra_exo_simul, extra_steady_state, extra_exo_steady_state, M_, options_);
     end
@@ -195,7 +217,7 @@ elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && completed_
             fprintf('The extra simulation for %.1f%% of the shock did not run when using the first simulation as a guess value. Now trying a full homotopy loop to get that extra simulation working\n\n', extra_share*100)
             fprintf('%s\n\n', repmat('*', 1, 80))
         end
-        [extra_completed_share, extra_endo_simul, extra_exo_simul, extra_steady_state, extra_exo_steady_state] = homotopy_loop(extra_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.steady_state, oo_.exo_steady_state);
+        [extra_completed_share, extra_endo_simul, extra_exo_simul, extra_steady_state, extra_exo_steady_state] = homotopy_loop(extra_share, shareorig, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.steady_state, oo_.exo_steady_state);
         extra_success = (extra_completed_share == extra_share);
     end
     extra_simul_time_elapsed = toc(extra_simul_time_counter);
@@ -272,7 +294,7 @@ assignin('base', 'Simulated_time_series', ts);
 oo_.gui.ran_perfect_foresight = oo_.deterministic_simulation.status;
 
 
-function [completed_share, endo_simul, exo_simul, steady_state, exo_steady_state, iteration, maxerror, solver_iter, per_block_status] = homotopy_loop(max_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, steady_state, exo_steady_state)
+function [completed_share, endo_simul, exo_simul, steady_state, exo_steady_state, iteration, maxerror, solver_iter, per_block_status] = homotopy_loop(max_share, shareorig, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, steady_state, exo_steady_state)
 % INPUTS
 %   share            [double]    the share of the shock that we want to simulate
 %   simperiods       [vector]    period indices of simulation periods (between initial and terminal conditions)
@@ -314,16 +336,16 @@ while step > options_.simul.homotopy_min_step_size
 
     iter_time_counter = tic;
 
-    [steady_success, endo_simul, exo_simul, steady_state, exo_steady_state] = create_scenario(new_share, endoorig, exoorig, endobase, exobase, initperiods, lastperiods, recompute_final_steady_state, endo_simul, steady_state, exo_steady_state);
+    [steady_success, endo_simul, exo_simul, steady_state, exo_steady_state] = create_scenario(new_share, shareorig, endoorig, exoorig, endobase, exobase, initperiods, lastperiods, recompute_final_steady_state, endo_simul, steady_state, exo_steady_state);
 
     if steady_success
         % At the first iteration, use the initial guess given by
-        % perfect_foresight_setup or the user (but only if new_share=1, otherwise it
+        % perfect_foresight_setup or the user (but only if new_share==shareorig, otherwise it
         % does not make much sense). Afterwards, until a converging iteration has been obtained,
         % use the rescaled terminal condition (or, if there is no lead, the base
         % scenario / initial steady state).
         if completed_share == 0
-            if iteration == 1 && new_share == 1
+            if iteration == 1 && new_share == shareorig
                 % Nothing to do, at this point endo_simul(:, simperiods) == endoorig(:, simperiods)
             elseif M_.maximum_lead > 0
                 endo_simul(:, simperiods) = repmat(endo_simul(:, lastperiods(1)), 1, options_.periods);
@@ -409,15 +431,16 @@ end
 fprintf('\n')
 
 
-function [steady_success, endo_simul, exo_simul, steady_state, exo_steady_state] = create_scenario(share, endoorig, exoorig, endobase, exobase, initperiods, lastperiods, recompute_final_steady_state, endo_simul, steady_state, exo_steady_state)
+function [steady_success, endo_simul, exo_simul, steady_state, exo_steady_state] = create_scenario(share, shareorig, endoorig, exoorig, endobase, exobase, initperiods, lastperiods, recompute_final_steady_state, endo_simul, steady_state, exo_steady_state)
 % For a given share, comutes the exogenous path and also the initial and
 % terminal conditions for the endogenous path (but do not modify the initial
 % guess for endogenous)
 %
 % INPUTS
 %   share            [double]    the share of the shock that we want to simulate
-%   endoorig         [matrix]    path of endogenous corresponding to 100% of the shock (only initial and terminal conditions are used)
-%   exoorig          [matrix]    path of exogenous corresponding to 100% of the shock
+%   shareorig        [double]    the share to which endoorig and exoorig correspond (typically 100%, except for perfect_foresight_with_expectation_errors_solver with homotopy and marginal linearization)
+%   endoorig         [matrix]    path of endogenous corresponding to shareorig of the shock (only initial and terminal conditions are used)
+%   exoorig          [matrix]    path of exogenous corresponding to shareorig of the shock
 %   endobase         [matrix]    path of endogenous corresponding to 0% of the shock (only initial and terminal conditions are used)
 %   exobase          [matrix]    path of exogenous corresponding to 0% of the shock
 %   initperiods      [vector]    period indices of initial conditions
@@ -437,12 +460,12 @@ function [steady_success, endo_simul, exo_simul, steady_state, exo_steady_state]
 global M_ options_ oo_
 
 % Compute convex combination for the path of exogenous
-exo_simul = exoorig*share + exobase*(1-share);
+exo_simul = exoorig*share/shareorig + exobase*(1-share);
 
 % Compute convex combination for the initial condition
 % In most cases, the initial condition is a steady state and this does nothing
 % This is for cases when the initial condition is out of equilibrium
-endo_simul(:, initperiods) = share*endoorig(:, initperiods)+(1-share)*endobase(:, initperiods);
+endo_simul(:, initperiods) = share/shareorig*endoorig(:, initperiods)+(1-share)*endobase(:, initperiods);
 
 % If there is a permanent shock, ensure that the rescaled terminal condition is
 % a steady state (if the user asked for this recomputation, or if the original
@@ -495,7 +518,7 @@ if recompute_final_steady_state
     options_.markowitz = saved_steady_markowitz;
 else
     % The terminal condition is not a steady state, compute a convex combination
-    endo_simul(:, lastperiods) = share*endoorig(:, lastperiods)+(1-share)*endobase(:, lastperiods);
+    endo_simul(:, lastperiods) = share/shareorig*endoorig(:, lastperiods)+(1-share)*endobase(:, lastperiods);
 end
 
 
