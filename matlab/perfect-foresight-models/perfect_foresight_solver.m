@@ -255,6 +255,21 @@ oo_.gui.ran_perfect_foresight = oo_.deterministic_simulation.status;
 
 
 function [completed_share, endo_simul, exo_simul, steady_state, exo_steady_state, iteration, maxerror, solver_iter, per_block_status] = homotopy_loop(max_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, endo_simul, steady_state, exo_steady_state)
+% INPUTS
+%   share            [double]    the share of the shock that we want to simulate
+%   simperiods       [vector]    period indices of simulation periods (between initial and terminal conditions)
+%   …                            other inputs have the same meaning as in the create_scenario function
+%
+% OUTPUTS
+%   completed_share  [double]    the share that has been successfully computed
+%   endo_simul       [matrix]    path of endogenous corresponding to completed share
+%   exo_simul        [matrix]    path of exogenous corresponding to completed share
+%   steady_state     [vector]    steady state of endogenous corresponding to the completed share (equal to the input if terminal steady state not recomputed)
+%   exo_steady_state [vector]    steady state of exogenous corresponding to the completed share (equal to the input if terminal steady state not recomputed)
+%   iteration        [integer]   number of homotopy iterations performed
+%   maxerror         [double]    as returned by perfect_foresight_solver_core
+%   solver_iter      [integer]   corresponds to iter as returned by perfect_foresight_solver_core
+%   per_block_status [struct]    as returned by perfect_foresight_solver_core
 
 global M_ options_
 
@@ -385,7 +400,7 @@ function [steady_success, endo_simul, exo_simul, steady_state, exo_steady_state]
 %   endobase         [matrix]    path of endogenous corresponding to 0% of the shock (only initial and terminal conditions are used)
 %   exobase          [matrix]    path of exogenous corresponding to 0% of the shock
 %   initperiods      [vector]    period indices of initial conditions
-%   lastperiods      [vector]    period incides of terminal conditions
+%   lastperiods      [vector]    period indices of terminal conditions
 %   recompute_final_steady_state [boolean] self-explanatory
 %   endo_simul       [matrix]    path of endogenous, used to construct the guess values (initial and terminal conditions are not used)
 %   steady_state     [vector]    steady state of endogenous, only used if terminal steady state is *not* recomputed by the function
