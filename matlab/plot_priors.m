@@ -76,7 +76,7 @@ for plt = 1:nbplt
     if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering\n');
-        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_Priors%s}\n',options_.figures.textwidth*min(index/nc,1),[graphDirectoryName '/' M_.fname],int2str(plt));
+        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_Priors%s}\n',options_.figures.textwidth*min(index/nc,1),[graphDirectoryName '/' M_.fname],int2str(plt));% don't use filesep as it will create issues with LaTeX on Windows
         fprintf(fidTeX,'\\caption{Priors.}');
         fprintf(fidTeX,'\\label{Fig:Priors:%s}\n',int2str(plt));
         fprintf(fidTeX,'\\end{figure}\n');

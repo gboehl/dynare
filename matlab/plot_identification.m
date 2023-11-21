@@ -43,7 +43,7 @@ if nargin <10 || isempty(tit_TeX)
 end
 
 if nargin <11
-    name_TeX=name;
+    name_tex=name;
 end
 
 [SampleSize, nparam]=size(params);
@@ -92,7 +92,11 @@ if SampleSize == 1
     set(gca,'xticklabel','')
     dy = get(gca,'ylim');
     for ip=1:nparam
-        text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        if options_.TeX
+            text(ip,dy(1),name_tex{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+        else
+            text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        end
     end
     if ~all(isnan(idehess.ide_strength_dMOMENTS_prior))
         legend('relative to param value','relative to prior std','Location','Best')
@@ -131,7 +135,11 @@ if SampleSize == 1
     set(gca,'xticklabel','')
     dy = get(gca,'ylim');
     for ip=1:nparam
-        text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        if options_.TeX
+            text(ip,dy(1),name_tex{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+        else
+            text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        end
     end
     if ~all(isnan(idehess.deltaM_prior))
         legend('relative to param value','relative to prior std','Location','Best')
@@ -181,7 +189,11 @@ if SampleSize == 1
             set(gca,'xticklabel','')
             dy = get(gca,'ylim');
             for ip=1:nparam
-                text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                if options_.TeX
+                    text(ip,dy(1),name_tex{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+                else
+                    text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                end
             end
             legend('Moments','Model','LRE model','Location','Best')
             title('Sensitivity bars using derivatives (log-scale)')
@@ -213,7 +225,11 @@ if SampleSize == 1
                     if isnan(dumpindx)
                         namx=[namx ' ' sprintf('%-15s','--')];
                     else
-                        namx=[namx ' ' sprintf('%-15s',name{dumpindx})];
+                        if options_.TeX
+                            namx=[namx ' ' sprintf('%-15s',name_tex{dumpindx})];
+                        else
+                            namx=[namx ' ' sprintf('%-15s',name{dumpindx})];
+                        end
                         pax(i,dumpindx)=idemoments.cosndMOMENTS(i,j);
                     end
                 end
@@ -224,8 +240,13 @@ if SampleSize == 1
             set(gca,'xticklabel','')
             set(gca,'yticklabel','')
             for ip=1:nparam
-                text(ip,(0.5),name{ip},'rotation',90,'HorizontalAlignment','left','interpreter','none')
-                text(0.5,ip,name{ip},'rotation',0,'HorizontalAlignment','right','interpreter','none')
+                if options_.TeX
+                    text(ip,(0.5),name_tex{ip},'rotation',90,'HorizontalAlignment','left','interpreter','latex')
+                    text(0.5,ip,name_tex{ip},'rotation',0,'HorizontalAlignment','right','interpreter','latex')
+                else
+                    text(ip,(0.5),name{ip},'rotation',90,'HorizontalAlignment','left','interpreter','none')
+                    text(0.5,ip,name{ip},'rotation',0,'HorizontalAlignment','right','interpreter','none')
+                end
             end
             colorbar;
             colormap('jet');
@@ -299,7 +320,11 @@ if SampleSize == 1
             set(gca,'xticklabel','')
             if j==4 || j==nparam || j==8
                 for ip=1:nparam
-                    text(ip,-0.02,name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    if options_.TeX
+                        text(ip,-0.02,name_tex{ip},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+                    else
+                        text(ip,-0.02,name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    end
                 end
             end
             title(['Singular value ',num2str(Stit)])
@@ -357,7 +382,11 @@ else
     set(gca,'xticklabel','')
     dy = get(gca,'ylim');
     for ip=1:nparam
-        text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        if options_.TeX
+            text(ip,dy(1),name_tex{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+        else
+            text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        end
     end
     if advanced
         legend('Moments','Model','LRE model','Location','Best')
@@ -469,7 +498,11 @@ else
             set(gca,'xticklabel','')
             if j==4 || j==nparam || j==8
                 for ip=1:nparam
-                    text(ip,-0.02,name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    if options_.TeX
+                        text(ip,-0.02,name_tex{ip},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+                    else
+                        text(ip,-0.02,name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    end
                 end
             end
             title(['MEAN Singular value ',num2str(Stit)])
