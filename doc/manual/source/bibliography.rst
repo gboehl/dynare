@@ -13,6 +13,7 @@ Bibliography
 * Andrews, Donald W.K (1991): “Heteroskedasticity and autocorrelation consistent covariance matrix estimation”, *Econometrica*, 59(3), 817–858.
 * Backus, David K., Patrick J. Kehoe, and Finn E. Kydland (1992): “International Real Business Cycles,” *Journal of Political Economy*, 100(4), 745–775.
 * Baxter, Marianne and Robert G. King (1999): “Measuring Business Cycles: Approximate Band-pass Filters for Economic Time Series,” *Review of Economics and Statistics*, 81(4), 575–593.
+* Bini, Dario A., Guy Latouche, and Beatrice Meini (2002): “Solving matrix polynomial equations arising in queueing problems,” *Linear Algebra and its Applications*, 340, 225–244.
 * Born, Benjamin and Johannes Pfeifer (2014): “Policy risk and the business cycle”, *Journal of Monetary Economics*, 68, 68-85.
 * Boucekkine, Raouf (1995): “An alternative methodology for solving nonlinear forward-looking models,” *Journal of Economic Dynamics and Control*, 19, 711–734.
 * Brayton, Flint and Peter Tinsley (1996): "A Guide to FRB/US: A Macroeconomic Model of the United States", *Finance and Economics Discussion Series*, 1996-42.

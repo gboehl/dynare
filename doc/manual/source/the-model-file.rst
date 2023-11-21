@@ -4826,7 +4826,7 @@ Computing the stochastic solution
 
            ``cycle_reduction``
 
-                Uses the cycle reduction algorithm to solve the
+                Uses the cycle reduction algorithm of ``Bini et al. (2002)`` to solve the
                 polynomial equation for retrieving the coefficients
                 associated to the endogenous variables in the decision
                 rule. This method is faster than the default one for
@@ -4834,7 +4834,7 @@ Computing the stochastic solution
 
            ``logarithmic_reduction``
 
-                Uses the logarithmic reduction algorithm to solve the
+                Uses the logarithmic reduction algorithm of ``Bini et al. (2002)`` to solve the
                 polynomial equation for retrieving the coefficients
                 associated to the endogenous variables in the decision
                 rule. This method is in general slower than the
