@@ -170,7 +170,7 @@ elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && completed_
     % Now compute extra simulation. First try using the first simulation as guess value.
     extra_share = completed_share - options_.simul.homotopy_marginal_linearization_fallback;
     if ~options_.noprint
-        fprintf('Only %.1f%% of the shock could be simulated. Since marginal linearization was requested as a fallback, now running an extra simulation for %.1f%% of the shock\n\n', completed_share, extra_share)
+        fprintf('Only %.1f%% of the shock could be simulated. Since marginal linearization was requested as a fallback, now running an extra simulation for %.1f%% of the shock\n\n', completed_share*100, extra_share*100)
         fprintf('%s\n\n', repmat('*', 1, 80))
     end
     extra_simul_time_counter = tic;
@@ -180,7 +180,7 @@ elseif options_.simul.homotopy_marginal_linearization_fallback > 0 && completed_
     end
     if ~extra_success
         if ~options_.noprint
-            fprintf('The extra simulation for %.1f%% of the shock did not run when using the first simulation as a guess value. Now trying a full homotopy loop to get that extra simulation working\n\n', extra_share)
+            fprintf('The extra simulation for %.1f%% of the shock did not run when using the first simulation as a guess value. Now trying a full homotopy loop to get that extra simulation working\n\n', extra_share*100)
             fprintf('%s\n\n', repmat('*', 1, 80))
         end
         [extra_completed_share, extra_endo_simul] = homotopy_loop(extra_share, endoorig, exoorig, endobase, exobase, initperiods, simperiods, lastperiods, recompute_final_steady_state, oo_.endo_simul, oo_.steady_state, oo_.exo_steady_state);
