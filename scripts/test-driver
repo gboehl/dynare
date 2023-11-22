@@ -52,7 +52,7 @@ done
 
 # If testing with MATLAB, compute the right batch flags
 if [[ $build_for == matlab ]]; then
-    # Check whether MATLAB version is ⩾ 9.6
+    # Check whether MATLAB version is ⩾ 9.6 (⩾ R2019a)
     IFS=. read -r -a split_version <<< "$matlab_octave_version"
     if ((split_version[0] > 9 || (split_version[0] == 9 && split_version[1] >= 6) )); then
         if [[ $matlab_arch == win64 ]]; then
@@ -60,12 +60,14 @@ if [[ $build_for == matlab ]]; then
         else
             matlab_batch_flags=(-nodisplay -batch)
         fi
-    else
+        needs_quit=no
+    else # MATLAB 9.5 (R2018b)
         if [[ $matlab_arch == win64 ]]; then
-            matlab_batch_flags=(-nosplash -automation -wait -sd "$source_root"/tests -r)
+            matlab_batch_flags=(-nosplash -automation -wait -r)
         else
             matlab_batch_flags=(-nosplash -nodisplay -r)
         fi
+        needs_quit=yes
     fi
 fi
 
@@ -87,6 +89,12 @@ for test_file in "${test_files[@]}"; do
     elif [[ $test_file =~ \.m$ ]]; then
         if [[ $build_for == matlab ]]; then
             test_arg=${test_basename%.m}
+            if [[ $needs_quit == yes ]]; then
+                # MATLAB R2018b does not have a true batch mode, and will not
+                # exit if there is no final quit statement. Hence ensure there
+                # is one.
+                echo quit >> "${tmpdir}"/"${test_file}"
+            fi
         else
             test_arg=$test_basename
         fi
