@@ -60,7 +60,7 @@ for jm = 1:options_mom_.mom.mom_nbr
         end
     end
     % We replace NaN (due to leads and lags and missing values) with the corresponding mean
-    if isoctave
+    if isoctave && octave_ver_less_than('8')
         dataMoments(jm,1) = nanmean(m_data_tmp);
     else
         dataMoments(jm,1) = mean(m_data_tmp,'omitnan');
