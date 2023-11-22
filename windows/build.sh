@@ -31,7 +31,6 @@ ROOT_DIRECTORY=$(dirname "$(readlink -f "$0")")
 # Check that build directories do not already exist
 [[ -d /tmp/windeps ]] && { echo "Please remove the /tmp/windeps directory" 2>&1; exit 1; }
 [[ -d "$ROOT_DIRECTORY"/../build-win-matlab ]] && { echo "Please remove the build-win-matlab directory" 2>&1; exit 1; }
-[[ -d "$ROOT_DIRECTORY"/../build-win-old-matlab ]] && { echo "Please remove the build-win-old-matlab directory" 2>&1; exit 1; }
 [[ -d "$ROOT_DIRECTORY"/../build-win-octave ]] && { echo "Please remove the build-win-octave directory" 2>&1; exit 1; }
 
 # Create TMP folder and make sure it is deleted upon exit
@@ -56,15 +55,10 @@ cd ..
 
 common_meson_opts=(-Dbuildtype=release --cross-file scripts/windows-cross.ini)
 
-# Create Windows 64-bit DLL binaries for MATLAB ≥ R2018a
-meson setup --cross-file scripts/windows-cross-matlab.ini -Dmatlab_path=/tmp/windeps/matlab64/R2018a \
+# Create Windows 64-bit DLL binaries for MATLAB ≥ R2018b
+meson setup --cross-file scripts/windows-cross-matlab.ini -Dmatlab_path=/tmp/windeps/matlab64/R2018b \
       "${common_meson_opts[@]}" build-win-matlab
 meson compile -v -C build-win-matlab
-
-# Create Windows 64-bit DLL binaries for MATLAB ≥ R2014a and ≤ R2017b
-meson setup --cross-file scripts/windows-cross-matlab.ini -Dmatlab_path=/tmp/windeps/matlab64/R2014a \
-      "${common_meson_opts[@]}" build-win-old-matlab
-meson compile -v -C build-win-old-matlab
 
 # Create Windows DLL binaries for Octave/MinGW (64bit)
 meson setup --cross-file scripts/windows-cross-octave.ini \
@@ -87,7 +81,6 @@ fi
 # Strip binaries
 x86_64-w64-mingw32-strip build-win-matlab/preprocessor/src/dynare-preprocessor.exe
 x86_64-w64-mingw32-strip -- build-win-matlab/*.mexw64
-x86_64-w64-mingw32-strip -- build-win-old-matlab/*.mexw64
 x86_64-w64-mingw32-strip -- build-win-octave/*.mex
 
 # Add a preprocessor copy for backward compatibility
@@ -128,10 +121,8 @@ mkdir -p "$ZIPDIR"/contrib/ms-sbvar/TZcode
 cp -pr contrib/ms-sbvar/TZcode/MatlabFiles "$ZIPDIR"/contrib/ms-sbvar/TZcode
 mkdir -p "$ZIPDIR"/contrib/jsonlab
 cp -pr contrib/jsonlab/* "$ZIPDIR"/contrib/jsonlab
-mkdir -p "$ZIPDIR"/mex/matlab/win64-8.3-9.3
-cp -p build-win-old-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-8.3-9.3
-mkdir -p "$ZIPDIR"/mex/matlab/win64-9.4-23.2
-cp -p build-win-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-9.4-23.2
+mkdir -p "$ZIPDIR"/mex/matlab/win64-9.5-23.2
+cp -p build-win-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-9.5-23.2
 mkdir -p "$ZIPDIR"/mex/octave/win64
 cp -p build-win-octave/*.mex "$ZIPDIR"/mex/octave/win64
 mkdir "$ZIPDIR"/preprocessor

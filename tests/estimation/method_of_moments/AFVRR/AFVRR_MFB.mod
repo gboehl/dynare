@@ -2,7 +2,7 @@
 % Andreasen, Fernandez-Villaverde, Rubio-Ramirez (2018), The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications, Review of Economic Studies, 85, p. 1-49
 % Adapted for Dynare by Willi Mutschler (@wmutschl, willi@mutschler.eu), Jan 2021
 % =========================================================================
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -258,8 +258,7 @@ dev_datamoments  = str2double(AndreasenEtAl.moments@{orderApp}(:,5)) - oo_.mom.d
 dev_modelmoments = str2double(AndreasenEtAl.moments@{orderApp}(:,6)) - oo_.mom.model_moments;
 
 % There is no table command in Octave
-% The table command also crashes on MATLAB R2014a because it does not like variable names
-if ~isoctave && ~matlab_ver_less_than('8.4')
+if ~isoctave
 table([AndreasenEtAl.Q@{orderApp} ; str2double(AndreasenEtAl.moments@{orderApp}(:,5)) ; str2double(AndreasenEtAl.moments@{orderApp}(:,6))],...
       [oo_.mom.Q                  ; oo_.mom.data_moments                              ; oo_.mom.model_moments                            ],...
       [dev_Q                      ; dev_datamoments                                   ; dev_modelmoments                                 ],...

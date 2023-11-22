@@ -7,7 +7,7 @@ function write_regimes_to_xls(occbin_struct,M_,options_)
 % - M_              [struct]    Matlab's structure describing the model
 % - options_        [struct]    Matlab's structure describing the current options
 
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -62,14 +62,7 @@ else
     end
 end
 
-if ~ispc && ~isoctave && matlab_ver_less_than('9.0')
-    % On GNU/Linux and macOS, with MATLAB < R2016a, “writeable” can’t write Excel files
-    % (and “xlswrite” can’t either)
-    warning('This version of MATLAB is too old and cannot create Excel files. The Occbin regimes will rather be written to a CSV file.')
-    filename=[OutputDirectoryName filesep xls_filename '.csv'];
-else
-    filename=[OutputDirectoryName filesep xls_filename '.xls'];
-end
+filename=[OutputDirectoryName filesep xls_filename '.xls'];
 
 if isfile(filename)
     delete(filename)
@@ -81,10 +74,6 @@ if isoctave
         error('The io package is required to write XLS files from Octave')
     end
     xlswrite(filename, vertcat(Header, xlsmat));
-elseif  ~ispc && matlab_ver_less_than('9.0')
-    % Use a CSV file. See the comment above about filename.
-    % We don’t use xlswrite because its CSV fallback does not support cell-arrays.
-    writetable(array2table(xlsmat,'VariableNames',Header), filename);
 else
     writetable(array2table(xlsmat,'VariableNames',Header), filename, 'Sheet', 'Regimes');
 end

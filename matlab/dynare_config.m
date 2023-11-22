@@ -105,19 +105,14 @@ if ~exist('struct2array')
     p{end+1} = '/missing/struct2array';
 end
 
-% isfile is missing in MATLAB < R2017b
-if ~isoctave && matlab_ver_less_than('9.3')
-    p{end+1} = '/missing/isfile';
-end
-
-% contains and splitlines don't exist in Octave and in MATLAB < R2016b
-if isoctave || matlab_ver_less_than('9.1')
+% contains and splitlines don't exist in Octave
+if isoctave
     p{end+1} = '/missing/contains';
     p{end+1} = '/missing/splitlines';
 end
 
-% datetime doesn't exist in Octave and in MATLAB < R2014b
-if isoctave || matlab_ver_less_than('8.4')
+% datetime doesn't exist in Octave
+if isoctave
     p{end+1} = '/missing/datetime';
 end
 

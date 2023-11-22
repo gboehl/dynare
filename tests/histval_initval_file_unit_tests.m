@@ -177,7 +177,7 @@ end
 fclose(fh);
 
 % The table() function is not implemented in Octave
-if ~isoctave && ((ispc && ~matlab_ver_less_than('8.2')) || (~ispc && ~matlab_ver_less_than('9.0')))
+if ~isoctave
     writetable(table(x,y), 'data.xlsx')
     options = struct();
     options.datafile = 'data.xlsx';
@@ -190,7 +190,7 @@ end
 
 % The table() function is not implemented in Octave
 % The test also does not work under GNU/Linux + MATLAB R2020b (Unicode issue in xlsread)
-if ~isoctave && (ispc && ~matlab_ver_less_than('8.2'))
+if ~isoctave && ispc
     writetable(table(x,y), 'data.xls')
     options = struct();
     options.datafile = 'data.xls';

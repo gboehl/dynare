@@ -36,7 +36,7 @@ function [x, errorflag, info] = trust_region(objfun, x, j1, j2, jacobianflag, gs
 %        4 if iteration is not making good progress, as measured by the improvement from the last 15 iterations.
 %        5 if no further improvement in the approximate solution x is possible (xtol is too small).
 
-% Copyright © 2014-2022 Dynare Team
+% Copyright © 2014-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -285,8 +285,8 @@ end
 
 function x = dogleg (r, b, d, delta)
 % Compute the Gauss-Newton direction.
-if isoctave || matlab_ver_less_than('9.3')
-    % The decomposition() function does not exist in Octave and MATLAB < R2017b
+if isoctave
+    % The decomposition() function does not exist in Octave
     x = r \ b;
 else
     x = decomposition(r, 'CheckCondition', false) \ b;

@@ -9,7 +9,7 @@ function  g = best_1978(a ,b)
 % OUTPUTS
 % - g    [double]     n*1 vector, gamma variates.
 
-% Copyright © 2006-2020 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,12 +44,7 @@ while mm
     X(index) = bb(index)+Y(index); % x
     id1 = index(X(index)<0); % Reject.
     id2 = setdiff(index, id1);
-    if numel(id2) ~= 0 || isoctave || ~matlab_ver_less_than('9.1')
-        % If id2=[], LHS of the .* has size [0,0], while RHS is [0,1].
-        % Since there is no automatic broadcast in MATLAB < R2016b, skip the
-        % statement in that case.
-        Z(id2) = 64.0*(W(id2).^3).*(rand(length(id2),1).^2); % d
-    end
+    Z(id2) = 64.0*(W(id2).^3).*(rand(length(id2),1).^2); % d
     id3 = id2(Z(id2)>1.0-2.0*Y(id2).*Y(id2)./X(id2)); % Reject.
     id4 = id3(log(Z(id3))>2.0*(bb(id3).*log(X(id3)./bb(id3))-Y(id3))); % Reject.
     index = [id1, id4];

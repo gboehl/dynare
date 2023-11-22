@@ -97,7 +97,7 @@ if get_option('build_for') == 'matlab'
     error('The “matlab_path” option must be provided when doing a MATLAB build')
   endif
   matlab_version = run_command('scripts/get-matlab-version', matlab_path, check : true).stdout().strip()
-  matlab_minimal_version = [ '8.3', 'R2014a' ]
+  matlab_minimal_version = [ '9.5', 'R2018b' ]
 
   if matlab_version.version_compare('<' + matlab_minimal_version[0])
     error('MATLAB is too old (version ' + matlab_version + '), please upgrade to version ' + matlab_minimal_version[0] + ' (' + matlab_minimal_version[1] + ') at least.')

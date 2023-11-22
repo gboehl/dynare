@@ -162,7 +162,7 @@ if options.solve_algo == 0
     else
         options4fsolve = optimoptions('fsolve');
     end
-    if isoctave || matlab_ver_less_than('9.0') % Option names changed in MATLAB R2016a
+    if isoctave
         options4fsolve.MaxFunEvals = 50000;
         options4fsolve.MaxIter = maxit;
         options4fsolve.TolFun = tolf;

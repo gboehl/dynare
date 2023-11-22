@@ -67,19 +67,6 @@ function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, ST
 
 global M_ options_ oo_ bayestopt_ estim_params_
 
-% The TeX option crashes MATLAB R2014a run with "-nodisplay" option
-% (as is done from the testsuite).
-% Since we can’t directly test whether "-nodisplay" has been passed,
-% we test for the "source_root" environment variable, which is set
-% by the testsuite.
-% Note that it was not tested whether the crash happens with more
-% recent MATLAB versions, so when OLD_MATLAB_VERSION is increased,
-% one should make a test before removing this workaround.
-if options_.TeX && ~isoctave && matlab_ver_less_than('8.4') && ~isempty(getenv('source_root'))
-    warning('Disabling TeX option due to a bug in MATLAB R2014a with -nodisplay')
-    options_.TeX = false;
-end
-
 store_options_ = options_; % store options to restore them at the end
 fname = M_.fname; %model name
 dname = M_.dname; %model name

@@ -26,7 +26,7 @@ function [opt_par_values,fval,exitflag,hessian_mat,options_,Scale,new_rat_hess_i
 %   none.
 %
 %
-% Copyright © 2014-2021 Dynare Team
+% Copyright © 2014-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -566,7 +566,7 @@ switch minimizer_algorithm
         optim_options.Display='off';
     end
     if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1)
-        if isoctave || matlab_ver_less_than('9.0') % Option names changed in MATLAB R2016a
+        if isoctave
             optim_options.Jacobian = 'on';
         else
             optim_options.SpecifyObjectiveGradient = true;

@@ -37,8 +37,6 @@ else
     # Remove /opt/homebrew/bin from PATH, so it does not intervene with the x86_64 compilations
     path_remove PATH /opt/homebrew/bin
     MATLAB_ARCH=maci64
-    # On x86_64 we need to differentiate between older and newer MATLAB versions
-    OLD_MATLAB_PATH=/Applications/"$PKG_ARCH"/MATLAB_R2016b.app
 fi
 MATLAB_PATH=/Applications/"$PKG_ARCH"/MATLAB_R2023b.app
 
@@ -71,15 +69,9 @@ common_meson_opts=(-Dbuild_for=matlab -Dbuildtype=release -Dprefer_static=true -
                    -Dc_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" -Dcpp_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" -Dfortran_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" \
                    --native-file scripts/homebrew-native-$PKG_ARCH.ini)
 
-# Build for MATLAB ⩾ R2018a (x86_64) and MATLAB ⩾ R2023b (arm64)
+# Build for MATLAB ⩾ R2018b (x86_64) and MATLAB ⩾ R2023b (arm64)
 arch -"$PKG_ARCH" meson setup "${common_meson_opts[@]}" -Dmatlab_path="$MATLAB_PATH" build-matlab --wipe
 arch -"$PKG_ARCH" meson compile -v -C build-matlab
-
-if [[ "$PKG_ARCH" == x86_64 ]]; then
-    # Build for MATLAB < R2018a
-    arch -"$PKG_ARCH" meson setup "${common_meson_opts[@]}" -Dmatlab_path="$OLD_MATLAB_PATH" build-old-matlab --wipe
-    arch -"$PKG_ARCH" meson compile -v -C build-old-matlab
-fi
 
 # If not in CI, build the docs
 if [[ -z $CI ]]; then
@@ -125,8 +117,7 @@ mkdir -p \
       "$PKGFILES"/scripts \
       "$PKGFILES"/contrib/ms-sbvar/TZcode
 if [[ "$PKG_ARCH" == x86_64 ]]; then
-    mkdir -p "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-8.3-9.3 \
-             "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-9.4-23.2
+    mkdir -p "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-9.5-23.2
 else
     mkdir -p "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-23.2
 fi      
@@ -147,8 +138,7 @@ mkdir -p                                                             "$PKGFILES"
 ln -sf ../../preprocessor/dynare-preprocessor                        "$PKGFILES"/matlab/preprocessor64/dynare_m
 
 if [[ "$PKG_ARCH" == x86_64 ]]; then
-    cp -L  "$ROOTDIR"/build-matlab/*.mex"$MATLAB_ARCH"               "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-9.4-23.2
-    cp -L  "$ROOTDIR"/build-old-matlab/*.mex"$MATLAB_ARCH"           "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-8.3-9.3
+    cp -L  "$ROOTDIR"/build-matlab/*.mex"$MATLAB_ARCH"               "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-9.5-23.2
 else
     cp -L  "$ROOTDIR"/build-matlab/*.mex"$MATLAB_ARCH"               "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-23.2
 fi

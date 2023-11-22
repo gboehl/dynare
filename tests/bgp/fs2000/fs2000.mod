@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright © 2019-2021 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -66,9 +66,6 @@ verbatim;
     g = ones(M_.endo_nbr,1);% 1+(rand(M_.endo_nbr,1)-.5)*.1;
     if isoctave
         options = optimset('Display','iter','Algorithm','levenberg-marquardt','MaxFunEvals',1000000,'MaxIter',100000,'GradObj','on','TolFun',1e-6,'TolX',1e-6);
-    elseif matlab_ver_less_than('9.0')
-        % See https://fr.mathworks.com/help/optim/ug/current-and-legacy-option-name-tables.html
-        options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunEvals',1000000,'MaxIter',100000,'Jacobian','on','TolFun',1e-6,'TolX',1e-6);
     else
         options = optimoptions('fsolve','Display','iter','Algorithm','levenberg-marquardt','MaxFunctionEvaluations',1000000,'MaxIterations',100000,'SpecifyObjectiveGradient',true,'FunctionTolerance',1e-6,'StepTolerance',1e-6);
     end

@@ -19,7 +19,7 @@ function [dr, out, ss] = solver(M_, options_, dr ,steady_state, exo_steady_state
 %                                           - R: [n_vars by n_exo by n_shock_period] array of shock response matrices
 %                                           - C: [n_vars by n_shock_period] array of constants
 
-% Copyright © 2021 Dynare Team
+% Copyright © 2021-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -90,15 +90,7 @@ end
 
 % add back steady state
 if ~options_.occbin.simul.piecewise_only
-    if ~isoctave && matlab_ver_less_than('9.1') % Automatic broadcasting was introduced in MATLAB R2016b
-        out.linear = bsxfun(@plus, out.linear, out.ys');
-    else
-        out.linear = out.linear + out.ys';
-    end
+    out.linear = out.linear + out.ys';
 end
-if ~isoctave && matlab_ver_less_than('9.1') % Automatic broadcasting was introduced in MATLAB R2016b
-    out.piecewise = bsxfun(@plus, out.piecewise, out.ys');
-else
-    out.piecewise = out.piecewise + out.ys';
-end
+out.piecewise = out.piecewise + out.ys';
 out.exo_pos = options_.occbin.simul.exo_pos;

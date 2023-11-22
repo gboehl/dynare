@@ -217,8 +217,8 @@ end
 % Plot
 %
 
-% The histogram() function is not implemented in Octave and in MATLAB < R2014b
-if ~options_.nograph && ~isoctave && ~matlab_ver_less_than('8.4')
+% The histogram() function is not implemented in Octave
+if ~options_.nograph && ~isoctave
     figure
     nrows = 5;
     ncols = floor(nparams/nrows);

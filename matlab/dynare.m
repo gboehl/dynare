@@ -87,9 +87,9 @@ if isoctave
         skipline()
     end
 else
-    if matlab_ver_less_than('8.3') % Should match the test in meson.build
+    if matlab_ver_less_than('9.5') % Should match the test in meson.build
         skipline()
-        warning('This version of Dynare has only been tested on MATLAB 8.3 (R2014a) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
+        warning('This version of Dynare has only been tested on MATLAB 9.5 (R2018b) and above. Since your MATLAB version is older than that, Dynare may fail to run, or give unexpected results. Consider upgrading your MATLAB installation, or switch to Octave.');
         skipline()
     end
 end

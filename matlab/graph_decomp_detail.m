@@ -190,8 +190,8 @@ for j=1:nvar
             ineg=zz<0;
             hax = subplot(nrow,ncol,i); set(gca,'box','on')
             hbar = bar(x(2:end),(zz.*ipos)','stacked','FaceColor','flat');
-            if ~isoctave && ~matlab_ver_less_than('9.3.0')
-                % make bar obey colormap under MATLAB R2017b
+            if ~isoctave
+                % make bar obey colormap under MATLAB
                 for k = 1:2
                     hbar(k).CData = k;
                 end
@@ -199,8 +199,8 @@ for j=1:nvar
             set(hbar,'edgecolor','flat');
             hold on,
             hbar = bar(x(2:end),(zz.*ineg)','stacked','FaceColor','flat');
-            if ~isoctave && ~matlab_ver_less_than('9.3.0')
-                % make bar obey colormap under MATLAB R2017b
+            if ~isoctave
+                % make bar obey colormap under MATLAB
                 for k = 1:2
                     hbar(k).CData = k;
                 end

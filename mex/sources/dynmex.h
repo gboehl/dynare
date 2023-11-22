@@ -26,24 +26,4 @@
 
 #include <mex.h>
 
-#if defined(MATLAB_MEX_FILE) && MATLAB_VERSION < 0x0805
-# define mxIsScalar(x) (mxGetM(x) == 1 && mxGetN(x) == 1)
-#endif
-
-/* The int64_T and uint64_T type are broken under MinGW for MATLAB < R2015b
-   (they actually alias long integer types, which are 32-bit) */
-#if defined(MATLAB_MEX_FILE) && defined(__MINGW64__) && MATLAB_VERSION < 0x0806
-# define int64_T long long
-# define uint64_T unsigned long long
-#endif
-/* NB: the following #ifdef can be removed when we upgrade to C23, since the
-   latter has static_assert as a keyword */
-#ifdef __cplusplus
-static_assert(sizeof(int64_T) == 8, "The int64_T type is buggy");
-static_assert(sizeof(uint64_T) == 8, "The uint64_T type is buggy");
-#else
-_Static_assert(sizeof(int64_T) == 8, "The int64_T type is buggy");
-_Static_assert(sizeof(uint64_T) == 8, "The uint64_T type is buggy");
-#endif
-
 #endif

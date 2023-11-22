@@ -8,11 +8,11 @@
 ! Things to be aware of when adding new interfaces this file:
 !
 ! — The tricky part is to deal with API versioning.
-!   • API_VER is for functions which were not versioned before 9.4 (R2018a)
-!   • API_VER2 is for functions which were versioned _730 before 9.4 (R2018a)
-!     when not using the MX_COMPAT_32 mode
+!   For MATLAB ⩾ R2018b, all versions share the same API (embodied in API_VER
+!   define), but in the past the API would differ across function, so there
+!   was an API_VER2 define for those.
 !   For each function, the information can be retrieved from either matrix.h or
-!   mex.h from R2014a
+!   mex.h.
 ! — C passes arguments by value, so the “value” keyword is often needed
 ! — Strings passed to C must be null terminated (hence a wrapper is needed to
 !   append c_null_char)
@@ -49,17 +49,10 @@
 ! along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 #ifdef MATLAB_MEX_FILE
-# if MATLAB_VERSION >= 0x0904
-#  define API_VER "_800"
-#  define API_VER2 "_800"
-# else
-#  define API_VER ""
-#  define API_VER2 "_730"
-# endif
+# define API_VER "_800"
 #else
 ! Octave
 # define API_VER ""
-# define API_VER2 ""
 #endif
 
 #include "defines.F08"
@@ -116,7 +109,7 @@ module matlab_mat
      !! Create, Query, and Access Data Types
 
      ! Numeric types
-     type(c_ptr) function mxCreateDoubleMatrix(m, n, ComplexFlag) bind(c, name="mxCreateDoubleMatrix"//API_VER2)
+     type(c_ptr) function mxCreateDoubleMatrix(m, n, ComplexFlag) bind(c, name="mxCreateDoubleMatrix"//API_VER)
        use iso_c_binding
        import :: mwSize, mxComplexity
        integer(mwSize), intent(in), value :: m, n
@@ -178,7 +171,7 @@ module matlab_mat
 #endif
 
      ! Sparse
-     type(c_ptr) function mxCreateSparse(m, n, nzmax, ComplexFlag) bind(c, name="mxCreateSparse"//API_VER2)
+     type(c_ptr) function mxCreateSparse(m, n, nzmax, ComplexFlag) bind(c, name="mxCreateSparse"//API_VER)
        use iso_c_binding
        import :: mwSize, mxComplexity
        integer(mwSize), intent(in), value :: m, n, nzmax
@@ -190,12 +183,12 @@ module matlab_mat
        type(c_ptr), intent(in), value :: pm
      end function mxIsSparse
 
-     pure type(c_ptr) function mxGetIr(pm) bind(c, name="mxGetIr"//API_VER2)
+     pure type(c_ptr) function mxGetIr(pm) bind(c, name="mxGetIr"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetIr
 
-     pure type(c_ptr) function mxGetJc(pm) bind(c, name="mxGetJc"//API_VER2)
+     pure type(c_ptr) function mxGetJc(pm) bind(c, name="mxGetJc"//API_VER)
        use iso_c_binding
        type(c_ptr), intent(in), value :: pm
      end function mxGetJc
@@ -242,7 +235,7 @@ module matlab_mat
      end function mxIsClass_internal
 
      ! Structure
-     type(c_ptr) function mxCreateStructMatrix_internal(m, n, nfields, fieldnames) bind(c, name="mxCreateStructMatrix"//API_VER2)
+     type(c_ptr) function mxCreateStructMatrix_internal(m, n, nfields, fieldnames) bind(c, name="mxCreateStructMatrix"//API_VER)
        use iso_c_binding
        import :: mwSize
        integer(mwSize), intent(in), value :: m, n
@@ -255,7 +248,7 @@ module matlab_mat
        type(c_ptr), intent(in), value :: pm
      end function mxIsStruct
 
-     pure type(c_ptr) function mxGetField_internal(pm, index, fieldname) bind(c, name="mxGetField"//API_VER2)
+     pure type(c_ptr) function mxGetField_internal(pm, index, fieldname) bind(c, name="mxGetField"//API_VER)
        use iso_c_binding
        import :: mwIndex
        type(c_ptr), intent(in), value :: pm
@@ -263,7 +256,7 @@ module matlab_mat
        character(c_char), dimension(*), intent(in) :: fieldname
      end function mxGetField_internal
 
-     subroutine mxSetField_internal(pm, index, fieldname, pvalue) bind(c, name="mxSetField"//API_VER2)
+     subroutine mxSetField_internal(pm, index, fieldname, pvalue) bind(c, name="mxSetField"//API_VER)
        use iso_c_binding
        import :: mwIndex
        type(c_ptr), intent(in), value :: pm
@@ -283,7 +276,7 @@ module matlab_mat
        type(c_ptr), intent(in), value :: pm
      end function mxIsCell
 
-     pure type(c_ptr) function mxGetCell_internal(pm, index) bind(c, name="mxGetCell"//API_VER2)
+     pure type(c_ptr) function mxGetCell_internal(pm, index) bind(c, name="mxGetCell"//API_VER)
        use iso_c_binding
        import :: mwIndex
        type(c_ptr), intent(in), value :: pm

@@ -47,30 +47,16 @@ else
     end
     % Add win64 specific paths for Dynare Windows package
     if strcmp(computer, 'PCWIN64')
-        if matlab_ver_less_than('9.4')
-            tmp = [dynareroot '../mex/matlab/win64-8.3-9.3/'];
-            if exist(tmp, 'dir')
-                mexpath = tmp;
-            end
-        else
-            tmp = [dynareroot '../mex/matlab/win64-9.4-23.2/'];
-            if exist(tmp, 'dir')
-                mexpath = tmp;
-            end
+        tmp = [dynareroot '../mex/matlab/win64-9.5-23.2/'];
+        if exist(tmp, 'dir')
+            mexpath = tmp;
         end
     end
     % Add macOS paths for Dynare Mac package
     if strcmp(computer, 'MACI64')
-        if matlab_ver_less_than('9.4')
-            tmp = [dynareroot '../mex/matlab/maci64-8.3-9.3/'];
-            if exist(tmp, 'dir')
-                mexpath = tmp;
-            end
-        else
-            tmp = [dynareroot '../mex/matlab/maci64-9.4-23.2/'];
-            if exist(tmp, 'dir')
-                mexpath = tmp;
-            end
+        tmp = [dynareroot '../mex/matlab/maci64-9.5-23.2/'];
+        if exist(tmp, 'dir')
+            mexpath = tmp;
         end
     end
     if strcmp(computer, 'MACA64')
