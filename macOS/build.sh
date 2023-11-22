@@ -145,7 +145,6 @@ fi
 
 cp -p  "$ROOTDIR"/scripts/dynare.el                                  "$PKGFILES"/scripts
 cp -pr "$ROOTDIR"/contrib/ms-sbvar/TZcode/MatlabFiles                "$PKGFILES"/contrib/ms-sbvar/TZcode
-cp -pr "$ROOTDIR"/contrib/jsonlab                                    "$PKGFILES"/contrib
 
 cp     "$ROOTDIR"/build-doc/*.pdf                                    "$PKGFILES"/doc
 cp     "$ROOTDIR"/build-doc/preprocessor/doc/*.pdf                   "$PKGFILES"/doc

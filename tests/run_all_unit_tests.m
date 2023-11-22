@@ -36,13 +36,7 @@ if isoctave
     mlist = mlist(find(~strcmp([matlab_dir filesep 'load_m_file_data_legacy.m'], mlist)));
 end
 
-% Set random seed, for reproducibility
-if isoctave && octave_ver_less_than('7')
-    randn('state',1);
-    rand('state',1);
-else
-    rng(1);
-end
+rng(1);
 
 failedtests = {};
 

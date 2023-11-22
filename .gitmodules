@@ -14,9 +14,6 @@
 	path = matlab/modules/dseries
 	url = ../../Dynare/dseries.git
 	branch = master
-[submodule "contrib/jsonlab"]
-	path = contrib/jsonlab
-	url = https://github.com/fangq/jsonlab.git
 [submodule "preprocessor"]
 	path = preprocessor
 	url = ../../Dynare/preprocessor.git

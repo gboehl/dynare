@@ -119,8 +119,6 @@ cp -p windows/README.txt "$ZIPDIR"
 cp -pr windows/deps/mingw64 "$ZIPDIR"
 mkdir -p "$ZIPDIR"/contrib/ms-sbvar/TZcode
 cp -pr contrib/ms-sbvar/TZcode/MatlabFiles "$ZIPDIR"/contrib/ms-sbvar/TZcode
-mkdir -p "$ZIPDIR"/contrib/jsonlab
-cp -pr contrib/jsonlab/* "$ZIPDIR"/contrib/jsonlab
 mkdir -p "$ZIPDIR"/mex/matlab/win64-9.5-23.2
 cp -p build-win-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-9.5-23.2
 mkdir -p "$ZIPDIR"/mex/octave/win64

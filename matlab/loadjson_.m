@@ -1,6 +1,6 @@
 function o = loadjson_(jsonfilename)
 
-% Reads a json file using jsonlab toolbox or jsondecode builtin if available.
+% Reads a json file using jsondecode builtin.
 %
 % INPUTS
 % - jsonfilename   [char]      1×n char array, name of the JSON file.
@@ -27,11 +27,6 @@ function o = loadjson_(jsonfilename)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-if isoctave && octave_ver_less_than('7')
-    o = loadjson(jsonfilename);
-    return
-end
 
 json = fileread(jsonfilename);
 

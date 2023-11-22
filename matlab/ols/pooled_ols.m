@@ -27,7 +27,7 @@ function varargout = pooled_ols(ds, param_common, param_regex, overlapping_dates
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright © 2017-2019 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -76,10 +76,6 @@ else
 end
 
 st = dbstack(1);
-if isoctave && octave_ver_less_than('6.3.0')
-    % Workaround for https://savannah.gnu.org/bugs/?60531, fixed in 6.3.0
-    st = st(2:end);
-end
 if ~isempty(st) && strcmp(st(1).name, 'pooled_fgls')
     save_structure_name = 'pooled_fgls';
 else

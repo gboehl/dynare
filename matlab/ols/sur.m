@@ -18,7 +18,7 @@ function varargout = sur(ds, param_names, eqtags, model_name, noniterative, ds_r
 % SPECIAL REQUIREMENTS
 %   dynare must have been run with the option: json=compute
 
-% Copyright © 2017-2021 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -121,10 +121,6 @@ end
 %
 
 st = dbstack(1);
-if isoctave && octave_ver_less_than('6.3.0')
-    % Workaround for https://savannah.gnu.org/bugs/?60531, fixed in 6.3.0
-    st = st(2:end);
-end
 if ~isempty(st) && strcmp(st(1).name, 'surgibbs')
     varargout{1} = nobs;
     varargout{2} = X{param_names{:}}.data;

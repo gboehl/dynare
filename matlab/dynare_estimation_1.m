@@ -34,11 +34,6 @@ global M_ options_ oo_ estim_params_ bayestopt_ dataset_ dataset_info
 dispString = 'Estimation::mcmc';
 
 if ~exist([M_.dname filesep 'Output'],'dir')
-    if isoctave && octave_ver_less_than('7') && ~exist(M_.dname)
-        % See https://savannah.gnu.org/bugs/index.php?61166
-        % This workaround is needed for recursive estimation.
-        mkdir(M_.dname)
-    end
     mkdir(M_.dname,'Output');
 end
 

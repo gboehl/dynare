@@ -42,7 +42,7 @@ function nls(eqname, params, data, range, optimizer, varargin)
 % is available only if the matylab optimization toolbox is installed), the
 % remaining inputs are the options (key/value) passed to the optimizers.
 
-% Copyright © 2018-2022 Dynare Team
+% Copyright © 2018-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -95,12 +95,6 @@ write_residuals_routine(lhs, rhs, eqname, ipnames_, M_, pacmodl);
 
 % Create a routine for evaluating the sum of squared residuals of the nonlinear model
 write_ssr_routine(lhs, rhs, eqname, ipnames_, M_, pacmodl);
-
-% Workaround for Octave bug https://savannah.gnu.org/bugs/?46282
-% Octave will randomly fail to read the ssr_* file generated in the +folder
-if isoctave && octave_ver_less_than('7')
-    path(path)
-end
 
 % Copy (sub)sample data in a matrix.
 DATA = data([range(1)-1, range]).data;

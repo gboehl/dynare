@@ -39,10 +39,6 @@ if nargin > 5 || nargin < 2 || nargout > 7 || nargout == 0
     error('MJDGGES: takes 2, 3 or 4 input arguments and between 1 and 7 output arguments.')
 end
 
-if isoctave && octave_ver_less_than('7')
-    error('Octave version 7 or higher is required (Octave 6 lacks the ordqz function)')
-end
-
 [me, ne] = size(e);
 [md, nd] = size(d);
 if ~isreal(e) || ~isreal(d) || me ~= ne || md ~= nd || me ~= nd
