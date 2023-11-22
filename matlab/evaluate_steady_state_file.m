@@ -79,7 +79,11 @@ end
 
 if updated_params_flag && ~isreal(params1)
     info(1) = 23;
-    info(2) = sum(imag(params).^2,'omitnan');
+    if ~isoctave
+        info(2) = sum(imag(params).^2,'omitnan');
+    else
+        info(2) = nansum(imag(params).^2);
+    end
     if M_.set_auxiliary_variables
         ys = h_set_auxiliary_variables(ys,exo_ss,params);
     end
