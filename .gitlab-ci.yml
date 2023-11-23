@@ -3,6 +3,8 @@ variables:
   TERM: linux
   MATLAB_VERSION: R2023b
   OLD_MATLAB_VERSION: R2018b
+  # To ensure that "false && true" fails, see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/25394#note_412609647
+  FF_ENABLE_BASH_EXIT_CODE_CHECK: 'true'
 
 # The next stanza creates the version number used for the source tarball and the
 # binary packages. Here are the following possible cases:
@@ -13,10 +15,10 @@ variables:
 #   + on another branch: use $BRANCH-$TIMESTAMP-$COMMIT
 # - if in a personal repository: use $USER-$TIMESTAMP-$COMMIT
 before_script:
-  - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ -n $CI_COMMIT_TAG ]] && export VERSION=$CI_COMMIT_TAG'
-  - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ $CI_COMMIT_REF_NAME == master ]] && export VERSION=6-unstable-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
-  - '[[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && export VERSION=$CI_COMMIT_REF_NAME-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
-  - '[[ -z $VERSION ]] && export VERSION=$CI_PROJECT_NAMESPACE-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA'
+  - 'if [[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ -n $CI_COMMIT_TAG ]]; then export VERSION=$CI_COMMIT_TAG; fi'
+  - 'if [[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ $CI_COMMIT_REF_NAME == master ]]; then export VERSION=6-unstable-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA; fi'
+  - 'if [[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]]; then export VERSION=$CI_COMMIT_REF_NAME-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA; fi'
+  - 'if [[ -z $VERSION ]]; then export VERSION=$CI_PROJECT_NAMESPACE-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA; fi'
 
 stages:
   - build
