@@ -144,7 +144,8 @@ for j=1:nvar
         continue
     end
     fhandle = dyn_figure(options_.plot_shock_decomp.nodisplay,'Name',[preamble_txt fig_name_long strrep(fig_mode1, '_', ' ') ': ' endo_names{i_var(j)} '.'], 'PaperPositionMode', 'auto','PaperOrientation','landscape','renderermode','auto');
-    set(fhandle,'position' ,[50 50 1500 750])
+    screensize = get( groot, 'Screensize' );
+    set(fhandle,'OuterPosition' ,[50 50 min(1500,screensize(3)-50) min(750,screensize(4)-50)])
     ax=axes('Position',[0.1 0.1 0.6 0.8],'box','on');
     %     plot(ax,x(2:end),z1(end,:),'k-','LineWidth',2)
     %     axis(ax,[xmin xmax ymin ymax]);
