@@ -115,41 +115,47 @@ if ~strcmp(options_.posterior_sampler_options.posterior_sampling_method,'slice')
     return
 end
 
-if nblck == 1 % Brooks and Gelman tests need more than one block
-    convergence_diagnostics_geweke=zeros(npar,4+2*length(options_.convergence.geweke.taper_steps));
-    if any(options_.convergence.geweke.geweke_interval<0) || any(options_.convergence.geweke.geweke_interval>1) || length(options_.convergence.geweke.geweke_interval)~=2 ...
-            || (options_.convergence.geweke.geweke_interval(2)-options_.convergence.geweke.geweke_interval(1)<0)
-        fprintf('\nCONVERGENCE DIAGNOSTICS: Invalid option for geweke_interval. Using the default of [0.2 0.5].\n')
-        options_.convergence.geweke.geweke_interval=[0.2 0.5];
-    end
-    first_obs_begin_sample = max(1,ceil(options_.mh_drop*NumberOfDraws));
-    last_obs_begin_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(1)*NumberOfDraws*(1-options_.mh_drop));
-    first_obs_end_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(2)*NumberOfDraws*(1-options_.mh_drop));
-    param_name = {};
+convergence_diagnostics_geweke=zeros(npar,4+2*length(options_.convergence.geweke.taper_steps));
+if any(options_.convergence.geweke.geweke_interval<0) || any(options_.convergence.geweke.geweke_interval>1) || length(options_.convergence.geweke.geweke_interval)~=2 ...
+        || (options_.convergence.geweke.geweke_interval(2)-options_.convergence.geweke.geweke_interval(1)<0)
+    fprintf('\nCONVERGENCE DIAGNOSTICS: Invalid option for geweke_interval. Using the default of [0.2 0.5].\n')
+    options_.convergence.geweke.geweke_interval=[0.2 0.5];
+end
+first_obs_begin_sample = max(1,ceil(options_.mh_drop*NumberOfDraws));
+last_obs_begin_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(1)*NumberOfDraws*(1-options_.mh_drop));
+first_obs_end_sample = first_obs_begin_sample+round(options_.convergence.geweke.geweke_interval(2)*NumberOfDraws*(1-options_.mh_drop));
+param_name = {};
+if options_.TeX
+    param_name_tex = {};
+end
+for jj=1:npar
     if options_.TeX
-        param_name_tex = {};
+        [param_name_temp, param_name_tex_temp] = get_the_name(jj, options_.TeX, M_, estim_params_, options_);
+        param_name_tex = vertcat(param_name_tex, strrep(param_name_tex_temp, '$',''));
+        param_name = vertcat(param_name, param_name_temp);
+    else
+        param_name_temp = get_the_name(jj, options_.TeX, M_,estim_params_, options_);
+        param_name = vertcat(param_name, param_name_temp);
     end
-    for jj=1:npar
-        if options_.TeX
-            [param_name_temp, param_name_tex_temp] = get_the_name(jj, options_.TeX, M_, estim_params_, options_);
-            param_name_tex = vertcat(param_name_tex, strrep(param_name_tex_temp, '$',''));
-            param_name = vertcat(param_name, param_name_temp);
-        else
-            param_name_temp = get_the_name(jj, options_.TeX, M_,estim_params_, options_);
-            param_name = vertcat(param_name, param_name_temp);
-        end
-    end
-    fprintf('\nGeweke (1992) Convergence Tests, based on means of draws %d to %d vs %d to %d.\n',first_obs_begin_sample,last_obs_begin_sample,first_obs_end_sample,NumberOfDraws);
+end
+datamat=NaN(npar,3+length(options_.convergence.geweke.taper_steps),nblck);
+%remove stale results as it will cause assignment problems
+if options_.convergence.rafterylewis.indicator && isfield(oo_,'convergence') && isfield(oo_.convergence,'raftery_lewis')
+    oo_.convergence=rmfield(oo_.convergence,'raftery_lewis');
+end
+
+for block_iter=1:nblck
+    fprintf('\n\nConvergence diagnostics results for chain %u.\n',block_iter);
+    fprintf('\nGeweke (1992) Convergence Tests, based on means of draws %d to %d vs %d to %d for chain %u.\n',first_obs_begin_sample,last_obs_begin_sample,first_obs_end_sample,NumberOfDraws,block_iter);
     fprintf('p-values are for Chi2-test for equality of means.\n');
     Geweke_header = {'Parameter'; 'Post. Mean'; 'Post. Std'; 'p-val No Taper'};
     for ii = 1:length(options_.convergence.geweke.taper_steps)
         Geweke_header = vertcat(Geweke_header, ['p-val ' num2str(options_.convergence.geweke.taper_steps(ii)),'% Taper']);
     end
-    datamat=NaN(npar,3+length(options_.convergence.geweke.taper_steps));
     for jj=1:npar
         startline=0;
         for n = 1:NumberOfMcFilesPerBlock
-            load([MetropolisFolder '/' ModelName '_mh',int2str(n),'_blck1.mat'],'x2');
+            load([MetropolisFolder '/' ModelName '_mh',int2str(n),'_blck',num2str(block_iter),'.mat'],'x2');
             nx2 = size(x2,1);
             param_draws(startline+(1:nx2),1) = x2(:,jj);
             startline = startline + nx2;
@@ -163,22 +169,22 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         [results_vec2] = geweke_moments(param_draws2,options_);
 
         results_struct = geweke_chi2_test(results_vec1,results_vec2,results_struct,options_);
-        oo_.convergence.geweke.(param_name{jj}) = results_struct;
-        datamat(jj,:)=[results_struct.posteriormean,results_struct.posteriorstd,results_struct.prob_chi2_test];
+        oo_.convergence.geweke(block_iter).(param_name{jj}) = results_struct;
+        datamat(jj,:,block_iter)=[results_struct.posteriormean,results_struct.posteriorstd,results_struct.prob_chi2_test];
     end
     lh = size(param_name,2)+2;
-    dyntable(options_, '', Geweke_header, param_name, datamat, lh, 12, 3);
+    dyntable(options_, '', Geweke_header, param_name, datamat(:,:,block_iter), lh, 12, 3);
     if options_.TeX
         Geweke_tex_header = {'Parameter'; 'Mean'; 'Std'; 'No\ Taper'};
         additional_header = {[' & \multicolumn{2}{c}{Posterior} & \multicolumn{',num2str(1+length(options_.convergence.geweke.taper_steps)),'}{c}{p-values} \\'],
-                            ['\cmidrule(r{.75em}){2-3} \cmidrule(r{.75em}){4-',num2str(4+length(options_.convergence.geweke.taper_steps)),'}']};
+            ['\cmidrule(r{.75em}){2-3} \cmidrule(r{.75em}){4-',num2str(4+length(options_.convergence.geweke.taper_steps)),'}']};
         for ii=1:length(options_.convergence.geweke.taper_steps)
             Geweke_tex_header = vertcat(Geweke_tex_header, [num2str(options_.convergence.geweke.taper_steps(ii)),'\%%\ Taper']);
         end
         headers = Geweke_tex_header;
         lh = cellofchararraymaxlength(param_name_tex)+2;
-        my_title=sprintf('Geweke (1992) Convergence Tests, based on means of draws %d to %d vs %d to %d. p-values are for $\\\\chi^2$-test for equality of means.',first_obs_begin_sample,last_obs_begin_sample,first_obs_end_sample,NumberOfDraws);
-        dyn_latex_table(M_, options_, my_title, 'geweke', headers, param_name_tex, datamat, lh, 12, 4, additional_header);
+        my_title=sprintf('Geweke (1992) Convergence Tests, based on means of draws %d to %d vs %d to %d for chain %u. p-values are for $\\\\chi^2$-test for equality of means.',first_obs_begin_sample,last_obs_begin_sample,first_obs_end_sample,NumberOfDraws,block_iter);
+        dyn_latex_table(M_, options_, my_title, ['geweke_block_' num2str(block_iter)], headers, param_name_tex, datamat(:,:,block_iter), lh, 12, 4, additional_header);
     end
     skipline(2);
 
@@ -191,11 +197,10 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         Raftery_Lewis_q=options_.convergence.rafterylewis.qrs(1);
         Raftery_Lewis_r=options_.convergence.rafterylewis.qrs(2);
         Raftery_Lewis_s=options_.convergence.rafterylewis.qrs(3);
-        oo_.convergence.raftery_lewis = raftery_lewis(x2,Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);
-        oo_.convergence.raftery_lewis.parameter_names=param_name;
-        my_title=sprintf('Raftery/Lewis (1992) Convergence Diagnostics, based on quantile q=%4.3f with precision r=%4.3f with probability s=%4.3f.',Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);
+        oo_.convergence.raftery_lewis(block_iter) = raftery_lewis(x2,Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s);
+        my_title=sprintf('Raftery/Lewis (1992) Convergence Diagnostics, based on quantile q=%4.3f with precision r=%4.3f with probability s=%4.3f for chain %u.',Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s,block_iter);
         headers = {'Variables'; 'M (burn-in)'; 'N (req. draws)'; 'N+M (total draws)'; 'k (thinning)'};
-        raftery_data_mat=[oo_.convergence.raftery_lewis.M_burn,oo_.convergence.raftery_lewis.N_prec,oo_.convergence.raftery_lewis.N_total,oo_.convergence.raftery_lewis.k_thin];
+        raftery_data_mat=[oo_.convergence.raftery_lewis(block_iter).M_burn,oo_.convergence.raftery_lewis(block_iter).N_prec,oo_.convergence.raftery_lewis(block_iter).N_total,oo_.convergence.raftery_lewis(block_iter).k_thin];
         raftery_data_mat=[raftery_data_mat;max(raftery_data_mat)];
         labels_Raftery_Lewis = vertcat(param_name, 'Maximum');
         lh = cellofchararraymaxlength(labels_Raftery_Lewis)+2;
@@ -203,10 +208,14 @@ if nblck == 1 % Brooks and Gelman tests need more than one block
         if options_.TeX
             labels_Raftery_Lewis_tex = vertcat(param_name_tex, 'Maximum');
             lh = cellofchararraymaxlength(labels_Raftery_Lewis_tex)+2;
-            dyn_latex_table(M_, options_, my_title, 'raftery_lewis', headers, labels_Raftery_Lewis_tex, raftery_data_mat, lh, 10, 0);
+            dyn_latex_table(M_, options_, my_title, ['raftery_lewis_' num2str(block_iter)], headers, labels_Raftery_Lewis_tex, raftery_data_mat, lh, 10, 0);
         end
     end
-
+end
+for block_iter=1:nblck
+    oo_.convergence.raftery_lewis(block_iter).parameter_names=param_name;
+end
+if nblck==1
     return
 end
 
