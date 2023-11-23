@@ -13,6 +13,9 @@
 !   was an API_VER2 define for those.
 !   For each function, the information can be retrieved from either matrix.h or
 !   mex.h.
+!   Under Octave, when the interleaved API is used, some functions have a
+!   different symbol name, handled through the API_VER_INTERLEAVED define;
+!   see octave/mexproto.h for the list of affected functions.
 ! — C passes arguments by value, so the “value” keyword is often needed
 ! — Strings passed to C must be null terminated (hence a wrapper is needed to
 !   append c_null_char)
@@ -48,14 +51,20 @@
 ! You should have received a copy of the GNU General Public License
 ! along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+#include "defines.F08"
+
 #ifdef MATLAB_MEX_FILE
 # define API_VER "_800"
+# define API_VER_INTERLEAVED "_800"
 #else
 ! Octave
 # define API_VER ""
+# if MX_HAS_INTERLEAVED_COMPLEX
+#  define API_VER_INTERLEAVED "_interleaved"
+# else
+#  define API_VER_INTERLEAVED ""
+# endif
 #endif
-
-#include "defines.F08"
 
 !!! C Matrix API
 !!! Listed in same order as https://fr.mathworks.com/help/matlab/cc-mx-matrix-library.html
@@ -109,14 +118,14 @@ module matlab_mat
      !! Create, Query, and Access Data Types
 
      ! Numeric types
-     type(c_ptr) function mxCreateDoubleMatrix(m, n, ComplexFlag) bind(c, name="mxCreateDoubleMatrix"//API_VER)
+     type(c_ptr) function mxCreateDoubleMatrix(m, n, ComplexFlag) bind(c, name="mxCreateDoubleMatrix"//API_VER_INTERLEAVED)
        use iso_c_binding
        import :: mwSize, mxComplexity
        integer(mwSize), intent(in), value :: m, n
        integer(mxComplexity), intent(in), value :: ComplexFlag
      end function mxCreateDoubleMatrix
 
-     type(c_ptr) function mxCreateDoubleScalar(value) bind(c, name="mxCreateDoubleScalar"//API_VER)
+     type(c_ptr) function mxCreateDoubleScalar(value) bind(c, name="mxCreateDoubleScalar"//API_VER_INTERLEAVED)
        use iso_c_binding
        real(c_double), intent(in), value :: value
      end function mxCreateDoubleScalar
@@ -171,7 +180,7 @@ module matlab_mat
 #endif
 
      ! Sparse
-     type(c_ptr) function mxCreateSparse(m, n, nzmax, ComplexFlag) bind(c, name="mxCreateSparse"//API_VER)
+     type(c_ptr) function mxCreateSparse(m, n, nzmax, ComplexFlag) bind(c, name="mxCreateSparse"//API_VER_INTERLEAVED)
        use iso_c_binding
        import :: mwSize, mxComplexity
        integer(mwSize), intent(in), value :: m, n, nzmax
@@ -216,7 +225,7 @@ module matlab_mat
        type(c_ptr), intent(in), value :: array_ptr
      end function mxIsLogicalScalar
 
-     type(c_ptr) function mxCreateLogicalScalar(value) bind(c, name="mxCreateLogicalScalar"//API_VER)
+     type(c_ptr) function mxCreateLogicalScalar(value) bind(c, name="mxCreateLogicalScalar"//API_VER_INTERLEAVED)
        use iso_c_binding
        import :: mxLogical
        logical(mxLogical), intent(in), value :: value
@@ -235,7 +244,8 @@ module matlab_mat
      end function mxIsClass_internal
 
      ! Structure
-     type(c_ptr) function mxCreateStructMatrix_internal(m, n, nfields, fieldnames) bind(c, name="mxCreateStructMatrix"//API_VER)
+     type(c_ptr) function mxCreateStructMatrix_internal(m, n, nfields, fieldnames) bind(c, name="mxCreateStructMatrix" &
+          //API_VER_INTERLEAVED)
        use iso_c_binding
        import :: mwSize
        integer(mwSize), intent(in), value :: m, n

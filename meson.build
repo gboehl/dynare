@@ -203,7 +203,17 @@ else # Octave build
   exe_rpath = octlibdir
   exe_link_args = [ '-L' + octlibdir ] + octave_libs
 
+  # Minimal Octave version for which we enable the interleaved API.
+  # Octave 7 is supposed to support it, but it crashes due to this bug:
+  #  https://savannah.gnu.org/bugs/?64687
+  octave_minimal_version_for_interleaved_api = '8.4.0'
+
   octave_defs = [ '-DOCTAVE_MEX_FILE', '-DMEXEXT=".mex"' ]
+  if octave_version.version_compare('>=' + octave_minimal_version_for_interleaved_api)
+    # Mimic the behaviour of mkoctfile which adds this define when the
+    # interleaved API is requested.
+    octave_defs += '-DMX_HAS_INTERLEAVED_COMPLEX=1'
+  endif
 
   mex_kwargs = { 'name_prefix' : '',
                  'name_suffix' : 'mex',
@@ -214,6 +224,12 @@ else # Octave build
                  'link_args' : octave_link_args,
                  'install' : true,
                  'install_dir' : 'lib/dynare/mex/octave' }
+
+  if octave_version.version_compare('>=' + octave_minimal_version_for_interleaved_api)
+    # Mimic the behaviour of mkoctfile which compiles in a similar source file
+    # when interleaved API is requested.
+    mex_kwargs += { 'sources' : 'mex/sources/octave_interleaved.c' }
+  endif
 
   # The -L argument is useful when cross-compiling.
   blas_dep = declare_dependency(link_args : [ '-L' + (octlibdir / '../..') ] + run_command(mkoctfile_exe, '-p', 'BLAS_LIBS', check : true).stdout().split())
