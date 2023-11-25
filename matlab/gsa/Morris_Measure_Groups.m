@@ -6,20 +6,20 @@ function [SAmeas, OutMatrix] = Morris_Measure_Groups(NumFact, Sample, Output, p,
 % INPUTS
 % -------------------------------------------------------------------------
 % Group [NumFactor, NumGroups] := Matrix describing the groups.
-% Each column represents one group.
-% The element of each column are zero if the factor is not in the
-% group. Otherwise it is 1.
+%   Each column represents one group.
+%   The element of each column are zero if the factor is not in the
+%   group. Otherwise it is 1.
 %
 % Sample := Matrix of the Morris sampled trajectories
 %
 % Output := Matrix of the output(s) values in correspondence of each point
-% of each trajectory
+%   of each trajectory
 %
 % k = Number of factors
 % -------------------------------------------------------------------------
 % OUTPUTS
 % OutMatrix (NumFactor*NumOutputs, 3)= [Mu*, Mu, StDev]
-% for each output it gives the three measures of each factor
+%   for each output it gives the three measures of each factor
 % -------------------------------------------------------------------------
 %
 % Written by Jessica Cariboni and Francesca Campolongo
@@ -27,7 +27,7 @@ function [SAmeas, OutMatrix] = Morris_Measure_Groups(NumFact, Sample, Output, p,
 %
 
 % Copyright © 2005 European Commission
-% Copyright © 2012-2017 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,32 +50,34 @@ if nargin==0
     return
 end
 
-OutMatrix=[];
 if nargin < 5, Group=[]; end
 
 NumGroups = size(Group,2);
-if nargin < 4 | isempty(p)
+
+if nargin < 4 || isempty(p)
     p = 4;
 end
 Delt = p/(2*p-2);
 
-if NumGroups ~ 0
+if NumGroups ~= 0
     sizea = NumGroups;      % Number of groups
-    GroupMat=Group;
-    GroupMat = GroupMat';
 else
     sizea = NumFact;
 end
+
 r=size(Sample,1)/(sizea+1);     % Number of trajectories
+if NumGroups > 0
+    OutMatrix = NaN(sizea*size(Output,2),1);
+else
+    OutMatrix = NaN(sizea*size(Output,2),3);
+end
 
 % For Each Output
 for k=1:size(Output,2)
-
     OutValues=Output(:,k);
 
     % For each r trajectory
     for i=1:r
-
         % For each step j in the trajectory
         % Read the orientation matrix fact for the r-th sampling
         % Read the corresponding output values
@@ -86,13 +88,11 @@ for k=1:size(Output,2)
 
         % For each point of the fixed trajectory compute the values of the Morris function. The function
         % is partitioned in four parts, from order zero to order 4th.
+        % SAmeas=NaN();
         for j=1:sizea   % For each point in the trajectory i.e for each factor
                         % matrix of factor which changes
-            if NumGroups ~ 0
+            if NumGroups ~= 0
                 AuxFind (:,1) = A(:,j);
-                %                 AuxFind(find(A(:,j)),1)=1;
-                %                 Pippo = sum((Group - repmat(AuxFind,1,NumGroups)),1);
-                %                 Change_factor(j,i) = find(Pippo==0);
                 Change_factor = find(abs(AuxFind)>1e-010);
                 % If we deal with groups we can only estimate the new mu*
                 % measure since factors in the same groups can move in
@@ -100,7 +100,6 @@ for k=1:size(Output,2)
                 % Morris mu cannopt be applied.
                 % In the new version the elementary effect is defined with
                 % the absolute value.
-                %SAmeas(find(GroupMat(Change_factor(j,i),:)),i) = abs((Single_OutValues(j) - Single_OutValues(j+1) )/Delt); %(2/3));
                 SAmeas(i,Change_factor') = abs((Single_OutValues(j) - Single_OutValues(j+1) )/Delt);
             else
                 Change_factor(j,i) = find(Single_Sample(j+1,:)-Single_Sample(j,:));
@@ -116,12 +115,17 @@ for k=1:size(Output,2)
 
     end     %for i=1:r
 
-    if NumGroups ~ 0
+    if NumGroups ~= 0
         SAmeas = SAmeas';
     end
 
     % Compute Mu AbsMu and StDev
     if any(any(isnan(SAmeas)))
+        AbsMu=NaN(NumFact,1);
+        if NumGroups == 0
+            Mu=NaN(NumFact,1);
+            StDev=NaN(NumFact,1);
+        end
         for j=1:NumFact
             SAm = SAmeas(j,:);
             SAm = SAm(find(~isnan(SAm)));
@@ -143,8 +147,8 @@ for k=1:size(Output,2)
     % Define the output Matrix - if we have groups we cannot define the old
     % measure mu, only mu* makes sense
     if NumGroups > 0
-        OutMatrix = [OutMatrix; AbsMu];
+        OutMatrix((k-1)*sizea+1:k*sizea,:) = AbsMu;
     else
-        OutMatrix = [OutMatrix; AbsMu, Mu, StDev];
+        OutMatrix((k-1)*sizea+1:k*sizea,:) = [AbsMu, Mu, StDev];
     end
 end     % For Each Output
