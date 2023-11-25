@@ -310,7 +310,7 @@ if ~isempty(options_gsa.moment_calibration) || ~isempty(options_gsa.irf_calibrat
 end
 
 if options_gsa.identification
-    map_ident_(OutputDirectoryName,options_gsa);
+    map_ident_(OutputDirectoryName,options_gsa,M_,options_,bayestopt_,oo_.dr,estim_params_.param_vals);
 end
 
 if options_gsa.redform && ~isempty(options_gsa.namendo)
