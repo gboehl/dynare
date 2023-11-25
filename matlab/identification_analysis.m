@@ -462,7 +462,7 @@ if info(1) == 0 %no errors in solution
 
         if advanced
             % here we do not normalize (i.e. we set norm_dMOMENTS=1) as the OLS in ident_bruteforce is very sensitive to norm_dMOMENTS
-            [ide_moments.pars, ide_moments.cosndMOMENTS] = ident_bruteforce(dMOMENTS(ind_dMOMENTS,:), max_dim_cova_group, options_.TeX, options_ident.name_tex, options_ident.tittxt, tol_deriv);
+            [ide_moments.pars, ide_moments.cosndMOMENTS] = ident_bruteforce(M_.dname,M_.fname,dMOMENTS(ind_dMOMENTS,:), max_dim_cova_group, options_.TeX, options_ident.name_tex, options_ident.tittxt, tol_deriv);
         end
 
         %here we focus on the unnormalized S and V, which is then used in plot_identification.m and for prior_mc > 1
