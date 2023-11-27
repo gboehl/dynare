@@ -216,7 +216,7 @@ for plt = 1:nbplt
         % TeX eps loader file
         fprintf(fidTeX,'\\begin{figure}[H]\n');
         fprintf(fidTeX,'\\centering \n');
-        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_CheckPlots%s}\n',options_.figures.textwidth*min(k/nc,1),[graphsFolder filesep M_.fname],int2str(plt));
+        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_CheckPlots%s}\n',options_.figures.textwidth*min(k/nc,1),[graphsFolder '/' M_.fname],int2str(plt)); % don't use filesep as it will create issues with LaTeX on Windows
         fprintf(fidTeX,'\\caption{Check plots.}');
         fprintf(fidTeX,'\\label{Fig:CheckPlots:%s}\n',int2str(plt));
         fprintf(fidTeX,'\\end{figure}\n');
