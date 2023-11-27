@@ -114,12 +114,12 @@ for ll = 1:max_dim_cova_group
             plist='';
             for ii=1:ll
                 if ~isnan(pars{i,ll}(ii))
-                    plist = [plist ' $' name_tex{pars{i,ll}(ii)} '\;\; $ '];
+                    plist = [plist ' ' name_tex{pars{i,ll}(ii)} '\;\;  '];
                 else
                     plist = [plist ' ---- '];
                 end
             end
-            fprintf(fidTeX,'$%s$ & [%s] & %7.3f \\\\ \n',...
+            fprintf(fidTeX,'%s & [%s] & %7.3f \\\\ \n',...
                     name_tex{i},...
                     plist,...
                     cosnJ(i,ll));

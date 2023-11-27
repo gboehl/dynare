@@ -362,7 +362,7 @@ if prior_exist % use estimated_params block
     for jj=1:totparam_nbr
         if options_.TeX
             [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
-            name_tex{jj,1} = strrep(param_name_tex_temp,'$',''); %ordering corresponds to estimated_params
+            name_tex{jj,1} =param_name_tex_temp;
             name{jj,1} = param_name_temp; %ordering corresponds to estimated_params
         else
             param_name_temp = get_the_name(jj,options_.TeX,M_,estim_params_,options_);
@@ -379,8 +379,8 @@ else % no estimated_params block, choose all model parameters and all stderr par
     totparam_nbr = modparam_nbr+stderrparam_nbr;
     name = cellfun(@(x) horzcat('SE_', x), M_.exo_names, 'UniformOutput', false); %names for stderr parameters
     name = vertcat(name, M_.param_names);
-    name_tex = cellfun(@(x) horzcat('$ SE_{', x, '} $'), M_.exo_names, 'UniformOutput', false);
-    name_tex = vertcat(name_tex, M_.param_names_tex);
+    name_tex = cellfun(@(x) horzcat('$ SE_{', x, '} $'), M_.exo_names_tex, 'UniformOutput', false);
+    name_tex = vertcat(name_tex, cellfun(@(x) horzcat('$ ', x, ' $'), M_.param_names_tex, 'UniformOutput', false));
     if ~isequal(M_.H,0)
         fprintf('\ndynare_identification:: Identification does not support measurement errors (yet) and will ignore them in the following. To test their identifiability, instead define them explicitly as varexo and provide measurement equations in the model definition.\n')
     end
