@@ -14716,7 +14716,7 @@ Macro directives
 
         Choose between two alternative monetary policy rules using a
         macro-variable. The only difference between this example and the
-        previous one is the use of ``@#ifdef`` instead of ``@#if``. 
+        previous one is the use of ``@#ifdef`` instead of ``@#if``::
 
             @#define linear_mon_pol = false // 0 would be treated the same
             ...
