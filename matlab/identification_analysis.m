@@ -1,5 +1,5 @@
-function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, error_indicator] = identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
-% [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, error_indicator] = identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
+function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, error_indicator] = identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
+% [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, error_indicator] = identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
 % -------------------------------------------------------------------------
 % This function wraps all identification analysis, i.e. it
 % (1) wraps functions for the theoretical identification analysis based on moments (Iskrev, 2010),
@@ -12,6 +12,11 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 % moments, spectrum, reduced-form solution and dynamic model derivatives
 % =========================================================================
 % INPUTS
+%    * M_                 [structure] describing the model
+%    * options_           [structure] describing the options
+%    * oo_                [structure] storing the results
+%    * bayestopt_         [structure] describing the priors
+%    * estim_params_      [structure] characterizing parameters to be estimated
 %    * params             [mc_sample_nbr by totparam_nbr]
 %                         parameter values for identification checks
 %    * indpmodel          [modparam_nbr by 1]
@@ -91,7 +96,6 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 
-global oo_ M_ options_ bayestopt_ estim_params_
 persistent ind_dMOMENTS ind_dREDUCEDFORM ind_dDYNAMIC
 % persistent indices are necessary, because in a MC loop the numerical threshold
 % used may provide vectors of different length, leading to crashes in MC loops

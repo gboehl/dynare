@@ -469,7 +469,7 @@ if iload <=0
     options_ident.tittxt = parameters; %title text for graphs and figures
     % perform identification analysis for single point
     [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info, error_indicator_point] = ...
-        identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end implies initialization of persistent variables
+        identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end implies initialization of persistent variables
     if info(1)~=0
         % there are errors in the solution algorithm
         message = get_error_message(info,options_);
@@ -486,7 +486,7 @@ if iload <=0
                 options_ident.tittxt = 'Random_prior_params'; %title text for graphs and figures
                 % perform identification analysis
                 [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info, error_indicator_point] = ...
-                    identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
+                    identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
             end
         end
         if info(1)
@@ -540,7 +540,7 @@ if iload <=0
         options_ident.tittxt = []; % clear title text for graphs and figures
         % run identification analysis
         [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, ide_derivatives_info, info, error_indicator] = ...
-            identification_analysis(params, indpmodel, indpstderr, indpcorr, options_MC, dataset_info, prior_exist, 0); % the 0 implies that we do not initialize persistent variables anymore
+            identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_MC, dataset_info, prior_exist, 0); % the 0 implies that we do not initialize persistent variables anymore
 
         if iteration==0 && info(1)==0 % preallocate storage in the first admissable run
             delete([IdentifDirectoryName '/' fname '_identif_*.mat']) % delete previously saved results
@@ -894,7 +894,7 @@ if SampleSize > 1
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
                     [ide_moments_max, ide_spectrum_max, ide_minimal_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, derivatives_info_max, info_max, error_indicator_max] = ...
-                        identification_analysis(pdraws(jmax,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes some persistent variables
+                        identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,pdraws(jmax,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes some persistent variables
                     save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_max', 'ide_moments_max', 'ide_spectrum_max', 'ide_minimal_max','ide_reducedform_max', 'ide_dynamic_max', 'jmax', '-append');
                 end
                 advanced0 = options_ident.advanced; options_ident.advanced = 1; % make sure advanced setting is on
@@ -912,7 +912,7 @@ if SampleSize > 1
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
                     [ide_moments_min, ide_spectrum_min, ide_minimal_min, ide_hess_min, ide_reducedform_min, ide_dynamic_min, derivatives_info_min, info_min, error_indicator_min] = ...
-                        identification_analysis(pdraws(jmin,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes persistent variables
+                        identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,pdraws(jmin,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes persistent variables
                     save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_min', 'ide_moments_min','ide_spectrum_min','ide_minimal_min','ide_reducedform_min', 'ide_dynamic_min', 'jmin', '-append');
                 end
                 advanced0 = options_ident.advanced; options_ident.advanced = 1; % make sure advanced setting is on
@@ -934,7 +934,7 @@ if SampleSize > 1
                     if ~iload
                         options_ident.tittxt = tittxt; %title text for graphs and figures
                         [ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), derivatives_info_(j), info_resolve, error_indicator_j] = ...
-                            identification_analysis(pdraws(jcrit(j),:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
+                            identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,pdraws(jcrit(j),:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
                     end
                     advanced0 = options_ident.advanced; options_ident.advanced = 1; %make sure advanced setting is on
                     disp_identification(pdraws(jcrit(j),:), ide_reducedform_(j), ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), name, options_ident);
