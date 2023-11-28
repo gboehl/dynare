@@ -434,7 +434,7 @@ if options_gsa.rmse
     end
     clear a;
     %     filt_mc_(OutputDirectoryName,data_info);
-    filt_mc_(OutputDirectoryName,options_gsa,dataset_,dataset_info);
+    filt_mc_(OutputDirectoryName,options_gsa,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_);
 end
 options_.opt_gsa = options_gsa;
 options_.prior_trunc=original_prior_trunc;
