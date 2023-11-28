@@ -1,4 +1,4 @@
-var y y_s R pie dq pie_s de A y_obs pie_obs R_obs ${R^{obs}}$;
+var y y_s R pie $\pi$ dq pie_s de A y_obs pie_obs R_obs ${R^{obs}}$;
 varexo e_R ${e^R}$ e_q e_ys e_pies e_A;
 
 parameters psi1 psi2 psi3 rho_R ${\rho_R}$  tau alpha rr k rho_q rho_A rho_ys rho_pies;

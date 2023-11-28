@@ -214,6 +214,7 @@ for ii=1:length(options_gsa.var_rmse)
     temp_name = M_.endo_names_tex{strmatch(options_gsa.var_rmse{ii}, M_.endo_names, 'exact')};
     options_gsa.var_rmse_tex = vertcat(options_gsa.var_rmse_tex, temp_name);
 end
+options_gsa.var_rmse_tex = cellfun(@(x) horzcat('$', x, '$'), options_gsa.var_rmse_tex, 'UniformOutput', false);
 options_gsa = set_default_option(options_gsa,'pfilt_rmse', 0.1);
 options_gsa = set_default_option(options_gsa,'istart_rmse', options_.presample+1);
 options_gsa = set_default_option(options_gsa,'alpha_rmse', 0.001);
