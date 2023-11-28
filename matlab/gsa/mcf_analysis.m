@@ -1,5 +1,16 @@
-function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, options_)
-% indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, options_)
+function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, options_, bayestopt_, estim_params_)
+% indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, options_, bayestopt_, estim_params_)
+% Inputs:
+% - lpmat               [double]        Monte Carlo matrix
+% - ibeha               [integer]       index of behavioural runs
+% - inobeha             [integer]       index of non-behavioural runs
+% - options_gsa_        [structure]     GSA options_
+% - options_            [structure]     describing the options
+% - bayestopt_          [structure]     describing the priors
+% - estim_params_       [structure]     characterizing parameters to be estimated
+%
+% Outputs:
+% - indmcf              [double]        results of matrix
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -50,15 +61,15 @@ if isfield(options_mcf,'xparam1')
 end
 OutputDirectoryName = options_mcf.OutputDirectoryName;
 
-[proba, dproba] = stab_map_1(lpmat, ibeha, inobeha, [],0);
+[proba, dproba] = stab_map_1(lpmat, ibeha, inobeha, [],fname_, options_, bayestopt_.name, estim_params_,0);
 indmcf=find(proba<pvalue_ks);
-[tmp,jtmp] = sort(proba(indmcf),2,'ascend');
+[~,jtmp] = sort(proba(indmcf),1,'ascend');
 indmcf = indmcf(jtmp);
 if ~isempty(indmcf)
     skipline()
     headers = {'Parameter','d-stat','p-value'};
     labels = param_names(indmcf);
-    data_mat=[dproba(indmcf)' proba(indmcf)'];
+    data_mat=[dproba(indmcf) proba(indmcf)];
     options_temp.noprint=0;
     dyntable(options_temp,['Smirnov statistics in driving ', title],headers,labels,data_mat,size(labels,2)+2,16,3);
     if options_.TeX
@@ -68,7 +79,6 @@ if ~isempty(indmcf)
         dyn_latex_table(M_temp,options_temp,['Smirnov statistics in driving ', strrep(title,'_','\\_')],amcf_name,headers,labels_TeX,data_mat,size(labels,2)+2,16,6);
     end
 end
-
 
 if length(ibeha)>10 && length(inobeha)>10
     indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, beha_title);

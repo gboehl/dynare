@@ -1,7 +1,13 @@
 function map_calibration(OutputDirectoryName, M_, options_, oo_, estim_params_, bayestopt_)
 % map_calibration(OutputDirectoryName, M_, options_, oo_, estim_params_, bayestopt_)
-
-
+% Inputs:
+%  - OutputDirectoryName [string]    name of the output directory
+%  - M_                  [structure] describing the model
+%  - options_            [structure] describing the options
+%  - oo_                 [structure] storing the results
+%  - estim_params_       [structure] characterizing parameters to be estimated
+%  - bayestopt_          [structure] describing the priors
+%
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
@@ -33,7 +39,7 @@ pnames_tex=cell(np,1);
 for jj=1:np
     if options_.TeX
         [param_name_temp, param_name_tex_temp]= get_the_name(nshock+jj, options_.TeX, M_, estim_params_, options_);
-        pnames_tex{jj,1} = strrep(param_name_tex_temp,'$','');
+        pnames_tex{jj,1} = param_name_tex_temp;
         pnames{jj,1} = param_name_temp;
     else
         param_name_temp = get_the_name(nshock+jj, options_.TeX, M_, estim_params_, options_);
@@ -41,7 +47,6 @@ for jj=1:np
     end
 end
 
-pvalue_ks = options_.opt_gsa.pvalue_ks;
 indx_irf = [];
 indx_moment = [];
 init = ~options_.opt_gsa.load_stab;
@@ -63,7 +68,7 @@ if options_.opt_gsa.ppost
     filetoload=dir([M_.dname filesep 'metropolis' filesep fname_ '_param_irf*.mat']);
     lpmat=[];
     for j=1:length(filetoload)
-        load([M_.dname filesep 'metropolis' filesep fname_ '_param_irf',int2str(j),'.mat'])
+        load([M_.dname filesep 'metropolis' filesep fname_ '_param_irf',int2str(j),'.mat'],'stock')
         lpmat = [lpmat; stock];
         clear stock
     end
@@ -71,12 +76,12 @@ if options_.opt_gsa.ppost
 else
     if options_.opt_gsa.pprior
         filetoload=[OutputDirectoryName '/' fname_ '_prior'];
-        load(filetoload,'lpmat','lpmat0','istable','iunstable','iindeterm','iwrong' ,'infox')
+        load(filetoload,'lpmat','lpmat0')
         lpmat = [lpmat0 lpmat];
         type = 'prior';
     else
         filetoload=[OutputDirectoryName '/' fname_ '_mc'];
-        load(filetoload,'lpmat','lpmat0','istable','iunstable','iindeterm','iwrong' ,'infox')
+        load(filetoload,'lpmat','lpmat0')
         lpmat = [lpmat0 lpmat];
         type = 'mc';
     end
@@ -99,17 +104,17 @@ if init
         mat_moment{ij}=NaN(Nsam,length(options_.endogenous_prior_restrictions.moment{ij,3}));
     end
 
-    irestrictions = [1:Nsam];
+    irestrictions = 1:Nsam;
     h = dyn_waitbar(0,'Please wait...');
     for j=1:Nsam
         M_ = set_all_parameters(lpmat(j,:)',estim_params_,M_);
         if nbr_moment_restrictions
-            [Tt,Rr,SteadyState,info,oo_.dr, M_.params] = dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+            [Tt,Rr,~,info,oo_.dr, M_.params] = dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
         else
-            [Tt,Rr,SteadyState,info,oo_.dr, M_.params] = dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state,'restrict');
+            [Tt,Rr,~,info,oo_.dr, M_.params] = dynare_resolve(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state,'restrict');
         end
         if info(1)==0
-            [info, info_irf, info_moment, data_irf, data_moment]=endogenous_prior_restrictions(Tt,Rr,M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+            [~, info_irf, info_moment, data_irf, data_moment]=endogenous_prior_restrictions(Tt,Rr,M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
             if ~isempty(info_irf)
                 for ij=1:nbr_irf_restrictions
                     mat_irf{ij}(j,:)=data_irf{ij}(:,2)';
@@ -183,7 +188,7 @@ if ~isempty(indx_irf)
     maxijv=0;
     for ij=1:nbr_irf_restrictions
         if length(endo_prior_restrictions.irf{ij,3})>maxijv
-            maxij=ij;maxijv=length(endo_prior_restrictions.irf{ij,3});
+            maxijv=length(endo_prior_restrictions.irf{ij,3});
         end
         plot_indx(ij) = find(strcmp(irf_couples,all_irf_couples(ij,:)));
         time_matrix{plot_indx(ij)} = [time_matrix{plot_indx(ij)} endo_prior_restrictions.irf{ij,3}];
@@ -235,22 +240,11 @@ if ~isempty(indx_irf)
             hold off,
             %         hold off,
             title([endo_prior_restrictions.irf{ij,1},' vs ',endo_prior_restrictions.irf{ij,2}, '(', leg,')'],'interpreter','none'),
-            %set(legend_h,'Xlim',[0 1]);
-            %         if ij==maxij
-            %             leg1 = num2str(endo_prior_restrictions.irf{ij,3}(:));
-            %             [legend_h,object_h,plot_h,text_strings]=legend(leg1);
-            %             Position=get(legend_h,'Position');Position(1:2)=[-0.055 0.95-Position(4)];
-            %             set(legend_h,'Position',Position);
-            %         end
         end
-        % hc = get(h,'Children');
-        %for i=2:2:length(hc)
-        %end
         indx1 = find(indx_irf(:,ij)==0);
         indx2 = find(indx_irf(:,ij)~=0);
         atitle0=[endo_prior_restrictions.irf{ij,1},' vs ',endo_prior_restrictions.irf{ij,2}, '(', leg,')'];
         fprintf(['%4.1f%% of the ',type,' support matches IRF ',atitle0,' inside [%4.1f, %4.1f]\n'],length(indx1)/length(irestrictions)*100,endo_prior_restrictions.irf{ij,4})
-        % aname=[type '_irf_calib_',int2str(ij)];
         aname=[type '_irf_calib_',endo_prior_restrictions.irf{ij,1},'_vs_',endo_prior_restrictions.irf{ij,2},'_',aleg];
         atitle=[type ' IRF Calib: Parameter(s) driving ',endo_prior_restrictions.irf{ij,1},' vs ',endo_prior_restrictions.irf{ij,2}, '(', leg,')'];
         options_mcf.amcf_name = aname;
@@ -259,14 +253,8 @@ if ~isempty(indx_irf)
         options_mcf.nobeha_title = 'NO IRF restriction';
         options_mcf.title = atitle0;
         if ~isempty(indx1) && ~isempty(indx2)
-            mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, options_);
+            mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, options_, bayestopt_, estim_params_);
         end
-
-        %         [proba, dproba] = stab_map_1(xmat, indx1, indx2, aname, 0);
-        %         indplot=find(proba<pvalue_ks);
-        %         if ~isempty(indplot)
-        %             stab_map_1(xmat, indx1, indx2, aname, 1, indplot, OutputDirectoryName,[],atitle);
-        %         end
     end
     for ij=1:nbr_irf_couples
         if length(time_matrix{ij})>1
@@ -284,7 +272,6 @@ if ~isempty(indx_irf)
                         tmp(temp_index,:) = endo_prior_restrictions.irf{itmp(ir),4};
                     end
                 end
-                %             tmp = cell2mat(endo_prior_restrictions.irf(itmp,4));
                 tmp(isinf(tmp(:,1)),1)=a(3);
                 tmp(isinf(tmp(:,2)),2)=a(4);
                 hp = patch([time_matrix{ij} time_matrix{ij}(end:-1:1)],[tmp(:,1); tmp(end:-1:1,2)],'c');
@@ -297,7 +284,6 @@ if ~isempty(indx_irf)
                 hold off
                 axis([max(1,a(1)) a(2:4)])
                 box on
-                %set(gca,'xtick',sort(time_matrix{ij}))
                 itmp = min(itmp);
                 title([endo_prior_restrictions.irf{itmp,1},' vs ',endo_prior_restrictions.irf{itmp,2}],'interpreter','none'),
             end
@@ -311,7 +297,6 @@ if ~isempty(indx_irf)
                 aleg = 'ALL';
                 atitle0=[endo_prior_restrictions.irf{itmp,1},' vs ',endo_prior_restrictions.irf{itmp,2}, '(', leg,')'];
                 fprintf(['%4.1f%% of the ',type,' support matches IRF restrictions ',atitle0,'\n'],length(indx1)/length(irestrictions)*100)
-                % aname=[type '_irf_calib_',int2str(ij)];
                 aname=[type '_irf_calib_',endo_prior_restrictions.irf{itmp,1},'_vs_',endo_prior_restrictions.irf{itmp,2},'_',aleg];
                 atitle=[type ' IRF Calib: Parameter(s) driving ',endo_prior_restrictions.irf{itmp,1},' vs ',endo_prior_restrictions.irf{itmp,2}, '(', leg,')'];
                 options_mcf.amcf_name = aname;
@@ -320,7 +305,7 @@ if ~isempty(indx_irf)
                 options_mcf.nobeha_title = 'NO IRF restriction';
                 options_mcf.title = atitle0;
                 if ~isempty(indx1) && ~isempty(indx2)
-                    mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, options_);
+                    mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, options_, bayestopt_, estim_params_);
                 end
             end
         end
@@ -398,7 +383,7 @@ if ~isempty(indx_moment)
     for ij=1:nbr_moment_restrictions
         endo_prior_restrictions.moment{ij,3} = sort(endo_prior_restrictions.moment{ij,3});
         if length(endo_prior_restrictions.moment{ij,3})>maxijv
-            maxij=ij;maxijv=length(endo_prior_restrictions.moment{ij,3});
+            maxijv=length(endo_prior_restrictions.moment{ij,3});
         end
         plot_indx(ij) = find(strcmp(moment_couples,all_moment_couples(ij,:)));
         time_matrix{plot_indx(ij)} = [time_matrix{plot_indx(ij)} endo_prior_restrictions.moment{ij,3}];
@@ -450,18 +435,11 @@ if ~isempty(indx_moment)
             set(hc,'color','k','linewidth',2)
             hold off
             title([endo_prior_restrictions.moment{ij,1},' vs ',endo_prior_restrictions.moment{ij,2},'(',leg,')'],'interpreter','none'),
-            %         if ij==maxij
-            %             leg1 = num2str(endo_prior_restrictions.moment{ij,3}(:));
-            %             [legend_h,object_h,plot_h,text_strings]=legend(leg1);
-            %             Position=get(legend_h,'Position');Position(1:2)=[-0.055 0.95-Position(4)];
-            %             set(legend_h,'Position',Position);
-            %         end
         end
         indx1 = find(indx_moment(:,ij)==0);
         indx2 = find(indx_moment(:,ij)~=0);
         atitle0=[endo_prior_restrictions.moment{ij,1},' vs ',endo_prior_restrictions.moment{ij,2}, '(', leg,')'];
         fprintf(['%4.1f%% of the ',type,' support matches MOMENT ',atitle0,' inside [%4.1f, %4.1f]\n'],length(indx1)/length(irestrictions)*100,endo_prior_restrictions.moment{ij,4})
-        % aname=[type '_moment_calib_',int2str(ij)];
         aname=[type '_moment_calib_',endo_prior_restrictions.moment{ij,1},'_vs_',endo_prior_restrictions.moment{ij,2},'_',aleg];
         atitle=[type ' MOMENT Calib: Parameter(s) driving ',endo_prior_restrictions.moment{ij,1},' vs ',endo_prior_restrictions.moment{ij,2}, '(', leg,')'];
         options_mcf.amcf_name = aname;
@@ -470,14 +448,8 @@ if ~isempty(indx_moment)
         options_mcf.nobeha_title = 'NO moment restriction';
         options_mcf.title = atitle0;
         if ~isempty(indx1) && ~isempty(indx2)
-            mcf_analysis(xmat, indx1, indx2, options_mcf, options_);
+            mcf_analysis(xmat, indx1, indx2, options_mcf, options_, bayestopt_, estim_params_);
         end
-
-        %         [proba, dproba] = stab_map_1(xmat, indx1, indx2, aname, 0);
-        %         indplot=find(proba<pvalue_ks);
-        %         if ~isempty(indplot)
-        %             stab_map_1(xmat, indx1, indx2, aname, 1, indplot, OutputDirectoryName,[],atitle);
-        %         end
     end
     for ij=1:nbr_moment_couples
         time_matrix{ij} = sort(time_matrix{ij});
@@ -496,7 +468,6 @@ if ~isempty(indx_moment)
                         tmp(temp_index,:) = endo_prior_restrictions.moment{itmp(ir),4};
                     end
                 end
-                %             tmp = cell2mat(endo_prior_restrictions.moment(itmp,4));
                 tmp(isinf(tmp(:,1)),1)=a(3);
                 tmp(isinf(tmp(:,2)),2)=a(4);
                 hp = patch([time_matrix{ij} time_matrix{ij}(end:-1:1)],[tmp(:,1); tmp(end:-1:1,2)],'b');
@@ -509,7 +480,6 @@ if ~isempty(indx_moment)
                 hold off
                 axis(a)
                 box on
-%                 set(gca,'xtick',sort(time_matrix{ij}))
                 itmp = min(itmp);
                 title([endo_prior_restrictions.moment{itmp,1},' vs ',endo_prior_restrictions.moment{itmp,2}],'interpreter','none'),
             end
@@ -523,7 +493,6 @@ if ~isempty(indx_moment)
                 aleg = 'ALL';
                 atitle0=[endo_prior_restrictions.moment{itmp,1},' vs ',endo_prior_restrictions.moment{itmp,2}, '(', leg,')'];
                 fprintf(['%4.1f%% of the ',type,' support matches MOMENT restrictions ',atitle0,'\n'],length(indx1)/length(irestrictions)*100)
-                % aname=[type '_moment_calib_',int2str(ij)];
                 aname=[type '_moment_calib_',endo_prior_restrictions.moment{itmp,1},'_vs_',endo_prior_restrictions.moment{itmp,2},'_',aleg];
                 atitle=[type ' MOMENT Calib: Parameter(s) driving ',endo_prior_restrictions.moment{itmp,1},' vs ',endo_prior_restrictions.moment{itmp,2}, '(', leg,')'];
                 options_mcf.amcf_name = aname;
@@ -532,7 +501,7 @@ if ~isempty(indx_moment)
                 options_mcf.nobeha_title = 'NO moment restriction';
                 options_mcf.title = atitle0;
                 if ~isempty(indx1) && ~isempty(indx2)
-                    mcf_analysis(xmat, indx1, indx2, options_mcf, options_);
+                    mcf_analysis(xmat, indx1, indx2, options_mcf, options_, bayestopt_, estim_params_);
                 end
             end
         end

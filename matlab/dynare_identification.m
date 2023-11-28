@@ -514,7 +514,8 @@ if iload <=0
     disp_identification(params, ide_reducedform_point, ide_moments_point, ide_spectrum_point, ide_minimal_point, name, options_ident);
     if ~options_ident.no_identification_strength && ~options_.nograph && ~error_indicator_point.identification_strength && ~error_indicator_point.identification_moments
         % plot (i) identification strength and sensitivity measure based on the moment information matrix and (ii) plot advanced analysis graphs
-        plot_identification(params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, IdentifDirectoryName, parameters_TeX, name_tex);
+        plot_identification(params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, ...
+            IdentifDirectoryName, M_.fname, options_, estim_params_, parameters_TeX, name_tex);
     end
 
     if SampleSize > 1
@@ -863,7 +864,8 @@ if iload
     disp_identification(ide_hess_point.params, ide_reducedform_point, ide_moments_point, ide_spectrum_point, ide_minimal_point, name, options_ident);
     if ~options_.nograph && ~error_indicator_point.identification_strength && ~error_indicator_point.identification_moments
         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-        plot_identification(ide_hess_point.params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, IdentifDirectoryName, [], name_tex);
+        plot_identification(ide_hess_point.params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, ...
+            IdentifDirectoryName, M_.fname, options_, estim_params_, [], name_tex);
     end
 end
 
@@ -877,7 +879,8 @@ if SampleSize > 1
     options_ident.advanced = advanced0; % reset advanced setting
     if ~options_.nograph && isfield(ide_hess_point,'ide_strength_dMOMENTS')
         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-        plot_identification(pdraws, IDE_MOMENTS, ide_hess_point, IDE_REDUCEDFORM, IDE_DYNAMIC, options_ident.advanced, 'MC sample ', name, IdentifDirectoryName, [], name_tex);
+        plot_identification(pdraws, IDE_MOMENTS, ide_hess_point, IDE_REDUCEDFORM, IDE_DYNAMIC, options_ident.advanced, 'MC sample ', name, ...
+            IdentifDirectoryName, M_.fname, options_, estim_params_, [], name_tex);
     end
     %advanced display and plots for MC Sample, i.e. look at draws with highest/lowest condition number
     if options_ident.advanced
@@ -902,7 +905,8 @@ if SampleSize > 1
                 options_ident.advanced = advanced0; %reset advanced setting
                 if ~options_.nograph && ~error_indicator_max.identification_strength && ~error_indicator_max.identification_moments
                     % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-                    plot_identification(pdraws(jmax,:), ide_moments_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, 1, tittxt, name, IdentifDirectoryName, tittxt, name_tex);
+                    plot_identification(pdraws(jmax,:), ide_moments_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, 1, tittxt, name, ...
+                        IdentifDirectoryName, M_.fname, options_, estim_params_, tittxt, name_tex);
                 end
 
                 % SMALLEST condition number
@@ -920,7 +924,8 @@ if SampleSize > 1
                 options_ident.advanced = advanced0; %reset advanced setting
                 if ~options_.nograph && ~error_indicator_min.identification_strength && ~error_indicator_min.identification_moments
                     % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-                    plot_identification(pdraws(jmin,:),ide_moments_min,ide_hess_min,ide_reducedform_min,ide_dynamic_min,1,tittxt,name,IdentifDirectoryName,tittxt,name_tex);
+                    plot_identification(pdraws(jmin,:),ide_moments_min,ide_hess_min,ide_reducedform_min,ide_dynamic_min,1,tittxt,name,...
+                        IdentifDirectoryName, M_.fname, options_, estim_params_, tittxt,name_tex);
                 end
                 % reset nodisplay option
                 options_.nodisplay = store_nodisplay;
@@ -941,7 +946,8 @@ if SampleSize > 1
                     options_ident.advanced = advanced0; % reset advanced
                     if ~options_.nograph && ~error_indicator_j.identification_strength && ~error_indicator_j.identification_moments
                         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-                        plot_identification(pdraws(jcrit(j),:), ide_moments_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), 1, tittxt, name, IdentifDirectoryName, tittxt, name_tex);
+                        plot_identification(pdraws(jcrit(j),:), ide_moments_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), 1, tittxt, name, ...
+                            IdentifDirectoryName, M_.fname, options_, estim_params_, tittxt, name_tex);
                     end
                 end
                 if ~iload

@@ -345,7 +345,7 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
             fprintf('After obtaining the files, you need to unpack them and set a Matlab Path to those files.\n')
             error('SS-ANOVA-R Toolbox missing!')
         end
-        redform_map(OutputDirectoryName,options_gsa);
+        redform_map(OutputDirectoryName,options_gsa,M_,estim_params_,options_,bayestopt_,oo_.dr);
     end
 end
 % RMSE mapping

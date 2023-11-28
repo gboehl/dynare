@@ -1,5 +1,6 @@
 function redform_screen(dirname, options_gsa_, param_vals, M_, dr, options_, bayestopt_)
-%redform_screen(dirname, options_gsa_, param_vals, M_, dr, options_, bayestopt_)
+% redform_screen(dirname, options_gsa_, param_vals, M_, dr, options_, bayestopt_)
+% Conduct reduced form screening
 % Inputs:
 %  - dirname             [string]    name of the output directory
 %  - options_gsa_        [structure] GSA options_
@@ -8,12 +9,6 @@ function redform_screen(dirname, options_gsa_, param_vals, M_, dr, options_, bay
 %  - dr                  [structure] decision rules
 %  - options_            [structure] describing the options
 %  - bayestopt_          [structure] describing the priors
-
-% inputs (from opt_gsa structure
-% anamendo    = options_gsa_.namendo;
-% anamlagendo = options_gsa_.namlagendo;
-% anamexo     = options_gsa_.namexo;
-% iload       = options_gsa_.load_redform;
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,

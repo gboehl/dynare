@@ -498,7 +498,7 @@ if length(iunstable)>0 || length(iwrong)>0
         options_mcf.beha_title = 'unique Stable Saddle-Path';
         options_mcf.nobeha_title = 'NO unique Stable Saddle-Path';
         options_mcf.title = 'unique solution';
-        mcf_analysis(lpmat, istable, itmp, options_mcf, options_);
+        mcf_analysis(lpmat, istable, itmp, options_mcf, options_, bayestopt_, estim_params_);
 
         if ~isempty(iindeterm)
             itmp = isolve(find(~ismember(isolve,iindeterm)));
@@ -507,7 +507,7 @@ if length(iunstable)>0 || length(iwrong)>0
             options_mcf.beha_title = 'NO indeterminacy';
             options_mcf.nobeha_title = 'indeterminacy';
             options_mcf.title = 'indeterminacy';
-            mcf_analysis(lpmat, itmp, iindeterm, options_mcf, options_);
+            mcf_analysis(lpmat, itmp, iindeterm, options_mcf, options_, bayestopt_, estim_params_);
         end
 
         if ~isempty(ixun)
@@ -517,7 +517,7 @@ if length(iunstable)>0 || length(iwrong)>0
             options_mcf.beha_title = 'NO explosive solution';
             options_mcf.nobeha_title = 'explosive solution';
             options_mcf.title = 'instability';
-            mcf_analysis(lpmat, itmp, ixun, options_mcf, options_);
+            mcf_analysis(lpmat, itmp, ixun, options_mcf, options_, bayestopt_, estim_params_);
         end
 
         inorestriction = istable(find(~ismember(istable,irestriction))); % violation of prior restrictions
@@ -529,7 +529,7 @@ if length(iunstable)>0 || length(iwrong)>0
             options_mcf.beha_title = 'NO inability to find a solution';
             options_mcf.nobeha_title = 'inability to find a solution';
             options_mcf.title = 'inability to find a solution';
-            mcf_analysis(lpmat, itmp, iwrong, options_mcf, options_);
+            mcf_analysis(lpmat, itmp, iwrong, options_mcf, options_, bayestopt_, estim_params_);
         end
 
         if ~isempty(irestriction)
@@ -558,7 +558,7 @@ if length(iunstable)>0 || length(iwrong)>0
             options_mcf.beha_title = 'prior IRF/moment calibration';
             options_mcf.nobeha_title = 'NO prior IRF/moment calibration';
             options_mcf.title = 'prior restrictions';
-            mcf_analysis([lpmat0 lpmat], irestriction, inorestriction, options_mcf, options_);
+            mcf_analysis([lpmat0 lpmat], irestriction, inorestriction, options_mcf, options_, bayestopt_, estim_params_);
             iok = irestriction(1);
             x0 = [lpmat0(iok,:)'; lpmat(iok,:)'];
         else
