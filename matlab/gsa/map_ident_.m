@@ -60,7 +60,7 @@ if opt_gsa.load_ident_files==0
     mss = teff(mss(:,istable),Nsam,istable);
     yys = teff(yys(dr.order_var,istable),Nsam,istable);
     if exist('T','var')
-        [vdec, cc, ac] = mc_moments(T, lpmatx, dr);
+        [vdec, cc, ac] = mc_moments(T, lpmatx, dr, M_.exo_nbr, options_);
     else
         return
     end
@@ -77,14 +77,14 @@ if opt_gsa.load_ident_files==0
         ifig=0;
         for j=1:M_.exo_nbr
             if mod(j,6)==1
-                hh_fig=dyn_figure(options_.nodisplay,'name',['Variance decomposition shocks']);
+                hh_fig=dyn_figure(options_.nodisplay,'name','Variance decomposition shocks');
                 ifig=ifig+1;
                 iplo=0;
             end
             iplo=iplo+1;
             subplot(2,3,iplo)
             myboxplot(squeeze(vdec(:,j,:))',[],'.',[],10)
-            set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:size(options_.varobs,1)])
+            set(gca,'xticklabel',' ','fontsize',10,'xtick',1:size(options_.varobs,1))
             set(gca,'xlim',[0.5 size(options_.varobs,1)+0.5])
             set(gca,'ylim',[-2 102])
             for ip=1:size(options_.varobs,1)
@@ -95,7 +95,7 @@ if opt_gsa.load_ident_files==0
             title(M_.exo_names{j},'interpreter','none')
             if mod(j,6)==0 || j==M_.exo_nbr
                 dyn_saveas(hh_fig,[OutputDirectoryName,'/',fname_,'_vdec_exo_',int2str(ifig)],options_.nodisplay,options_.graph_format);
-                create_TeX_loader(options_,[OutputDirectoryName,'/',fname_,'_vdec_exo_',int2str(ifig)],ifig,['Variance decomposition shocks'],'vdec_exo',options_.figures.textwidth*min(iplo/3,1))
+                create_TeX_loader(options_,[OutputDirectoryName,'/',fname_,'_vdec_exo_',int2str(ifig)],ifig,'Variance decomposition shocks','vdec_exo',options_.figures.textwidth*min(iplo/3,1))
             end
         end
     end
@@ -113,8 +113,8 @@ if opt_gsa.load_ident_files==0
     iv = (1:endo_nbr)';
     ic = [ nstatic+(1:nspred) endo_nbr+(1:size(dr.ghx,2)-nspred) ]';
 
-    dr.ghx = T(:, [1:(nc1-M_.exo_nbr)],1);
-    dr.ghu = T(:, [(nc1-M_.exo_nbr+1):end], 1);
+    dr.ghx = T(:, 1:(nc1-M_.exo_nbr),1);
+    dr.ghu = T(:, (nc1-M_.exo_nbr+1):end, 1);
     [Aa,Bb] = kalman_transition_matrix(dr,iv,ic);
     A = zeros(size(Aa,1),size(Aa,2)+size(Aa,1),length(istable));
     if ~isempty(lpmatx)
@@ -122,8 +122,8 @@ if opt_gsa.load_ident_files==0
     end
     A(:,:,1)=[Aa, triu(Bb*M_.Sigma_e*Bb')];
     for j=2:length(istable)
-        dr.ghx = T(:, [1:(nc1-M_.exo_nbr)],j);
-        dr.ghu = T(:, [(nc1-M_.exo_nbr+1):end], j);
+        dr.ghx = T(:, 1:(nc1-M_.exo_nbr),j);
+        dr.ghu = T(:, (nc1-M_.exo_nbr+1):end, j);
         [Aa,Bb] = kalman_transition_matrix(dr, iv, ic);
         if ~isempty(lpmatx)
             set_shocks_param(lpmatx(j,:));
@@ -155,12 +155,12 @@ if opt_gsa.morris==1
             SAvdec = squeeze(SAMorris(:,1,:))';
             save([OutputDirectoryName,'/',fname_,'_morris_IDE.mat'],'SAvdec','vdec','ir_vdec','ic_vdec')
         else
-            load([OutputDirectoryName,'/',fname_,'_morris_IDE.mat'],'SAvdec','vdec','ir_vdec','ic_vdec')
+            load([OutputDirectoryName,'/',fname_,'_morris_IDE.mat'],'SAvdec')
         end
 
         hh_fig = dyn_figure(options_.nodisplay,'name','Screening identification: variance decomposition');
         myboxplot(SAvdec,[],'.',[],10)
-        set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
+        set(gca,'xticklabel',' ','fontsize',10,'xtick',1:npT)
         set(gca,'xlim',[0.5 npT+0.5])
         ydum = get(gca,'ylim');
         set(gca,'ylim',[0 ydum(2)])
@@ -193,7 +193,7 @@ if opt_gsa.morris==1
 
     hh_fig=dyn_figure(options_.nodisplay,'name','Screening identification: theoretical moments');
     myboxplot(SAcc,[],'.',[],10)
-    set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
+    set(gca,'xticklabel',' ','fontsize',10,'xtick',1:npT)
     set(gca,'xlim',[0.5 npT+0.5])
     set(gca,'ylim',[0 1])
     set(gca,'position',[0.13 0.2 0.775 0.7])
@@ -231,11 +231,11 @@ if opt_gsa.morris==1
         end
         save([OutputDirectoryName,'/',fname_,'_morris_IDE.mat'],'SAnorm','SAmunorm','SAsignorm','-append')
     else
-        load([OutputDirectoryName,'/',fname_,'_morris_IDE'],'SAnorm','SAmunorm','SAsignorm')
+        load([OutputDirectoryName,'/',fname_,'_morris_IDE'],'SAnorm')
     end
     hh_fig=dyn_figure(options_.nodisplay,'name','Screening identification: model');
     myboxplot(SAnorm',[],'.',[],10)
-    set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
+    set(gca,'xticklabel',' ','fontsize',10,'xtick',1:npT)
     set(gca,'xlim',[0.5 npT+0.5])
     set(gca,'ylim',[0 1])
     set(gca,'position',[0.13 0.2 0.775 0.7])
@@ -261,7 +261,7 @@ else  % main effects analysis
         fsuffix = '_rank';
     end
 
-    imap=[1:npT];
+    imap=1:npT;
 
     if isempty(lpmat0)
         x0=lpmat(istable,:);
@@ -309,12 +309,12 @@ else  % main effects analysis
         save([OutputDirectoryName,'/map_cc',fsuffix,'.mat'],'gsa_')
         save([OutputDirectoryName,'/',fname_,'_main_eff.mat'],'imap_cc','SAcc','ccac','-append')
     else
-        load([OutputDirectoryName,'/',fname_,'_main_eff'],'imap_cc','SAcc','ccac')
+        load([OutputDirectoryName,'/',fname_,'_main_eff'],'SAcc')
     end
 
     hh_fig=dyn_figure(options_.nodisplay,'Name',['Identifiability indices in the ',fsuffix,' moments.']);
     bar(sum(SAcc))
-    set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:npT])
+    set(gca,'xticklabel',' ','fontsize',10,'xtick',1:npT)
     set(gca,'xlim',[0.5 npT+0.5])
     ydum = get(gca,'ylim');
     set(gca,'ylim',[0 ydum(2)])

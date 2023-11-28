@@ -1,7 +1,22 @@
-function [vdec, corr, autocorr, z, zz] = th_moments(dr,var_list)
-% [vdec, corr, autocorr, z, zz] = th_moments(dr,var_list)
+function [vdec, corr, autocorr, z, zz] = th_moments(dr,options_,M_)
+% [vdec, corr, autocorr, z, zz] = th_moments(dr,options_,M_)
+% Computes theoretical moments for GSA
+%
+% INPUTS
+% - dr            [structure]     model information structure
+% - options_      [structure]     Matlab's structure describing the current options
+% - M_            [structure]     Matlab's structure describing the model
+%
+% OUTPUTS
+% - vdec          [double]        variance decomposition matrix
+% - corr          [double]        correlation matrix
+% - autocorr      [cell]          contains autocorrelation or
+%                                 auto- and cross-covariance matrices
+% - z             [double]        matrix containing mean, standard
+%                                 deviation, and variance vector
+% - zz            [double]        autocorrelation matrix
 
-% Copyright © 2012-2018 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,18 +33,16 @@ function [vdec, corr, autocorr, z, zz] = th_moments(dr,var_list)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ options_
-
-nvar = length(var_list);
+nvar = length(options_.var_list);
 if nvar == 0
     nvar = length(dr.order_var);
     ivar = [1:nvar]';
 else
     ivar=zeros(nvar,1);
     for i=1:nvar
-        i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
+        i_tmp = strmatch(options_.var_list{i}, M_.endo_names, 'exact');
         if isempty(i_tmp)
-            error(['One of the variables specified does not exist']) ;
+            error('th_moments: One of the variables specified does not exist');
         else
             ivar(i) = i_tmp;
         end
@@ -39,21 +52,11 @@ end
 [gamma_y,stationary_vars] = th_autocovariances(dr,ivar,M_, options_);
 m = dr.ys(ivar(stationary_vars));
 
-
-%   i1 = find(abs(diag(gamma_y{1})) > 1e-12);
-i1 = [1:length(ivar)];
+i1 = 1:length(ivar);
 s2 = diag(gamma_y{1});
 sd = sqrt(s2);
 
-
 z = [ m sd s2 ];
-mean = m;
-var = gamma_y{1};
-
-
-%'THEORETICAL MOMENTS';
-%'MEAN','STD. DEV.','VARIANCE');
-z;
 
 %'VARIANCE DECOMPOSITION (in percent)';
 if M_.exo_nbr>1
@@ -69,6 +72,7 @@ else
     corr = gamma_y{1}(i1,i1);
 end
 if options_.ar > 0
+    zz=NaN(length(ivar),options_.ar);
     %'COEFFICIENTS OF AUTOCORRELATION';
     for i=1:options_.ar
         if options_.opt_gsa.useautocorr
