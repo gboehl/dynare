@@ -1,5 +1,14 @@
-function redform_screen(dirname, options_gsa_)
-%function redform_map(dirname, options_gsa_)
+function redform_screen(dirname, options_gsa_, param_vals, M_, dr, options_, bayestopt_)
+%redform_screen(dirname, options_gsa_, param_vals, M_, dr, options_, bayestopt_)
+% Inputs:
+%  - dirname             [string]    name of the output directory
+%  - options_gsa_        [structure] GSA options_
+%  - param_vals          [double]    parameter vector
+%  - M_                  [structure] describing the model
+%  - dr                  [structure] decision rules
+%  - options_            [structure] describing the options
+%  - bayestopt_          [structure] describing the priors
+
 % inputs (from opt_gsa structure
 % anamendo    = options_gsa_.namendo;
 % anamlagendo = options_gsa_.namlagendo;
@@ -28,17 +37,12 @@ function redform_screen(dirname, options_gsa_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ estim_params_ options_ bayestopt_
-
-% options_gsa_ = options_.opt_gsa;
-
 anamendo = options_gsa_.namendo;
 anamlagendo = options_gsa_.namlagendo;
 anamexo = options_gsa_.namexo;
-iload = options_gsa_.load_redform;
 nliv = options_gsa_.morris_nliv;
 
-pnames = M_.param_names(estim_params_.param_vals(:,1));
+pnames = M_.param_names(param_vals(:,1));
 if nargin==0
     dirname='';
 end
@@ -55,7 +59,7 @@ nsok = length(find(M_.lead_lag_incidence(M_.maximum_lag,:)));
 js=0;
 for j=1:size(anamendo,1)
     namendo = deblank(anamendo(j,:));
-    iendo = strmatch(namendo, M_.endo_names(oo_.dr.order_var), 'exact');
+    iendo = strmatch(namendo, M_.endo_names(dr.order_var), 'exact');
     iplo=0;
     ifig=0;
     for jx=1:size(anamexo,1)
@@ -66,16 +70,16 @@ for j=1:size(anamendo,1)
             if ~isempty(y0)
                 if mod(iplo,9)==0
                     ifig = ifig+1;
-                    hh_fig = dyn_figure(options_.nodisplay, 'name', [namendo,[' vs. shocks '], int2str(ifig)]);
+                    hh_fig = dyn_figure(options_.nodisplay, 'name', [namendo,' vs. shocks ', int2str(ifig)]);
                     iplo = 0;
                 end
                 iplo = iplo+1;
                 js = js+1;
                 subplot(3, 3, iplo)
-                [SAmeas, SAMorris] = Morris_Measure_Groups(np+nshock, [lpmat0 lpmat], y0, nliv);
+                [~, SAMorris] = Morris_Measure_Groups(np+nshock, [lpmat0 lpmat], y0, nliv);
                 SAM = squeeze(SAMorris(nshock+1:end,1));
                 SA(:,js) = SAM./(max(SAM)+eps);
-                [saso, iso] = sort(-SA(:,js));
+                [~, iso] = sort(-SA(:,js));
                 bar(SA(iso(1:min(np,10)),js))
                 set(gca,'xticklabel',' ','fontsize',10)
                 set(gca,'xlim',[0.5 10.5])
@@ -100,7 +104,7 @@ for j=1:size(anamendo,1)
     ifig=0;
     for je=1:size(anamlagendo,1)
         namlagendo=deblank(anamlagendo(je,:));
-        ilagendo=strmatch(namlagendo, M_.endo_names(oo_.dr.order_var(M_.nstatic+1:M_.nstatic+nsok)), 'exact');
+        ilagendo=strmatch(namlagendo, M_.endo_names(dr.order_var(M_.nstatic+1:M_.nstatic+nsok)), 'exact');
 
         if ~isempty(ilagendo)
             y0=teff(T(iendo,ilagendo,:),kn,istable);
@@ -113,12 +117,11 @@ for j=1:size(anamendo,1)
                 iplo=iplo+1;
                 js=js+1;
                 subplot(3,3,iplo),
-                [SAmeas, SAMorris] = Morris_Measure_Groups(np+nshock, [lpmat0 lpmat], y0,nliv);
+                [~, SAMorris] = Morris_Measure_Groups(np+nshock, [lpmat0 lpmat], y0,nliv);
                 SAM = squeeze(SAMorris(nshock+1:end,1));
                 SA(:,js)=SAM./(max(SAM)+eps);
-                [saso, iso] = sort(-SA(:,js));
+                [~, iso] = sort(-SA(:,js));
                 bar(SA(iso(1:min(np,10)),js))
-                %set(gca,'xticklabel',pnames(iso(1:min(np,10)),:),'fontsize',8)
                 set(gca,'xticklabel',' ','fontsize',10)
                 set(gca,'xlim',[0.5 10.5])
                 for ip=1:min(np,10)
@@ -140,10 +143,8 @@ for j=1:size(anamendo,1)
 end
 
 hh_fig=dyn_figure(options_.nodisplay,'Name','Reduced form screening');
-%bar(SA)
-% boxplot(SA','whis',10,'symbol','r.')
 myboxplot(SA',[],'.',[],10)
-set(gca,'xticklabel',' ','fontsize',10,'xtick',[1:np])
+set(gca,'xticklabel',' ','fontsize',10,'xtick',1:np)
 set(gca,'xlim',[0.5 np+0.5])
 set(gca,'ylim',[0 1])
 set(gca,'position',[0.13 0.2 0.775 0.7])

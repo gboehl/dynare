@@ -334,7 +334,7 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
     end
     %     options_.opt_gsa = options_gsa;
     if options_gsa.morris==1
-        redform_screen(OutputDirectoryName,options_gsa);
+        redform_screen(OutputDirectoryName,options_gsa, estim_params_.param_vals, M_, oo_.dr, options_, bayestopt_);
     else
         % check existence of the SS_ANOVA toolbox
         if isempty(options_gsa.threshold_redform) && ~(exist('gsa_sdp','file')==6 || exist('gsa_sdp','file')==2)
