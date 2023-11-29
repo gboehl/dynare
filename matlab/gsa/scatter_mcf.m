@@ -38,12 +38,6 @@ function  scatter_mcf(X,Y,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, o
 
 
 Z=[X;Y];
-[n,p] = size(X);
-% X = X - ones(n,1)*min(Z);
-% X = X ./ (ones(n,1)*max(Z));
-[n,p] = size(Y);
-% Y = Y - ones(n,1)*min(Z);
-% Y = Y ./ (ones(n,1)*max(Z));
 [n,p] = size(Z);
 clear Z;
 
@@ -53,8 +47,10 @@ if nargin >=3
 end
 
 if nargin<4 || isempty(plotsymbol)
-    if n*p<100, plotsymbol = 'o';
-    else plotsymbol = '.';
+    if n*p<100
+        plotsymbol = 'o';
+    else 
+        plotsymbol = '.';
     end
 end
 
@@ -83,7 +79,7 @@ end
 
 figtitle_tex=strrep(figtitle,'_','\_');
 
-fig_nam_=[fnam];
+fig_nam_=fnam;
 if ~nograph
     hh_fig=dyn_figure(options_.nodisplay,'name',figtitle);
 end
@@ -101,7 +97,6 @@ for i = 1:p
         h = axes('position',[fL(i),fL(p+1-j),ffl,ffl]);
         if i==j
             h1=cumplot(X(:,j));
-            %             set(h1,'color',[0 0 1], 'linestyle','--','LineWidth',1.5)
             set(h1,'color',[0 0 1],'LineWidth',1.5)
             hold on,
             h2=cumplot(Y(:,j));
@@ -126,10 +121,10 @@ for i = 1:p
                 plot(X(:,i),X(:,j),[plotsymbol,'b'])
             end
             if ~isempty(xparam1)
-                hold on, plot(xparam1(i),xparam1(j),'s','MarkerFaceColor',[0 0.75 0],'MarkerEdgeColor',[0 0.75 0])
+                hold on 
+                plot(xparam1(i),xparam1(j),'s','MarkerFaceColor',[0 0.75 0],'MarkerEdgeColor',[0 0.75 0])
             end
             hold off;
-            %             axis([-0.1 1.1 -0.1 1.1])
             if i<p
                 set(gca,'YTickLabel',[],'YTick',[]);
             else
@@ -144,16 +139,26 @@ for i = 1:p
         end
         if i==1
             if nflag == 1
-                ylabel(vnames(j,:),'Rotation',45, ...
-                       'HorizontalAlignment','right','VerticalAlignment','middle');
+                if options_.TeX
+                    ylabel(vnames(j,:),'Rotation',45, ...
+                        'HorizontalAlignment','right','VerticalAlignment','middle','Interpreter','latex');
+                else
+                    ylabel(vnames(j,:),'Rotation',45, ...
+                        'HorizontalAlignment','right','VerticalAlignment','middle','Interpreter','none');
+                end
             else
                 ylabel([num2str(j),' '],'Rotation',90)
             end
         end
         if j==1
             if nflag == 1
-                title(vnames(i,:),'Rotation',45, ...
-                      'HorizontalAlignment','left','VerticalAlignment','bottom')
+                if options_.TeX
+                    title(vnames(i,:),'Rotation',45, ...
+                      'HorizontalAlignment','left','VerticalAlignment','bottom','Interpreter','latex')
+                else
+                    title(vnames(i,:),'Rotation',45, ...
+                      'HorizontalAlignment','left','VerticalAlignment','bottom','Interpreter','none')
+                end
             else
                 title(num2str(i))
             end
@@ -162,8 +167,13 @@ for i = 1:p
     end
 end
 if ~isoctave
-    annotation('textbox', [0.1,0,0.35,0.05],'String', beha_name,'Color','Blue','horizontalalignment','center','interpreter','none');
-    annotation('textbox', [0.55,0,0.35,0.05],'String', non_beha_name,'Color','Red','horizontalalignment','center','interpreter','none');
+    if options_.TeX
+        annotation('textbox', [0.1,0,0.35,0.05],'String', beha_name,'Color','Blue','horizontalalignment','center','interpreter','latex');
+        annotation('textbox', [0.55,0,0.35,0.05],'String', non_beha_name,'Color','Red','horizontalalignment','center','interpreter','latex');
+    else
+        annotation('textbox', [0.1,0,0.35,0.05],'String', beha_name,'Color','Blue','horizontalalignment','center','interpreter','none');
+        annotation('textbox', [0.55,0,0.35,0.05],'String', non_beha_name,'Color','Red','horizontalalignment','center','interpreter','none');
+    end
 end
 
 if ~nograph

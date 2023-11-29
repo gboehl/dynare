@@ -1,5 +1,5 @@
-function redform_map(dirname,options_gsa_,M_,estim_params_,options_,bayestopt_,dr)
-% redform_map(dirname,options_gsa_,M_,estim_params_,options_,bayestopt_,dr)
+function redform_map(dirname,options_gsa_,M_,estim_params_,options_,bayestopt_,oo_)
+% redform_map(dirname,options_gsa_,M_,estim_params_,options_,bayestopt_,oo_)
 % Inputs:
 % - dirname             [string]    name of the output directory
 % - options_gsa_        [structure] GSA options_
@@ -7,7 +7,7 @@ function redform_map(dirname,options_gsa_,M_,estim_params_,options_,bayestopt_,d
 % - estim_params_       [structure] characterizing parameters to be estimated
 % - options_            [structure] describing the options
 % - bayestopt_          [structure] describing the priors
-% - dr                  [structure] storing the decision rules
+% - oo_                 [structure] storing the results
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -82,7 +82,7 @@ options_mcf.fname_ = M_.fname;
 options_mcf.OutputDirectoryName = adir;
 
 if ~exist('T','var')
-    stab_map_(dirname,options_gsa_);
+    stab_map_(dirname,options_gsa_,M_,oo_,options_,bayestopt_,estim_params_);
     if pprior
         load([dirname,filesep,M_.fname,'_prior'],'T');
     else
@@ -134,7 +134,7 @@ lpmat0=[];
 js=0;
 for j = 1:length(anamendo)
     namendo = anamendo{j};
-    iendo = strmatch(namendo, M_.endo_names(dr.order_var), 'exact');
+    iendo = strmatch(namendo, M_.endo_names(oo_.dr.order_var), 'exact');
     ifig = 0;
     iplo = 0;
     for jx = 1:length(anamexo)
@@ -205,7 +205,7 @@ for j = 1:length(anamendo)
                         options_mcf.OutputDirectoryName = xdir;
                         if ~isempty(iy) && ~isempty(iyc)
                             fprintf(['%4.1f%% of the ',type,' support matches ',atitle0,'\n'],length(iy)/length(y0)*100)
-                            icheck = mcf_analysis(x0, iy, iyc, options_mcf, options_, bayestopt_, estim_params_);
+                            icheck = mcf_analysis(x0, iy, iyc, options_mcf, M_, options_, bayestopt_, estim_params_);
 
                             lpmat=x0(iy,:);
                             if nshocks
@@ -289,7 +289,7 @@ for j = 1:length(anamendo)
     iplo=0;
     for je=1:length(anamlagendo)
         namlagendo = anamlagendo{je};
-        ilagendo=strmatch(namlagendo, M_.endo_names(dr.order_var(M_.nstatic+1:M_.nstatic+nsok)), 'exact');
+        ilagendo=strmatch(namlagendo, M_.endo_names(oo_.dr.order_var(M_.nstatic+1:M_.nstatic+nsok)), 'exact');
         skipline()
         disp(['[', namendo,' vs lagged ',namlagendo,']'])
 
@@ -356,7 +356,7 @@ for j = 1:length(anamendo)
                         if ~isempty(iy) && ~isempty(iyc)
 
                             fprintf(['%4.1f%% of the ',type,' support matches ',atitle0,'\n'],length(iy)/length(y0)*100)
-                            icheck = mcf_analysis(x0, iy, iyc, options_mcf, options_, bayestopt_, estim_params_);
+                            icheck = mcf_analysis(x0, iy, iyc, options_mcf, M_, options_, bayestopt_, estim_params_);
 
                             lpmat=x0(iy,:);
                             if nshocks

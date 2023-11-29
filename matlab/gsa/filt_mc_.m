@@ -84,11 +84,15 @@ if ~options_.nograph
     end
     for j=1:length(a)
         if strmatch([fname_,tmp],a(j).name)
-            disp(a(j).name)
+            if options_.debug
+                disp(a(j).name)
+            end
             delete([OutDir,filesep,a(j).name])
         end
         if strmatch([fname_,tmp1],a(j).name)
-            disp(a(j).name)
+            if options_.debug
+                disp(a(j).name)
+            end
             delete([OutDir,filesep,a(j).name])
         end
     end
@@ -306,7 +310,7 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
     options_mcf.title = atitle;
     options_mcf.beha_title = 'better posterior kernel';
     options_mcf.nobeha_title = 'worse posterior kernel';
-    mcf_analysis(x, ipost(1:nfilt), ipost(nfilt+1:end), options_mcf, options_, bayestopt_, estim_params_);
+    mcf_analysis(x, ipost(1:nfilt), ipost(nfilt+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
     if options_.opt_gsa.pprior
         anam = 'rmse_prior_lik';
         atitle = 'RMSE prior: Log Likelihood Kernel';
@@ -319,7 +323,7 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
     options_mcf.title = atitle;
     options_mcf.beha_title = 'better likelihood';
     options_mcf.nobeha_title = 'worse likelihood';
-    mcf_analysis(x, ilik(1:nfilt), ilik(nfilt+1:end), options_mcf, options_, bayestopt_, estim_params_);
+    mcf_analysis(x, ilik(1:nfilt), ilik(nfilt+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
 
 else
     if options_.opt_gsa.ppost
@@ -729,10 +733,15 @@ else
         for iy = 1:length(vvarvecm)
             options_mcf.amcf_name = [asname '_' vvarvecm{iy} '_map' ];
             options_mcf.amcf_title = [atitle ' ' vvarvecm{iy}];
-            options_mcf.beha_title = ['better fit of ' vvarvecm{iy}];
-            options_mcf.nobeha_title = ['worse fit of ' vvarvecm{iy}];
+            if options_.TeX
+                options_mcf.beha_title = ['better fit of ' vvarvecm_tex{iy}];
+                options_mcf.nobeha_title = ['worse fit of ' vvarvecm_tex{iy}];
+            else
+                options_mcf.beha_title = ['better fit of ' vvarvecm{iy}];
+                options_mcf.nobeha_title = ['worse fit of ' vvarvecm{iy}];
+            end
             options_mcf.title = ['the fit of ' vvarvecm{iy}];
-            mcf_analysis(x, ixx(1:nfilt0(iy),iy), ixx(nfilt0(iy)+1:end,iy), options_mcf, options_, bayestopt_, estim_params_);
+            mcf_analysis(x, ixx(1:nfilt0(iy),iy), ixx(nfilt0(iy)+1:end,iy), options_mcf, M_, options_, bayestopt_, estim_params_);
         end
         for iy = 1:length(vvarvecm)
             ipar = find(any(squeeze(PPV(iy,:,:))<alpha));
@@ -877,7 +886,7 @@ pnames_tex=cell(np,1);
 for ii=1:length(bayestopt_.name)
     if options_.TeX
         [param_name_temp, param_name_tex_temp]= get_the_name(ii,options_.TeX,M_,estim_params_,options_);
-        pnames_tex{ii,1} = strrep(param_name_tex_temp,'$','');
+        pnames_tex{ii,1} = param_name_tex_temp;
         pnames{ii,1} = param_name_temp;
     else
         param_name_temp = get_the_name(ii,options_.TeX,M_,estim_params_,options_);

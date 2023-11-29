@@ -1,6 +1,6 @@
-var c, y_ro, psi, s, tt, pi_h, mc_ro, i_ro, pi_ro, pi_eu, pi_f, y_eu, mc_eu, i_eu, g, a, cp, bnr, gs, as ;
-varexo eps_a, eps_g, eps_cp, eps_s, eps_m, eps_as, eps_gs, eps_ms;
-parameters alfa, niu, delt, teta_h, teta_f, bet, fi, sigm, h, ro, psi_pi, tetas, rhos, psi_pis, psi_y, psi_deltay, rho_g, rho_a, rho_cp, rho_s, rho_gs, rho_as ; 
+var c, y_ro, psi, s, tt, pi_h ${\pi_h}$, mc_ro, i_ro, pi_ro ${\pi_\rho}$, pi_eu, pi_f, y_eu, mc_eu, i_eu, g, a, cp, bnr, gs, as ;
+varexo eps_a, eps_g, eps_cp, eps_s, eps_m $\varepsilon_m$, eps_as, eps_gs, eps_ms;
+parameters alfa, niu, delt, teta_h, teta_f, bet, fi, sigm, h, ro, psi_pi $\psi_\pi$, tetas, rhos, psi_pis, psi_y, psi_deltay, rho_g, rho_a, rho_cp, rho_s, rho_gs, rho_as ; 
 
 alfa = 0.425 ;
 bet = 0.99 ; 
@@ -121,7 +121,7 @@ stderr eps_as, 1, 0.01, 10 ;
 end;
 
 varobs y_ro, pi_ro, i_ro, s, y_eu, pi_eu, i_eu, tt ;
-
+options_.TeX    =1;
 dynare_sensitivity (identification=1, nsam = 500, lik_only = 1, morris=2) ;
 
 stoch_simul(order=2,irf=20)  y_ro pi_ro i_ro s ;

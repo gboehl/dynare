@@ -1,7 +1,8 @@
-function plot_identification(params, idemoments, idehess, idemodel, idelre, advanced, tittxt, name, IdentifDirectoryName, fname, options_, estim_params_, tit_TeX, name_tex)
-% function plot_identification(params,idemoments,idehess,idemodel, idelre, advanced, tittxt, name, IdentifDirectoryName)
+function plot_identification(M_, params, idemoments, idehess, idemodel, idelre, advanced, tittxt, name, IdentifDirectoryName, fname, options_, estim_params_, bayestopt_, tit_TeX, name_tex)
+% function plot_identification(params,idemoments,idehess,idemodel, idelre, advanced, tittxt, name, IdentifDirectoryName, fname, options_, estim_params_, bayestopt_, tit_TeX, name_tex)
 %
 % INPUTS
+%    o M_                   [structure] model
 %    o params               [array] parameter values for identification checks
 %    o idemoments           [structure] identification results for the moments
 %    o idehess              [structure] identification results for the Hessian
@@ -36,11 +37,11 @@ function plot_identification(params, idemoments, idehess, idemodel, idelre, adva
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if nargin <12 || isempty(tit_TeX)
+if nargin <14 || isempty(tit_TeX)
     tit_TeX=tittxt;
 end
 
-if nargin <13
+if nargin <15
     name_tex=name;
 end
 
@@ -436,17 +437,17 @@ else
         options_mcf.title = 'MC Highest Condition Number LRE Model';
         ncut=floor(SampleSize/10*9);
         [~,is]=sort(idelre.cond);
-        mcf_analysis(params, is(1:ncut), is(ncut+1:end), options_mcf, options_, bayestopt_, estim_params_);
+        mcf_analysis(params, is(1:ncut), is(ncut+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
         options_mcf.amcf_name = 'MC_HighestCondNumberModel';
         options_mcf.amcf_title = 'MC Highest Condition Number Model Solution';
         options_mcf.title = 'MC Highest Condition Number Model Solution';
         [~,is]=sort(idemodel.cond);
-        mcf_analysis(params, is(1:ncut), is(ncut+1:end), options_mcf, options_, bayestopt_, estim_params_);
+        mcf_analysis(params, is(1:ncut), is(ncut+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
         options_mcf.amcf_name = 'MC_HighestCondNumberMoments';
         options_mcf.amcf_title = 'MC Highest Condition Number Model Moments';
         options_mcf.title = 'MC Highest Condition Number Model Moments';
         [~,is]=sort(idemoments.cond);
-        mcf_analysis(params, is(1:ncut), is(ncut+1:end), options_mcf, options_, bayestopt_, estim_params_);
+        mcf_analysis(params, is(1:ncut), is(ncut+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
         %         [proba, dproba] = stab_map_1(idemoments.Mco', is(1:ncut), is(ncut+1:end), 'HighestCondNumberMoments_vs_Mco', 1, [], IdentifDirectoryName);
         %         for j=1:nparam,
         % %             ibeh=find(idemoments.Mco(j,:)<0.9);

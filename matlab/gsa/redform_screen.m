@@ -1,10 +1,10 @@
-function redform_screen(dirname, options_gsa_, param_vals, M_, dr, options_, bayestopt_)
-% redform_screen(dirname, options_gsa_, param_vals, M_, dr, options_, bayestopt_)
+function redform_screen(dirname, options_gsa_, estim_params_, M_, dr, options_, bayestopt_)
+% redform_screen(dirname, options_gsa_, estim_params_, M_, dr, options_, bayestopt_)
 % Conduct reduced form screening
 % Inputs:
 %  - dirname             [string]    name of the output directory
 %  - options_gsa_        [structure] GSA options_
-%  - param_vals          [double]    parameter vector
+%  - estim_params        [structure] describing the estimated parameters
 %  - M_                  [structure] describing the model
 %  - dr                  [structure] decision rules
 %  - options_            [structure] describing the options
@@ -37,7 +37,12 @@ anamlagendo = options_gsa_.namlagendo;
 anamexo = options_gsa_.namexo;
 nliv = options_gsa_.morris_nliv;
 
-pnames = M_.param_names(param_vals(:,1));
+pnames = M_.param_names(estim_params_.param_vals(:,1));
+if options_.TeX
+    for par_iter=1:size(estim_params_.param_vals(:,1),1)
+        [~,tex_names{par_iter,1}]=get_the_name(estim_params_.param_vals(par_iter,1),options_.TeX, M_, estim_params_, options_);
+    end
+end
 if nargin==0
     dirname='';
 end
@@ -53,12 +58,12 @@ nsok = length(find(M_.lead_lag_incidence(M_.maximum_lag,:)));
 
 js=0;
 for j=1:size(anamendo,1)
-    namendo = deblank(anamendo(j,:));
+    namendo = anamendo{j,:};
     iendo = strmatch(namendo, M_.endo_names(dr.order_var), 'exact');
     iplo=0;
     ifig=0;
     for jx=1:size(anamexo,1)
-        namexo = deblank(anamexo(jx,:));
+        namexo = anamexo{jx};
         iexo = strmatch(namexo, M_.exo_names, 'exact');
         if ~isempty(iexo)
             y0=teff(T(iendo,iexo+nspred,:), kn, istable);
@@ -79,7 +84,11 @@ for j=1:size(anamendo,1)
                 set(gca,'xticklabel',' ','fontsize',10)
                 set(gca,'xlim',[0.5 10.5])
                 for ip=1:min(np,10)
-                    text(ip,-0.02,pnames(iso(ip)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    if options_.TeX
+                        text(ip,-0.02,tex_names(iso(ip)),'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+                    else
+                        text(ip,-0.02,pnames(iso(ip)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    end
                 end
                 title([namendo,' vs. ',namexo],'interpreter','none')
                 if iplo==9
@@ -98,7 +107,7 @@ for j=1:size(anamendo,1)
     iplo=0;
     ifig=0;
     for je=1:size(anamlagendo,1)
-        namlagendo=deblank(anamlagendo(je,:));
+        namlagendo=anamlagendo{je};
         ilagendo=strmatch(namlagendo, M_.endo_names(dr.order_var(M_.nstatic+1:M_.nstatic+nsok)), 'exact');
 
         if ~isempty(ilagendo)
@@ -120,7 +129,11 @@ for j=1:size(anamendo,1)
                 set(gca,'xticklabel',' ','fontsize',10)
                 set(gca,'xlim',[0.5 10.5])
                 for ip=1:min(np,10)
-                    text(ip,-0.02,deblank(pnames(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    if options_.TeX
+                        text(ip,-0.02,tex_names(iso(ip)),'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+                    else
+                        text(ip,-0.02,pnames{iso(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    end
                 end
 
                 title([namendo,' vs. ',namlagendo,'(-1)'],'interpreter','none')
@@ -144,7 +157,11 @@ set(gca,'xlim',[0.5 np+0.5])
 set(gca,'ylim',[0 1])
 set(gca,'position',[0.13 0.2 0.775 0.7])
 for ip=1:np
-    text(ip,-0.02,deblank(pnames(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+    if options_.TeX
+        text(ip,-0.02,tex_names(ip),'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+    else
+        text(ip,-0.02,pnames{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+    end
 end
 xlabel(' ')
 ylabel('Elementary Effects')

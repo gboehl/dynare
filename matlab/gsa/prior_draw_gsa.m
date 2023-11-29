@@ -1,9 +1,13 @@
-function pdraw = prior_draw_gsa(init,rdraw)
+function pdraw = prior_draw_gsa(M_,bayestopt_,options_,estim_params_,init,rdraw)
 % Draws from the prior distributions for use with Sensitivity Toolbox for DYNARE
 %
 % INPUTS
-%   o init           [integer]  scalar equal to 1 (first call) or 0.
-%   o rdraw
+%  - M_                 [structure] describing the model
+%  - bayestopt_         [structure] describing the priors
+%  - options_           [structure] describing the options
+%  - estim_params_      [structure] characterizing parameters to be estimated
+%  - init               [integer]   scalar equal to 1 (first call) or 0.
+%  - rdraw              
 %
 % OUTPUTS
 %   o pdraw          [double]   draw from the joint prior density.
@@ -35,8 +39,7 @@ function pdraw = prior_draw_gsa(init,rdraw)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-global bayestopt_ options_ estim_params_ M_
+ 
 persistent npar pshape p6 p7 p3 p4 lbcum ubcum
 
 if init
@@ -49,7 +52,7 @@ if init
     pdraw = zeros(npar,1);
     lbcum = zeros(npar,1);
     ubcum = ones(npar,1);
-    [~,~,~,lb,ub,~] = set_prior(estim_params_,M_,options_); %Prepare bounds
+    [~,~,~,lb,ub] = set_prior(estim_params_,M_,options_); %Prepare bounds
     if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
         % Set prior bounds
         bounds = prior_bounds(bayestopt_, options_.prior_trunc);
@@ -64,29 +67,29 @@ if init
     % set bounds for cumulative probabilities
     for i = 1:npar
         switch pshape(i)
-          case 5% Uniform prior.
-            p4(i) = min(p4(i),bounds.ub(i));
-            p3(i) = max(p3(i),bounds.lb(i));
-          case 3% Gaussian prior.
-            lbcum(i) = 0.5 * erfc(-(bounds.lb(i)-p6(i))/p7(i) ./ sqrt(2));
-            ubcum(i) = 0.5 * erfc(-(bounds.ub(i)-p6(i))/p7(i) ./ sqrt(2));
-          case 2% Gamma prior.
-            lbcum(i) = gamcdf(bounds.lb(i)-p3(i),p6(i),p7(i));
-            ubcum(i) = gamcdf(bounds.ub(i)-p3(i),p6(i),p7(i));
           case 1% Beta distribution (TODO: generalized beta distribution)
             lbcum(i) = betainc((bounds.lb(i)-p3(i))./(p4(i)-p3(i)),p6(i),p7(i));
             ubcum(i) = betainc((bounds.ub(i)-p3(i))./(p4(i)-p3(i)),p6(i),p7(i));
+          case 2% Gamma prior.
+            lbcum(i) = gamcdf(bounds.lb(i)-p3(i),p6(i),p7(i));
+            ubcum(i) = gamcdf(bounds.ub(i)-p3(i),p6(i),p7(i));
+          case 3% Gaussian prior.
+            lbcum(i) = 0.5 * erfc(-(bounds.lb(i)-p6(i))/p7(i) ./ sqrt(2));
+            ubcum(i) = 0.5 * erfc(-(bounds.ub(i)-p6(i))/p7(i) ./ sqrt(2));
           case 4% INV-GAMMA1 distribution
                 % TO BE CHECKED
             lbcum(i) = gamcdf(1/(bounds.ub(i)-p3(i))^2,p7(i)/2,2/p6(i));
             ubcum(i) = gamcdf(1/(bounds.lb(i)-p3(i))^2,p7(i)/2,2/p6(i));
+          case 5% Uniform prior.
+            p4(i) = min(p4(i),bounds.ub(i));
+            p3(i) = max(p3(i),bounds.lb(i));
           case 6% INV-GAMMA2 distribution
                 % TO BE CHECKED
             lbcum(i) = gamcdf(1/(bounds.ub(i)-p3(i)),p7(i)/2,2/p6(i));
             ubcum(i) = gamcdf(1/(bounds.lb(i)-p3(i)),p7(i)/2,2/p6(i));
           case 8
-            lbcum(i) = weibcdf(bounds.lb(i)-p3(i),p6(i),p7(i));
-            ubcum(i) = weibcdf(bounds.ub(i)-p3(i),p6(i),p7(i));
+            lbcum(i) = wblcdf(bounds.lb(i)-p3(i),p6(i),p7(i));
+            ubcum(i) = wblcdf(bounds.ub(i)-p3(i),p6(i),p7(i));
           otherwise
             % Nothing to do here.
         end
@@ -94,7 +97,7 @@ if init
     return
 end
 
-
+pdraw=NaN(size(rdraw,1),npar);
 for i = 1:npar
     rdraw(:,i) = rdraw(:,i).*(ubcum(i)-lbcum(i))+lbcum(i);
     switch pshape(i)

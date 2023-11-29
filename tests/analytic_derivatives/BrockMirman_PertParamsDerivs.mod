@@ -418,7 +418,7 @@ for jj = 1:2
      if jj==1
         strparamset = 'PRIOR';
         nSYM = nSYMprior;
-        xparam_prior = set_prior(estim_params_,M_,options_);
+        [xparam_prior, estim_params_]= set_prior(estim_params_,M_,options_);
         M_ = set_all_parameters(xparam_prior,estim_params_,M_);
     elseif jj==2
         strparamset = 'CALIBRATION';

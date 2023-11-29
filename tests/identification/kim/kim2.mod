@@ -125,4 +125,5 @@ end
 
 % Integration test if identification works without priors
 estim_params_=[]; 
+dumpy=0;
 identification(advanced=1,max_dim_cova_group=3);

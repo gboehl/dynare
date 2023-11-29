@@ -1,10 +1,11 @@
-function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, options_, bayestopt_, estim_params_)
-% indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, options_, bayestopt_, estim_params_)
+function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, M_, options_, bayestopt_, estim_params_)
+% indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, M_, options_, bayestopt_, estim_params_)
 % Inputs:
 % - lpmat               [double]        Monte Carlo matrix
 % - ibeha               [integer]       index of behavioural runs
 % - inobeha             [integer]       index of non-behavioural runs
 % - options_gsa_        [structure]     GSA options_
+% - M_                  [structure]     describing the model
 % - options_            [structure]     describing the options
 % - bayestopt_          [structure]     describing the priors
 % - estim_params_       [structure]     characterizing parameters to be estimated
@@ -81,8 +82,8 @@ if ~isempty(indmcf)
 end
 
 if length(ibeha)>10 && length(inobeha)>10
-    indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, beha_title);
-    indcorr2 = stab_map_2(lpmat(inobeha,:),alpha2, pvalue_corr, nobeha_title);
+    indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, beha_title);
+    indcorr2 = stab_map_2(lpmat(inobeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, nobeha_title);
     indcorr = union(indcorr1(:), indcorr2(:));
     indcorr = indcorr(~ismember(indcorr(:),indmcf));
     indmcf = [indmcf(:); indcorr(:)];
@@ -90,7 +91,9 @@ end
 if ~isempty(indmcf) && ~options_.nograph
     skipline()
     xx=[];
-    if ~ isempty(xparam1), xx=xparam1(indmcf); end
+    if ~ isempty(xparam1)
+        xx=xparam1(indmcf); 
+    end
     scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names_tex(indmcf), ...
                 '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, options_, ...
                 beha_title, nobeha_title)

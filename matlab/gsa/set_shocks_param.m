@@ -1,8 +1,16 @@
-function set_shocks_param(xparam1)
-% function set_shocks_param(xparam1)
+function M_=set_shocks_param(M_,estim_params_,xparam1)
+% function M_=set_shocks_param(M_,estim_params_,xparam1)
 % Set the structural and measurement error variances and covariances
+% Inputs
+%  - M_                     [structure]     Matlab's structure describing the model
+%  - estim_params_          [structure]     characterizing parameters to be estimated
+%  - xparam1                [double]        parameter vector
+% Outputs:
+%  - M_                     [structure]     Matlab's structure describing the model
+%
+% Notes: closely follows set_all_parameters.m
 
-% Copyright © 2012-2017 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -18,8 +26,6 @@ function set_shocks_param(xparam1)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-global estim_params_ M_
 
 nvx = estim_params_.nvx;
 ncx = estim_params_.ncx;

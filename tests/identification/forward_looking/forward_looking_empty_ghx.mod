@@ -26,7 +26,7 @@ TRUE_SOLUTION2 = 1/(KAPPA*PSI/TAU +1)*[1         KAPPA*PSI PSI;
                                       -1/TAU     1         -PSI/TAU;
                                       -KAPPA/TAU KAPPA     1];
 % note that BETA drops out from the solution
-
+stoch_simul(order=1,noprint,irf=0,nomoments);
 if max(max(abs(TRUE_SOLUTION1 - oo_.dr.ghu))) > 1e-15
     error('Something wrong with perturbation');
 end

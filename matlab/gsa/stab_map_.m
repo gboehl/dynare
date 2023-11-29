@@ -1,9 +1,22 @@
-function x0 = stab_map_(OutputDirectoryName,opt_gsa)
-% x0 = stab_map_(OutputDirectoryName,opt_gsa)
+function x0 = stab_map_(OutputDirectoryName,opt_gsa,M_,oo_,options_,bayestopt_,estim_params_)
+% x0 = stab_map_(OutputDirectoryName,opt_gsa,M_,oo_,options_,bayestopt_,estim_params_)
 % Mapping of stability regions in the prior ranges applying
 % Monte Carlo filtering techniques.
 %
-% INPUTS (from opt_gsa structure)
+% Inputs
+%  - OutputDirectoryName    [string]        name of the output directory
+%  - opt_gsa                [structure]     GSA options structure
+%  - M_                     [structure]     Matlab's structure describing the model
+%  - oo_                    [structure]     Matlab's structure describing the results
+%  - options_               [structure]     Matlab's structure describing the current options
+%  - bayestopt_             [structure]     describing the priors
+%  - estim_params_          [structure]     characterizing parameters to be estimated
+%
+% Outputs:
+%  - x0                                 one parameter vector for which the model is stable.
+%
+%
+% Inputs from opt_gsa structure
 % Nsam = MC sample size
 % fload = 0 to run new MC; 1 to load prevoiusly generated analysis
 % alpha2 =  significance level for bivariate sensitivity analysis
@@ -14,8 +27,6 @@ function x0 = stab_map_(OutputDirectoryName,opt_gsa)
 %            _prior.mat   file
 %        = 0: sample from posterior ranges: sample saved in
 %            _mc.mat file
-% OUTPUT:
-% x0: one parameter vector for which the model is stable.
 %
 % GRAPHS
 % 1) Pdf's of marginal distributions under the stability (dotted
@@ -50,11 +61,6 @@ function x0 = stab_map_(OutputDirectoryName,opt_gsa)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-%global bayestopt_ estim_params_ dr_ options_ ys_ fname_
-global bayestopt_ estim_params_ options_ oo_ M_
-
-% opt_gsa=options_.opt_gsa;
-
 Nsam   = opt_gsa.Nsam;
 fload  = opt_gsa.load_stab;
 alpha2 = opt_gsa.alpha2_stab;
@@ -82,6 +88,7 @@ nshock = nshock + estim_params_.ncn;
 lpmat0=zeros(Nsam,0);
 xparam1=[];
 
+%% prepare prior bounds
 [~,~,~,lb,ub,~] = set_prior(estim_params_,M_,options_); %Prepare bounds
 if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
     % Set prior bounds
@@ -107,12 +114,13 @@ options_mcf.pvalue_ks = pvalue_ks;
 options_mcf.pvalue_corr = pvalue_corr;
 options_mcf.alpha2 = alpha2;
 
+%% get LaTeX names
 name=cell(np,1);
 name_tex=cell(np,1);
 for jj=1:np
     if options_.TeX
         [param_name_temp, param_name_tex_temp]= get_the_name(nshock+jj,options_.TeX,M_,estim_params_,options_);
-        name_tex{jj,1} = strrep(param_name_tex_temp,'$','');
+        name_tex{jj,1} = param_name_tex_temp;
         name{jj,1} = param_name_temp;
     else
         param_name_temp = get_the_name(nshock+jj,options_.TeX,M_,estim_params_,options_);
@@ -128,19 +136,18 @@ options_mcf.fname_ = fname_;
 options_mcf.OutputDirectoryName = OutputDirectoryName;
 options_mcf.xparam1 = [];
 
-opt=options_;
 options_.periods=0;
 options_.nomoments=1;
 options_.irf=0;
 options_.noprint=1;
-if fload==0
+if fload==0 %run new MC
     if isfield(dr_,'ghx')
         egg=zeros(length(dr_.eigval),Nsam);
     end
     yys=zeros(length(dr_.ys),Nsam);
 
     if opt_gsa.morris == 1
-        [lpmat, OutFact] = Sampling_Function_2(nliv, np+nshock, ntra, ones(np+nshock, 1), zeros(np+nshock,1), []);
+        [lpmat] = Sampling_Function_2(nliv, np+nshock, ntra, ones(np+nshock, 1), zeros(np+nshock,1), []);
         lpmat = lpmat.*(nliv-1)/nliv+1/nliv/2;
         Nsam=size(lpmat,1);
         lpmat0 = lpmat(:,1:nshock);
@@ -158,10 +165,9 @@ if fload==0
             for j=1:np
                 lpmat(:,j) = randperm(Nsam)'./(Nsam+1); %latin hypercube
             end
-
         end
     end
-    dummy=prior_draw_gsa(1); 
+    prior_draw_gsa(M_,bayestopt_,options_,estim_params_,1); %initialize
     if pprior
         for j=1:nshock
             if opt_gsa.morris~=1
@@ -178,16 +184,16 @@ if fload==0
                 lpmat(:,j)=lpmat(:,j).*(upper_bound-lower_bound)+lower_bound;
             end
         else
-            xx=prior_draw_gsa(0,[lpmat0 lpmat]);
+            xx=prior_draw_gsa(M_,bayestopt_,options_,estim_params_,0,[lpmat0 lpmat]);
             lpmat0=xx(:,1:nshock);
             lpmat=xx(:,nshock+1:end);
             clear xx;
         end
-    else
+    else %posterior analysis
         if neighborhood_width>0 && isempty(options_.mode_file)
             xparam1 = get_all_parameters(estim_params_,M_);
         else
-            eval(['load ' options_.mode_file '.mat;']);
+            load([options_.mode_file '.mat'],'hh','xparam1');
         end
         if neighborhood_width>0
             for j=1:nshock
@@ -216,8 +222,8 @@ if fload==0
             for j=1:Nsam*2
                 lnprior(j) = any(lp(j,:)'<=bounds.lb | lp(j,:)'>=bounds.ub);
             end
-            ireal=[1:2*Nsam];
-            ireal=ireal(find(lnprior==0));
+            ireal=1:2*Nsam;
+            ireal=ireal(lnprior==0);
             lp=lp(ireal,:);
             Nsam=min(Nsam, length(ireal));
             lpmat0=lp(1:Nsam,1:nshock);
@@ -227,9 +233,9 @@ if fload==0
     end
     %
     h = dyn_waitbar(0,'Please wait...');
-    istable=[1:Nsam];
+    istable=1:Nsam;
     jstab=0;
-    iunstable=[1:Nsam];
+    iunstable=1:Nsam;
     iindeterm=zeros(1,Nsam);
     iwrong=zeros(1,Nsam);
     inorestriction=zeros(1,Nsam);
@@ -237,12 +243,11 @@ if fload==0
     infox=zeros(Nsam,1);
     for j=1:Nsam
         M_ = set_all_parameters([lpmat0(j,:) lpmat(j,:)]',estim_params_,M_);
-        %try stoch_simul([]);
         try
-            if ~ isempty(options_.endogenous_prior_restrictions.moment)
-                [Tt,Rr,SteadyState,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+            if ~isempty(options_.endogenous_prior_restrictions.moment)
+                [Tt,Rr,~,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
             else
-                [Tt,Rr,SteadyState,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,'restrict');
+                [Tt,Rr,~,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,'restrict');
             end
             infox(j,1)=info(1);
             if infox(j,1)==0 && ~exist('T','var')
@@ -250,8 +255,7 @@ if fload==0
                 if prepSA
                     try
                         T=zeros(size(dr_.ghx,1),size(dr_.ghx,2)+size(dr_.ghu,2),Nsam);
-                    catch
-                        ME = lasterror();
+                    catch ME                         
                         if strcmp('MATLAB:nomem',ME.identifier)
                             prepSA=0;
                             disp('The model is too large for storing state space matrices ...')
@@ -324,7 +328,6 @@ if fload==0
         end
         ys_=real(dr_.ys);
         yys(:,j) = ys_;
-        ys_=yys(:,1);
         dyn_waitbar(j/Nsam,h,['MC iteration ',int2str(j),'/',int2str(Nsam)])
     end
     dyn_waitbar_close(h);
@@ -333,13 +336,13 @@ if fload==0
     else
         T=[];
     end
-    istable=istable(find(istable));  % stable params ignoring restrictions
-    irestriction=irestriction(find(irestriction));  % stable params & restrictions OK
-    inorestriction=inorestriction(find(inorestriction));  % stable params violating restrictions
-    iunstable=iunstable(find(iunstable));   % violation of BK & restrictions & solution could not be found (whatever goes wrong)
-    iindeterm=iindeterm(find(iindeterm));  % indeterminacy
-    iwrong=iwrong(find(iwrong));  % dynare could not find solution
-    ixun=iunstable(find(~ismember(iunstable,[iindeterm,iwrong,inorestriction]))); % explosive roots
+    istable=istable(istable~=0);  % stable params ignoring restrictions
+    irestriction=irestriction(irestriction~=0);  % stable params & restrictions OK
+    inorestriction=inorestriction(inorestriction~=0);  % stable params violating restrictions
+    iunstable=iunstable(iunstable~=0);   % violation of BK & restrictions & solution could not be found (whatever goes wrong)
+    iindeterm=iindeterm(iindeterm~=0);  % indeterminacy
+    iwrong=iwrong(iwrong~=0);  % dynare could not find solution
+    ixun=iunstable(~ismember(iunstable,[iindeterm,iwrong,inorestriction])); % explosive roots
 
     bkpprior.pshape=bayestopt_.pshape;
     bkpprior.p1=bayestopt_.p1;
@@ -356,8 +359,7 @@ if fload==0
                  'bkpprior','lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun', ...
                  'egg','yys','T','nspred','nboth','nfwrd','infox')
         end
-
-    else
+    else %~pprior
         if ~prepSA
             save([OutputDirectoryName filesep fname_ '_mc.mat'], ...
                  'lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun', ...
@@ -368,18 +370,17 @@ if fload==0
                  'egg','yys','T','nspred','nboth','nfwrd','infox')
         end
     end
-else
+else %load old run
     if pprior
         filetoload=[OutputDirectoryName filesep fname_ '_prior.mat'];
     else
         filetoload=[OutputDirectoryName filesep fname_ '_mc.mat'];
     end
-    load(filetoload,'lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun','egg','yys','nspred','nboth','nfwrd','infox')
+    load(filetoload,'lpmat','lpmat0','irestriction','iunstable','istable','iindeterm','iwrong','ixun','infox')
     Nsam = size(lpmat,1);
     if pprior==0 && ~isempty(options_.mode_file)
-        eval(['load ' options_.mode_file '.mat;']);
+        load([options_.mode_file '.mat'],'xparam1');
     end
-
 
     if prepSA && isempty(strmatch('T',who('-file', filetoload),'exact'))
         h = dyn_waitbar(0,'Please wait...');
@@ -392,30 +393,22 @@ else
         yys=NaN(length(ys_),ntrans);
         for j=1:ntrans
             M_.params(estim_params_.param_vals(:,1)) = lpmat(istable(j),:)';
-            %stoch_simul([]);
-            [Tt,Rr,SteadyState,info,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,'restrict');
+            [~,~,~,~,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,'restrict');
             if ~exist('T','var')
                 T=zeros(size(dr_.ghx,1),size(dr_.ghx,2)+size(dr_.ghu,2),ntrans);
             end
             dr_ = oo_.dr;
             T(:,:,j) = [dr_.ghx dr_.ghu];
-            if ~exist('nspred','var')
-                nspred = dr_.nspred; %size(dr_.ghx,2);
-                nboth = dr_.nboth;
-                nfwrd = dr_.nfwrd;
-            end
             ys_=real(dr_.ys);
             yys(:,j) = ys_;
-            ys_=yys(:,1);
             dyn_waitbar(j/ntrans,h,['MC iteration ',int2str(j),'/',int2str(ntrans)])
         end
         dyn_waitbar_close(h);
         save(filetoload,'T','-append')
-    elseif prepSA
-        load(filetoload,'T')
     end
 end
 
+%% display and save output
 if pprior
     aunstname='prior_unstable'; aunsttitle='Prior StabMap: explosiveness of solution';
     aindname='prior_indeterm'; aindtitle='Prior StabMap: Indeterminacy';
@@ -435,17 +428,18 @@ delete([OutputDirectoryName,filesep,fname_,'_',aindname,'.*']);
 delete([OutputDirectoryName,filesep,fname_,'_',aunstname,'.*']);
 delete([OutputDirectoryName,filesep,fname_,'_',awrongname,'.*']);
 
-if length(iunstable)>0 || length(iwrong)>0
-    fprintf(['%4.1f%% of the prior support gives unique saddle-path solution.\n'],length(istable)/Nsam*100)
-    fprintf(['%4.1f%% of the prior support gives explosive dynamics.\n'],(length(ixun) )/Nsam*100)
+fprintf('\nSensitivity Analysis: Stability mapping:\n')
+if ~isempty(iunstable) || ~isempty(iwrong)
+    fprintf('%4.1f%% of the prior support gives unique saddle-path solution.\n',length(istable)/Nsam*100)
+    fprintf('%4.1f%% of the prior support gives explosive dynamics.\n',(length(ixun) )/Nsam*100)
     if ~isempty(iindeterm)
-        fprintf(['%4.1f%% of the prior support gives indeterminacy.\n'],length(iindeterm)/Nsam*100)
+        fprintf('%4.1f%% of the prior support gives indeterminacy.\n',length(iindeterm)/Nsam*100)
     end
-    inorestriction = istable(find(~ismember(istable,irestriction))); % violation of prior restrictions
+    inorestriction = istable(~ismember(istable,irestriction)); % violation of prior restrictions
     if ~isempty(iwrong) || ~isempty(inorestriction)
         skipline()
         if any(infox==49)
-            fprintf(['%4.1f%% of the prior support violates prior restrictions.\n'],(length(inorestriction) )/Nsam*100)
+            fprintf('%4.1f%% of the prior support violates prior restrictions.\n',(length(inorestriction) )/Nsam*100)
         end
         if ~isempty(iwrong)
             skipline()
@@ -486,50 +480,50 @@ if length(iunstable)>0 || length(iwrong)>0
     end
     skipline()
     if length(iunstable)<Nsam || length(istable)>1
-        itot = [1:Nsam];
-        isolve = itot(find(~ismember(itot,iwrong))); % dynare could find a solution
+        itot = 1:Nsam;
+        isolve = itot(~ismember(itot,iwrong)); % dynare could find a solution
                                                      % Blanchard Kahn
         if neighborhood_width
             options_mcf.xparam1 = xparam1(nshock+1:end);
         end
-        itmp = itot(find(~ismember(itot,istable)));
+        itmp = itot(~ismember(itot,istable));
         options_mcf.amcf_name = asname;
         options_mcf.amcf_title = atitle;
         options_mcf.beha_title = 'unique Stable Saddle-Path';
         options_mcf.nobeha_title = 'NO unique Stable Saddle-Path';
         options_mcf.title = 'unique solution';
-        mcf_analysis(lpmat, istable, itmp, options_mcf, options_, bayestopt_, estim_params_);
+        mcf_analysis(lpmat, istable, itmp, options_mcf, M_, options_, bayestopt_, estim_params_);
 
         if ~isempty(iindeterm)
-            itmp = isolve(find(~ismember(isolve,iindeterm)));
+            itmp = isolve(~ismember(isolve,iindeterm));
             options_mcf.amcf_name = aindname;
             options_mcf.amcf_title = aindtitle;
             options_mcf.beha_title = 'NO indeterminacy';
             options_mcf.nobeha_title = 'indeterminacy';
             options_mcf.title = 'indeterminacy';
-            mcf_analysis(lpmat, itmp, iindeterm, options_mcf, options_, bayestopt_, estim_params_);
+            mcf_analysis(lpmat, itmp, iindeterm, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
 
         if ~isempty(ixun)
-            itmp = isolve(find(~ismember(isolve,ixun)));
+            itmp = isolve(~ismember(isolve,ixun));
             options_mcf.amcf_name = aunstname;
             options_mcf.amcf_title = aunsttitle;
             options_mcf.beha_title = 'NO explosive solution';
             options_mcf.nobeha_title = 'explosive solution';
             options_mcf.title = 'instability';
-            mcf_analysis(lpmat, itmp, ixun, options_mcf, options_, bayestopt_, estim_params_);
+            mcf_analysis(lpmat, itmp, ixun, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
 
-        inorestriction = istable(find(~ismember(istable,irestriction))); % violation of prior restrictions
-        iwrong = iwrong(find(~ismember(iwrong,inorestriction))); % what went wrong beyond prior restrictions
+        inorestriction = istable(~ismember(istable,irestriction)); % violation of prior restrictions
+        iwrong = iwrong(~ismember(iwrong,inorestriction)); % what went wrong beyond prior restrictions
         if ~isempty(iwrong)
-            itmp = itot(find(~ismember(itot,iwrong)));
+            itmp = itot(~ismember(itot,iwrong));
             options_mcf.amcf_name = awrongname;
             options_mcf.amcf_title = awrongtitle;
             options_mcf.beha_title = 'NO inability to find a solution';
             options_mcf.nobeha_title = 'inability to find a solution';
             options_mcf.title = 'inability to find a solution';
-            mcf_analysis(lpmat, itmp, iwrong, options_mcf, options_, bayestopt_, estim_params_);
+            mcf_analysis(lpmat, itmp, iwrong, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
 
         if ~isempty(irestriction)
@@ -542,7 +536,7 @@ if length(iunstable)>0 || length(iwrong)>0
             for jj=1:np
                 if options_.TeX
                     [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
-                    name_tex{jj,1} = strrep(param_name_tex_temp,'$','');
+                    name_tex{jj,1} = param_name_tex_temp;
                     name{jj,1} = param_name_temp;
                 else
                     param_name_temp = get_the_name(jj,options_.TeX,M_,estim_params_,options_);
@@ -558,7 +552,7 @@ if length(iunstable)>0 || length(iwrong)>0
             options_mcf.beha_title = 'prior IRF/moment calibration';
             options_mcf.nobeha_title = 'NO prior IRF/moment calibration';
             options_mcf.title = 'prior restrictions';
-            mcf_analysis([lpmat0 lpmat], irestriction, inorestriction, options_mcf, options_, bayestopt_, estim_params_);
+            mcf_analysis([lpmat0 lpmat], irestriction, inorestriction, options_mcf, M_, options_, bayestopt_, estim_params_);
             iok = irestriction(1);
             x0 = [lpmat0(iok,:)'; lpmat(iok,:)'];
         else
@@ -568,7 +562,7 @@ if length(iunstable)>0 || length(iwrong)>0
         end
 
         M_ = set_all_parameters(x0,estim_params_,M_);
-        [oo_.dr,info,M_.params] = resol(0,M_,options_,oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+        [oo_.dr,~,M_.params] = resol(0,M_,options_,oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     else
         disp('All parameter values in the specified ranges are not acceptable!')
         x0=[];
@@ -578,15 +572,8 @@ else
     disp('and match prior IRF/moment restriction(s) if any!')
     x0=0.5.*(bounds.ub(1:nshock)-bounds.lb(1:nshock))+bounds.lb(1:nshock);
     x0 = [x0; lpmat(istable(1),:)'];
-
 end
+skipline(1);
 
 xparam1=x0;
 save([OutputDirectoryName filesep 'prior_ok.mat'],'xparam1');
-
-options_.periods=opt.periods;
-if isfield(opt,'nomoments')
-    options_.nomoments=opt.nomoments;
-end
-options_.irf=opt.irf;
-options_.noprint=opt.noprint;

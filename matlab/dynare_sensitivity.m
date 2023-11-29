@@ -1,10 +1,17 @@
-function x0=dynare_sensitivity(options_gsa)
+function x0=dynare_sensitivity(M_,oo_,options_,bayestopt_,estim_params_,options_gsa)
 % Frontend to the Sensitivity Analysis Toolbox for DYNARE
+% Inputs:
+%  - M_                     [structure]     Matlab's structure describing the model
+%  - oo_                    [structure]     Matlab's structure describing the results
+%  - options_               [structure]     Matlab's structure describing the current options
+%  - bayestopt_             [structure]     describing the priors
+%  - estim_params_          [structure]     characterizing parameters to be estimated
+%  - options_gsa            [structure]     Matlab's structure describing the GSA options
 %
 % Reference:
 % M. Ratto, Global Sensitivity Analysis for Macroeconomic models, MIMEO, 2006.
 
-% Copyright © 2008-2018 Dynare Team
+% Copyright © 2008-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -20,8 +27,6 @@ function x0=dynare_sensitivity(options_gsa)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-global M_ options_ oo_ bayestopt_ estim_params_
 
 if options_.dsge_var
     error('Identification does not support DSGE-VARs at the current stage')
@@ -86,9 +91,6 @@ if options_.order~=1
     warning('dynare_sensitivity: dynare_sensitivity does only support order=1, resetting to order=1.')
     options_.order = 1;
 end
-
-original_prior_trunc = options_.prior_trunc;
-original_qz_criterium = options_.qz_criterium;
 
 if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse
     if isempty(options_gsa.datafile) && options_gsa.rmse
@@ -208,9 +210,9 @@ options_gsa = set_default_option(options_gsa,'var_rmse', options_.varobs);
 options_gsa.var_rmse_tex={};
 for ii=1:length(options_gsa.var_rmse)
     temp_name = M_.endo_names_tex{strmatch(options_gsa.var_rmse{ii}, M_.endo_names, 'exact')};
-    options_gsa.var_rmse_tex = vertcat(options_gsa.var_rmse_tex, temp_name);
+    options_gsa.var_rmse_tex = vertcat(options_gsa.var_rmse_tex, ['$' temp_name '$']);
 end
-options_gsa.var_rmse_tex = cellfun(@(x) horzcat('$', x, '$'), options_gsa.var_rmse_tex, 'UniformOutput', false);
+options_gsa.varobs_tex = cellfun(@(x) horzcat('$', x, '$'), M_.endo_names_tex(options_.varobs_id), 'UniformOutput', false);
 options_gsa = set_default_option(options_gsa,'pfilt_rmse', 0.1);
 options_gsa = set_default_option(options_gsa,'istart_rmse', options_.presample+1);
 options_gsa = set_default_option(options_gsa,'alpha_rmse', 0.001);
@@ -281,7 +283,7 @@ if (options_gsa.load_stab || options_gsa.load_rmse || options_gsa.load_redform) 
 end
 
 if options_gsa.stab && ~options_gsa.ppost
-    x0 = stab_map_(OutputDirectoryName,options_gsa);
+    x0 = stab_map_(OutputDirectoryName,options_gsa,M_,oo_,options_,bayestopt_,estim_params_);
     if isempty(x0)
         skipline()
         disp('Sensitivity computations stopped: no parameter set provided a unique solution')
@@ -295,7 +297,7 @@ if ~isempty(options_gsa.moment_calibration) || ~isempty(options_gsa.irf_calibrat
 end
 
 if options_gsa.identification
-    map_ident_(OutputDirectoryName,options_gsa,M_,options_,bayestopt_,oo_.dr,estim_params_.param_vals);
+    map_ident_(OutputDirectoryName,options_gsa,M_,oo_,options_,estim_params_,bayestopt_);
 end
 
 if options_gsa.redform && ~isempty(options_gsa.namendo)
@@ -303,7 +305,7 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
         filnam = dir([M_.dname filesep 'metropolis' filesep '*param_irf*.mat']);
         lpmat=[];
         for j=1:length(filnam)
-            load ([M_.dname filesep 'metropolis' filesep M_.fname '_param_irf' int2str(j) '.mat'])
+            load ([M_.dname filesep 'metropolis' filesep M_.fname '_param_irf' int2str(j) '.mat'],'stock')
             lpmat=[lpmat; stock];
         end
         clear stock
@@ -321,7 +323,7 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
         save([OutputDirectoryName filesep M_.fname '_mc.mat'],'lpmat','lpmat0','istable','iunstable','iwrong','iindeterm')
         options_gsa.load_stab=1;
 
-        x0 = stab_map_(OutputDirectoryName,options_gsa);
+        x0 = stab_map_(OutputDirectoryName,options_gsa,M_,oo_,options_,bayestopt_,estim_params_);
     end
     if strmatch(':',options_gsa.namendo,'exact')
         options_gsa.namendo = M_.endo_names(1:M_.orig_endo_nbr);
@@ -332,9 +334,8 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
     if strmatch(':',options_gsa.namlagendo,'exact')
         options_gsa.namlagendo = M_.endo_names(1:M_.orig_endo_nbr);
     end
-    %     options_.opt_gsa = options_gsa;
     if options_gsa.morris==1
-        redform_screen(OutputDirectoryName,options_gsa, estim_params_.param_vals, M_, oo_.dr, options_, bayestopt_);
+        redform_screen(OutputDirectoryName,options_gsa, estim_params_, M_, oo_.dr, options_, bayestopt_);
     else
         % check existence of the SS_ANOVA toolbox
         if isempty(options_gsa.threshold_redform) && ~(exist('gsa_sdp','file')==6 || exist('gsa_sdp','file')==2)
@@ -345,7 +346,7 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
             fprintf('After obtaining the files, you need to unpack them and set a Matlab Path to those files.\n')
             error('SS-ANOVA-R Toolbox missing!')
         end
-        redform_map(OutputDirectoryName,options_gsa,M_,estim_params_,options_,bayestopt_,oo_.dr);
+        redform_map(OutputDirectoryName,options_gsa,M_,estim_params_,options_,bayestopt_,oo_);
     end
 end
 % RMSE mapping
@@ -403,9 +404,6 @@ if options_gsa.rmse
     filt_mc_(OutputDirectoryName,options_gsa,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_);
 end
 options_.opt_gsa = options_gsa;
-options_.prior_trunc=original_prior_trunc;
-options_.qz_criterium=original_qz_criterium ;
-
 
 if options_gsa.glue
     dr_ = oo_.dr;
@@ -444,7 +442,6 @@ if options_gsa.glue
         vj = options_.varobs{j};
 
         jxj = strmatch(vj,M_.endo_names(dr_.order_var),'exact');
-        js = strmatch(vj,M_.endo_names,'exact');
         if ~options_gsa.ppost
             Out(j).data = jxj;
             Out(j).time = [pwd,'/',OutputDirectoryName];

@@ -1,6 +1,20 @@
-function indcorr = stab_map_2(x,alpha2, pvalue_crit, fnam, dirname,xparam1,figtitle)
-% function stab_map_2(x, alpha2, pvalue, fnam, dirname,xparam1)
+function indcorr = stab_map_2(x,alpha2, pvalue_crit, M_,options_,bayestopt_,estim_params_, fnam, dirname,xparam1,figtitle)
+% indcorr = stab_map_2(x,alpha2, pvalue_crit, M_,options_,bayestopt_,estim_params_, fnam, dirname,xparam1,figtitle)
+% Inputs:
+%  - x
+%  - alpha2
+%  - pvalue_crit
+%  - M_                     [structure]     Matlab's structure describing the model
+%  - options_               [structure]     Matlab's structure describing the current options
+%  - bayestopt_             [structure]     describing the priors
+%  - estim_params_          [structure]     characterizing parameters to be estimated
+%  - fnam                   [string]        file name
+%  - dirnam                 [string]        directory name
+%  - xparam1                [double]        parameter vector
+%  - figtitle               [string]        figure title
 %
+% Output:
+%  - indcorr
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
@@ -22,29 +36,23 @@ function indcorr = stab_map_2(x,alpha2, pvalue_crit, fnam, dirname,xparam1,figti
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-%global bayestopt_ estim_params_ dr_ options_ ys_ fname_
-global bayestopt_ estim_params_ options_ oo_ M_
-
 npar=size(x,2);
-nsam=size(x,1);
 ishock= npar>estim_params_.np;
 nograph = options_.nograph;
-if nargin<4
+if nargin<8
     fnam='';
 end
-if nargin<5
+if nargin<9
     dirname='';
     nograph=1;
 end
-if nargin<6
+if nargin<10
     xparam1=[];
 end
-if nargin<7
+if nargin<11
     figtitle=fnam;
 end
 
-ys_ = oo_.dr.ys;
-dr_ = oo_.dr;
 fname_ = M_.fname;
 nshock = estim_params_.nvx;
 nshock = nshock + estim_params_.nvn;
@@ -74,7 +82,7 @@ indcorr = [];
 entry_iter=1;
 for j=1:npar
     i2=find(abs(c00(:,j))>alpha2);
-    if length(i2)>0
+    if ~isempty(i2)
         for jx=1:length(i2)
             if pvalue(j,i2(jx))<pvalue_crit
                 indcorr = [indcorr; [j i2(jx)]];
@@ -82,9 +90,7 @@ for j=1:npar
                 if ishock
                     if options_.TeX
                         [param_name_temp1, param_name_tex_temp1]= get_the_name(j,options_.TeX,M_,estim_params_,options_);
-                        param_name_tex_temp1 = strrep(param_name_tex_temp1,'$','');
                         [param_name_temp2, param_name_tex_temp2]= get_the_name(i2(jx),options_.TeX,M_,estim_params_,options_);
-                        param_name_tex_temp2 = strrep(param_name_tex_temp2,'$','');
                         tmp_name=(['[',param_name_temp1,',',param_name_temp2,']']);
                         tmp_name_tex=(['[',param_name_tex_temp1,',',param_name_tex_temp2,']']);
                         name{entry_iter,1}=tmp_name;
@@ -98,9 +104,7 @@ for j=1:npar
                 else
                     if options_.TeX
                         [param_name_temp1, param_name_tex_temp1]= get_the_name(j+nshock,options_.TeX,M_,estim_params_,options_);
-                        param_name_tex_temp1 = strrep(param_name_tex_temp1,'$','');
                         [param_name_temp2, param_name_tex_temp2]= get_the_name(i2(jx)+nshock,options_.TeX,M_,estim_params_,options_);
-                        param_name_tex_temp2 = strrep(param_name_tex_temp2,'$','');
                         tmp_name=(['[',param_name_temp1,',',param_name_temp2,']']);
                         tmp_name_tex=(['[',param_name_tex_temp1,',',param_name_tex_temp2,']']);
                         name{entry_iter,1}=tmp_name;
@@ -121,17 +125,10 @@ for j=1:npar
                         hh_fig=dyn_figure(options_.nodisplay,'name',[figtitle,' sample bivariate projection ', num2str(ifig)]);
                     end
                     subplot(3,4,j2-(ifig-1)*12)
-                    %             bar(c0(i2,j)),
-                    %             set(gca,'xticklabel',bayestopt_.name(i2)),
-                    %             set(gca,'xtick',[1:length(i2)])
-                    %plot(stock_par(ixx(nfilt+1:end,i),j),stock_par(ixx(nfilt+1:end,i),i2(jx)),'.k')
-                    %hold on,
                     plot(x(:,j),x(:,i2(jx)),'.')
                     if ~isempty(xparam1)
                         hold on, plot(xparam1(j),xparam1(i2(jx)),'ro')
                     end
-                    %             xlabel(deblank(estim_params_.param_names(j,:)),'interpreter','none'),
-                    %             ylabel(deblank(estim_params_.param_names(i2(jx),:)),'interpreter','none'),
                     if ishock
                         xlabel(bayestopt_.name{j},'interpreter','none'),
                         ylabel(bayestopt_.name{i2(jx)},'interpreter','none'),
@@ -192,4 +189,3 @@ else
         dyn_latex_table(M_, options_, title_string_tex, fig_nam_tex_table, headers, name_tex, data_mat, 0, 7, 3);
     end
 end
-%close all

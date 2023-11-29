@@ -253,7 +253,7 @@ if ~isempty(indx_irf)
         options_mcf.nobeha_title = 'NO IRF restriction';
         options_mcf.title = atitle0;
         if ~isempty(indx1) && ~isempty(indx2)
-            mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, options_, bayestopt_, estim_params_);
+            mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
     end
     for ij=1:nbr_irf_couples
@@ -305,7 +305,7 @@ if ~isempty(indx_irf)
                 options_mcf.nobeha_title = 'NO IRF restriction';
                 options_mcf.title = atitle0;
                 if ~isempty(indx1) && ~isempty(indx2)
-                    mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, options_, bayestopt_, estim_params_);
+                    mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
                 end
             end
         end
@@ -354,7 +354,7 @@ if ~isempty(indx_moment)
     for jj=1:np
         if options_.TeX
             [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
-            name_tex{jj,1} = strrep(param_name_tex_temp,'$','');
+            name_tex{jj,1} = param_name_tex_temp;
             name{jj,1} = param_name_temp;
         else
             param_name_temp = get_the_name(jj,options_.TeX,M_,estim_params_,options_);
@@ -448,7 +448,7 @@ if ~isempty(indx_moment)
         options_mcf.nobeha_title = 'NO moment restriction';
         options_mcf.title = atitle0;
         if ~isempty(indx1) && ~isempty(indx2)
-            mcf_analysis(xmat, indx1, indx2, options_mcf, options_, bayestopt_, estim_params_);
+            mcf_analysis(xmat, indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
     end
     for ij=1:nbr_moment_couples
@@ -501,7 +501,7 @@ if ~isempty(indx_moment)
                 options_mcf.nobeha_title = 'NO moment restriction';
                 options_mcf.title = atitle0;
                 if ~isempty(indx1) && ~isempty(indx2)
-                    mcf_analysis(xmat, indx1, indx2, options_mcf, options_, bayestopt_, estim_params_);
+                    mcf_analysis(xmat, indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
                 end
             end
         end

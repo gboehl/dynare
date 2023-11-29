@@ -1,10 +1,11 @@
-function [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_)
-% [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_)
+function [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_, estim_params_)
+% [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_,estim_params_)
 % Conduct Monte Carlo simulation of second moments for GSA
 % Inputs:
 %  - dr                 [structure]     decision rules
 %  - M_                 [structure]     model structure
 %  - options_           [structure]     Matlab's structure describing the current options
+%  - estim_params_      [structure]     characterizing parameters to be estimated
 %
 % Outputs:
 % - vdec                [double]        variance decomposition matrix
@@ -41,7 +42,7 @@ for j=1:nsam
     dr.ghx = mm(:, 1:(nc1-M_.exo_nbr),j);
     dr.ghu = mm(:, (nc1-M_.exo_nbr+1):end, j);
     if ~isempty(ss)
-        set_shocks_param(ss(j,:));
+        M_=set_shocks_param(M_,estim_params_,ss(j,:));
     end
     [vdec(:,:,j), corr, autocorr] = th_moments(dr,options_,M_);
     cc(:,:,j)=triu(corr);

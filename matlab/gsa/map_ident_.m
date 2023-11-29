@@ -1,13 +1,13 @@
-function map_ident_(OutputDirectoryName,opt_gsa,M_,options_,bayestopt_,dr,param_vals)
-% map_ident_(OutputDirectoryName,opt_gsa,M_,oo_,options_,bayestopt_,param_vals)
+function map_ident_(OutputDirectoryName,opt_gsa,M_,oo_,options_,estim_params_,bayestopt_)
+% map_ident_(OutputDirectoryName,opt_gsa,M_,oo_,options_,estim_params_,bayestopt_)
 % Inputs
 %  - OutputDirectoryName [string]    name of the output directory
 %  - opt_gsa             [structure]     GSA options structure
 %  - M_                  [structure]     Matlab's structure describing the model
+%  - oo_                 [structure]     Matlab's structure describing the results
 %  - options_            [structure]     Matlab's structure describing the current options
+%  - estim_params_       [structure]     characterizing parameters to be estimated
 %  - bayestopt_          [structure]     describing the priors
-%  - dr                  [structure]     decision rules
-%  - param_vals          [structure]     characterizing parameters to be estimated
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -32,12 +32,13 @@ function map_ident_(OutputDirectoryName,opt_gsa,M_,options_,bayestopt_,dr,param_
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>. 
 
 fname_ = M_.fname;
+dr=oo_.dr;
 nliv   = opt_gsa.morris_nliv;
 itrans = opt_gsa.trans_ident;
 
-np = size(param_vals,1);
+np = size(estim_params_.param_vals,1);
 
-pnames = M_.param_names(param_vals(:,1));
+pnames = M_.param_names(estim_params_.param_vals(:,1));
 if opt_gsa.pprior
     filetoload=[OutputDirectoryName '/' fname_ '_prior'];
 else
@@ -60,15 +61,15 @@ if opt_gsa.load_ident_files==0
     mss = teff(mss(:,istable),Nsam,istable);
     yys = teff(yys(dr.order_var,istable),Nsam,istable);
     if exist('T','var')
-        [vdec, cc, ac] = mc_moments(T, lpmatx, dr, M_, options_);
+        [vdec, cc, ac] = mc_moments(T, lpmatx, dr, M_, options_, estim_params_);
     else
         return
     end
 
     if opt_gsa.morris==2
-        pdraws = dynare_identification(options_.options_ident,[lpmatx lpmat(istable,:)]);
+        pdraws = dynare_identification(M_,oo_,options_,bayestopt_,estim_params_,options_.options_ident,[lpmatx lpmat(istable,:)]);
         if ~isempty(pdraws) && max(max(abs(pdraws-[lpmatx lpmat(istable,:)])))==0
-            disp(['Sample check OK ', num2str(max(max(abs(pdraws-[lpmatx lpmat(istable,:)]))))]),
+            disp(['Sample check OK. Largest difference: ', num2str(max(max(abs(pdraws-[lpmatx lpmat(istable,:)]))))]),
             clear pdraws;
         end
         clear GAM gas
@@ -88,7 +89,11 @@ if opt_gsa.load_ident_files==0
             set(gca,'xlim',[0.5 size(options_.varobs,1)+0.5])
             set(gca,'ylim',[-2 102])
             for ip=1:size(options_.varobs,1)
-                text(ip,-4,deblank(options_.varobs(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                if options_.TeX
+                    text(ip,-4,deblank(opt_gsa.varobs_tex(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+                else
+                    text(ip,-4,deblank(options_.varobs(ip,:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                end
             end
             xlabel(' ')
             ylabel(' ')
@@ -118,7 +123,7 @@ if opt_gsa.load_ident_files==0
     [Aa,Bb] = kalman_transition_matrix(dr,iv,ic);
     A = zeros(size(Aa,1),size(Aa,2)+size(Aa,1),length(istable));
     if ~isempty(lpmatx)
-        set_shocks_param(lpmatx(1,:));
+        M_=set_shocks_param(M_,estim_params_,lpmatx(1,:));
     end
     A(:,:,1)=[Aa, triu(Bb*M_.Sigma_e*Bb')];
     for j=2:length(istable)
@@ -126,7 +131,7 @@ if opt_gsa.load_ident_files==0
         dr.ghu = T(:, (nc1-M_.exo_nbr+1):end, j);
         [Aa,Bb] = kalman_transition_matrix(dr, iv, ic);
         if ~isempty(lpmatx)
-            set_shocks_param(lpmatx(j,:));
+            M_=set_shocks_param(M_,estim_params_,lpmatx(j,:));
         end
         A(:,:,j)=[Aa, triu(Bb*M_.Sigma_e*Bb')];
     end
@@ -166,7 +171,12 @@ if opt_gsa.morris==1
         set(gca,'ylim',[0 ydum(2)])
         set(gca,'position',[0.13 0.2 0.775 0.7])
         for ip=1:npT
-            text(ip,-2,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+            if options_.TeX
+                [~, param_name_tex_temp]= get_the_name(ip,options_.TeX,M_,estim_params_,options_);
+                text(ip,-2,param_name_tex_temp,'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+            else
+                text(ip,-2,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+            end
         end
         xlabel(' ')
         title('Elementary effects variance decomposition')
@@ -198,7 +208,12 @@ if opt_gsa.morris==1
     set(gca,'ylim',[0 1])
     set(gca,'position',[0.13 0.2 0.775 0.7])
     for ip=1:npT
-        text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        if options_.TeX
+            [~, param_name_tex_temp]= get_the_name(ip,options_.TeX,M_,estim_params_,options_);    
+            text(ip,-0.02,param_name_tex_temp,'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+        else
+            text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        end
     end
     xlabel(' ')
     title('Elementary effects in the moments')
@@ -241,7 +256,12 @@ if opt_gsa.morris==1
     set(gca,'position',[0.13 0.2 0.775 0.7])
     xlabel(' ')
     for ip=1:npT
-        text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        if options_.TeX
+            [~, param_name_tex_temp]= get_the_name(ip,options_.TeX,M_,estim_params_,options_);
+            text(ip,-0.02,param_name_tex_temp,'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+        else
+            text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        end      
     end
     xlabel(' ')
     title('Elementary effects in the model')
