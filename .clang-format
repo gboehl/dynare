@@ -1,8 +1,11 @@
 # NB: whenever the present file is modified, the same modification should be
 # applied to the copy in preprocessor.git
 
-# For the list of options (clang-format 14, present in Debian “bookworm” 12), see:
-#  https://releases.llvm.org/14.0.0/tools/clang/docs/ClangFormatStyleOptions.html
+# For general information about our coding style, and the specific version
+# of clang-format used, see:
+#  https://git.dynare.org/Dynare/dynare/-/wikis/CodingGuidelines#c-code
+# For the list of options of clang-format, see:
+#  https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 # Effective configuration can be obtained with:
 #  clang-format --dump-config
 Language: Cpp
