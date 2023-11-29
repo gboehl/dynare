@@ -177,6 +177,13 @@ test_octave:
   needs: [ "build_octave" ]
   when: manual
 
+test_clang_format:
+  stage: test
+  script:
+    - meson setup -Dbuild_for=octave build-clang-format
+    - ninja -C build-clang-format clang-format-check
+  needs: []
+
 # For the sign and deploy jobs, we don’t use the “needs” keyword, since we
 # don’t want those jobs to start before the “test” and “pkg” stages have
 # succeeded. Hence we stick to the “dependencies” keyword.
