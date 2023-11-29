@@ -23,8 +23,6 @@ function pdraw = prior_draw(bayestopt_, prior_trunc, uniform)
 %
 % NOTE 1. Input arguments 1 and 2 are only needed for initialization.
 % NOTE 2. A given draw from the joint prior distribution does not satisfy BK conditions a priori.
-% NOTE 3. This code relies on bayestopt_ as created in the base workspace
-%           by the preprocessor (or as updated in subsequent pieces of code and handed to the base workspace)
 %
 % Copyright © 2006-2023 Dynare Team
 %
