@@ -60,7 +60,7 @@ if opt_gsa.load_ident_files==0
     mss = teff(mss(:,istable),Nsam,istable);
     yys = teff(yys(dr.order_var,istable),Nsam,istable);
     if exist('T','var')
-        [vdec, cc, ac] = mc_moments(T, lpmatx, dr, M_.exo_nbr, options_);
+        [vdec, cc, ac] = mc_moments(T, lpmatx, dr, M_, options_);
     else
         return
     end

@@ -1,9 +1,9 @@
-function [vdec, cc, ac] = mc_moments(mm, ss, dr, exo_nbr, options_)
-% [vdec, cc, ac] = mc_moments(mm, ss, dr, exo_nbr, options_)
+function [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_)
+% [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_)
 % Conduct Monte Carlo simulation of second moments for GSA
 % Inputs:
 %  - dr                 [structure]     decision rules
-%  - exo_nbr            [double]        number of exogenous shocks
+%  - M_                 [structure]     model structure
 %  - options_           [structure]     Matlab's structure describing the current options
 %
 % Outputs:
@@ -33,13 +33,13 @@ function [vdec, cc, ac] = mc_moments(mm, ss, dr, exo_nbr, options_)
 nobs=length(options_.varobs);
 disp('mc_moments: Computing theoretical moments ...')
 h = dyn_waitbar(0,'Theoretical moments ...');
-vdec = zeros(nobs,exo_nbr,nsam);
+vdec = zeros(nobs,M_.exo_nbr,nsam);
 cc = zeros(nobs,nobs,nsam);
 ac = zeros(nobs,nobs*options_.ar,nsam);
 
 for j=1:nsam
-    dr.ghx = mm(:, 1:(nc1-exo_nbr),j);
-    dr.ghu = mm(:, (nc1-exo_nbr+1):end, j);
+    dr.ghx = mm(:, 1:(nc1-M_.exo_nbr),j);
+    dr.ghu = mm(:, (nc1-M_.exo_nbr+1):end, j);
     if ~isempty(ss)
         set_shocks_param(ss(j,:));
     end

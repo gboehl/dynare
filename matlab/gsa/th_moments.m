@@ -33,14 +33,14 @@ function [vdec, corr, autocorr, z, zz] = th_moments(dr,options_,M_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-nvar = length(options_.var_list);
+nvar = length(options_.varobs);
 if nvar == 0
     nvar = length(dr.order_var);
     ivar = [1:nvar]';
 else
     ivar=zeros(nvar,1);
     for i=1:nvar
-        i_tmp = strmatch(options_.var_list{i}, M_.endo_names, 'exact');
+        i_tmp = strmatch(options_.varobs{i}, M_.endo_names, 'exact');
         if isempty(i_tmp)
             error('th_moments: One of the variables specified does not exist');
         else
