@@ -26,10 +26,9 @@
    corresponding to one folded index. So we go through all the rows in the
    unfolded tensor ‘ut’, make an index of the folded tensor by sorting the
    coordinates, and add the row. */
-FRTensor::FRTensor(const URTensor &ut)
-  : FTensor(indor::along_row, IntSequence(ut.dimen(), ut.nvar()),
-            FFSTensor::calcMaxOffset(ut.nvar(), ut.dimen()), ut.ncols(),
-            ut.dimen()),
+FRTensor::FRTensor(const URTensor& ut) :
+    FTensor(indor::along_row, IntSequence(ut.dimen(), ut.nvar()),
+            FFSTensor::calcMaxOffset(ut.nvar(), ut.dimen()), ut.ncols(), ut.dimen()),
     nv(ut.nvar())
 {
   zeros();
@@ -51,20 +50,18 @@ FRTensor::unfold() const
 /* Incrementing is easy. The same as for FFSTensor. */
 
 void
-FRTensor::increment(IntSequence &v) const
+FRTensor::increment(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in FRTensor::increment");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in FRTensor::increment");
 
   UTensor::increment(v, nv);
   v.monotone();
 }
 
 void
-FRTensor::decrement(IntSequence &v) const
+FRTensor::decrement(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in FRTensor::decrement");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in FRTensor::decrement");
 
   FTensor::decrement(v, nv);
 }
@@ -73,10 +70,9 @@ FRTensor::decrement(IntSequence &v) const
    columns of folded tensor to unfolded and leave other columns
    (duplicates) zero. In this way, if the unfolded tensor is folded back,
    we should get the same data. */
-URTensor::URTensor(const FRTensor &ft)
-  : UTensor(indor::along_row, IntSequence(ft.dimen(), ft.nvar()),
-            UFSTensor::calcMaxOffset(ft.nvar(), ft.dimen()), ft.ncols(),
-            ft.dimen()),
+URTensor::URTensor(const FRTensor& ft) :
+    UTensor(indor::along_row, IntSequence(ft.dimen(), ft.nvar()),
+            UFSTensor::calcMaxOffset(ft.nvar(), ft.dimen()), ft.ncols(), ft.dimen()),
     nv(ft.nvar())
 {
   zeros();
@@ -94,28 +90,25 @@ URTensor::fold() const
 }
 
 void
-URTensor::increment(IntSequence &v) const
+URTensor::increment(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in URTensor::increment");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in URTensor::increment");
 
   UTensor::increment(v, nv);
 }
 
 void
-URTensor::decrement(IntSequence &v) const
+URTensor::decrement(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in URTensor::decrement");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in URTensor::decrement");
 
   UTensor::decrement(v, nv);
 }
 
 int
-URTensor::getOffset(const IntSequence &v) const
+URTensor::getOffset(const IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input vector size in URTensor::getOffset");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input vector size in URTensor::getOffset");
 
   return UTensor::getOffset(v, nv);
 }
@@ -123,8 +116,8 @@ URTensor::getOffset(const IntSequence &v) const
 /* Here we construct v₁⊗v₂⊗…⊗vₙ, where v₁,v₂,…,vₙ are stored in a
    std::vector<ConstVector>. */
 
-URSingleTensor::URSingleTensor(const std::vector<ConstVector> &cols)
-  : URTensor(1, cols[0].length(), cols.size())
+URSingleTensor::URSingleTensor(const std::vector<ConstVector>& cols) :
+    URTensor(1, cols[0].length(), cols.size())
 {
   if (dimen() == 1)
     {
@@ -132,10 +125,10 @@ URSingleTensor::URSingleTensor(const std::vector<ConstVector> &cols)
       return;
     }
 
-  auto last = std::make_unique<Vector>(cols[cols.size()-1]);
-  for (int i = cols.size()-2; i > 0; i--)
+  auto last = std::make_unique<Vector>(cols[cols.size() - 1]);
+  for (int i = cols.size() - 2; i > 0; i--)
     {
-      auto newlast = std::make_unique<Vector>(power(nvar(), cols.size()-i));
+      auto newlast = std::make_unique<Vector>(power(nvar(), cols.size() - i));
       KronProd::kronMult(cols[i], ConstVector(*last), *newlast);
       last = std::move(newlast);
     }
@@ -144,8 +137,7 @@ URSingleTensor::URSingleTensor(const std::vector<ConstVector> &cols)
 
 /* Here we construct v⊗…⊗v, where ‘d’ gives the number of copies of v. */
 
-URSingleTensor::URSingleTensor(const ConstVector &v, int d)
-  : URTensor(1, v.length(), d)
+URSingleTensor::URSingleTensor(const ConstVector& v, int d) : URTensor(1, v.length(), d)
 {
   if (d == 1)
     {
@@ -154,9 +146,9 @@ URSingleTensor::URSingleTensor(const ConstVector &v, int d)
     }
 
   auto last = std::make_unique<Vector>(v);
-  for (int i = d-2; i > 0; i--)
+  for (int i = d - 2; i > 0; i--)
     {
-      auto newlast = std::make_unique<Vector>(last->length()*v.length());
+      auto newlast = std::make_unique<Vector>(last->length() * v.length());
       KronProd::kronMult(v, ConstVector(*last), *newlast);
       last = std::move(newlast);
     }
@@ -172,8 +164,7 @@ URSingleTensor::fold() const
 /* The conversion from unfolded URSingleTensor to folded FRSingleTensor is
    exactly the same as the conversion from URTensor to FRTensor, except that we
    do not copy rows but elements. */
-FRSingleTensor::FRSingleTensor(const URSingleTensor &ut)
-  : FRTensor(1, ut.nvar(), ut.dimen())
+FRSingleTensor::FRSingleTensor(const URSingleTensor& ut) : FRTensor(1, ut.nvar(), ut.dimen())
 {
   zeros();
   for (index in = ut.begin(); in != ut.end(); ++in)

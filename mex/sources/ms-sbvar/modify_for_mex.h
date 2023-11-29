@@ -20,9 +20,9 @@
 #ifndef _MODIFY_FOR_MEX_H
 #define _MODIFY_FOR_MEX_H
 
-#include <dynmex.h>
 #include <dynblas.h>
 #include <dynlapack.h>
+#include <dynmex.h>
 
 #define dw_malloc mxMalloc
 #define dw_calloc mxCalloc
@@ -37,7 +37,8 @@ extern "C"
 # else
 extern
 # endif
-bool utIsInterruptPending();
+    bool
+    utIsInterruptPending();
 #else
 # include <octave/quit.h>
 #endif
@@ -48,10 +49,11 @@ extern "C"
 // NB: C23 has the [[noreturn]] attribute, so this #ifdef can be removed when
 // we upgrade
 #ifdef __cplusplus
-[[noreturn]]
+    [[noreturn]]
 #else
 _Noreturn
 #endif
-void msExit(int status);
+    void
+    msExit(int status);
 
 #endif // _MODIFY_FOR_MEX_H

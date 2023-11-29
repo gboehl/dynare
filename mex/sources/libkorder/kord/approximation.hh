@@ -64,10 +64,10 @@
 #ifndef APPROXIMATION_H
 #define APPROXIMATION_H
 
-#include "dynamic_model.hh"
 #include "decision_rule.hh"
-#include "korder.hh"
+#include "dynamic_model.hh"
 #include "journal.hh"
+#include "korder.hh"
 
 #include <memory>
 
@@ -87,8 +87,8 @@ class ZAuxContainer : public StackContainer<FGSTensor>, public FoldedStackContai
 public:
   using _Ctype = StackContainer<FGSTensor>::_Ctype;
   using itype = StackContainer<FGSTensor>::itype;
-  ZAuxContainer(const _Ctype *gss, int ngss, int ng, int ny, int nu);
-  itype getType(int i, const Symmetry &s) const override;
+  ZAuxContainer(const _Ctype* gss, int ngss, int ng, int ny, int nu);
+  itype getType(int i, const Symmetry& s) const override;
 };
 
 /* This class provides an interface to approximation algorithms. The core
@@ -119,8 +119,8 @@ public:
 
 class Approximation
 {
-  DynamicModel &model;
-  Journal &journal;
+  DynamicModel& model;
+  Journal& journal;
   std::unique_ptr<FGSContainer> rule_ders;
   std::unique_ptr<FGSContainer> rule_ders_s;
   std::unique_ptr<FGSContainer> rule_ders_ss;
@@ -136,18 +136,19 @@ class Approximation
   bool pruning;
   double qz_criterium;
   TwoDMatrix ss;
-public:
-  Approximation(DynamicModel &m, Journal &j, int ns, bool dr_centr, bool pruning, double qz_crit);
 
-  const FoldDecisionRule &getFoldDecisionRule() const;
-  const UnfoldDecisionRule &getUnfoldDecisionRulePruning() const;
-  const UnfoldDecisionRule &getUnfoldDecisionRule() const;
-  const TwoDMatrix &
+public:
+  Approximation(DynamicModel& m, Journal& j, int ns, bool dr_centr, bool pruning, double qz_crit);
+
+  const FoldDecisionRule& getFoldDecisionRule() const;
+  const UnfoldDecisionRule& getUnfoldDecisionRulePruning() const;
+  const UnfoldDecisionRule& getUnfoldDecisionRule() const;
+  const TwoDMatrix&
   getSS() const
   {
     return ss;
   }
-  const DynamicModel &
+  const DynamicModel&
   getModel() const
   {
     return model;
@@ -155,25 +156,26 @@ public:
 
   void walkStochSteady();
   TwoDMatrix calcYCov() const;
-  const FGSContainer &
+  const FGSContainer&
   get_rule_ders() const
   {
     return *rule_ders;
   }
-  const FGSContainer &
+  const FGSContainer&
   get_rule_ders_s() const
   {
     return *rule_ders_s;
   }
-  const FGSContainer &
+  const FGSContainer&
   get_rule_ders_ss() const
   {
     return *rule_ders_ss;
   }
+
 protected:
   void approxAtSteady();
-  void calcStochShift(Vector &out, double at_sigma) const;
-  void saveRuleDerivs(const FGSContainer &g);
+  void calcStochShift(Vector& out, double at_sigma) const;
+  void saveRuleDerivs(const FGSContainer& g);
   void check(double at_sigma) const;
 };
 

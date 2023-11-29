@@ -37,7 +37,8 @@
    libmwumfpack, since there is no associated header */
 
 # ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 # endif
 
   /* -------------------------------------------------------------------------- */
@@ -50,10 +51,10 @@ extern "C" {
 # define UMFPACK_INFO 90
 # define UMFPACK_CONTROL 20
   /* used in all UMFPACK_report_* routines: */
-# define UMFPACK_PRL 0                   /* print level */
+# define UMFPACK_PRL 0 /* print level */
   /* returned by all routines that use Info: */
 # define UMFPACK_OK (0)
-# define UMFPACK_STATUS 0        /* UMFPACK_OK, or other result */
+# define UMFPACK_STATUS 0 /* UMFPACK_OK, or other result */
 
 # ifdef _WIN64
 #  ifdef __cplusplus
@@ -63,42 +64,44 @@ extern "C" {
 #  endif
   typedef int64_t SuiteSparse_long;
 # else
-  typedef long SuiteSparse_long;
+typedef long SuiteSparse_long;
 # endif
 
   void umfpack_dl_defaults(double Control[UMFPACK_CONTROL]);
 
   SuiteSparse_long umfpack_dl_symbolic(SuiteSparse_long n_row, SuiteSparse_long n_col,
-                                       const SuiteSparse_long Ap [], const SuiteSparse_long Ai [],
-                                       const double Ax [], void **Symbolic,
-                                       const double Control [UMFPACK_CONTROL], double Info [UMFPACK_INFO]);
+                                       const SuiteSparse_long Ap[], const SuiteSparse_long Ai[],
+                                       const double Ax[], void** Symbolic,
+                                       const double Control[UMFPACK_CONTROL],
+                                       double Info[UMFPACK_INFO]);
 
-  SuiteSparse_long umfpack_dl_numeric(const SuiteSparse_long Ap [], const SuiteSparse_long Ai [],
-                                      const double Ax [], void *Symbolic, void **Numeric,
-                                      const double Control [UMFPACK_CONTROL], double Info [UMFPACK_INFO]);
+  SuiteSparse_long umfpack_dl_numeric(const SuiteSparse_long Ap[], const SuiteSparse_long Ai[],
+                                      const double Ax[], void* Symbolic, void** Numeric,
+                                      const double Control[UMFPACK_CONTROL],
+                                      double Info[UMFPACK_INFO]);
 
-  SuiteSparse_long umfpack_dl_solve(SuiteSparse_long sys, const SuiteSparse_long Ap [],
-                                    const SuiteSparse_long Ai [], const double Ax [],
-                                    double X [], const double B [], void *Numeric,
-                                    const double Control [UMFPACK_CONTROL], double Info [UMFPACK_INFO]);
+  SuiteSparse_long umfpack_dl_solve(SuiteSparse_long sys, const SuiteSparse_long Ap[],
+                                    const SuiteSparse_long Ai[], const double Ax[], double X[],
+                                    const double B[], void* Numeric,
+                                    const double Control[UMFPACK_CONTROL],
+                                    double Info[UMFPACK_INFO]);
 
-  void umfpack_dl_report_info(const double Control [UMFPACK_CONTROL],
-                              const double Info [UMFPACK_INFO]);
+  void umfpack_dl_report_info(const double Control[UMFPACK_CONTROL],
+                              const double Info[UMFPACK_INFO]);
 
-  void umfpack_dl_report_status(const double Control [UMFPACK_CONTROL],
-                                SuiteSparse_long status);
+  void umfpack_dl_report_status(const double Control[UMFPACK_CONTROL], SuiteSparse_long status);
 
-  void umfpack_dl_free_symbolic(void **Symbolic);
+  void umfpack_dl_free_symbolic(void** Symbolic);
 
-  void umfpack_dl_free_numeric(void **Numeric);
+  void umfpack_dl_free_numeric(void** Numeric);
 
-  SuiteSparse_long umfpack_dl_load_symbolic(void **Symbolic, char *filename);
+  SuiteSparse_long umfpack_dl_load_symbolic(void** Symbolic, char* filename);
 
-  SuiteSparse_long umfpack_dl_load_numeric(void **Numeric, char *filename);
+  SuiteSparse_long umfpack_dl_load_numeric(void** Numeric, char* filename);
 
-  SuiteSparse_long umfpack_dl_save_symbolic(void *Symbolic, char *filename);
+  SuiteSparse_long umfpack_dl_save_symbolic(void* Symbolic, char* filename);
 
-  SuiteSparse_long umfpack_dl_save_numeric(void *Numeric, char *filename);
+  SuiteSparse_long umfpack_dl_save_numeric(void* Numeric, char* filename);
 
 # ifdef __cplusplus
 } /* extern "C" */

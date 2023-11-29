@@ -45,8 +45,8 @@
 
    which can be written as:
 
-    ⎛[v_yu]_α₁β₁⎞ ⎛[v_y]_α₂⎞ ⎛[vᵤᵤ]_β₂β₃⎞ 
-    ⎢[w_yu]_α₁β₁⎥ ⎢[w_y]_α₂⎥ ⎢[wᵤᵤ]_β₂β₃⎥       
+    ⎛[v_yu]_α₁β₁⎞ ⎛[v_y]_α₂⎞ ⎛[vᵤᵤ]_β₂β₃⎞
+    ⎢[w_yu]_α₁β₁⎥ ⎢[w_y]_α₂⎥ ⎢[wᵤᵤ]_β₂β₃⎥
     ⎢     0     ⎥⊗⎢  1_α₂  ⎥⊗⎢     0    ⎥
     ⎝     0     ⎠ ⎝    0   ⎠ ⎝     0    ⎠
    where 1_α₂ is a column of zeros having the only 1 at α₂ index.
@@ -59,7 +59,7 @@
                   ⎛[v_y]_α₂⎞
    ⎛[v_yu]_α₁β₁⎞⊗ ⎢[w_y]_α₂⎥⊗⎛[vᵤᵤ]_β₂β₃⎞
    ⎝[w_yu]_α₁β₁⎠  ⎝    1   ⎠ ⎝[wᵤᵤ]_β₂β₃⎠
-  
+
    The class will have a tensor infrastructure introducing ‘index’ which
    iterates over all items in the column with γ₁γ₂γ₃
    as coordinates in [f_z³]. The data of such a tensor is
@@ -71,10 +71,10 @@
 #define PYRAMID_PROD2_H
 
 #include "permutation.hh"
-#include "tensor.hh"
-#include "tl_exception.hh"
 #include "rfs_tensor.hh"
 #include "stack_container.hh"
+#include "tensor.hh"
+#include "tl_exception.hh"
 
 #include "Vector.hh"
 
@@ -103,14 +103,15 @@ class IrregTensorHeader
   IntSequence unit_flag;
   std::vector<std::unique_ptr<Vector>> cols;
   IntSequence end_seq;
+
 public:
-  IrregTensorHeader(const StackProduct<FGSTensor> &sp, const IntSequence &c);
+  IrregTensorHeader(const StackProduct<FGSTensor>& sp, const IntSequence& c);
   int
   dimen() const
   {
     return unit_flag.size();
   }
-  void increment(IntSequence &v) const;
+  void increment(IntSequence& v) const;
   int calcMaxOffset() const;
 };
 
@@ -131,22 +132,23 @@ public:
 
 class IrregTensor : public Tensor
 {
-  const IrregTensorHeader &header;
+  const IrregTensorHeader& header;
+
 public:
-  IrregTensor(const IrregTensorHeader &h);
-  void addTo(FRSingleTensor &out) const;
+  IrregTensor(const IrregTensorHeader& h);
+  void addTo(FRSingleTensor& out) const;
   void
-  increment(IntSequence &v) const override
+  increment(IntSequence& v) const override
   {
     header.increment(v);
   }
   void
-  decrement([[maybe_unused]] IntSequence &v) const override
+  decrement([[maybe_unused]] IntSequence& v) const override
   {
     TL_RAISE("Not implemented error in IrregTensor::decrement");
   }
   int
-  getOffset([[maybe_unused]] const IntSequence &v) const override
+  getOffset([[maybe_unused]] const IntSequence& v) const override
   {
     TL_RAISE("Not implemented error in IrregTensor::getOffset");
   }

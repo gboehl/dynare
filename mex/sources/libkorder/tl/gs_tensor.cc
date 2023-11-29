@@ -19,10 +19,10 @@
  */
 
 #include "gs_tensor.hh"
-#include "sparse_tensor.hh"
-#include "tl_exception.hh"
 #include "kron_prod.hh"
 #include "pascal_triangle.hh"
+#include "sparse_tensor.hh"
+#include "tl_exception.hh"
 
 /* Constructor used for slicing fully symmetric tensor. It constructs the
    dimensions from the partitioning of variables of fully symmetric tensor. Let
@@ -35,14 +35,11 @@
    sizes of partitions (n_a,n_b,n_c,n_d) as IntSequence, and indices of
    picked partitions, in our case (1,1,3,3,3), as IntSequence. */
 
-TensorDimens::TensorDimens(const IntSequence &ss, const IntSequence &coor)
-  : nvs(ss),
-    sym(ss.size()),
-    nvmax(coor.size(), 0)
+TensorDimens::TensorDimens(const IntSequence& ss, const IntSequence& coor) :
+    nvs(ss), sym(ss.size()), nvmax(coor.size(), 0)
 {
-  TL_RAISE_IF(!coor.isSorted(),
-              "Coordinates not sorted in TensorDimens slicing constructor");
-  TL_RAISE_IF(coor[0] < 0 || coor[coor.size()-1] >= ss.size(),
+  TL_RAISE_IF(!coor.isSorted(), "Coordinates not sorted in TensorDimens slicing constructor");
+  TL_RAISE_IF(coor[0] < 0 || coor[coor.size() - 1] >= ss.size(),
               "A coordinate out of stack range in TensorDimens slicing constructor");
 
   for (int i = 0; i < coor.size(); i++)
@@ -71,7 +68,7 @@ TensorDimens::calcFoldMaxOffset() const
       if (nvs[i] == 0 && sym[i] > 0)
         return 0;
       if (sym[i] > 0)
-        res *= PascalTriangle::noverk(nvs[i]+sym[i]-1, sym[i]);
+        res *= PascalTriangle::noverk(nvs[i] + sym[i] - 1, sym[i]);
     }
   return res;
 }
@@ -97,26 +94,23 @@ TensorDimens::calcFoldMaxOffset() const
    product in ‘pow’. */
 
 int
-TensorDimens::calcFoldOffset(const IntSequence &v) const
+TensorDimens::calcFoldOffset(const IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input vector size in TensorDimens::getFoldOffset");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input vector size in TensorDimens::getFoldOffset");
 
   int res = 0;
   int pow = 1;
   int blstart = v.size();
-  for (int ibl = getSym().num()-1; ibl >= 0; ibl--)
-    if (int bldim { getSym()[ibl] };
-        bldim > 0)
+  for (int ibl = getSym().num() - 1; ibl >= 0; ibl--)
+    if (int bldim {getSym()[ibl]}; bldim > 0)
       {
         blstart -= bldim;
         int blnvar = getNVX(blstart);
-        IntSequence subv(v, blstart, blstart+bldim);
-        res += FTensor::getOffset(subv, blnvar)*pow;
+        IntSequence subv(v, blstart, blstart + bldim);
+        res += FTensor::getOffset(subv, blnvar) * pow;
         pow *= FFSTensor::calcMaxOffset(blnvar, bldim);
       }
-  TL_RAISE_IF(blstart != 0,
-              "Error in tracing symmetry in TensorDimens::getFoldOffset");
+  TL_RAISE_IF(blstart != 0, "Error in tracing symmetry in TensorDimens::getFoldOffset");
   return res;
 }
 
@@ -138,17 +132,17 @@ TensorDimens::calcFoldOffset(const IntSequence &v) const
    index (fully symmetric within that partition). */
 
 void
-TensorDimens::decrement(IntSequence &v) const
+TensorDimens::decrement(IntSequence& v) const
 {
   TL_RAISE_IF(getNVX().size() != v.size(),
               "Wrong size of input/output sequence in TensorDimens::decrement");
 
-  int iblock = getSym().num()-1;
+  int iblock = getSym().num() - 1;
   int block_last = v.size();
-  int block_first = block_last-getSym()[iblock];
+  int block_first = block_last - getSym()[iblock];
 
   // check for zero trailing blocks
-  while (iblock > 0 && v[block_last-1] == 0)
+  while (iblock > 0 && v[block_last - 1] == 0)
     {
       for (int i = block_first; i < block_last; i++)
         v[i] = getNVX(i); // equivalent to nvs[iblock]
@@ -165,9 +159,9 @@ TensorDimens::decrement(IntSequence &v) const
 // FGSTensor conversion from UGSTensor
 /* Here we go through columns of folded, calculate column of unfolded,
    and copy data. */
-FGSTensor::FGSTensor(const UGSTensor &ut)
-  : FTensor(indor::along_col, ut.tdims.getNVX(), ut.nrows(),
-            ut.tdims.calcFoldMaxOffset(), ut.dimen()),
+FGSTensor::FGSTensor(const UGSTensor& ut) :
+    FTensor(indor::along_col, ut.tdims.getNVX(), ut.nrows(), ut.tdims.calcFoldMaxOffset(),
+            ut.dimen()),
     tdims(ut.tdims)
 {
   for (index ti = begin(); ti != end(); ++ti)
@@ -186,10 +180,9 @@ FGSTensor::FGSTensor(const UGSTensor &ut)
    in Cartesian ordering (this corresponds to belonging to the
    slices). If it belongs, then we subtract the lower bound ‘lb’ to
    obtain coordinates in the ‘this’ tensor and we copy the item. */
-FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
-                     const IntSequence &coor, TensorDimens td)
-  : FTensor(indor::along_col, td.getNVX(), t.nrows(),
-            td.calcFoldMaxOffset(), td.dimen()),
+FGSTensor::FGSTensor(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor,
+                     TensorDimens td) :
+    FTensor(indor::along_col, td.getNVX(), t.nrows(), td.calcFoldMaxOffset(), td.dimen()),
     tdims(std::move(td))
 {
   // set ‘lb’ and ‘ub’ to lower and upper bounds of indices
@@ -201,7 +194,7 @@ FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
      slice. */
   IntSequence s_offsets(ss.size(), 0);
   for (int i = 1; i < ss.size(); i++)
-    s_offsets[i] = s_offsets[i-1] + ss[i-1];
+    s_offsets[i] = s_offsets[i - 1] + ss[i - 1];
 
   IntSequence lb(coor.size());
   IntSequence ub(coor.size());
@@ -228,10 +221,9 @@ FGSTensor::FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
 
 // FGSTensor slicing from FFSTensor
 /* The code is similar to FGSTensor slicing from FSSparseTensor. */
-FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
-                     const IntSequence &coor, TensorDimens td)
-  : FTensor(indor::along_col, td.getNVX(), t.nrows(),
-            td.calcFoldMaxOffset(), td.dimen()),
+FGSTensor::FGSTensor(const FFSTensor& t, const IntSequence& ss, const IntSequence& coor,
+                     TensorDimens td) :
+    FTensor(indor::along_col, td.getNVX(), t.nrows(), td.calcFoldMaxOffset(), td.dimen()),
     tdims(std::move(td))
 {
   if (ncols() == 0)
@@ -241,7 +233,7 @@ FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
   /* Same code as in the previous converting constructor */
   IntSequence s_offsets(ss.size(), 0);
   for (int i = 1; i < ss.size(); i++)
-    s_offsets[i] = s_offsets[i-1] + ss[i-1];
+    s_offsets[i] = s_offsets[i - 1] + ss[i - 1];
 
   IntSequence lb(coor.size());
   IntSequence ub(coor.size());
@@ -268,12 +260,13 @@ FGSTensor::FGSTensor(const FFSTensor &t, const IntSequence &ss,
 }
 
 // FGSTensor conversion from GSSparseTensor
-FGSTensor::FGSTensor(const GSSparseTensor &t)
-  : FTensor(indor::along_col, t.getDims().getNVX(), t.nrows(),
-            t.getDims().calcFoldMaxOffset(), t.dimen()), tdims(t.getDims())
+FGSTensor::FGSTensor(const GSSparseTensor& t) :
+    FTensor(indor::along_col, t.getDims().getNVX(), t.nrows(), t.getDims().calcFoldMaxOffset(),
+            t.dimen()),
+    tdims(t.getDims())
 {
   zeros();
-  for (const auto &it : t.getMap())
+  for (const auto& it : t.getMap())
     {
       index ind(*this, it.first);
       get(it.second.first, *ind) = it.second.second;
@@ -285,10 +278,9 @@ FGSTensor::FGSTensor(const GSSparseTensor &t)
    IntSequence::pmonotone(). */
 
 void
-FGSTensor::increment(IntSequence &v) const
+FGSTensor::increment(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in FGSTensor::increment");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in FGSTensor::increment");
 
   UTensor::increment(v, tdims.getNVX());
   v.pmonotone(tdims.getSym());
@@ -322,11 +314,9 @@ FGSTensor::unfold() const
    starting from 0. */
 
 void
-FGSTensor::contractAndAdd(int i, FGSTensor &out,
-                          const FRSingleTensor &col) const
+FGSTensor::contractAndAdd(int i, FGSTensor& out, const FRSingleTensor& col) const
 {
-  TL_RAISE_IF(i < 0 || i >= getSym().num(),
-              "Wrong index for FGSTensor::contractAndAdd");
+  TL_RAISE_IF(i < 0 || i >= getSym().num(), "Wrong index for FGSTensor::contractAndAdd");
 
   TL_RAISE_IF(getSym()[i] != col.dimen() || tdims.getNVS()[i] != col.nvar(),
               "Wrong dimensions for FGSTensor::contractAndAdd");
@@ -362,9 +352,9 @@ FGSTensor::contractAndAdd(int i, FGSTensor &out,
    of the unfolded tensor and copy the data to the unfolded. Then we
    unfold data within the unfolded tensor. */
 
-UGSTensor::UGSTensor(const FGSTensor &ft)
-  : UTensor(indor::along_col, ft.tdims.getNVX(), ft.nrows(),
-            ft.tdims.calcUnfoldMaxOffset(), ft.dimen()),
+UGSTensor::UGSTensor(const FGSTensor& ft) :
+    UTensor(indor::along_col, ft.tdims.getNVX(), ft.nrows(), ft.tdims.calcUnfoldMaxOffset(),
+            ft.dimen()),
     tdims(ft.tdims)
 {
   for (index fi = ft.begin(); fi != ft.end(); ++fi)
@@ -377,10 +367,9 @@ UGSTensor::UGSTensor(const FGSTensor &ft)
 
 // UGSTensor slicing from FSSparseTensor
 /* This makes a folded slice from the sparse tensor and unfolds it. */
-UGSTensor::UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
-                     const IntSequence &coor, TensorDimens td)
-  : UTensor(indor::along_col, td.getNVX(), t.nrows(),
-            td.calcUnfoldMaxOffset(), td.dimen()),
+UGSTensor::UGSTensor(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor,
+                     TensorDimens td) :
+    UTensor(indor::along_col, td.getNVX(), t.nrows(), td.calcUnfoldMaxOffset(), td.dimen()),
     tdims(std::move(td))
 {
   if (ncols() == 0)
@@ -397,10 +386,9 @@ UGSTensor::UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
 
 // UGSTensor slicing from UFSTensor
 /* This makes a folded slice from dense and unfolds it. */
-UGSTensor::UGSTensor(const UFSTensor &t, const IntSequence &ss,
-                     const IntSequence &coor, TensorDimens td)
-  : UTensor(indor::along_col, td.getNVX(), t.nrows(),
-            td.calcUnfoldMaxOffset(), td.dimen()),
+UGSTensor::UGSTensor(const UFSTensor& t, const IntSequence& ss, const IntSequence& coor,
+                     TensorDimens td) :
+    UTensor(indor::along_col, td.getNVX(), t.nrows(), td.calcUnfoldMaxOffset(), td.dimen()),
     tdims(std::move(td))
 {
   FFSTensor folded(t);
@@ -416,19 +404,17 @@ UGSTensor::UGSTensor(const UFSTensor &t, const IntSequence &ss,
 // UGSTensor increment and decrement codes
 /* Clear, just call UTensor static methods. */
 void
-UGSTensor::increment(IntSequence &v) const
+UGSTensor::increment(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in UGSTensor::increment");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in UGSTensor::increment");
 
   UTensor::increment(v, tdims.getNVX());
 }
 
 void
-UGSTensor::decrement(IntSequence &v) const
+UGSTensor::decrement(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in UGSTensor::decrement");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in UGSTensor::decrement");
 
   UTensor::decrement(v, tdims.getNVX());
 }
@@ -442,10 +428,9 @@ UGSTensor::fold() const
 
 /* Return an offset of a given index. */
 int
-UGSTensor::getOffset(const IntSequence &v) const
+UGSTensor::getOffset(const IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input vector size in UGSTensor::getOffset");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input vector size in UGSTensor::getOffset");
 
   return UTensor::getOffset(v, tdims.getNVX());
 }
@@ -465,13 +450,13 @@ UGSTensor::unfoldData()
    partitions of the index. */
 
 Tensor::index
-UGSTensor::getFirstIndexOf(const index &in) const
+UGSTensor::getFirstIndexOf(const index& in) const
 {
   IntSequence v(in.getCoor());
   int last = 0;
   for (int i = 0; i < tdims.getSym().num(); i++)
     {
-      IntSequence vtmp(v, last, last+tdims.getSym()[i]);
+      IntSequence vtmp(v, last, last + tdims.getSym()[i]);
       vtmp.sort();
       last += tdims.getSym()[i];
     }
@@ -482,11 +467,9 @@ UGSTensor::getFirstIndexOf(const index &in) const
    FGSTensor::contractAndAdd(). */
 
 void
-UGSTensor::contractAndAdd(int i, UGSTensor &out,
-                          const URSingleTensor &col) const
+UGSTensor::contractAndAdd(int i, UGSTensor& out, const URSingleTensor& col) const
 {
-  TL_RAISE_IF(i < 0 || i >= getSym().num(),
-              "Wrong index for UGSTensor::contractAndAdd");
+  TL_RAISE_IF(i < 0 || i >= getSym().num(), "Wrong index for UGSTensor::contractAndAdd");
   TL_RAISE_IF(getSym()[i] != col.dimen() || tdims.getNVS()[i] != col.nvar(),
               "Wrong dimensions for UGSTensor::contractAndAdd");
 

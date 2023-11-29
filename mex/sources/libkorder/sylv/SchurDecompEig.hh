@@ -23,26 +23,25 @@
 #ifndef SCHUR_DECOMP_EIG_H
 #define SCHUR_DECOMP_EIG_H
 
-#include "SchurDecomp.hh"
 #include "QuasiTriangular.hh"
+#include "SchurDecomp.hh"
 
 class SchurDecompEig : public SchurDecomp
 {
 public:
   using diag_iter = QuasiTriangular::diag_iter;
-  SchurDecompEig(const SqSylvMatrix &m) : SchurDecomp(m)
+  SchurDecompEig(const SqSylvMatrix& m) : SchurDecomp(m)
   {
   }
-  SchurDecompEig(const QuasiTriangular &tr) : SchurDecomp(tr)
-  {
-  };
-  SchurDecompEig(QuasiTriangular &tr) : SchurDecomp(tr)
+  SchurDecompEig(const QuasiTriangular& tr) : SchurDecomp(tr) {};
+  SchurDecompEig(QuasiTriangular& tr) : SchurDecomp(tr)
   {
   }
   diag_iter bubbleEigen(diag_iter from, diag_iter to);
   void orderEigen();
+
 protected:
-  bool tryToSwap(diag_iter &it, diag_iter &itadd);
+  bool tryToSwap(diag_iter& it, diag_iter& itadd);
 };
 
 #endif /* SCHUR_DECOMP_EIG_H */

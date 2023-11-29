@@ -54,11 +54,11 @@
 #include "equivalence.hh"
 #include "int_sequence.hh"
 
-#include <list>
-#include <vector>
 #include <initializer_list>
-#include <utility>
+#include <list>
 #include <memory>
+#include <utility>
+#include <vector>
 
 /* Clear. The method isFull() returns true if and only if the symmetry
    allows for any permutation of indices.
@@ -71,22 +71,19 @@ class Symmetry : public IntSequence
 {
 public:
   // Constructor allocating a given length of (zero-initialized) data
-  explicit Symmetry(int len)
-    : IntSequence(len, 0)
+  explicit Symmetry(int len) : IntSequence(len, 0)
   {
   }
   /* Constructor using an initializer list, that gives the contents of the
      Symmetry. Typically used for symmetries of the form yⁿ, yⁿuᵐ, yⁿuᵐσᵏ */
-  Symmetry(std::initializer_list<int> init)
-    : IntSequence(std::move(init))
+  Symmetry(std::initializer_list<int> init) : IntSequence(std::move(init))
   {
   }
   // Constructor of implied symmetry for a symmetry and an equivalence class
-  Symmetry(const Symmetry &s, const OrdSequence &cl);
+  Symmetry(const Symmetry& s, const OrdSequence& cl);
   /* Subsymmetry, which takes the given length of symmetry from the end (shares
      data pointer) */
-  Symmetry(Symmetry &s, int len)
-    : IntSequence(s, s.size()-len, s.size())
+  Symmetry(Symmetry& s, int len) : IntSequence(s, s.size() - len, s.size())
   {
   }
 
@@ -119,22 +116,23 @@ class symiterator
 {
   const int dim;
   Symmetry run;
+
 public:
   symiterator(int dim_arg, Symmetry run_arg);
   ~symiterator() = default;
-  symiterator &operator++();
-  const Symmetry &
+  symiterator& operator++();
+  const Symmetry&
   operator*() const
   {
     return run;
   }
   bool
-  operator=(const symiterator &it)
+  operator=(const symiterator& it)
   {
     return dim == it.dim && run == it.run;
   }
   bool
-  operator!=(const symiterator &it)
+  operator!=(const symiterator& it)
   {
     return !operator=(it);
   }
@@ -158,23 +156,22 @@ class SymmetrySet
 public:
   const int len;
   const int dim;
-  SymmetrySet(int dim_arg, int len_arg)
-    : len(len_arg), dim(dim_arg)
+  SymmetrySet(int dim_arg, int len_arg) : len(len_arg), dim(dim_arg)
   {
   }
   symiterator
   begin() const
   {
     Symmetry run(len);
-    run[len-1] = dim;
-    return { dim, run };
+    run[len - 1] = dim;
+    return {dim, run};
   }
   symiterator
   end() const
   {
     Symmetry run(len);
-    run[0] = dim+1;
-    return { dim, run };
+    run[0] = dim + 1;
+    return {dim, run};
   }
 };
 
@@ -185,8 +182,8 @@ public:
 class InducedSymmetries : public std::vector<Symmetry>
 {
 public:
-  InducedSymmetries(const Equivalence &e, const Symmetry &s);
-  InducedSymmetries(const Equivalence &e, const Permutation &p, const Symmetry &s);
+  InducedSymmetries(const Equivalence& e, const Symmetry& s);
+  InducedSymmetries(const Equivalence& e, const Permutation& p, const Symmetry& s);
   void print() const;
 };
 

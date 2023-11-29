@@ -20,8 +20,8 @@
 
 #include "dynamic_model.hh"
 
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
 void
 NameList::print() const

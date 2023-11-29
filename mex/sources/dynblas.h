@@ -43,71 +43,67 @@ typedef int blas_int;
 #if defined(MATLAB_MEX_FILE) && defined(_WIN32)
 # define FORTRAN_WRAPPER(x) x
 #else
-# define FORTRAN_WRAPPER(x) x ## _
+# define FORTRAN_WRAPPER(x) x##_
 #endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-  typedef const char *BLCHAR;
-  typedef const blas_int *CONST_BLINT;
-  typedef const double *CONST_BLDOU;
-  typedef const float *CONST_BLFLT;
-  typedef double *BLDOU;
-  typedef float *BLFLT;
+  typedef const char* BLCHAR;
+  typedef const blas_int* CONST_BLINT;
+  typedef const double* CONST_BLDOU;
+  typedef const float* CONST_BLFLT;
+  typedef double* BLDOU;
+  typedef float* BLFLT;
 
 #define dgemm FORTRAN_WRAPPER(dgemm)
-  void dgemm(BLCHAR transa, BLCHAR transb, CONST_BLINT m, CONST_BLINT n,
-             CONST_BLINT k, CONST_BLDOU alpha, CONST_BLDOU a, CONST_BLINT lda,
-             CONST_BLDOU b, CONST_BLINT ldb, CONST_BLDOU beta,
-             BLDOU c, CONST_BLINT ldc);
+  void dgemm(BLCHAR transa, BLCHAR transb, CONST_BLINT m, CONST_BLINT n, CONST_BLINT k,
+             CONST_BLDOU alpha, CONST_BLDOU a, CONST_BLINT lda, CONST_BLDOU b, CONST_BLINT ldb,
+             CONST_BLDOU beta, BLDOU c, CONST_BLINT ldc);
 
 #define sgemm FORTRAN_WRAPPER(sgemm)
-  void sgemm(BLCHAR transa, BLCHAR transb, CONST_BLINT m, CONST_BLINT n,
-             CONST_BLINT k, CONST_BLFLT alpha, CONST_BLFLT a, CONST_BLINT lda,
-             CONST_BLFLT b, CONST_BLINT ldb, CONST_BLFLT beta,
-             BLFLT c, CONST_BLINT ldc);
+  void sgemm(BLCHAR transa, BLCHAR transb, CONST_BLINT m, CONST_BLINT n, CONST_BLINT k,
+             CONST_BLFLT alpha, CONST_BLFLT a, CONST_BLINT lda, CONST_BLFLT b, CONST_BLINT ldb,
+             CONST_BLFLT beta, BLFLT c, CONST_BLINT ldc);
 
 #define dsymm FORTRAN_WRAPPER(dsymm)
-  void dsymm(BLCHAR side, BLCHAR uplo, CONST_BLINT m, CONST_BLINT n,
-             CONST_BLDOU alpha, CONST_BLDOU a, CONST_BLINT lda,
-             CONST_BLDOU b, CONST_BLINT ldb, CONST_BLDOU beta,
+  void dsymm(BLCHAR side, BLCHAR uplo, CONST_BLINT m, CONST_BLINT n, CONST_BLDOU alpha,
+             CONST_BLDOU a, CONST_BLINT lda, CONST_BLDOU b, CONST_BLINT ldb, CONST_BLDOU beta,
              BLDOU c, CONST_BLINT ldc);
 
 #define dgemv FORTRAN_WRAPPER(dgemv)
-  void dgemv(BLCHAR trans, CONST_BLINT m, CONST_BLINT n, CONST_BLDOU alpha,
-             CONST_BLDOU a, CONST_BLINT lda, CONST_BLDOU x, CONST_BLINT incx,
-             CONST_BLDOU beta, BLDOU y, CONST_BLINT incy);
+  void dgemv(BLCHAR trans, CONST_BLINT m, CONST_BLINT n, CONST_BLDOU alpha, CONST_BLDOU a,
+             CONST_BLINT lda, CONST_BLDOU x, CONST_BLINT incx, CONST_BLDOU beta, BLDOU y,
+             CONST_BLINT incy);
 
 #define dsymv FORTRAN_WRAPPER(dsymv)
-  void dsymv(BLCHAR uplo, CONST_BLINT m, CONST_BLDOU alpha, CONST_BLDOU a,
-             CONST_BLINT lda, CONST_BLDOU b, CONST_BLINT ldb, CONST_BLDOU beta,
-             BLDOU c, CONST_BLINT ldc);
+  void dsymv(BLCHAR uplo, CONST_BLINT m, CONST_BLDOU alpha, CONST_BLDOU a, CONST_BLINT lda,
+             CONST_BLDOU b, CONST_BLINT ldb, CONST_BLDOU beta, BLDOU c, CONST_BLINT ldc);
 
 #define dtrsv FORTRAN_WRAPPER(dtrsv)
-  void dtrsv(BLCHAR uplo, BLCHAR trans, BLCHAR diag, CONST_BLINT n,
-             CONST_BLDOU a, CONST_BLINT lda, BLDOU x, CONST_BLINT incx);
+  void dtrsv(BLCHAR uplo, BLCHAR trans, BLCHAR diag, CONST_BLINT n, CONST_BLDOU a, CONST_BLINT lda,
+             BLDOU x, CONST_BLINT incx);
 
 #define dtrmv FORTRAN_WRAPPER(dtrmv)
-  void dtrmv(BLCHAR uplo, BLCHAR trans, BLCHAR diag, CONST_BLINT n,
-             CONST_BLDOU a, CONST_BLINT lda, BLDOU x, CONST_BLINT incx);
+  void dtrmv(BLCHAR uplo, BLCHAR trans, BLCHAR diag, CONST_BLINT n, CONST_BLDOU a, CONST_BLINT lda,
+             BLDOU x, CONST_BLINT incx);
 
 #define daxpy FORTRAN_WRAPPER(daxpy)
-  void daxpy(CONST_BLINT n, CONST_BLDOU a, CONST_BLDOU x, CONST_BLINT incx,
-             BLDOU y, CONST_BLINT incy);
+  void daxpy(CONST_BLINT n, CONST_BLDOU a, CONST_BLDOU x, CONST_BLINT incx, BLDOU y,
+             CONST_BLINT incy);
 
 #define saxpy FORTRAN_WRAPPER(saxpy)
-  void saxpy(CONST_BLINT n, CONST_BLFLT a, CONST_BLFLT x, CONST_BLINT incx,
-             BLFLT y, CONST_BLINT incy);
+  void saxpy(CONST_BLINT n, CONST_BLFLT a, CONST_BLFLT x, CONST_BLINT incx, BLFLT y,
+             CONST_BLINT incy);
 
 #define dcopy FORTRAN_WRAPPER(dcopy)
-  void dcopy(CONST_BLINT n, CONST_BLDOU x, CONST_BLINT incx,
-             BLDOU y, CONST_BLINT incy);
+  void dcopy(CONST_BLINT n, CONST_BLDOU x, CONST_BLINT incx, BLDOU y, CONST_BLINT incy);
 
 #define zaxpy FORTRAN_WRAPPER(zaxpy)
-  void zaxpy(CONST_BLINT n, CONST_BLDOU a, CONST_BLDOU x, CONST_BLINT incx,
-             BLDOU y, CONST_BLINT incy);
+  void zaxpy(CONST_BLINT n, CONST_BLDOU a, CONST_BLDOU x, CONST_BLINT incx, BLDOU y,
+             CONST_BLINT incy);
 
 #define dscal FORTRAN_WRAPPER(dscal)
   void dscal(CONST_BLINT n, CONST_BLDOU a, BLDOU x, CONST_BLINT incx);
@@ -116,27 +112,23 @@ extern "C" {
   void sscal(CONST_BLINT n, CONST_BLDOU a, BLFLT x, CONST_BLINT incx);
 
 #define dtrsm FORTRAN_WRAPPER(dtrsm)
-  void dtrsm(BLCHAR side, BLCHAR uplo, BLCHAR transa, BLCHAR diag, CONST_BLINT m,
-             CONST_BLINT n, CONST_BLDOU alpha, CONST_BLDOU a, CONST_BLINT lda,
-             BLDOU b, CONST_BLINT ldb);
+  void dtrsm(BLCHAR side, BLCHAR uplo, BLCHAR transa, BLCHAR diag, CONST_BLINT m, CONST_BLINT n,
+             CONST_BLDOU alpha, CONST_BLDOU a, CONST_BLINT lda, BLDOU b, CONST_BLINT ldb);
 
 #define ddot FORTRAN_WRAPPER(ddot)
-  double ddot(CONST_BLINT n, CONST_BLDOU x, CONST_BLINT incx, CONST_BLDOU y,
-              CONST_BLINT incy);
+  double ddot(CONST_BLINT n, CONST_BLDOU x, CONST_BLINT incx, CONST_BLDOU y, CONST_BLINT incy);
 
 #define dsyr FORTRAN_WRAPPER(dsyr)
-  void dsyr(BLCHAR uplo, CONST_BLINT n, CONST_BLDOU alpha, CONST_BLDOU x,
-            CONST_BLINT incx, BLDOU a, CONST_BLINT lda);
+  void dsyr(BLCHAR uplo, CONST_BLINT n, CONST_BLDOU alpha, CONST_BLDOU x, CONST_BLINT incx, BLDOU a,
+            CONST_BLINT lda);
 
 #define dtrmm FORTRAN_WRAPPER(dtrmm)
-  void dtrmm(BLCHAR side, BLCHAR uplo, BLCHAR transa, BLCHAR diag, CONST_BLINT m,
-             CONST_BLINT n, CONST_BLDOU alpha, CONST_BLDOU a, CONST_BLINT lda,
-             BLDOU b, CONST_BLINT ldb);
+  void dtrmm(BLCHAR side, BLCHAR uplo, BLCHAR transa, BLCHAR diag, CONST_BLINT m, CONST_BLINT n,
+             CONST_BLDOU alpha, CONST_BLDOU a, CONST_BLINT lda, BLDOU b, CONST_BLINT ldb);
 
 #define strmm FORTRAN_WRAPPER(strmm)
-  void strmm(BLCHAR side, BLCHAR uplo, BLCHAR transa, BLCHAR diag, CONST_BLINT m,
-             CONST_BLINT n, CONST_BLFLT alpha, CONST_BLFLT a, CONST_BLINT lda,
-             BLFLT b, CONST_BLINT ldb);
+  void strmm(BLCHAR side, BLCHAR uplo, BLCHAR transa, BLCHAR diag, CONST_BLINT m, CONST_BLINT n,
+             CONST_BLFLT alpha, CONST_BLFLT a, CONST_BLINT lda, BLFLT b, CONST_BLINT ldb);
 
 #ifdef __cplusplus
 } /* extern "C" */

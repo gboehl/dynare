@@ -22,8 +22,7 @@
 #include <dynmex.h>
 
 void
-mexFunction(int nlhs, mxArray *plhs[],
-            int nrhs, [[maybe_unused]] const mxArray *prhs[])
+mexFunction(int nlhs, mxArray* plhs[], int nrhs, [[maybe_unused]] const mxArray* prhs[])
 {
   if (nrhs != 0 || nlhs != 1)
     mexErrMsgTxt("Must have zero input argument and one output argument");

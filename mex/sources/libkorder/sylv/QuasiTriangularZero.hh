@@ -21,8 +21,8 @@
 #ifndef QUASI_TRIANGULAR_ZERO_H
 #define QUASI_TRIANGULAR_ZERO_H
 
-#include "QuasiTriangular.hh"
 #include "GeneralMatrix.hh"
+#include "QuasiTriangular.hh"
 
 #include <memory>
 
@@ -36,29 +36,29 @@
 
 class QuasiTriangularZero : public QuasiTriangular
 {
-  int nz; // number of zero columns
+  int nz;           // number of zero columns
   GeneralMatrix ru; // data in right upper part (of size nz×d_size)
 public:
-  QuasiTriangularZero(int num_zeros, const ConstVector &d, int d_size);
+  QuasiTriangularZero(int num_zeros, const ConstVector& d, int d_size);
   // Initializes with r·t
-  QuasiTriangularZero(double r, const QuasiTriangularZero &t);
+  QuasiTriangularZero(double r, const QuasiTriangularZero& t);
   // Initializes with r·t+r₂·t₂
-  QuasiTriangularZero(double r, const QuasiTriangularZero &t,
-                      double r2, const QuasiTriangularZero &t2);
+  QuasiTriangularZero(double r, const QuasiTriangularZero& t, double r2,
+                      const QuasiTriangularZero& t2);
   // Initializes with t²
-  QuasiTriangularZero(const std::string &dummy, const QuasiTriangularZero &t);
-  explicit QuasiTriangularZero(const QuasiTriangular &t);
-  explicit QuasiTriangularZero(const SchurDecompZero &decomp);
+  QuasiTriangularZero(const std::string& dummy, const QuasiTriangularZero& t);
+  explicit QuasiTriangularZero(const QuasiTriangular& t);
+  explicit QuasiTriangularZero(const SchurDecompZero& decomp);
   ~QuasiTriangularZero() override = default;
-  void solvePre(Vector &x, double &eig_min) override;
-  void solvePreTrans(Vector &x, double &eig_min) override;
-  void multVec(Vector &x, const ConstVector &b) const override;
-  void multVecTrans(Vector &x, const ConstVector &b) const override;
-  void multaVec(Vector &x, const ConstVector &b) const override;
-  void multaVecTrans(Vector &x, const ConstVector &b) const override;
-  void multKron(KronVector &x) const override;
-  void multKronTrans(KronVector &x) const override;
-  void multLeftOther(GeneralMatrix &a) const override;
+  void solvePre(Vector& x, double& eig_min) override;
+  void solvePreTrans(Vector& x, double& eig_min) override;
+  void multVec(Vector& x, const ConstVector& b) const override;
+  void multVecTrans(Vector& x, const ConstVector& b) const override;
+  void multaVec(Vector& x, const ConstVector& b) const override;
+  void multaVecTrans(Vector& x, const ConstVector& b) const override;
+  void multKron(KronVector& x) const override;
+  void multKronTrans(KronVector& x) const override;
+  void multLeftOther(GeneralMatrix& a) const override;
 
   std::unique_ptr<QuasiTriangular>
   clone() const override
@@ -76,9 +76,10 @@ public:
     return std::make_unique<QuasiTriangularZero>(r, *this);
   }
   std::unique_ptr<QuasiTriangular>
-  linearlyCombine(double r, double r2, const QuasiTriangular &t2) const override
+  linearlyCombine(double r, double r2, const QuasiTriangular& t2) const override
   {
-    return std::make_unique<QuasiTriangularZero>(r, *this, r2, dynamic_cast<const QuasiTriangularZero &>(t2));
+    return std::make_unique<QuasiTriangularZero>(r, *this, r2,
+                                                 dynamic_cast<const QuasiTriangularZero&>(t2));
   }
   void print() const override;
 };

@@ -22,9 +22,9 @@
 #include "fs_tensor.hh"
 #include "tl_exception.hh"
 
-#include <iostream>
-#include <iomanip>
 #include <cmath>
+#include <iomanip>
+#include <iostream>
 
 /* This is straightforward. Before we insert anything, we do a few
    checks. Then we reset ‘first_nz_row’ and ‘last_nz_row’ if necessary. */
@@ -32,12 +32,9 @@
 void
 SparseTensor::insert(IntSequence key, int r, double c)
 {
-  TL_RAISE_IF(r < 0 || r >= nr,
-              "Row number out of dimension of tensor in SparseTensor::insert");
-  TL_RAISE_IF(key.size() != dimen(),
-              "Wrong length of key in SparseTensor::insert");
-  TL_RAISE_IF(!std::isfinite(c),
-              "Insertion of non-finite value in SparseTensor::insert");
+  TL_RAISE_IF(r < 0 || r >= nr, "Row number out of dimension of tensor in SparseTensor::insert");
+  TL_RAISE_IF(key.size() != dimen(), "Wrong length of key in SparseTensor::insert");
+  TL_RAISE_IF(!std::isfinite(c), "Insertion of non-finite value in SparseTensor::insert");
 
   auto first_pos = m.lower_bound(key);
 
@@ -80,11 +77,11 @@ SparseTensor::getFoldIndexFillFactor() const
   while (start_col != m.end())
     {
       cnt++;
-      const IntSequence &key = start_col->first;
+      const IntSequence& key = start_col->first;
       start_col = m.upper_bound(key);
     }
 
-  return static_cast<double>(cnt)/ncols();
+  return static_cast<double>(cnt) / ncols();
 }
 
 /* This returns a ratio of a number of non-zero columns in unfolded
@@ -97,12 +94,12 @@ SparseTensor::getUnfoldIndexFillFactor() const
   auto start_col = m.begin();
   while (start_col != m.end())
     {
-      const IntSequence &key = start_col->first;
+      const IntSequence& key = start_col->first;
       cnt += key.getSymmetry().noverseq();
       start_col = m.upper_bound(key);
     }
 
-  return static_cast<double>(cnt)/ncols();
+  return static_cast<double>(cnt) / ncols();
 }
 
 /* This prints the fill factor and all items. */
@@ -110,13 +107,12 @@ SparseTensor::getUnfoldIndexFillFactor() const
 void
 SparseTensor::print() const
 {
-  std::cout << "Fill: "
-            << std::fixed << std::setprecision(2) << 100*getFillFactor()
+  std::cout << "Fill: " << std::fixed << std::setprecision(2) << 100 * getFillFactor()
             << std::setprecision(6) << std::defaultfloat << " %\n";
   auto start_col = m.begin();
   while (start_col != m.end())
     {
-      const IntSequence &key = start_col->first;
+      const IntSequence& key = start_col->first;
       std::cout << "Column: ";
       key.print();
       auto end_col = m.upper_bound(key);
@@ -132,18 +128,16 @@ SparseTensor::print() const
     }
 }
 
-FSSparseTensor::FSSparseTensor(int d, int nvar, int r)
-  : SparseTensor(d, r, FFSTensor::calcMaxOffset(nvar, d)),
-    nv(nvar), sym{d}
+FSSparseTensor::FSSparseTensor(int d, int nvar, int r) :
+    SparseTensor(d, r, FFSTensor::calcMaxOffset(nvar, d)), nv(nvar), sym {d}
 {
 }
 
 void
 FSSparseTensor::insert(IntSequence key, int r, double c)
 {
-  TL_RAISE_IF(!key.isSorted(),
-              "Key is not sorted in FSSparseTensor::insert");
-  TL_RAISE_IF(key[key.size()-1] >= nv || key[0] < 0,
+  TL_RAISE_IF(!key.isSorted(), "Key is not sorted in FSSparseTensor::insert");
+  TL_RAISE_IF(key[key.size() - 1] >= nv || key[0] < 0,
               "Wrong value of the key in FSSparseTensor::insert");
   SparseTensor::insert(std::move(key), r, c);
 }
@@ -163,7 +157,7 @@ FSSparseTensor::insert(IntSequence key, int r, double c)
    everything depends how filled is the sparse tensor. */
 
 void
-FSSparseTensor::multColumnAndAdd(const Tensor &t, Vector &v) const
+FSSparseTensor::multColumnAndAdd(const Tensor& t, Vector& v) const
 {
   // check compatibility of input parameters
   TL_RAISE_IF(v.length() != nrows(),
@@ -183,7 +177,7 @@ FSSparseTensor::multColumnAndAdd(const Tensor &t, Vector &v) const
           key.sort();
 
           // check that ‘key’ is within the range
-          TL_RAISE_IF(key[0] < 0 || key[key.size()-1] >= nv,
+          TL_RAISE_IF(key[0] < 0 || key[key.size() - 1] >= nv,
                       "Wrong coordinates of index in FSSparseTensor::multColumnAndAdd");
 
           auto first_pos = m.lower_bound(key);
@@ -201,15 +195,16 @@ FSSparseTensor::multColumnAndAdd(const Tensor &t, Vector &v) const
 void
 FSSparseTensor::print() const
 {
-  std::cout << "FS Sparse tensor: dim=" << dim << ", nv=" << nv << ", (" << nr << 'x' << nc << ")\n";
+  std::cout << "FS Sparse tensor: dim=" << dim << ", nv=" << nv << ", (" << nr << 'x' << nc
+            << ")\n";
   SparseTensor::print();
 }
 
 // GSSparseTensor slicing constructor
 /* This is the same as FGSTensor slicing constructor from FSSparseTensor. */
-GSSparseTensor::GSSparseTensor(const FSSparseTensor &t, const IntSequence &ss,
-                               const IntSequence &coor, TensorDimens td)
-  : SparseTensor(td.dimen(), t.nrows(), td.calcFoldMaxOffset()),
+GSSparseTensor::GSSparseTensor(const FSSparseTensor& t, const IntSequence& ss,
+                               const IntSequence& coor, TensorDimens td) :
+    SparseTensor(td.dimen(), t.nrows(), td.calcFoldMaxOffset()),
     tdims(std::move(td))
 {
   // set ‘lb’ and ‘ub’ to lower and upper bounds of slice indices
@@ -217,7 +212,7 @@ GSSparseTensor::GSSparseTensor(const FSSparseTensor &t, const IntSequence &ss,
      details. */
   IntSequence s_offsets(ss.size(), 0);
   for (int i = 1; i < ss.size(); i++)
-    s_offsets[i] = s_offsets[i-1] + ss[i-1];
+    s_offsets[i] = s_offsets[i - 1] + ss[i - 1];
 
   IntSequence lb(coor.size());
   IntSequence ub(coor.size());
@@ -241,8 +236,7 @@ GSSparseTensor::GSSparseTensor(const FSSparseTensor &t, const IntSequence &ss,
 void
 GSSparseTensor::insert(IntSequence s, int r, double c)
 {
-  TL_RAISE_IF(!s.less(tdims.getNVX()),
-              "Wrong coordinates of index in GSSparseTensor::insert");
+  TL_RAISE_IF(!s.less(tdims.getNVX()), "Wrong coordinates of index in GSSparseTensor::insert");
   SparseTensor::insert(std::move(s), r, c);
 }
 

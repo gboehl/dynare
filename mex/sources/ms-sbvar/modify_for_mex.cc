@@ -19,9 +19,7 @@
 
 #include <dynmex.h>
 
-extern "C"
-[[noreturn]]
-void
+extern "C" [[noreturn]] void
 msExit([[maybe_unused]] int status)
 {
   throw "Error in MS-SBVAR MEX file.\n";

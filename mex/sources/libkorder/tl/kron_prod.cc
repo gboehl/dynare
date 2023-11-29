@@ -34,12 +34,10 @@
 
    Then we fork according to i. */
 
-KronProdDimens::KronProdDimens(const KronProdDimens &kd, int i)
-  : rows((i == 0 || i == kd.dimen()-1) ? 2 : 3),
-    cols((i == 0 || i == kd.dimen()-1) ? 2 : 3)
+KronProdDimens::KronProdDimens(const KronProdDimens& kd, int i) :
+    rows((i == 0 || i == kd.dimen() - 1) ? 2 : 3), cols((i == 0 || i == kd.dimen() - 1) ? 2 : 3)
 {
-  TL_RAISE_IF(i < 0 || i >= kd.dimen(),
-              "Wrong index for pickup in KronProdDimens constructor");
+  TL_RAISE_IF(i < 0 || i >= kd.dimen(), "Wrong index for pickup in KronProdDimens constructor");
 
   int kdim = kd.dimen();
   if (i == 0)
@@ -53,16 +51,16 @@ KronProdDimens::KronProdDimens(const KronProdDimens &kd, int i)
       cols[0] = kd.cols[0];
       cols[1] = rows[1];
     }
-  else if (i == kdim-1)
+  else if (i == kdim - 1)
     {
       // set I⊗A dimensions
       /* The second dimension is taken from ‘kd’. The dimension of the identity
          matrix is the number of columns of A₁⊗…⊗Aₙ₋₁, since the matrix I⊗Aₙ is
          the last. */
-      rows[0] = kd.cols.mult(0, kdim-1);
-      rows[1] = kd.rows[kdim-1];
+      rows[0] = kd.cols.mult(0, kdim - 1);
+      rows[1] = kd.rows[kdim - 1];
       cols[0] = rows[0];
-      cols[1] = kd.cols[kdim-1];
+      cols[1] = kd.cols[kdim - 1];
     }
   else
     {
@@ -75,7 +73,7 @@ KronProdDimens::KronProdDimens(const KronProdDimens &kd, int i)
       cols[0] = rows[0];
       rows[1] = kd.rows[i];
       cols[1] = kd.cols[i];
-      cols[2] = kd.rows.mult(i+1, kdim);
+      cols[2] = kd.rows.mult(i + 1, kdim);
       rows[2] = cols[2];
     }
 }
@@ -84,7 +82,7 @@ KronProdDimens::KronProdDimens(const KronProdDimens &kd, int i)
    out = in·this. */
 
 void
-KronProd::checkDimForMult(const ConstTwoDMatrix &in, const TwoDMatrix &out) const
+KronProd::checkDimForMult(const ConstTwoDMatrix& in, const TwoDMatrix& out) const
 {
   auto [my_rows, my_cols] = kpd.getRC();
   TL_RAISE_IF(in.nrows() != out.nrows() || in.ncols() != my_rows,
@@ -95,21 +93,20 @@ KronProd::checkDimForMult(const ConstTwoDMatrix &in, const TwoDMatrix &out) cons
    store the result in preallocated ‘res’. */
 
 void
-KronProd::kronMult(const ConstVector &v1, const ConstVector &v2,
-                   Vector &res)
+KronProd::kronMult(const ConstVector& v1, const ConstVector& v2, Vector& res)
 {
-  TL_RAISE_IF(res.length() != v1.length()*v2.length(),
+  TL_RAISE_IF(res.length() != v1.length() * v2.length(),
               "Wrong vector lengths in KronProd::kronMult");
   res.zeros();
   for (int i = 0; i < v1.length(); i++)
     {
-      Vector sub(res, i *v2.length(), v2.length());
+      Vector sub(res, i * v2.length(), v2.length());
       sub.add(v1[i], v2);
     }
 }
 
 void
-KronProdAll::setMat(int i, const TwoDMatrix &m)
+KronProdAll::setMat(int i, const TwoDMatrix& m)
 {
   matlist[i] = &m;
   kpd.setRC(i, m.nrows(), m.ncols());
@@ -138,7 +135,7 @@ KronProdAll::isUnit() const
    partitions of ‘in’, and ‘id_cols’ is m. We employ level-2 BLAS. */
 
 void
-KronProdIA::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
+KronProdIA::mult(const ConstTwoDMatrix& in, TwoDMatrix& out) const
 {
   checkDimForMult(in, out);
 
@@ -154,8 +151,7 @@ KronProdIA::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
 }
 
 /* Here we construct KronProdAI from KronProdIAI. It is clear. */
-KronProdAI::KronProdAI(const KronProdIAI &kpiai)
-  : KronProd(KronProdDimens(2)), mat(kpiai.mat)
+KronProdAI::KronProdAI(const KronProdIAI& kpiai) : KronProd(KronProdDimens(2)), mat(kpiai.mat)
 {
   kpd.rows[0] = mat.nrows();
   kpd.cols[0] = mat.ncols();
@@ -174,17 +170,16 @@ KronProdAI::KronProdAI(const KronProdIAI &kpiai)
 
    For cases where the leading dimension is not equal to the number of
    rows, we partition the matrix A⊗I into m×n square partitions aᵢⱼI.
-   Therefore, we partition B into m partitions (B₁ B₂ … Bₘ). Each partition of B has the same number of
-   columns as the identity matrix. If R denotes the resulting matrix,
-   then it can be partitioned into n partitions
-   (R₁ R₂ … Rₙ). Each partition of R has the same number of
-   columns as the identity matrix. Then we have Rᵢ=∑aⱼᵢBⱼ.
+   Therefore, we partition B into m partitions (B₁ B₂ … Bₘ). Each partition of B has the same number
+   of columns as the identity matrix. If R denotes the resulting matrix, then it can be partitioned
+   into n partitions (R₁ R₂ … Rₙ). Each partition of R has the same number of columns as the
+   identity matrix. Then we have Rᵢ=∑aⱼᵢBⱼ.
 
    In the implementation, ‘outi’ is Rᵢ, ‘ini’ is Bⱼ, and ‘id_cols’ is the
    dimension of the identity matrix. */
 
 void
-KronProdAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
+KronProdAI::mult(const ConstTwoDMatrix& in, TwoDMatrix& out) const
 {
   checkDimForMult(in, out);
 
@@ -193,8 +188,8 @@ KronProdAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
 
   if (in.getLD() == in.nrows())
     {
-      ConstTwoDMatrix in_resh(in.nrows()*id_cols, a.nrows(), in.getData());
-      TwoDMatrix out_resh(in.nrows()*id_cols, a.ncols(), out.getData());
+      ConstTwoDMatrix in_resh(in.nrows() * id_cols, a.nrows(), in.getData());
+      TwoDMatrix out_resh(in.nrows() * id_cols, a.ncols(), out.getData());
       out_resh.mult(in_resh, a);
     }
   else
@@ -202,10 +197,10 @@ KronProdAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
       out.zeros();
       for (int i = 0; i < a.ncols(); i++)
         {
-          TwoDMatrix outi(out, i *id_cols, id_cols);
+          TwoDMatrix outi(out, i * id_cols, id_cols);
           for (int j = 0; j < a.nrows(); j++)
             {
-              ConstTwoDMatrix ini(in, j *id_cols, id_cols);
+              ConstTwoDMatrix ini(in, j * id_cols, id_cols);
               outi.add(a.get(j, i), ini);
             }
         }
@@ -223,7 +218,7 @@ KronProdAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
    and ‘out_bl_width’ are the rows and cols of A⊗I. */
 
 void
-KronProdIAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
+KronProdIAI::mult(const ConstTwoDMatrix& in, TwoDMatrix& out) const
 {
   checkDimForMult(in, out);
 
@@ -234,8 +229,8 @@ KronProdIAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
 
   for (int i = 0; i < id_cols; i++)
     {
-      TwoDMatrix outi(out, i *out_bl_width, out_bl_width);
-      ConstTwoDMatrix ini(in, i *in_bl_width, in_bl_width);
+      TwoDMatrix outi(out, i * out_bl_width, out_bl_width);
+      ConstTwoDMatrix ini(in, i * in_bl_width, in_bl_width);
       akronid.mult(ini, outi);
     }
 }
@@ -254,7 +249,7 @@ KronProdIAI::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
    handle ‘last’ safely also if no calcs are done. */
 
 void
-KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
+KronProdAll::mult(const ConstTwoDMatrix& in, TwoDMatrix& out) const
 {
   // quick copy if product is unit
   if (isUnit())
@@ -298,13 +293,13 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
       akronid.mult(in, *last);
     }
   else
-    last = std::make_unique<TwoDMatrix>(in.nrows(), in.ncols(), Vector{in.getData()});
+    last = std::make_unique<TwoDMatrix>(in.nrows(), in.ncols(), Vector {in.getData()});
 
   // perform intermediate multiplications by I⊗Aᵢ⊗I
   /* Here we go through all I⊗Aᵢ⊗I, construct the product, allocate new storage
      for result ‘newlast’, perform the multiplication and set ‘last’ to
      ‘newlast’. */
-  for (int i = 1; i < dimen()-1; i++)
+  for (int i = 1; i < dimen() - 1; i++)
     if (matlist[i])
       {
         KronProdIAI interkron(*this, i);
@@ -315,7 +310,7 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
       }
 
   // perform last multiplication by I⊗Aₙ
-  if (matlist[dimen()-1])
+  if (matlist[dimen() - 1])
     {
       KronProdIA idkrona(*this);
       idkrona.mult(*last, out);
@@ -329,17 +324,16 @@ KronProdAll::mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const
    returned. */
 
 std::unique_ptr<Vector>
-KronProdAll::multRows(const IntSequence &irows) const
+KronProdAll::multRows(const IntSequence& irows) const
 {
-  TL_RAISE_IF(irows.size() != dimen(),
-              "Wrong length of row indices in KronProdAll::multRows");
+  TL_RAISE_IF(irows.size() != dimen(), "Wrong length of row indices in KronProdAll::multRows");
 
   std::unique_ptr<Vector> last;
   std::unique_ptr<ConstVector> row;
   std::vector<std::unique_ptr<Vector>> to_delete;
   for (int i = 0; i < dimen(); i++)
     {
-      int j = dimen()-1-i;
+      int j = dimen() - 1 - i;
 
       // set ‘row’ to the number of rows of j-th matrix
       /* If the j-th matrix is a real matrix, then the row is constructed from
@@ -363,7 +357,7 @@ KronProdAll::multRows(const IntSequence &irows) const
          ‘row’. */
       if (last)
         {
-          auto newlast = std::make_unique<Vector>(last->length()*row->length());
+          auto newlast = std::make_unique<Vector>(last->length() * row->length());
           kronMult(*row, ConstVector(*last), *newlast);
           last = std::move(newlast);
         }
@@ -387,24 +381,24 @@ KronProdAllOptim::optimizeOrder()
   for (int i = 0; i < dimen(); i++)
     {
       int swaps = 0;
-      for (int j = 0; j < dimen()-1; j++)
-        if (static_cast<double>(kpd.rows[j])/kpd.cols[j]
-            < static_cast<double>(kpd.rows[j+1])/kpd.cols[j+1])
+      for (int j = 0; j < dimen() - 1; j++)
+        if (static_cast<double>(kpd.rows[j]) / kpd.cols[j]
+            < static_cast<double>(kpd.rows[j + 1]) / kpd.cols[j + 1])
           {
             // swap dimensions and matrices at j and j+1
-            int s = kpd.rows[j+1];
-            kpd.rows[j+1] = kpd.rows[j];
+            int s = kpd.rows[j + 1];
+            kpd.rows[j + 1] = kpd.rows[j];
             kpd.rows[j] = s;
-            s = kpd.cols[j+1];
-            kpd.cols[j+1] = kpd.cols[j];
+            s = kpd.cols[j + 1];
+            kpd.cols[j + 1] = kpd.cols[j];
             kpd.cols[j] = s;
-            const TwoDMatrix *m = matlist[j+1];
-            matlist[j+1] = matlist[j];
+            const TwoDMatrix* m = matlist[j + 1];
+            matlist[j + 1] = matlist[j];
             matlist[j] = m;
 
             // project the swap to the permutation ‘oper’
-            s = oper.getMap()[j+1];
-            oper.getMap()[j+1] = oper.getMap()[j];
+            s = oper.getMap()[j + 1];
+            oper.getMap()[j + 1] = oper.getMap()[j];
             oper.getMap()[j] = s;
             swaps++;
           }

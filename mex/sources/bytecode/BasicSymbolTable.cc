@@ -21,10 +21,9 @@
 
 #include "dynmex.h"
 
-BasicSymbolTable::BasicSymbolTable(const mxArray *M_)
+BasicSymbolTable::BasicSymbolTable(const mxArray* M_)
 {
-  auto get_field_names = [&](const char *field_name, SymbolType type)
-  {
+  auto get_field_names = [&](const char* field_name, SymbolType type) {
     vector<string> r;
     if (mxGetFieldNumber(M_, field_name) != -1)
       {
@@ -33,16 +32,17 @@ BasicSymbolTable::BasicSymbolTable(const mxArray *M_)
           mexErrMsgTxt(("M_."s + field_name + " is not a cell array").c_str());
         for (size_t i {0}; i < mxGetNumberOfElements(M_field); i++)
           {
-            const mxArray *cell_mx = mxGetCell(M_field, i);
+            const mxArray* cell_mx = mxGetCell(M_field, i);
             if (!(cell_mx && mxIsChar(cell_mx)))
-              mexErrMsgTxt(("M_."s + field_name + " contains a cell which is not a character array").c_str());
+              mexErrMsgTxt(("M_."s + field_name + " contains a cell which is not a character array")
+                               .c_str());
             r.emplace_back(mxArrayToString(cell_mx));
           }
       }
 
     // Fill the reverse map
     for (size_t i {0}; i < r.size(); i++)
-      name_to_id_and_type.emplace(r[i], pair{type, i});
+      name_to_id_and_type.emplace(r[i], pair {type, i});
 
     return r;
   };
@@ -71,21 +71,23 @@ BasicSymbolTable::getName(SymbolType type, int tsid) const
           mexErrMsgTxt(("Unsupported symbol type: " + to_string(static_cast<int>(type))).c_str());
         }
     }
-  catch (out_of_range &)
+  catch (out_of_range&)
     {
-      mexErrMsgTxt(("Unknown symbol with ID " + to_string(tsid) + " and type " + to_string(static_cast<int>(type))).c_str());
+      mexErrMsgTxt(("Unknown symbol with ID " + to_string(tsid) + " and type "
+                    + to_string(static_cast<int>(type)))
+                       .c_str());
     }
   __builtin_unreachable(); // Silence GCC warning
 }
 
 pair<SymbolType, int>
-BasicSymbolTable::getIDAndType(const string &name) const
+BasicSymbolTable::getIDAndType(const string& name) const
 {
   try
     {
       return name_to_id_and_type.at(name);
     }
-  catch (out_of_range &)
+  catch (out_of_range&)
     {
       mexErrMsgTxt(("Unknown symbol: " + name).c_str());
     }
@@ -96,7 +98,7 @@ size_t
 BasicSymbolTable::maxEndoNameLength() const
 {
   size_t r {0};
-  for (const auto &n : endo_names)
+  for (const auto& n : endo_names)
     r = max(r, n.size());
   return r;
 }

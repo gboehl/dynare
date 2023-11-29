@@ -31,11 +31,10 @@
    Thus the constructed sequence must be (1,1), meaning that we picked one
    y and one u. */
 
-Symmetry::Symmetry(const Symmetry &sy, const OrdSequence &cl)
-  : IntSequence(sy.num())
+Symmetry::Symmetry(const Symmetry& sy, const OrdSequence& cl) : IntSequence(sy.num())
 {
-  const std::vector<int> &se = cl.getData();
-  TL_RAISE_IF(sy.dimen() <= se[se.size()-1],
+  const std::vector<int>& se = cl.getData();
+  TL_RAISE_IF(sy.dimen() <= se[se.size() - 1],
               "Sequence is not reachable by symmetry in IntSequence()");
   for (int i = 0; i < size(); i++)
     operator[](i) = 0;
@@ -58,7 +57,7 @@ Symmetry::findClass(int i) const
     }
   while (j < size() && sum <= i);
 
-  return j-1;
+  return j - 1;
 }
 
 /* The symmetry is full if it allows for any permutation of indices. It
@@ -77,8 +76,7 @@ Symmetry::isFull() const
 /* Construct a symiterator of given dimension, starting from the given
    symmetry. */
 
-symiterator::symiterator(int dim_arg, Symmetry run_arg)
-  : dim{dim_arg}, run(std::move(run_arg))
+symiterator::symiterator(int dim_arg, Symmetry run_arg) : dim {dim_arg}, run(std::move(run_arg))
 {
 }
 
@@ -88,7 +86,7 @@ symiterator::symiterator(int dim_arg, Symmetry run_arg)
    end, we recreate the subordinal symmetry set and set the subordinal
    iterator to the beginning. */
 
-symiterator &
+symiterator&
 symiterator::operator++()
 {
   if (run[0] == dim)
@@ -100,29 +98,28 @@ symiterator::operator++()
     }
   else
     {
-      symiterator subit{dim-run[0], Symmetry(run, run.size()-1)};
+      symiterator subit {dim - run[0], Symmetry(run, run.size() - 1)};
       ++subit;
-      if (run[1] == dim-run[0]+1)
+      if (run[1] == dim - run[0] + 1)
         {
           run[0]++;
           run[1] = 0;
           /* subit is equal to the past-the-end iterator, so the range
              2…(size()−1) is already set to 0 */
-          run[run.size()-1] = dim-run[0];
+          run[run.size() - 1] = dim - run[0];
         }
     }
   return *this;
 }
 
-InducedSymmetries::InducedSymmetries(const Equivalence &e, const Symmetry &s)
+InducedSymmetries::InducedSymmetries(const Equivalence& e, const Symmetry& s)
 {
-  for (const auto &i : e)
+  for (const auto& i : e)
     emplace_back(s, i);
 }
 
 // InducedSymmetries permuted constructor code
-InducedSymmetries::InducedSymmetries(const Equivalence &e, const Permutation &p,
-                                     const Symmetry &s)
+InducedSymmetries::InducedSymmetries(const Equivalence& e, const Permutation& p, const Symmetry& s)
 {
   for (int i = 0; i < e.numClasses(); i++)
     {

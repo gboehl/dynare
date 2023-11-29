@@ -47,8 +47,8 @@
 
 #include "stack_container.hh"
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 /* This class splits the first nc elements of the given sequence s
    to a sequence not having items greater than given max. The remaining
@@ -61,8 +61,9 @@ class SizeRefinement
   std::vector<int> rsizes;
   std::vector<int> ind_map;
   int new_nc;
+
 public:
-  SizeRefinement(const IntSequence &s, int nc, int max);
+  SizeRefinement(const IntSequence& s, int nc, int max);
   int
   getRefSize(int i) const
   {
@@ -98,7 +99,8 @@ protected:
   using _Ctype = typename StackContainerInterface<_Ttype>::_Ctype;
   using itype = typename StackContainerInterface<_Ttype>::itype;
   std::vector<std::unique_ptr<_Ctype>> ref_conts;
-  const _Stype &stack_cont;
+  const _Stype& stack_cont;
+
 public:
   /* Here we construct the SizeRefinement and allocate space for the
      refined containers. Then, the containers are created and put to
@@ -114,11 +116,10 @@ public:
      StackContainer has only a const method to return a member of
      conts. */
 
-  FineContainer(const _Stype &sc, int max)
-    : SizeRefinement(sc.getStackSizes(), sc.numConts(), max),
-      StackContainer<_Ttype>(numRefinements(), getNC()),
-      ref_conts(getNC()),
-      stack_cont(sc)
+  FineContainer(const _Stype& sc, int max) :
+      SizeRefinement(sc.getStackSizes(), sc.numConts(), max), StackContainer<_Ttype>(
+                                                                  numRefinements(), getNC()),
+      ref_conts(getNC()), stack_cont(sc)
   {
     for (int i = 0; i < numRefinements(); i++)
       _Stype::stack_sizes[i] = getRefSize(i);
@@ -134,26 +135,25 @@ public:
             last_row = 0;
           }
         ref_conts[i] = std::make_unique<_Ctype>(last_row, _Stype::stack_sizes[i],
-                                                const_cast<_Ctype &>(stack_cont.getCont(last_cont)));
+                                                const_cast<_Ctype&>(stack_cont.getCont(last_cont)));
         _Stype::conts[i] = ref_conts[i].get();
         last_row += _Stype::stack_sizes[i];
       }
   }
 
   itype
-  getType(int i, const Symmetry &s) const override
+  getType(int i, const Symmetry& s) const override
   {
     return stack_cont.getType(getOldIndex(i), s);
   }
-
 };
 
 /* Here is FineContainer specialization for folded tensors. */
 class FoldedFineContainer : public FineContainer<FGSTensor>, public FoldedStackContainer
 {
 public:
-  FoldedFineContainer(const StackContainer<FGSTensor> &sc, int max)
-    : FineContainer<FGSTensor>(sc, max)
+  FoldedFineContainer(const StackContainer<FGSTensor>& sc, int max) :
+      FineContainer<FGSTensor>(sc, max)
   {
   }
 };
@@ -162,8 +162,8 @@ public:
 class UnfoldedFineContainer : public FineContainer<UGSTensor>, public UnfoldedStackContainer
 {
 public:
-  UnfoldedFineContainer(const StackContainer<UGSTensor> &sc, int max)
-    : FineContainer<UGSTensor>(sc, max)
+  UnfoldedFineContainer(const StackContainer<UGSTensor>& sc, int max) :
+      FineContainer<UGSTensor>(sc, max)
   {
   }
 };

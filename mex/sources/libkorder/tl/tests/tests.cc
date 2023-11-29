@@ -19,48 +19,48 @@
  */
 
 #include "SylvException.hh"
-#include "tl_exception.hh"
-#include "gs_tensor.hh"
 #include "factory.hh"
+#include "gs_tensor.hh"
 #include "monoms.hh"
-#include "t_container.hh"
-#include "stack_container.hh"
-#include "t_polynomial.hh"
-#include "rfs_tensor.hh"
 #include "ps_tensor.hh"
+#include "rfs_tensor.hh"
+#include "stack_container.hh"
+#include "t_container.hh"
+#include "t_polynomial.hh"
+#include "tl_exception.hh"
 #include "tl_static.hh"
 
+#include <cstdlib>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <memory>
 #include <string>
 #include <utility>
-#include <memory>
 #include <vector>
-#include <ctime>
-#include <cstdlib>
-#include <iostream>
-#include <iomanip>
 
 class TestRunnable
 {
 public:
   const std::string name;
-  int dim; // dimension of the solved problem
+  int dim;  // dimension of the solved problem
   int nvar; // number of variable of the solved problem
-  TestRunnable(std::string name_arg, int d, int nv)
-    : name{std::move(name_arg)}, dim(d), nvar(nv)
+  TestRunnable(std::string name_arg, int d, int nv) : name {std::move(name_arg)}, dim(d), nvar(nv)
   {
   }
   virtual ~TestRunnable() = default;
   bool test() const;
   virtual bool run() const = 0;
+
 protected:
   template<class _Ttype>
-  static bool index_forward(const Symmetry &s, const IntSequence &nvs);
+  static bool index_forward(const Symmetry& s, const IntSequence& nvs);
 
   template<class _Ttype>
-  static bool index_backward(const Symmetry &s, const IntSequence &nvs);
+  static bool index_backward(const Symmetry& s, const IntSequence& nvs);
 
   template<class _Ttype>
-  static bool index_offset(const Symmetry &s, const IntSequence &nvs);
+  static bool index_offset(const Symmetry& s, const IntSequence& nvs);
 
   static bool fold_unfold(std::unique_ptr<FTensor> folded);
   static bool
@@ -76,31 +76,28 @@ protected:
     return fold_unfold(f.make<FRTensor>(r, nv, dim));
   }
   static bool
-  gs_fold_unfold(int r, const Symmetry &s, const IntSequence &nvs)
+  gs_fold_unfold(int r, const Symmetry& s, const IntSequence& nvs)
   {
     Factory f;
     return fold_unfold(f.make<FGSTensor>(r, s, nvs));
   }
 
-  static bool dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
-                         int hdim, int hnv, int rows);
+  static bool dense_prod(const Symmetry& bsym, const IntSequence& bnvs, int hdim, int hnv,
+                         int rows);
 
   static bool folded_monomial(int ng, int nx, int ny, int nu, int dim);
 
   static bool unfolded_monomial(int ng, int nx, int ny, int nu, int dim);
 
-  static bool fold_zcont(int nf, int ny, int nu, int nup, int nbigg,
-                         int ng, int dim);
+  static bool fold_zcont(int nf, int ny, int nu, int nup, int nbigg, int ng, int dim);
 
-  static bool unfold_zcont(int nf, int ny, int nu, int nup, int nbigg,
-                           int ng, int dim);
+  static bool unfold_zcont(int nf, int ny, int nu, int nup, int nbigg, int ng, int dim);
 
   static bool folded_contraction(int r, int nv, int dim);
 
   static bool unfolded_contraction(int r, int nv, int dim);
 
   static bool poly_eval(int r, int nv, int maxdim);
-
 };
 
 bool
@@ -110,7 +107,7 @@ TestRunnable::test() const
   clock_t start = clock();
   bool passed = run();
   clock_t end = clock();
-  std::cout << "CPU time " << static_cast<double>(end-start)/CLOCKS_PER_SEC
+  std::cout << "CPU time " << static_cast<double>(end - start) / CLOCKS_PER_SEC
             << " (CPU seconds)..................";
   if (passed)
     std::cout << "passed\n\n";
@@ -124,7 +121,7 @@ TestRunnable::test() const
 /****************************************************/
 template<class _Ttype>
 bool
-TestRunnable::index_forward(const Symmetry &s, const IntSequence &nvs)
+TestRunnable::index_forward(const Symmetry& s, const IntSequence& nvs)
 {
   int fails = 0;
   int ndecr = 0;
@@ -156,7 +153,7 @@ TestRunnable::index_forward(const Symmetry &s, const IntSequence &nvs)
 
 template<class _Ttype>
 bool
-TestRunnable::index_backward(const Symmetry &s, const IntSequence &nvs)
+TestRunnable::index_backward(const Symmetry& s, const IntSequence& nvs)
 {
   int fails = 0;
   int ndecr = 0;
@@ -187,7 +184,7 @@ TestRunnable::index_backward(const Symmetry &s, const IntSequence &nvs)
 
 template<class _Ttype>
 bool
-TestRunnable::index_offset(const Symmetry &s, const IntSequence &nvs)
+TestRunnable::index_offset(const Symmetry& s, const IntSequence& nvs)
 {
   int fails = 0;
   int nincr = 0;
@@ -223,12 +220,11 @@ TestRunnable::fold_unfold(std::unique_ptr<FTensor> folded)
 }
 
 bool
-TestRunnable::dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
-                         int hdim, int hnv, int rows)
+TestRunnable::dense_prod(const Symmetry& bsym, const IntSequence& bnvs, int hdim, int hnv, int rows)
 {
   Factory f;
-  FGSContainer cont{f.makeCont<FGSTensor, FGSContainer>(hnv, bnvs, bsym.dimen()-hdim+1)};
-  auto fh = f.make<FGSTensor>(rows, Symmetry{hdim}, IntSequence(1, hnv));
+  FGSContainer cont {f.makeCont<FGSTensor, FGSContainer>(hnv, bnvs, bsym.dimen() - hdim + 1)};
+  auto fh = f.make<FGSTensor>(rows, Symmetry {hdim}, IntSequence(1, hnv));
   UGSTensor uh(*fh);
   FGSTensor fb(rows, TensorDimens(bsym, bnvs));
   fb.getData().zeros();
@@ -249,9 +245,12 @@ TestRunnable::dense_prod(const Symmetry &bsym, const IntSequence &bnvs,
   double norm1 = btmp.getNorm1();
   double normInf = btmp.getNormInf();
 
-  std::cout << "\ttime for folded product:     " << static_cast<double>(s2-s1)/CLOCKS_PER_SEC << '\n'
-            << "\ttime for unfolded product:   " << static_cast<double>(s5-s4)/CLOCKS_PER_SEC << '\n'
-            << "\ttime for container convert:  " << static_cast<double>(s3-s2)/CLOCKS_PER_SEC << '\n'
+  std::cout << "\ttime for folded product:     " << static_cast<double>(s2 - s1) / CLOCKS_PER_SEC
+            << '\n'
+            << "\ttime for unfolded product:   " << static_cast<double>(s5 - s4) / CLOCKS_PER_SEC
+            << '\n'
+            << "\ttime for container convert:  " << static_cast<double>(s3 - s2) / CLOCKS_PER_SEC
+            << '\n'
             << "\tunfolded difference normMax: " << norm << '\n'
             << "\tunfolded difference norm1:   " << norm1 << '\n'
             << "\tunfolded difference normInf: " << normInf << '\n';
@@ -264,25 +263,24 @@ TestRunnable::folded_monomial(int ng, int nx, int ny, int nu, int dim)
 {
   clock_t gen_time = clock();
   DenseDerivGenerator gen(ng, nx, ny, nu, 5, 0.3, dim);
-  gen_time = clock()-gen_time;
-  std::cout << "\ttime for monom generation: "
-            << static_cast<double>(gen_time)/CLOCKS_PER_SEC << '\n';
-  IntSequence nvs{ny, nu};
+  gen_time = clock() - gen_time;
+  std::cout << "\ttime for monom generation: " << static_cast<double>(gen_time) / CLOCKS_PER_SEC
+            << '\n';
+  IntSequence nvs {ny, nu};
   double maxnorm = 0;
   for (int ydim = 0; ydim <= dim; ydim++)
     {
-      Symmetry s{ydim, dim-ydim};
+      Symmetry s {ydim, dim - ydim};
       std::cout << "\tSymmetry: ";
       s.print();
       FGSTensor res(ng, TensorDimens(s, nvs));
       res.getData().zeros();
       clock_t stime = clock();
       for (int d = 1; d <= dim; d++)
-        gen.xcont.multAndAdd(*(gen.ts[d-1]), res);
+        gen.xcont.multAndAdd(*(gen.ts[d - 1]), res);
       stime = clock() - stime;
-      std::cout << "\t\ttime for symmetry: "
-                << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
-      const FGSTensor &mres = gen.rcont.get(s);
+      std::cout << "\t\ttime for symmetry: " << static_cast<double>(stime) / CLOCKS_PER_SEC << '\n';
+      const FGSTensor& mres = gen.rcont.get(s);
       res.add(-1.0, mres);
       double normtmp = res.getData().getMax();
       std::cout << "\t\terror normMax:     " << normtmp << '\n';
@@ -296,30 +294,29 @@ TestRunnable::unfolded_monomial(int ng, int nx, int ny, int nu, int dim)
 {
   clock_t gen_time = clock();
   DenseDerivGenerator gen(ng, nx, ny, nu, 5, 0.3, dim);
-  gen_time = clock()-gen_time;
-  std::cout << "\ttime for monom generation: "
-            << static_cast<double>(gen_time)/CLOCKS_PER_SEC << '\n';
+  gen_time = clock() - gen_time;
+  std::cout << "\ttime for monom generation: " << static_cast<double>(gen_time) / CLOCKS_PER_SEC
+            << '\n';
   clock_t u_time = clock();
   gen.unfold();
   u_time = clock() - u_time;
-  std::cout << "\ttime for monom unfolding:  "
-            << static_cast<double>(u_time)/CLOCKS_PER_SEC << '\n';
-  IntSequence nvs{ny, nu};
+  std::cout << "\ttime for monom unfolding:  " << static_cast<double>(u_time) / CLOCKS_PER_SEC
+            << '\n';
+  IntSequence nvs {ny, nu};
   double maxnorm = 0;
   for (int ydim = 0; ydim <= dim; ydim++)
     {
-      Symmetry s{ydim, dim-ydim};
+      Symmetry s {ydim, dim - ydim};
       std::cout << "\tSymmetry: ";
       s.print();
       UGSTensor res(ng, TensorDimens(s, nvs));
       res.getData().zeros();
       clock_t stime = clock();
       for (int d = 1; d <= dim; d++)
-        gen.uxcont.multAndAdd(*(gen.uts[d-1]), res);
+        gen.uxcont.multAndAdd(*(gen.uts[d - 1]), res);
       stime = clock() - stime;
-      std::cout << "\t\ttime for symmetry: "
-                << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
-      const FGSTensor &mres = gen.rcont.get(s);
+      std::cout << "\t\ttime for symmetry: " << static_cast<double>(stime) / CLOCKS_PER_SEC << '\n';
+      const FGSTensor& mres = gen.rcont.get(s);
       FGSTensor foldres(res);
       foldres.add(-1.0, mres);
       double normtmp = foldres.getData().getMax();
@@ -330,29 +327,26 @@ TestRunnable::unfolded_monomial(int ng, int nx, int ny, int nu, int dim)
 }
 
 bool
-TestRunnable::fold_zcont(int nf, int ny, int nu, int nup, int nbigg,
-                         int ng, int dim)
+TestRunnable::fold_zcont(int nf, int ny, int nu, int nup, int nbigg, int ng, int dim)
 {
   clock_t gen_time = clock();
-  SparseDerivGenerator dg(nf, ny, nu, nup, nbigg, ng,
-                          5, 0.55, dim);
-  gen_time = clock()-gen_time;
+  SparseDerivGenerator dg(nf, ny, nu, nup, nbigg, ng, 5, 0.55, dim);
+  gen_time = clock() - gen_time;
   for (int d = 1; d <= dim; d++)
-    std::cout << "\tfill of dim=" << d << " tensor:     "
-              << std::setprecision(2) << std::fixed << std::setw(6)
-              << 100*dg.ts[d-1].getFillFactor()
-              << std::setprecision(6) << std::defaultfloat << " %\n";
-  std::cout << "\ttime for monom generation: "
-            << static_cast<double>(gen_time)/CLOCKS_PER_SEC << '\n';
+    std::cout << "\tfill of dim=" << d << " tensor:     " << std::setprecision(2) << std::fixed
+              << std::setw(6) << 100 * dg.ts[d - 1].getFillFactor() << std::setprecision(6)
+              << std::defaultfloat << " %\n";
+  std::cout << "\ttime for monom generation: " << static_cast<double>(gen_time) / CLOCKS_PER_SEC
+            << '\n';
 
-  IntSequence nvs{ny, nu, nup, 1};
+  IntSequence nvs {ny, nu, nup, 1};
   double maxnorm = 0.0;
 
   // form ZContainer
   FoldedZContainer zc(&dg.bigg, nbigg, &dg.g, ng, ny, nu);
 
   for (int d = 2; d <= dim; d++)
-    for (auto &si : SymmetrySet(d, 4))
+    for (auto& si : SymmetrySet(d, 4))
       {
         std::cout << "\tSymmetry: ";
         si.print();
@@ -360,11 +354,11 @@ TestRunnable::fold_zcont(int nf, int ny, int nu, int nup, int nbigg,
         res.getData().zeros();
         clock_t stime = clock();
         for (int l = 1; l <= si.dimen(); l++)
-          zc.multAndAdd(dg.ts[l-1], res);
+          zc.multAndAdd(dg.ts[l - 1], res);
         stime = clock() - stime;
-        std::cout << "\t\ttime for symmetry: "
-                  << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
-        const FGSTensor &mres = dg.rcont.get(si);
+        std::cout << "\t\ttime for symmetry: " << static_cast<double>(stime) / CLOCKS_PER_SEC
+                  << '\n';
+        const FGSTensor& mres = dg.rcont.get(si);
         res.add(-1.0, mres);
         double normtmp = res.getData().getMax();
         std::cout << "\t\terror normMax:     " << normtmp << '\n';
@@ -375,36 +369,33 @@ TestRunnable::fold_zcont(int nf, int ny, int nu, int nup, int nbigg,
 }
 
 bool
-TestRunnable::unfold_zcont(int nf, int ny, int nu, int nup, int nbigg,
-                           int ng, int dim)
+TestRunnable::unfold_zcont(int nf, int ny, int nu, int nup, int nbigg, int ng, int dim)
 {
   clock_t gen_time = clock();
-  SparseDerivGenerator dg(nf, ny, nu, nup, nbigg, ng,
-                          5, 0.55, dim);
-  gen_time = clock()-gen_time;
+  SparseDerivGenerator dg(nf, ny, nu, nup, nbigg, ng, 5, 0.55, dim);
+  gen_time = clock() - gen_time;
   for (int d = 1; d <= dim; d++)
-    std::cout << "\tfill of dim=" << d << " tensor:     "
-              << std::setprecision(2) << std::fixed << std::setw(6)
-              << 100*dg.ts[d-1].getFillFactor()
-              << std::setprecision(6) << std::defaultfloat << " %\n";
-  std::cout << "\ttime for monom generation: "
-            << static_cast<double>(gen_time)/CLOCKS_PER_SEC << '\n';
+    std::cout << "\tfill of dim=" << d << " tensor:     " << std::setprecision(2) << std::fixed
+              << std::setw(6) << 100 * dg.ts[d - 1].getFillFactor() << std::setprecision(6)
+              << std::defaultfloat << " %\n";
+  std::cout << "\ttime for monom generation: " << static_cast<double>(gen_time) / CLOCKS_PER_SEC
+            << '\n';
 
   clock_t con_time = clock();
   UGSContainer uG_cont(dg.bigg);
   UGSContainer ug_cont(dg.g);
-  con_time = clock()-con_time;
-  std::cout << "\ttime for container unfold: "
-            << static_cast<double>(con_time)/CLOCKS_PER_SEC << '\n';
+  con_time = clock() - con_time;
+  std::cout << "\ttime for container unfold: " << static_cast<double>(con_time) / CLOCKS_PER_SEC
+            << '\n';
 
-  IntSequence nvs{ny, nu, nup, 1};
+  IntSequence nvs {ny, nu, nup, 1};
   double maxnorm = 0.0;
 
   // Form ZContainer
   UnfoldedZContainer zc(&uG_cont, nbigg, &ug_cont, ng, ny, nu);
 
   for (int d = 2; d <= dim; d++)
-    for (auto &si : SymmetrySet(d, 4))
+    for (auto& si : SymmetrySet(d, 4))
       {
         std::cout << "\tSymmetry: ";
         si.print();
@@ -412,12 +403,12 @@ TestRunnable::unfold_zcont(int nf, int ny, int nu, int nup, int nbigg,
         res.getData().zeros();
         clock_t stime = clock();
         for (int l = 1; l <= si.dimen(); l++)
-          zc.multAndAdd(dg.ts[l-1], res);
+          zc.multAndAdd(dg.ts[l - 1], res);
         stime = clock() - stime;
-        std::cout << "\t\ttime for symmetry: "
-                  << static_cast<double>(stime)/CLOCKS_PER_SEC << '\n';
+        std::cout << "\t\ttime for symmetry: " << static_cast<double>(stime) / CLOCKS_PER_SEC
+                  << '\n';
         FGSTensor fold_res(res);
-        const FGSTensor &mres = dg.rcont.get(si);
+        const FGSTensor& mres = dg.rcont.get(si);
         fold_res.add(-1.0, mres);
         double normtmp = fold_res.getData().getMax();
         std::cout << "\t\terror normMax:     " << normtmp << '\n';
@@ -431,12 +422,12 @@ bool
 TestRunnable::folded_contraction(int r, int nv, int dim)
 {
   Factory fact;
-  Vector x{fact.makeVector(nv)};
+  Vector x {fact.makeVector(nv)};
 
   auto forig = fact.make<FFSTensor>(r, nv, dim);
   auto f = std::make_unique<FFSTensor>(*forig);
   clock_t ctime = clock();
-  for (int d = dim-1; d > 0; d--)
+  for (int d = dim - 1; d > 0; d--)
     f = std::make_unique<FFSTensor>(*f, ConstVector(x));
   ctime = clock() - ctime;
   Vector res(forig->nrows());
@@ -452,10 +443,10 @@ TestRunnable::folded_contraction(int r, int nv, int dim)
   utime = clock() - utime;
 
   v.add(-1.0, res);
-  std::cout << "\ttime for folded contraction: "
-            << static_cast<double>(ctime)/CLOCKS_PER_SEC << '\n'
-            << "\ttime for unfolded power:     "
-            << static_cast<double>(utime)/CLOCKS_PER_SEC << '\n'
+  std::cout << "\ttime for folded contraction: " << static_cast<double>(ctime) / CLOCKS_PER_SEC
+            << '\n'
+            << "\ttime for unfolded power:     " << static_cast<double>(utime) / CLOCKS_PER_SEC
+            << '\n'
             << "\terror normMax:     " << v.getMax() << '\n'
             << "\terror norm1:       " << v.getNorm1() << '\n';
 
@@ -466,13 +457,13 @@ bool
 TestRunnable::unfolded_contraction(int r, int nv, int dim)
 {
   Factory fact;
-  Vector x{fact.makeVector(nv)};
+  Vector x {fact.makeVector(nv)};
 
   auto forig = fact.make<FFSTensor>(r, nv, dim);
   UFSTensor uorig(*forig);
   auto u = std::make_unique<UFSTensor>(uorig);
   clock_t ctime = clock();
-  for (int d = dim-1; d > 0; d--)
+  for (int d = dim - 1; d > 0; d--)
     u = std::make_unique<UFSTensor>(*u, ConstVector(x));
   ctime = clock() - ctime;
   Vector res(uorig.nrows());
@@ -487,10 +478,10 @@ TestRunnable::unfolded_contraction(int r, int nv, int dim)
   utime = clock() - utime;
 
   v.add(-1.0, res);
-  std::cout << "\ttime for unfolded contraction: "
-            << static_cast<double>(ctime)/CLOCKS_PER_SEC << '\n'
-            << "\ttime for unfolded power:       "
-            << static_cast<double>(utime)/CLOCKS_PER_SEC << '\n'
+  std::cout << "\ttime for unfolded contraction: " << static_cast<double>(ctime) / CLOCKS_PER_SEC
+            << '\n'
+            << "\ttime for unfolded power:       " << static_cast<double>(utime) / CLOCKS_PER_SEC
+            << '\n'
             << "\terror normMax:     " << v.getMax() << '\n'
             << "\terror norm1:       " << v.getNorm1() << '\n';
 
@@ -501,7 +492,7 @@ bool
 TestRunnable::poly_eval(int r, int nv, int maxdim)
 {
   Factory fact;
-  Vector x{fact.makeVector(nv)};
+  Vector x {fact.makeVector(nv)};
 
   Vector out_ft(r);
   out_ft.zeros();
@@ -512,33 +503,33 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
   Vector out_uh(r);
   out_uh.zeros();
 
-  FTensorPolynomial fp{fact.makePoly<FFSTensor, FTensorPolynomial>(r, nv, maxdim)};
+  FTensorPolynomial fp {fact.makePoly<FFSTensor, FTensorPolynomial>(r, nv, maxdim)};
 
   clock_t ft_cl = clock();
   fp.evalTrad(out_ft, x);
   ft_cl = clock() - ft_cl;
-  std::cout << "\ttime for folded power eval:    "
-            << static_cast<double>(ft_cl)/CLOCKS_PER_SEC << '\n';
+  std::cout << "\ttime for folded power eval:    " << static_cast<double>(ft_cl) / CLOCKS_PER_SEC
+            << '\n';
 
   clock_t fh_cl = clock();
   fp.evalHorner(out_fh, x);
   fh_cl = clock() - fh_cl;
-  std::cout << "\ttime for folded horner eval:   "
-            << static_cast<double>(fh_cl)/CLOCKS_PER_SEC << '\n';
+  std::cout << "\ttime for folded horner eval:   " << static_cast<double>(fh_cl) / CLOCKS_PER_SEC
+            << '\n';
 
-  UTensorPolynomial up{fp};
+  UTensorPolynomial up {fp};
 
   clock_t ut_cl = clock();
   up.evalTrad(out_ut, x);
   ut_cl = clock() - ut_cl;
-  std::cout << "\ttime for unfolded power eval:  "
-            << static_cast<double>(ut_cl)/CLOCKS_PER_SEC << '\n';
+  std::cout << "\ttime for unfolded power eval:  " << static_cast<double>(ut_cl) / CLOCKS_PER_SEC
+            << '\n';
 
   clock_t uh_cl = clock();
   up.evalHorner(out_uh, x);
   uh_cl = clock() - uh_cl;
-  std::cout << "\ttime for unfolded horner eval: "
-            << static_cast<double>(uh_cl)/CLOCKS_PER_SEC << '\n';
+  std::cout << "\ttime for unfolded horner eval: " << static_cast<double>(uh_cl) / CLOCKS_PER_SEC
+            << '\n';
 
   out_ft.add(-1.0, out_ut);
   double max_ft = out_ft.getMax();
@@ -551,7 +542,7 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
             << "\tfolded horner error norm max:    " << max_fh << '\n'
             << "\tunfolded horner error norm max:  " << max_uh << '\n';
 
-  return (max_ft+max_fh+max_uh < 1.0e-10);
+  return (max_ft + max_fh + max_uh < 1.0e-10);
 }
 
 /****************************************************/
@@ -560,15 +551,14 @@ TestRunnable::poly_eval(int r, int nv, int maxdim)
 class SmallIndexForwardFold : public TestRunnable
 {
 public:
-  SmallIndexForwardFold()
-    : TestRunnable("small index forward for fold (44)(222)", 5, 4)
+  SmallIndexForwardFold() : TestRunnable("small index forward for fold (44)(222)", 5, 4)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 3};
-    IntSequence nvs{4, 2};
+    Symmetry s {2, 3};
+    IntSequence nvs {4, 2};
     return index_forward<FGSTensor>(s, nvs);
   }
 };
@@ -576,15 +566,14 @@ public:
 class SmallIndexForwardUnfold : public TestRunnable
 {
 public:
-  SmallIndexForwardUnfold()
-    : TestRunnable("small index forward for unfold (44)(222)", 5, 4)
+  SmallIndexForwardUnfold() : TestRunnable("small index forward for unfold (44)(222)", 5, 4)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 3};
-    IntSequence nvs{4, 2};
+    Symmetry s {2, 3};
+    IntSequence nvs {4, 2};
     return index_forward<UGSTensor>(s, nvs);
   }
 };
@@ -592,15 +581,14 @@ public:
 class IndexForwardFold : public TestRunnable
 {
 public:
-  IndexForwardFold()
-    : TestRunnable("index forward for fold (55)(222)(22)", 7, 5)
+  IndexForwardFold() : TestRunnable("index forward for fold (55)(222)(22)", 7, 5)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 3, 2};
-    IntSequence nvs{5, 2, 2};
+    Symmetry s {2, 3, 2};
+    IntSequence nvs {5, 2, 2};
     return index_forward<FGSTensor>(s, nvs);
   }
 };
@@ -608,15 +596,14 @@ public:
 class IndexForwardUnfold : public TestRunnable
 {
 public:
-  IndexForwardUnfold()
-    : TestRunnable("index forward for unfold (55)(222)(22)", 7, 5)
+  IndexForwardUnfold() : TestRunnable("index forward for unfold (55)(222)(22)", 7, 5)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 3, 2};
-    IntSequence nvs{5, 2, 2};
+    Symmetry s {2, 3, 2};
+    IntSequence nvs {5, 2, 2};
     return index_forward<UGSTensor>(s, nvs);
   }
 };
@@ -624,15 +611,14 @@ public:
 class SmallIndexBackwardFold : public TestRunnable
 {
 public:
-  SmallIndexBackwardFold()
-    : TestRunnable("small index backward for fold (3)(3)(222)", 5, 3)
+  SmallIndexBackwardFold() : TestRunnable("small index backward for fold (3)(3)(222)", 5, 3)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{1, 1, 3};
-    IntSequence nvs{3, 3, 2};
+    Symmetry s {1, 1, 3};
+    IntSequence nvs {3, 3, 2};
     return index_backward<FGSTensor>(s, nvs);
   }
 };
@@ -640,15 +626,14 @@ public:
 class IndexBackwardFold : public TestRunnable
 {
 public:
-  IndexBackwardFold()
-    : TestRunnable("index backward for fold (44)(222)(44)", 7, 4)
+  IndexBackwardFold() : TestRunnable("index backward for fold (44)(222)(44)", 7, 4)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 3, 2};
-    IntSequence nvs{4, 2, 4};
+    Symmetry s {2, 3, 2};
+    IntSequence nvs {4, 2, 4};
     return index_backward<FGSTensor>(s, nvs);
   }
 };
@@ -656,15 +641,14 @@ public:
 class SmallIndexBackwardUnfold : public TestRunnable
 {
 public:
-  SmallIndexBackwardUnfold()
-    : TestRunnable("small index backward for unfold (3)(3)(222)", 5, 3)
+  SmallIndexBackwardUnfold() : TestRunnable("small index backward for unfold (3)(3)(222)", 5, 3)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{1, 1, 3};
-    IntSequence nvs{3, 3, 2};
+    Symmetry s {1, 1, 3};
+    IntSequence nvs {3, 3, 2};
     return index_backward<UGSTensor>(s, nvs);
   }
 };
@@ -672,15 +656,14 @@ public:
 class IndexBackwardUnfold : public TestRunnable
 {
 public:
-  IndexBackwardUnfold()
-    : TestRunnable("index backward for unfold (44)(222)(44)", 7, 4)
+  IndexBackwardUnfold() : TestRunnable("index backward for unfold (44)(222)(44)", 7, 4)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 3, 2};
-    IntSequence nvs{4, 2, 4};
+    Symmetry s {2, 3, 2};
+    IntSequence nvs {4, 2, 4};
     return index_backward<UGSTensor>(s, nvs);
   }
 };
@@ -688,15 +671,14 @@ public:
 class SmallIndexOffsetFold : public TestRunnable
 {
 public:
-  SmallIndexOffsetFold()
-    : TestRunnable("small index offset for fold (44)(222)", 5, 4)
+  SmallIndexOffsetFold() : TestRunnable("small index offset for fold (44)(222)", 5, 4)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 3};
-    IntSequence nvs{4, 2};
+    Symmetry s {2, 3};
+    IntSequence nvs {4, 2};
     return index_offset<FGSTensor>(s, nvs);
   }
 };
@@ -704,15 +686,14 @@ public:
 class SmallIndexOffsetUnfold : public TestRunnable
 {
 public:
-  SmallIndexOffsetUnfold()
-    : TestRunnable("small index offset for unfold (44)(222)", 5, 4)
+  SmallIndexOffsetUnfold() : TestRunnable("small index offset for unfold (44)(222)", 5, 4)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 3};
-    IntSequence nvs{4, 2};
+    Symmetry s {2, 3};
+    IntSequence nvs {4, 2};
     return index_offset<UGSTensor>(s, nvs);
   }
 };
@@ -720,15 +701,14 @@ public:
 class IndexOffsetFold : public TestRunnable
 {
 public:
-  IndexOffsetFold()
-    : TestRunnable("index offset for fold (55)(222)(22)", 5, 5)
+  IndexOffsetFold() : TestRunnable("index offset for fold (55)(222)(22)", 5, 5)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 3, 2};
-    IntSequence nvs{5, 2, 2};
+    Symmetry s {2, 3, 2};
+    IntSequence nvs {5, 2, 2};
     return index_offset<FGSTensor>(s, nvs);
   }
 };
@@ -736,15 +716,14 @@ public:
 class IndexOffsetUnfold : public TestRunnable
 {
 public:
-  IndexOffsetUnfold()
-    : TestRunnable("index offset for unfold (55)(222)(22)", 7, 5)
+  IndexOffsetUnfold() : TestRunnable("index offset for unfold (55)(222)(22)", 7, 5)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 3, 2};
-    IntSequence nvs{5, 2, 2};
+    Symmetry s {2, 3, 2};
+    IntSequence nvs {5, 2, 2};
     return index_offset<UGSTensor>(s, nvs);
   }
 };
@@ -752,8 +731,7 @@ public:
 class SmallFoldUnfoldFS : public TestRunnable
 {
 public:
-  SmallFoldUnfoldFS()
-    : TestRunnable("small fold-unfold for full symmetry (444)", 3, 4)
+  SmallFoldUnfoldFS() : TestRunnable("small fold-unfold for full symmetry (444)", 3, 4)
   {
   }
   bool
@@ -766,15 +744,14 @@ public:
 class SmallFoldUnfoldGS : public TestRunnable
 {
 public:
-  SmallFoldUnfoldGS()
-    : TestRunnable("small fold-unfold for gen symmetry (3)(33)(22)", 5, 3)
+  SmallFoldUnfoldGS() : TestRunnable("small fold-unfold for gen symmetry (3)(33)(22)", 5, 3)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{1, 2, 2};
-    IntSequence nvs{3, 3, 2};
+    Symmetry s {1, 2, 2};
+    IntSequence nvs {3, 3, 2};
     return gs_fold_unfold(5, s, nvs);
   }
 };
@@ -782,8 +759,7 @@ public:
 class FoldUnfoldFS : public TestRunnable
 {
 public:
-  FoldUnfoldFS()
-    : TestRunnable("fold-unfold for full symmetry (9999)", 4, 9)
+  FoldUnfoldFS() : TestRunnable("fold-unfold for full symmetry (9999)", 4, 9)
   {
   }
   bool
@@ -796,15 +772,14 @@ public:
 class FoldUnfoldGS : public TestRunnable
 {
 public:
-  FoldUnfoldGS()
-    : TestRunnable("fold-unfold for gen symmetry (66)(2)(66)", 5, 6)
+  FoldUnfoldGS() : TestRunnable("fold-unfold for gen symmetry (66)(2)(66)", 5, 6)
   {
   }
   bool
   run() const override
   {
-    Symmetry s{2, 1, 2};
-    IntSequence nvs{6, 2, 6};
+    Symmetry s {2, 1, 2};
+    IntSequence nvs {6, 2, 6};
     return gs_fold_unfold(5, s, nvs);
   }
 };
@@ -812,8 +787,7 @@ public:
 class SmallFoldUnfoldR : public TestRunnable
 {
 public:
-  SmallFoldUnfoldR()
-    : TestRunnable("small fold-unfold for row full symmetry (333)", 3, 3)
+  SmallFoldUnfoldR() : TestRunnable("small fold-unfold for row full symmetry (333)", 3, 3)
   {
   }
   bool
@@ -826,8 +800,7 @@ public:
 class FoldUnfoldR : public TestRunnable
 {
 public:
-  FoldUnfoldR()
-    : TestRunnable("fold-unfold for row full symmetry (66666)", 5, 6)
+  FoldUnfoldR() : TestRunnable("fold-unfold for row full symmetry (66666)", 5, 6)
   {
   }
   bool
@@ -840,53 +813,49 @@ public:
 class SmallDenseProd : public TestRunnable
 {
 public:
-  SmallDenseProd()
-    : TestRunnable("small dense prod bsym=1-2,nvs=3-2,h=2-3,r=2", 3, 3)
+  SmallDenseProd() : TestRunnable("small dense prod bsym=1-2,nvs=3-2,h=2-3,r=2", 3, 3)
   {
   }
   bool
   run() const override
   {
-    IntSequence bnvs{3, 2};
-    return dense_prod(Symmetry{1, 2}, bnvs, 2, 3, 2);
+    IntSequence bnvs {3, 2};
+    return dense_prod(Symmetry {1, 2}, bnvs, 2, 3, 2);
   }
 };
 
 class DenseProd : public TestRunnable
 {
 public:
-  DenseProd()
-    : TestRunnable("dense prod bsym=2-3,nvs=10-7,h=3-15,r=10", 5, 15)
+  DenseProd() : TestRunnable("dense prod bsym=2-3,nvs=10-7,h=3-15,r=10", 5, 15)
   {
   }
   bool
   run() const override
   {
-    IntSequence bnvs{10, 7};
-    return dense_prod(Symmetry{2, 3}, bnvs, 3, 15, 10);
+    IntSequence bnvs {10, 7};
+    return dense_prod(Symmetry {2, 3}, bnvs, 3, 15, 10);
   }
 };
 
 class BigDenseProd : public TestRunnable
 {
 public:
-  BigDenseProd()
-    : TestRunnable("dense prod bsym=3-2,nvs=13-11,h=3-20,r=20", 6, 20)
+  BigDenseProd() : TestRunnable("dense prod bsym=3-2,nvs=13-11,h=3-20,r=20", 6, 20)
   {
   }
   bool
   run() const override
   {
-    IntSequence bnvs{13, 11};
-    return dense_prod(Symmetry{3, 2}, bnvs, 3, 20, 20);
+    IntSequence bnvs {13, 11};
+    return dense_prod(Symmetry {3, 2}, bnvs, 3, 20, 20);
   }
 };
 
 class SmallFoldedMonomial : public TestRunnable
 {
 public:
-  SmallFoldedMonomial()
-    : TestRunnable("folded vrs. monoms (g,x,y,u)=(10,4,5,3), dim=4", 4, 8)
+  SmallFoldedMonomial() : TestRunnable("folded vrs. monoms (g,x,y,u)=(10,4,5,3), dim=4", 4, 8)
   {
   }
   bool
@@ -899,8 +868,7 @@ public:
 class FoldedMonomial : public TestRunnable
 {
 public:
-  FoldedMonomial()
-    : TestRunnable("folded vrs. monoms (g,x,y,u)=(20,12,10,5), dim=4", 4, 15)
+  FoldedMonomial() : TestRunnable("folded vrs. monoms (g,x,y,u)=(20,12,10,5), dim=4", 4, 15)
   {
   }
   bool
@@ -913,8 +881,7 @@ public:
 class SmallUnfoldedMonomial : public TestRunnable
 {
 public:
-  SmallUnfoldedMonomial()
-    : TestRunnable("unfolded vrs. monoms (g,x,y,u)=(10,4,5,3), dim=4", 4, 8)
+  SmallUnfoldedMonomial() : TestRunnable("unfolded vrs. monoms (g,x,y,u)=(10,4,5,3), dim=4", 4, 8)
   {
   }
   bool
@@ -927,8 +894,7 @@ public:
 class UnfoldedMonomial : public TestRunnable
 {
 public:
-  UnfoldedMonomial()
-    : TestRunnable("unfolded vrs. monoms (g,x,y,u)=(20,12,10,5), dim=4", 4, 15)
+  UnfoldedMonomial() : TestRunnable("unfolded vrs. monoms (g,x,y,u)=(20,12,10,5), dim=4", 4, 15)
   {
   }
   bool
@@ -941,8 +907,7 @@ public:
 class FoldedContractionSmall : public TestRunnable
 {
 public:
-  FoldedContractionSmall()
-    : TestRunnable("folded contraction small (r=5, nv=4, dim=3)", 3, 4)
+  FoldedContractionSmall() : TestRunnable("folded contraction small (r=5, nv=4, dim=3)", 3, 4)
   {
   }
   bool
@@ -955,8 +920,7 @@ public:
 class FoldedContractionBig : public TestRunnable
 {
 public:
-  FoldedContractionBig()
-    : TestRunnable("folded contraction big (r=20, nv=12, dim=5)", 5, 12)
+  FoldedContractionBig() : TestRunnable("folded contraction big (r=20, nv=12, dim=5)", 5, 12)
   {
   }
   bool
@@ -969,8 +933,7 @@ public:
 class UnfoldedContractionSmall : public TestRunnable
 {
 public:
-  UnfoldedContractionSmall()
-    : TestRunnable("unfolded contraction small (r=5, nv=4, dim=3)", 3, 4)
+  UnfoldedContractionSmall() : TestRunnable("unfolded contraction small (r=5, nv=4, dim=3)", 3, 4)
   {
   }
   bool
@@ -983,8 +946,7 @@ public:
 class UnfoldedContractionBig : public TestRunnable
 {
 public:
-  UnfoldedContractionBig()
-    : TestRunnable("unfolded contraction big (r=20, nv=12, dim=5)", 5, 12)
+  UnfoldedContractionBig() : TestRunnable("unfolded contraction big (r=20, nv=12, dim=5)", 5, 12)
   {
   }
   bool
@@ -997,8 +959,7 @@ public:
 class PolyEvalSmall : public TestRunnable
 {
 public:
-  PolyEvalSmall()
-    : TestRunnable("polynomial evaluation small (r=4, nv=5, maxdim=4)", 4, 5)
+  PolyEvalSmall() : TestRunnable("polynomial evaluation small (r=4, nv=5, maxdim=4)", 4, 5)
   {
   }
   bool
@@ -1011,8 +972,7 @@ public:
 class PolyEvalBig : public TestRunnable
 {
 public:
-  PolyEvalBig()
-    : TestRunnable("polynomial evaluation big (r=244, nv=97, maxdim=2)", 2, 97)
+  PolyEvalBig() : TestRunnable("polynomial evaluation big (r=244, nv=97, maxdim=2)", 2, 97)
   {
   }
   bool
@@ -1025,9 +985,7 @@ public:
 class FoldZContSmall : public TestRunnable
 {
 public:
-  FoldZContSmall()
-    : TestRunnable("folded Z container (r=3,ny=2,nu=2,nup=1,G=2,g=2,dim=3)",
-                   3, 8)
+  FoldZContSmall() : TestRunnable("folded Z container (r=3,ny=2,nu=2,nup=1,G=2,g=2,dim=3)", 3, 8)
   {
   }
   bool
@@ -1040,9 +998,7 @@ public:
 class FoldZCont : public TestRunnable
 {
 public:
-  FoldZCont()
-    : TestRunnable("folded Z container (r=13,ny=5,nu=7,nup=4,G=6,g=7,dim=4)",
-                   4, 25)
+  FoldZCont() : TestRunnable("folded Z container (r=13,ny=5,nu=7,nup=4,G=6,g=7,dim=4)", 4, 25)
   {
   }
   bool
@@ -1055,9 +1011,8 @@ public:
 class UnfoldZContSmall : public TestRunnable
 {
 public:
-  UnfoldZContSmall()
-    : TestRunnable("unfolded Z container (r=3,ny=2,nu=2,nup=1,G=2,g=2,dim=3)",
-                   3, 8)
+  UnfoldZContSmall() :
+      TestRunnable("unfolded Z container (r=3,ny=2,nu=2,nup=1,G=2,g=2,dim=3)", 3, 8)
   {
   }
   bool
@@ -1070,9 +1025,7 @@ public:
 class UnfoldZCont : public TestRunnable
 {
 public:
-  UnfoldZCont()
-    : TestRunnable("unfolded Z container (r=13,ny=5,nu=7,nup=4,G=6,g=7,dim=4",
-                   4, 25)
+  UnfoldZCont() : TestRunnable("unfolded Z container (r=13,ny=5,nu=7,nup=4,G=6,g=7,dim=4", 4, 25)
   {
   }
   bool
@@ -1126,24 +1079,24 @@ main()
   /* Initialize library. We do it for each test individually instead of
      computing the maximum dimension and number of variables, because otherwise
      it does not pass the check on maximum problem size. */
-  for (const auto &test : all_tests)
+  for (const auto& test : all_tests)
     TLStatic::init(test->dim, test->nvar);
 
   // Launch the tests
   int success = 0;
-  for (const auto &test : all_tests)
+  for (const auto& test : all_tests)
     {
       try
         {
           if (test->test())
             success++;
         }
-      catch (const TLException &e)
+      catch (const TLException& e)
         {
           std::cout << "Caught TL exception in <" << test->name << ">:\n";
           e.print();
         }
-      catch (SylvException &e)
+      catch (SylvException& e)
         {
           std::cout << "Caught Sylv exception in <" << test->name << ">:\n";
           e.printMessage();
@@ -1151,8 +1104,8 @@ main()
     }
 
   int nfailed = all_tests.size() - success;
-  std::cout << "There were " << nfailed << " tests that failed out of "
-            << all_tests.size() << " tests run." << std::endl;
+  std::cout << "There were " << nfailed << " tests that failed out of " << all_tests.size()
+            << " tests run." << std::endl;
 
   if (nfailed)
     return EXIT_FAILURE;

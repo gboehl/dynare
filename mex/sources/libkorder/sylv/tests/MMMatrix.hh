@@ -30,6 +30,7 @@
 class MMException
 {
   std::string message;
+
 public:
   MMException(std::string mes) : message(std::move(mes))
   {
@@ -46,18 +47,19 @@ class MMMatrixIn
   std::vector<double> data;
   int rows;
   int cols;
+
 public:
-  MMMatrixIn(const std::string &fname);
+  MMMatrixIn(const std::string& fname);
   ~MMMatrixIn() = default;
   Vector
   getData()
   {
-    return Vector{data.data(), size()};
+    return Vector {data.data(), size()};
   }
   int
   size() const
   {
-    return rows*cols;
+    return rows * cols;
   }
   int
   row() const
@@ -74,7 +76,7 @@ public:
 class MMMatrixOut
 {
 public:
-  static void write(const std::string &fname, const GeneralMatrix &m);
+  static void write(const std::string& fname, const GeneralMatrix& m);
 };
 
 #endif /* MM_MATRIX_H */

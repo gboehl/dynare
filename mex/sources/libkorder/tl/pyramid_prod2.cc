@@ -25,18 +25,15 @@
    fills ‘cols’ and ‘unit_flag’ for the given column ‘c’. Then we set
    ‘end_seq’ according to ‘unit_flag’ and columns lengths. */
 
-IrregTensorHeader::IrregTensorHeader(const StackProduct<FGSTensor> &sp,
-                                     const IntSequence &c)
-  : nv(sp.getAllSize()),
-    unit_flag(sp.dimen()),
-    cols(sp.createPackedColumns(c, unit_flag)),
+IrregTensorHeader::IrregTensorHeader(const StackProduct<FGSTensor>& sp, const IntSequence& c) :
+    nv(sp.getAllSize()), unit_flag(sp.dimen()), cols(sp.createPackedColumns(c, unit_flag)),
     end_seq(sp.dimen())
 {
   for (int i = 0; i < sp.dimen(); i++)
     {
       end_seq[i] = cols[i]->length();
       if (unit_flag[i] != -1)
-        end_seq[i] = unit_flag[i]+1;
+        end_seq[i] = unit_flag[i] + 1;
     }
 }
 
@@ -45,21 +42,20 @@ IrregTensorHeader::IrregTensorHeader(const StackProduct<FGSTensor> &sp,
    difference is how we increment item of coordinates. */
 
 void
-IrregTensorHeader::increment(IntSequence &v) const
+IrregTensorHeader::increment(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong size of coordinates in IrregTensorHeader::increment");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong size of coordinates in IrregTensorHeader::increment");
 
   if (v.size() == 0)
     return;
-  int i = v.size()-1;
+  int i = v.size() - 1;
 
   // increment i-th item in coordinate ‘v’
   /* Here we increment item of coordinates. Whenever we reached end of
      column coming from matrices, and ‘unit_flag’ is not -1, we have to
      jump to that ‘unit_flag’. */
   v[i]++;
-  if (unit_flag[i] != -1 && v[i] == cols[i]->length()-1)
+  if (unit_flag[i] != -1 && v[i] == cols[i]->length() - 1)
     v[i] = unit_flag[i];
 
   while (i > 0 && v[i] == end_seq[i])
@@ -69,7 +65,7 @@ IrregTensorHeader::increment(IntSequence &v) const
       // increment i-th item in coordinate ‘v’
       /* Same code as above */
       v[i]++;
-      if (unit_flag[i] != -1 && v[i] == cols[i]->length()-1)
+      if (unit_flag[i] != -1 && v[i] == cols[i]->length() - 1)
         v[i] = unit_flag[i];
     }
 }
@@ -88,9 +84,8 @@ IrregTensorHeader::calcMaxOffset() const
 /* Everything is done in IrregTensorHeader, only we have to Kronecker
    multiply all columns of the header. */
 
-IrregTensor::IrregTensor(const IrregTensorHeader &h)
-  : Tensor(indor::along_row, IntSequence(h.dimen(), 0), h.end_seq,
-           h.calcMaxOffset(), 1, h.dimen()),
+IrregTensor::IrregTensor(const IrregTensorHeader& h) :
+    Tensor(indor::along_row, IntSequence(h.dimen(), 0), h.end_seq, h.calcMaxOffset(), 1, h.dimen()),
     header(h)
 {
   if (header.dimen() == 1)
@@ -99,20 +94,18 @@ IrregTensor::IrregTensor(const IrregTensorHeader &h)
       return;
     }
 
-  auto last = std::make_unique<Vector>(*(header.cols[header.dimen()-1]));
-  for (int i = header.dimen()-2; i > 0; i--)
+  auto last = std::make_unique<Vector>(*(header.cols[header.dimen() - 1]));
+  for (int i = header.dimen() - 2; i > 0; i--)
     {
-      auto newlast = std::make_unique<Vector>(last->length()*header.cols[i]->length());
-      KronProd::kronMult(ConstVector(*(header.cols[i])),
-                         ConstVector(*last), *newlast);
+      auto newlast = std::make_unique<Vector>(last->length() * header.cols[i]->length());
+      KronProd::kronMult(ConstVector(*(header.cols[i])), ConstVector(*last), *newlast);
       last = std::move(newlast);
     }
-  KronProd::kronMult(ConstVector(*(header.cols[0])),
-                     ConstVector(*last), getData());
+  KronProd::kronMult(ConstVector(*(header.cols[0])), ConstVector(*last), getData());
 }
 
 void
-IrregTensor::addTo(FRSingleTensor &out) const
+IrregTensor::addTo(FRSingleTensor& out) const
 {
   for (index it = begin(); it != end(); ++it)
     {

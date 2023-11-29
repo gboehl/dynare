@@ -37,9 +37,9 @@
 
 namespace TLStatic
 {
-  const EquivalenceSet &getEquiv(int n);
-  const PermutationSet &getPerm(int n);
-  void init(int dim, int nvar);
+const EquivalenceSet& getEquiv(int n);
+const PermutationSet& getPerm(int n);
+void init(int dim, int nvar);
 };
 
 #endif

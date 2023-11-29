@@ -19,27 +19,27 @@
  */
 
 #include "QuasiTriangular.hh"
-#include "SylvException.hh"
 #include "SchurDecomp.hh"
+#include "SylvException.hh"
 #include "int_power.hh"
 
 #include <dynblas.h>
 
 #include <cmath>
 #include <iostream>
-#include <sstream>
 #include <limits>
+#include <sstream>
 
 double
 DiagonalBlock::getDeterminant() const
 {
-  return (*alpha)*(*alpha) + getSBeta();
+  return (*alpha) * (*alpha) + getSBeta();
 }
 
 double
 DiagonalBlock::getSBeta() const
 {
-  return -(*beta1)*(*beta2);
+  return -(*beta1) * (*beta2);
 }
 
 double
@@ -63,12 +63,12 @@ DiagonalBlock::setReal()
 }
 
 void
-DiagonalBlock::checkBlock(const double *d, int d_size)
+DiagonalBlock::checkBlock(const double* d, int d_size)
 {
-  const double *a1 = d + jbar*d_size+jbar;
-  const double *b1 = a1 + d_size;
-  const double *b2 = a1 + 1;
-  const double *a2 = b1 + 1;
+  const double* a1 = d + jbar * d_size + jbar;
+  const double* b1 = a1 + d_size;
+  const double* b2 = a1 + 1;
+  const double* a2 = b1 + 1;
   if (a1 != alpha.a1)
     throw SYLV_MES_EXCEPTION("Bad alpha1.");
   if (!real && b1 != beta1)
@@ -79,25 +79,24 @@ DiagonalBlock::checkBlock(const double *d, int d_size)
     throw SYLV_MES_EXCEPTION("Bad alpha2.");
 }
 
-Diagonal::Diagonal(double *data, int d_size)
+Diagonal::Diagonal(double* data, int d_size)
 {
   int nc = getNumComplex(data, d_size); // return nc ≤ d_size/2
   num_all = d_size - nc;
-  num_real = d_size - 2*nc;
+  num_real = d_size - 2 * nc;
 
   int jbar = 0;
   int j = 0;
   while (j < num_all)
     {
-      int id = jbar*d_size + jbar; // index of diagonal block in data
-      int ill = id + 1; // index of element below the diagonal
-      int iur = id + d_size; // index of element right to diagonal
-      int idd = id + d_size + 1; // index of element next on diagonal
-      if ((jbar < d_size-1) && !isZero(data[ill]))
+      int id = jbar * d_size + jbar; // index of diagonal block in data
+      int ill = id + 1;              // index of element below the diagonal
+      int iur = id + d_size;         // index of element right to diagonal
+      int idd = id + d_size + 1;     // index of element next on diagonal
+      if ((jbar < d_size - 1) && !isZero(data[ill]))
         {
           // it is not last column and we have nonzero below diagonal
-          blocks.emplace_back(jbar, false, &data[id], &data[idd],
-                              &data[iur], &data[ill]);
+          blocks.emplace_back(jbar, false, &data[id], &data[idd], &data[iur], &data[ill]);
           jbar++;
         }
       else
@@ -108,90 +107,87 @@ Diagonal::Diagonal(double *data, int d_size)
     }
 }
 
-Diagonal::Diagonal(double *data, const Diagonal &d)
+Diagonal::Diagonal(double* data, const Diagonal& d)
 {
   num_all = d.num_all;
   num_real = d.num_real;
   int d_size = d.getSize();
-  for (const auto &block : d)
+  for (const auto& block : d)
     {
-      double *beta1 = nullptr;
-      double *beta2 = nullptr;
-      int id = block.getIndex()*(d_size+1);
+      double* beta1 = nullptr;
+      double* beta2 = nullptr;
+      int id = block.getIndex() * (d_size + 1);
       int idd = id;
       if (!block.isReal())
         {
-          beta1 = &data[id+d_size];
-          beta2 = &data[id+1];
+          beta1 = &data[id + d_size];
+          beta2 = &data[id + 1];
           idd = id + d_size + 1;
         }
-      blocks.emplace_back(block.getIndex(), block.isReal(),
-                          &data[id], &data[idd], beta1, beta2);
+      blocks.emplace_back(block.getIndex(), block.isReal(), &data[id], &data[idd], beta1, beta2);
     }
 }
 
 int
-Diagonal::getNumComplex(const double *data, int d_size)
+Diagonal::getNumComplex(const double* data, int d_size)
 {
   int num_complex = 0;
   int in = 1;
-  for (int i = 0; i < d_size-1; i++, in = in + d_size + 1)
+  for (int i = 0; i < d_size - 1; i++, in = in + d_size + 1)
     if (!isZero(data[in]))
       {
         num_complex++;
-        if (in < d_size - 2 && !isZero(data[in + d_size +1]))
+        if (in < d_size - 2 && !isZero(data[in + d_size + 1]))
           throw SYLV_MES_EXCEPTION("Matrix is not quasi-triangular");
       }
   return num_complex;
 }
 
 void
-Diagonal::changeBase(double *p)
+Diagonal::changeBase(double* p)
 {
   int d_size = getSize();
-  for (auto &it : *this)
+  for (auto& it : *this)
     {
-      const DiagonalBlock &b = it;
+      const DiagonalBlock& b = it;
       int jbar = b.getIndex();
-      int base = d_size*jbar + jbar;
+      int base = d_size * jbar + jbar;
       if (b.isReal())
         {
-          DiagonalBlock bnew(jbar, true, &p[base], &p[base],
-                             nullptr, nullptr);
+          DiagonalBlock bnew(jbar, true, &p[base], &p[base], nullptr, nullptr);
           it = bnew;
         }
       else
         {
-          DiagonalBlock bnew(jbar, false, &p[base], &p[base+d_size+1],
-                             &p[base+d_size], &p[base+1]);
+          DiagonalBlock bnew(jbar, false, &p[base], &p[base + d_size + 1], &p[base + d_size],
+                             &p[base + 1]);
           it = bnew;
         }
     }
 }
 
 void
-Diagonal::getEigenValues(Vector &eig) const
+Diagonal::getEigenValues(Vector& eig) const
 {
-  if (int d_size {getSize()};
-      eig.length() != 2*d_size)
+  if (int d_size {getSize()}; eig.length() != 2 * d_size)
     {
       std::ostringstream mes;
       mes << "Wrong length of vector for eigenvalues len=" << eig.length()
-          << ", should be=" << 2*d_size << '.' << std::endl;
+          << ", should be=" << 2 * d_size << '.' << std::endl;
       throw SYLV_MES_EXCEPTION(mes.str());
     }
-  for (const auto &b : *this)
+  for (const auto& b : *this)
     {
       int ind = b.getIndex();
-      eig[2*ind] = *(b.getAlpha());
+      eig[2 * ind] = *(b.getAlpha());
       if (b.isReal())
-        eig[2*ind+1] = 0.0;
+        eig[2 * ind + 1] = 0.0;
       else
         {
           double beta = std::sqrt(b.getSBeta());
-          eig[2*ind+1] = beta;
-          eig[2*ind+2] = eig[2*ind];
-          eig[2*ind+3] = -beta;
+          eig[2 * ind + 1] = beta;
+          eig[2 * ind + 2] = eig[2 * ind];
+          eig[2 * ind + 3] = -beta;
         }
     }
 }
@@ -208,25 +204,25 @@ Diagonal::swapLogically(diag_iter it)
   if (it->isReal() && !itp->isReal())
     {
       // first is real, second is complex
-      double *d1 = it->alpha.a1;
-      double *d2 = itp->alpha.a1;
-      double *d3 = itp->alpha.a2;
+      double* d1 = it->alpha.a1;
+      double* d2 = itp->alpha.a1;
+      double* d3 = itp->alpha.a2;
       // swap
       DiagonalBlock new_it(it->jbar, d1, d2);
       *it = new_it;
-      DiagonalBlock new_itp(itp->jbar+1, d3);
+      DiagonalBlock new_itp(itp->jbar + 1, d3);
       *itp = new_itp;
     }
   else if (!it->isReal() && itp->isReal())
     {
       // first is complex, second is real
-      double *d1 = it->alpha.a1;
-      double *d2 = it->alpha.a2;
-      double *d3 = itp->alpha.a1;
+      double* d1 = it->alpha.a1;
+      double* d2 = it->alpha.a2;
+      double* d3 = itp->alpha.a1;
       // swap
       DiagonalBlock new_it(it->jbar, d1);
       *it = new_it;
-      DiagonalBlock new_itp(itp->jbar-1, d2, d3);
+      DiagonalBlock new_itp(itp->jbar - 1, d2, d3);
       *itp = new_itp;
     }
 }
@@ -238,12 +234,12 @@ Diagonal::checkConsistency(diag_iter it)
     {
       it->getBeta2() = 0.0; // put exact zero
       int jbar = it->getIndex();
-      double *d2 = it->alpha.a2;
+      double* d2 = it->alpha.a2;
       it->alpha.a2 = it->alpha.a1;
       it->real = true;
       it->beta1 = nullptr;
       it->beta2 = nullptr;
-      blocks.emplace(++it, jbar+1, d2);
+      blocks.emplace(++it, jbar + 1, d2);
       num_real += 2;
       num_all++;
     }
@@ -260,7 +256,7 @@ Diagonal::getAverageSize(diag_iter start, diag_iter end)
       res += run->getSize();
     }
   if (num > 0)
-    res = res/num;
+    res = res / num;
   return res;
 }
 
@@ -270,8 +266,7 @@ Diagonal::findClosestBlock(diag_iter start, diag_iter end, double a)
   diag_iter closest = start;
   double minim {std::numeric_limits<double>::infinity()};
   for (diag_iter run = start; run != end; ++run)
-    if (double dist = std::abs(a - run->getSize());
-        dist < minim)
+    if (double dist = std::abs(a - run->getSize()); dist < minim)
       {
         minim = dist;
         closest = run;
@@ -285,8 +280,7 @@ Diagonal::findNextLargerBlock(diag_iter start, diag_iter end, double a)
   diag_iter closest = start;
   double minim {std::numeric_limits<double>::infinity()};
   for (diag_iter run = start; run != end; ++run)
-    if (double dist = run->getSize() - a;
-        0 <= dist && dist < minim)
+    if (double dist = run->getSize() - a; 0 <= dist && dist < minim)
       {
         minim = dist;
         closest = run;
@@ -300,14 +294,12 @@ Diagonal::print() const
   auto ff = std::cout.flags();
   std::cout << "Num real: " << getNumReal() << ", num complex: " << getNumComplex() << std::endl
             << std::fixed;
-  for (const auto &it : *this)
+  for (const auto& it : *this)
     if (it.isReal())
       std::cout << "real: jbar=" << it.getIndex() << ", alpha=" << *(it.getAlpha()) << std::endl;
     else
-      std::cout << "complex: jbar=" << it.getIndex()
-                << ", alpha=" << *(it.getAlpha())
-                << ", beta1=" << it.getBeta1()
-                << ", beta2=" << it.getBeta2() << std::endl;
+      std::cout << "complex: jbar=" << it.getIndex() << ", alpha=" << *(it.getAlpha())
+                << ", beta1=" << it.getBeta1() << ", beta2=" << it.getBeta2() << std::endl;
   std::cout.flags(ff);
 }
 
@@ -318,28 +310,28 @@ Diagonal::isZero(double p)
 }
 
 QuasiTriangular::const_col_iter
-QuasiTriangular::col_begin(const DiagonalBlock &b) const
+QuasiTriangular::col_begin(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return const_col_iter(&getData()[jbar*d_size], d_size, b.isReal(), 0);
+  return const_col_iter(&getData()[jbar * d_size], d_size, b.isReal(), 0);
 }
 
 QuasiTriangular::col_iter
-QuasiTriangular::col_begin(const DiagonalBlock &b)
+QuasiTriangular::col_begin(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return col_iter(&getData()[jbar*d_size], d_size, b.isReal(), 0);
+  return col_iter(&getData()[jbar * d_size], d_size, b.isReal(), 0);
 }
 
 QuasiTriangular::const_row_iter
-QuasiTriangular::row_begin(const DiagonalBlock &b) const
+QuasiTriangular::row_begin(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  int off = jbar*d_size+jbar+d_size;
-  int col = jbar+1;
+  int off = jbar * d_size + jbar + d_size;
+  int col = jbar + 1;
   if (!b.isReal())
     {
       off = off + d_size;
@@ -349,12 +341,12 @@ QuasiTriangular::row_begin(const DiagonalBlock &b) const
 }
 
 QuasiTriangular::row_iter
-QuasiTriangular::row_begin(const DiagonalBlock &b)
+QuasiTriangular::row_begin(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  int off = jbar*d_size+jbar+d_size;
-  int col = jbar+1;
+  int off = jbar * d_size + jbar + d_size;
+  int col = jbar + 1;
   if (!b.isReal())
     {
       off = off + d_size;
@@ -364,113 +356,112 @@ QuasiTriangular::row_begin(const DiagonalBlock &b)
 }
 
 QuasiTriangular::const_col_iter
-QuasiTriangular::col_end(const DiagonalBlock &b) const
+QuasiTriangular::col_end(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return const_col_iter(getData().base()+jbar*d_size+jbar, d_size, b.isReal(),
-                        jbar);
+  return const_col_iter(getData().base() + jbar * d_size + jbar, d_size, b.isReal(), jbar);
 }
 
 QuasiTriangular::col_iter
-QuasiTriangular::col_end(const DiagonalBlock &b)
+QuasiTriangular::col_end(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return col_iter(&getData()[jbar*d_size+jbar], d_size, b.isReal(), jbar);
+  return col_iter(&getData()[jbar * d_size + jbar], d_size, b.isReal(), jbar);
 }
 
 QuasiTriangular::const_row_iter
-QuasiTriangular::row_end(const DiagonalBlock &b) const
+QuasiTriangular::row_end(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return const_row_iter(&getData()[d_size*d_size+jbar], d_size, b.isReal(),
-                        d_size);
+  return const_row_iter(&getData()[d_size * d_size + jbar], d_size, b.isReal(), d_size);
 }
 
 QuasiTriangular::row_iter
-QuasiTriangular::row_end(const DiagonalBlock &b)
+QuasiTriangular::row_end(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return row_iter(&getData()[d_size*d_size+jbar], d_size, b.isReal(), d_size);
+  return row_iter(&getData()[d_size * d_size + jbar], d_size, b.isReal(), d_size);
 }
 
-QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular &t)
-  : SqSylvMatrix(t.nrows()), diagonal(getData().base(), t.diagonal)
+QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular& t) :
+    SqSylvMatrix(t.nrows()), diagonal(getData().base(), t.diagonal)
 {
   setMatrix(r, t);
 }
 
-QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular &t,
-                                 double r2, const QuasiTriangular &t2)
-  : SqSylvMatrix(t.nrows()), diagonal(getData().base(), t.diagonal)
+QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular& t, double r2,
+                                 const QuasiTriangular& t2) :
+    SqSylvMatrix(t.nrows()),
+    diagonal(getData().base(), t.diagonal)
 {
   setMatrix(r, t);
   addMatrix(r2, t2);
 }
 
-QuasiTriangular::QuasiTriangular(const QuasiTriangular &t)
-  : SqSylvMatrix(t), diagonal(getData().base(), t.diagonal)
+QuasiTriangular::QuasiTriangular(const QuasiTriangular& t) :
+    SqSylvMatrix(t), diagonal(getData().base(), t.diagonal)
 {
 }
 
-QuasiTriangular::QuasiTriangular(const ConstVector &d, int d_size)
-  : SqSylvMatrix(Vector{d}, d_size), diagonal(getData().base(), d_size)
+QuasiTriangular::QuasiTriangular(const ConstVector& d, int d_size) :
+    SqSylvMatrix(Vector {d}, d_size), diagonal(getData().base(), d_size)
 {
 }
 
-QuasiTriangular::QuasiTriangular([[maybe_unused]] const std::string &dummy, const QuasiTriangular &t)
-  : SqSylvMatrix(t.nrows()), diagonal(getData().base(), t.diagonal)
+QuasiTriangular::QuasiTriangular([[maybe_unused]] const std::string& dummy,
+                                 const QuasiTriangular& t) :
+    SqSylvMatrix(t.nrows()),
+    diagonal(getData().base(), t.diagonal)
 {
   Vector aux(t.getData());
   blas_int d_size = diagonal.getSize();
   double alpha = 1.0;
   double beta = 0.0;
   blas_int lda = t.getLD(), ldb = t.getLD(), ldc = ld;
-  dgemm("N", "N", &d_size, &d_size, &d_size, &alpha, aux.base(),
-        &lda, t.getData().base(), &ldb, &beta, getData().base(), &ldc);
+  dgemm("N", "N", &d_size, &d_size, &d_size, &alpha, aux.base(), &lda, t.getData().base(), &ldb,
+        &beta, getData().base(), &ldc);
 }
 
-QuasiTriangular::QuasiTriangular(const SchurDecomp &decomp)
-  : SqSylvMatrix(decomp.getT()),
-    diagonal(getData().base(), decomp.getDim())
+QuasiTriangular::QuasiTriangular(const SchurDecomp& decomp) :
+    SqSylvMatrix(decomp.getT()), diagonal(getData().base(), decomp.getDim())
 {
 }
 
 // This pads matrix with intial columns with zeros
-QuasiTriangular::QuasiTriangular(const SchurDecompZero &decomp)
-  : SqSylvMatrix(decomp.getDim())
+QuasiTriangular::QuasiTriangular(const SchurDecompZero& decomp) : SqSylvMatrix(decomp.getDim())
 {
   // nullify first decomp.getZeroCols() columns
-  int zeros = decomp.getZeroCols()*decomp.getDim();
+  int zeros = decomp.getZeroCols() * decomp.getDim();
   Vector zv(getData(), 0, zeros);
   zv.zeros();
   // fill right upper part with decomp.getRU()
   for (int i = 0; i < decomp.getRU().nrows(); i++)
     for (int j = 0; j < decomp.getRU().ncols(); j++)
-      getData()[(j+decomp.getZeroCols())*decomp.getDim()+i] = decomp.getRU().get(i, j);
+      getData()[(j + decomp.getZeroCols()) * decomp.getDim() + i] = decomp.getRU().get(i, j);
 
   // fill right lower part with decomp.getT()
   for (int i = 0; i < decomp.getT().nrows(); i++)
     for (int j = 0; j < decomp.getT().ncols(); j++)
-      getData()[(j+decomp.getZeroCols())*decomp.getDim()+decomp.getZeroCols()+i]
-        = decomp.getT().get(i, j);
+      getData()[(j + decomp.getZeroCols()) * decomp.getDim() + decomp.getZeroCols() + i]
+          = decomp.getT().get(i, j);
 
   // construct diagonal
-  diagonal = Diagonal{getData().base(), decomp.getDim()};
+  diagonal = Diagonal {getData().base(), decomp.getDim()};
 }
 
 void
-QuasiTriangular::setMatrix(double r, const QuasiTriangular &t)
+QuasiTriangular::setMatrix(double r, const QuasiTriangular& t)
 {
   getData().zeros();
   getData().add(r, t.getData());
 }
 
 void
-QuasiTriangular::addMatrix(double r, const QuasiTriangular &t)
+QuasiTriangular::addMatrix(double r, const QuasiTriangular& t)
 {
   getData().add(r, t.getData());
 }
@@ -483,21 +474,21 @@ QuasiTriangular::addUnit()
 }
 
 void
-QuasiTriangular::solve(Vector &x, const ConstVector &b, double &eig_min)
+QuasiTriangular::solve(Vector& x, const ConstVector& b, double& eig_min)
 {
   x = b;
   solvePre(x, eig_min);
 }
 
 void
-QuasiTriangular::solveTrans(Vector &x, const ConstVector &b, double &eig_min)
+QuasiTriangular::solveTrans(Vector& x, const ConstVector& b, double& eig_min)
 {
   x = b;
   solvePreTrans(x, eig_min);
 }
 
 void
-QuasiTriangular::solvePre(Vector &x, double &eig_min)
+QuasiTriangular::solvePre(Vector& x, double& eig_min)
 {
   addUnit();
   for (diag_iter di = diag_begin(); di != diag_end(); ++di)
@@ -506,10 +497,10 @@ QuasiTriangular::solvePre(Vector &x, double &eig_min)
       if (!di->isReal())
         {
           eig_size = di->getDeterminant();
-          eliminateLeft(di->getIndex()+1, di->getIndex(), x);
+          eliminateLeft(di->getIndex() + 1, di->getIndex(), x);
         }
       else
-        eig_size = *di->getAlpha()*(*di->getAlpha());
+        eig_size = *di->getAlpha() * (*di->getAlpha());
       eig_min = std::min(eig_min, eig_size);
     }
 
@@ -520,7 +511,7 @@ QuasiTriangular::solvePre(Vector &x, double &eig_min)
 }
 
 void
-QuasiTriangular::solvePreTrans(Vector &x, double &eig_min)
+QuasiTriangular::solvePreTrans(Vector& x, double& eig_min)
 {
   addUnit();
   for (diag_iter di = diag_begin(); di != diag_end(); ++di)
@@ -529,10 +520,10 @@ QuasiTriangular::solvePreTrans(Vector &x, double &eig_min)
       if (!di->isReal())
         {
           eig_size = di->getDeterminant();
-          eliminateRight(di->getIndex()+1, di->getIndex(), x);
+          eliminateRight(di->getIndex() + 1, di->getIndex(), x);
         }
       else
-        eig_size = *di->getAlpha()*(*di->getAlpha());
+        eig_size = *di->getAlpha() * (*di->getAlpha());
       if (eig_size < eig_min)
         eig_min = eig_size;
     }
@@ -545,7 +536,7 @@ QuasiTriangular::solvePreTrans(Vector &x, double &eig_min)
 
 // Calculates x = T·b
 void
-QuasiTriangular::multVec(Vector &x, const ConstVector &b) const
+QuasiTriangular::multVec(Vector& x, const ConstVector& b) const
 {
   x = b;
   blas_int nn = diagonal.getSize();
@@ -556,12 +547,12 @@ QuasiTriangular::multVec(Vector &x, const ConstVector &b) const
     if (!di->isReal())
       {
         int jbar = di->getIndex();
-        x[jbar+1] += di->getBeta2()*(b[jbar]);
+        x[jbar + 1] += di->getBeta2() * (b[jbar]);
       }
 }
 
 void
-QuasiTriangular::multVecTrans(Vector &x, const ConstVector &b) const
+QuasiTriangular::multVecTrans(Vector& x, const ConstVector& b) const
 {
   x = b;
   blas_int nn = diagonal.getSize();
@@ -572,31 +563,31 @@ QuasiTriangular::multVecTrans(Vector &x, const ConstVector &b) const
     if (!di->isReal())
       {
         int jbar = di->getIndex();
-        x[jbar] += di->getBeta2()*b[jbar+1];
+        x[jbar] += di->getBeta2() * b[jbar + 1];
       }
 }
 
 void
-QuasiTriangular::multaVec(Vector &x, const ConstVector &b) const
+QuasiTriangular::multaVec(Vector& x, const ConstVector& b) const
 {
-  Vector tmp(const_cast<const Vector &>(x)); // new copy
+  Vector tmp(const_cast<const Vector&>(x)); // new copy
   multVec(x, b);
   x.add(1.0, tmp);
 }
 
 void
-QuasiTriangular::multaVecTrans(Vector &x, const ConstVector &b) const
+QuasiTriangular::multaVecTrans(Vector& x, const ConstVector& b) const
 {
-  Vector tmp(const_cast<const Vector &>(x)); // new copy
+  Vector tmp(const_cast<const Vector&>(x)); // new copy
   multVecTrans(x, b);
   x.add(1.0, tmp);
 }
 
 // Calculates x=x+(this⊗I)·b, where size of I is given by b (KronVector)
 void
-QuasiTriangular::multaKron(KronVector &x, const ConstKronVector &b) const
+QuasiTriangular::multaKron(KronVector& x, const ConstKronVector& b) const
 {
-  int id = b.getN()*power(b.getM(), b.getDepth()-1);
+  int id = b.getN() * power(b.getM(), b.getDepth() - 1);
   ConstGeneralMatrix b_resh(b, id, b.getM());
   GeneralMatrix x_resh(x, id, b.getM());
   x_resh.multAndAdd(b_resh, ConstGeneralMatrix(*this), "trans");
@@ -604,38 +595,38 @@ QuasiTriangular::multaKron(KronVector &x, const ConstKronVector &b) const
 
 // Calculates x=x+(this⊗I)·b, where size of I is given by b (KronVector)
 void
-QuasiTriangular::multaKronTrans(KronVector &x, const ConstKronVector &b) const
+QuasiTriangular::multaKronTrans(KronVector& x, const ConstKronVector& b) const
 {
-  int id = b.getN()*power(b.getM(), b.getDepth()-1);
+  int id = b.getN() * power(b.getM(), b.getDepth() - 1);
   ConstGeneralMatrix b_resh(b, id, b.getM());
   GeneralMatrix x_resh(x, id, b.getM());
   x_resh.multAndAdd(b_resh, ConstGeneralMatrix(*this));
 }
 
 void
-QuasiTriangular::multKron(KronVector &x) const
+QuasiTriangular::multKron(KronVector& x) const
 {
-  KronVector b(const_cast<const KronVector &>(x)); // make copy
+  KronVector b(const_cast<const KronVector&>(x)); // make copy
   x.zeros();
   multaKron(x, b);
 }
 
 void
-QuasiTriangular::multKronTrans(KronVector &x) const
+QuasiTriangular::multKronTrans(KronVector& x) const
 {
-  KronVector b(const_cast<const KronVector &>(x)); // make copy
+  KronVector b(const_cast<const KronVector&>(x)); // make copy
   x.zeros();
   multaKronTrans(x, b);
 }
 
 void
-QuasiTriangular::multLeftOther(GeneralMatrix &a) const
+QuasiTriangular::multLeftOther(GeneralMatrix& a) const
 {
   a.multLeft(*this);
 }
 
 void
-QuasiTriangular::multLeftOtherTrans(GeneralMatrix &a) const
+QuasiTriangular::multLeftOtherTrans(GeneralMatrix& a) const
 {
   a.multLeftTrans(*this);
 }
@@ -673,5 +664,5 @@ QuasiTriangular::findNextLargerBlock(diag_iter start, diag_iter end, double a)
 int
 QuasiTriangular::getNumOffdiagonal() const
 {
-  return diagonal.getSize()*(diagonal.getSize()-1)/2 - diagonal.getNumComplex();
+  return diagonal.getSize() * (diagonal.getSize() - 1) / 2 - diagonal.getNumComplex();
 }

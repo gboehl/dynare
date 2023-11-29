@@ -25,11 +25,11 @@
 
 #include "int_sequence.hh"
 
+#include <chrono>
+#include <fstream>
 #include <iostream>
 #include <sstream>
-#include <fstream>
 #include <string>
-#include <chrono>
 
 /* Implement static methods for accessing some system resources. An instance of
    this class is a photograph of these resources at the time of instantiation. */
@@ -52,23 +52,23 @@ struct SystemResources
   long majflt;
 
   SystemResources();
-  void diff(const SystemResources &pre);
+  void diff(const SystemResources& pre);
 };
 
 class Journal : public std::ofstream
 {
-  int ord{0};
-  int depth{0};
+  int ord {0};
+  int depth {0};
+
 public:
-  explicit Journal(const std::string &fname)
-    : std::ofstream(fname)
+  explicit Journal(const std::string& fname) : std::ofstream(fname)
   {
     printHeader();
   }
   /* Constructor that does not initialize the std::ofstream. To be used when an
      on-disk journal is not wanted. */
   Journal() = default;
-  Journal &operator=(Journal &&) = default;
+  Journal& operator=(Journal&&) = default;
   ~Journal() override
   {
     flush();
@@ -102,63 +102,64 @@ public:
 };
 
 class JournalRecord;
-JournalRecord &endrec(JournalRecord &);
+JournalRecord& endrec(JournalRecord&);
 
 class JournalRecord
 {
 protected:
   char recChar;
   int ord;
+
 public:
-  Journal &journal;
+  Journal& journal;
   std::string prefix;
   std::string mes;
   SystemResources flash;
-  using _Tfunc = JournalRecord &(*)(JournalRecord &);
+  using _Tfunc = JournalRecord& (*)(JournalRecord&);
 
-  explicit JournalRecord(Journal &jr, char rc = 'M')
-    : recChar(rc), ord(jr.getOrd()), journal(jr)
+  explicit JournalRecord(Journal& jr, char rc = 'M') : recChar(rc), ord(jr.getOrd()), journal(jr)
   {
     writePrefix(flash);
   }
   virtual ~JournalRecord() = default;
-  JournalRecord &operator<<(const IntSequence &s);
-  JournalRecord &
+  JournalRecord& operator<<(const IntSequence& s);
+  JournalRecord&
   operator<<(_Tfunc f)
   {
     (*f)(*this);
     return *this;
   }
-  JournalRecord &
+  JournalRecord&
   operator<<(char c)
   {
     mes += c;
     return *this;
   }
-  JournalRecord &
-  operator<<(const std::string &s)
+  JournalRecord&
+  operator<<(const std::string& s)
   {
     mes += s;
     return *this;
   }
-  JournalRecord &
+  JournalRecord&
   operator<<(int i)
   {
     mes += std::to_string(i);
     return *this;
   }
-  JournalRecord &
+  JournalRecord&
   operator<<(double d)
   {
     mes += std::to_string(d);
     return *this;
   }
+
 protected:
-  void writePrefix(const SystemResources &f);
+  void writePrefix(const SystemResources& f);
   /* Writes a floating point number as a field of exactly ‘width’ characters
      large. Note that the width will not be respected if the integer part is
      too large. */
-  static void writeFloatTabular(std::ostream &s, double d, int width);
+  static void writeFloatTabular(std::ostream& s, double d, int width);
 };
 
 /*
@@ -170,15 +171,16 @@ protected:
 class JournalRecordPair : public JournalRecord
 {
   std::string prefix_end;
+
 public:
-  explicit JournalRecordPair(Journal &jr)
-    : JournalRecord(jr, 'S')
+  explicit JournalRecordPair(Journal& jr) : JournalRecord(jr, 'S')
   {
     journal.incrementDepth();
   }
   ~JournalRecordPair() override;
+
 private:
-  void writePrefixForEnd(const SystemResources &f);
+  void writePrefixForEnd(const SystemResources& f);
 };
 
 #endif

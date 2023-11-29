@@ -24,9 +24,8 @@
 #include <iostream>
 #include <utility>
 
-BlockDiagonal::BlockDiagonal(ConstVector d, int d_size)
-  : QuasiTriangular(std::move(d), d_size),
-    row_len(d_size), col_len(d_size)
+BlockDiagonal::BlockDiagonal(ConstVector d, int d_size) :
+    QuasiTriangular(std::move(d), d_size), row_len(d_size), col_len(d_size)
 {
   for (int i = 0; i < d_size; i++)
     {
@@ -35,9 +34,8 @@ BlockDiagonal::BlockDiagonal(ConstVector d, int d_size)
     }
 }
 
-BlockDiagonal::BlockDiagonal(const QuasiTriangular &t)
-  : QuasiTriangular(t),
-    row_len(t.nrows()), col_len(t.nrows())
+BlockDiagonal::BlockDiagonal(const QuasiTriangular& t) :
+    QuasiTriangular(t), row_len(t.nrows()), col_len(t.nrows())
 {
   for (int i = 0; i < t.nrows(); i++)
     {
@@ -73,57 +71,53 @@ BlockDiagonal::setZeroBlockEdge(diag_iter edge)
 
   int iedge = edge->getIndex();
   for (diag_iter run = diag_begin(); run != edge; ++run)
-    if (int ind {run->getIndex()};
-        row_len[ind] > iedge)
+    if (int ind {run->getIndex()}; row_len[ind] > iedge)
       {
         row_len[ind] = iedge;
         if (!run->isReal())
-          row_len[ind+1] = iedge;
+          row_len[ind + 1] = iedge;
       }
   for (diag_iter run = edge; run != diag_end(); ++run)
-    if (int ind {run->getIndex()};
-        col_len[ind] < iedge)
+    if (int ind {run->getIndex()}; col_len[ind] < iedge)
       {
         col_len[ind] = iedge;
         if (!run->isReal())
-          col_len[ind+1] = iedge;
+          col_len[ind + 1] = iedge;
       }
 }
 
 BlockDiagonal::const_col_iter
-BlockDiagonal::col_begin(const DiagonalBlock &b) const
+BlockDiagonal::col_begin(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return const_col_iter(&getData()[jbar*d_size + col_len[jbar]], d_size,
-                        b.isReal(), col_len[jbar]);
+  return const_col_iter(&getData()[jbar * d_size + col_len[jbar]], d_size, b.isReal(),
+                        col_len[jbar]);
 }
 
 BlockDiagonal::col_iter
-BlockDiagonal::col_begin(const DiagonalBlock &b)
+BlockDiagonal::col_begin(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return col_iter(&getData()[jbar*d_size + col_len[jbar]], d_size,
-                  b.isReal(), col_len[jbar]);
+  return col_iter(&getData()[jbar * d_size + col_len[jbar]], d_size, b.isReal(), col_len[jbar]);
 }
 
 BlockDiagonal::const_row_iter
-BlockDiagonal::row_end(const DiagonalBlock &b) const
+BlockDiagonal::row_end(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return const_row_iter(&getData()[d_size*row_len[jbar]+jbar], d_size,
-                        b.isReal(), row_len[jbar]);
+  return const_row_iter(&getData()[d_size * row_len[jbar] + jbar], d_size, b.isReal(),
+                        row_len[jbar]);
 }
 
 BlockDiagonal::row_iter
-BlockDiagonal::row_end(const DiagonalBlock &b)
+BlockDiagonal::row_end(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return row_iter(&getData()[d_size*row_len[jbar]+jbar], d_size,
-                  b.isReal(), row_len[jbar]);
+  return row_iter(&getData()[d_size * row_len[jbar] + jbar], d_size, b.isReal(), row_len[jbar]);
 }
 
 int
@@ -141,8 +135,7 @@ BlockDiagonal::findBlockStart(const_diag_iter from) const
   if (from != diag_end())
     {
       ++from;
-      while (from != diag_end()
-             && col_len[from->getIndex()] != from->getIndex())
+      while (from != diag_end() && col_len[from->getIndex()] != from->getIndex())
         ++from;
     }
   return from;
@@ -160,7 +153,7 @@ BlockDiagonal::getLargestBlock() const
       int ei = diagonal.getSize();
       if (end != diag_end())
         ei = end->getIndex();
-      largest = std::max(largest, ei-si);
+      largest = std::max(largest, ei - si);
       start = end;
       end = findBlockStart(start);
     }
@@ -168,19 +161,19 @@ BlockDiagonal::getLargestBlock() const
 }
 
 void
-BlockDiagonal::savePartOfX(int si, int ei, const KronVector &x, Vector &work)
+BlockDiagonal::savePartOfX(int si, int ei, const KronVector& x, Vector& work)
 {
   for (int i = si; i < ei; i++)
     {
       ConstKronVector xi(x, i);
-      Vector target(work, (i-si)*xi.length(), xi.length());
+      Vector target(work, (i - si) * xi.length(), xi.length());
       target = xi;
     }
 }
 
 void
-BlockDiagonal::multKronBlock(const_diag_iter start, const_diag_iter end,
-                             KronVector &x, Vector &work) const
+BlockDiagonal::multKronBlock(const_diag_iter start, const_diag_iter end, KronVector& x,
+                             Vector& work) const
 {
   int si = start->getIndex();
   int ei = diagonal.getSize();
@@ -189,28 +182,27 @@ BlockDiagonal::multKronBlock(const_diag_iter start, const_diag_iter end,
   savePartOfX(si, ei, x, work);
 
   for (const_diag_iter di = start; di != end; ++di)
-    if (int jbar {di->getIndex()};
-        di->isReal())
+    if (int jbar {di->getIndex()}; di->isReal())
       {
         KronVector xi(x, jbar);
         xi.zeros();
-        Vector wi(work, (jbar-si)*xi.length(), xi.length());
+        Vector wi(work, (jbar - si) * xi.length(), xi.length());
         xi.add(*(di->getAlpha()), wi);
         for (const_row_iter ri = row_begin(*di); ri != row_end(*di); ++ri)
           {
             int col = ri.getCol();
-            Vector wj(work, (col-si)*xi.length(), xi.length());
+            Vector wj(work, (col - si) * xi.length(), xi.length());
             xi.add(*ri, wj);
           }
       }
     else
       {
         KronVector xi(x, jbar);
-        KronVector xii(x, jbar+1);
+        KronVector xii(x, jbar + 1);
         xi.zeros();
         xii.zeros();
-        Vector wi(work, (jbar-si)*xi.length(), xi.length());
-        Vector wii(work, (jbar+1-si)*xi.length(), xi.length());
+        Vector wi(work, (jbar - si) * xi.length(), xi.length());
+        Vector wii(work, (jbar + 1 - si) * xi.length(), xi.length());
         xi.add(*(di->getAlpha()), wi);
         xi.add(di->getBeta1(), wii);
         xii.add(di->getBeta2(), wi);
@@ -218,7 +210,7 @@ BlockDiagonal::multKronBlock(const_diag_iter start, const_diag_iter end,
         for (const_row_iter ri = row_begin(*di); ri != row_end(*di); ++ri)
           {
             int col = ri.getCol();
-            Vector wj(work, (col-si)*xi.length(), xi.length());
+            Vector wj(work, (col - si) * xi.length(), xi.length());
             xi.add(ri.a(), wj);
             xii.add(ri.b(), wj);
           }
@@ -226,8 +218,8 @@ BlockDiagonal::multKronBlock(const_diag_iter start, const_diag_iter end,
 }
 
 void
-BlockDiagonal::multKronBlockTrans(const_diag_iter start, const_diag_iter end,
-                                  KronVector &x, Vector &work) const
+BlockDiagonal::multKronBlockTrans(const_diag_iter start, const_diag_iter end, KronVector& x,
+                                  Vector& work) const
 {
   int si = start->getIndex();
   int ei = diagonal.getSize();
@@ -236,28 +228,27 @@ BlockDiagonal::multKronBlockTrans(const_diag_iter start, const_diag_iter end,
   savePartOfX(si, ei, x, work);
 
   for (const_diag_iter di = start; di != end; ++di)
-    if (int jbar {di->getIndex()};
-        di->isReal())
+    if (int jbar {di->getIndex()}; di->isReal())
       {
         KronVector xi(x, jbar);
         xi.zeros();
-        Vector wi(work, (jbar-si)*xi.length(), xi.length());
+        Vector wi(work, (jbar - si) * xi.length(), xi.length());
         xi.add(*(di->getAlpha()), wi);
         for (const_col_iter ci = col_begin(*di); ci != col_end(*di); ++ci)
           {
             int row = ci.getRow();
-            Vector wj(work, (row-si)*xi.length(), xi.length());
+            Vector wj(work, (row - si) * xi.length(), xi.length());
             xi.add(*ci, wj);
           }
       }
     else
       {
         KronVector xi(x, jbar);
-        KronVector xii(x, jbar+1);
+        KronVector xii(x, jbar + 1);
         xi.zeros();
         xii.zeros();
-        Vector wi(work, (jbar-si)*xi.length(), xi.length());
-        Vector wii(work, (jbar+1-si)*xi.length(), xi.length());
+        Vector wi(work, (jbar - si) * xi.length(), xi.length());
+        Vector wii(work, (jbar + 1 - si) * xi.length(), xi.length());
         xi.add(*(di->getAlpha()), wi);
         xi.add(di->getBeta2(), wii);
         xii.add(di->getBeta1(), wi);
@@ -265,7 +256,7 @@ BlockDiagonal::multKronBlockTrans(const_diag_iter start, const_diag_iter end,
         for (const_col_iter ci = col_begin(*di); ci != col_end(*di); ++ci)
           {
             int row = ci.getRow();
-            Vector wj(work, (row-si)*xi.length(), xi.length());
+            Vector wj(work, (row - si) * xi.length(), xi.length());
             xi.add(ci.a(), wj);
             xii.add(ci.b(), wj);
           }
@@ -273,10 +264,10 @@ BlockDiagonal::multKronBlockTrans(const_diag_iter start, const_diag_iter end,
 }
 
 void
-BlockDiagonal::multKron(KronVector &x) const
+BlockDiagonal::multKron(KronVector& x) const
 {
   int largest = getLargestBlock();
-  Vector work(largest *x.getN()*power(x.getM(), x.getDepth()-1));
+  Vector work(largest * x.getN() * power(x.getM(), x.getDepth() - 1));
   const_diag_iter start = diag_begin();
   const_diag_iter end = findBlockStart(start);
   while (start != diag_end())
@@ -288,10 +279,10 @@ BlockDiagonal::multKron(KronVector &x) const
 }
 
 void
-BlockDiagonal::multKronTrans(KronVector &x) const
+BlockDiagonal::multKronTrans(KronVector& x) const
 {
   int largest = getLargestBlock();
-  Vector work(largest *x.getN()*power(x.getM(), x.getDepth()-1));
+  Vector work(largest * x.getN() * power(x.getM(), x.getDepth() - 1));
   const_diag_iter start = diag_begin();
   const_diag_iter end = findBlockStart(start);
   while (start != diag_end())
@@ -315,14 +306,15 @@ BlockDiagonal::printInfo() const
       int ei = diagonal.getSize();
       if (end != diag_end())
         ei = end->getIndex();
-      std::cout << ' ' << ei-si;
+      std::cout << ' ' << ei - si;
       num_blocks++;
       start = end;
       end = findBlockStart(start);
     }
   std::cout << std::endl
             << "Num blocks: " << num_blocks << std::endl
-            << "There are " << getNumZeros() << " zeros out of " << getNumOffdiagonal() << std::endl;
+            << "There are " << getNumZeros() << " zeros out of " << getNumOffdiagonal()
+            << std::endl;
 }
 
 int

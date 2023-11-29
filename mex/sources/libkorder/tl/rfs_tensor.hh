@@ -55,9 +55,9 @@
 #ifndef RFS_TENSOR_H
 #define RFS_TENSOR_H
 
-#include "tensor.hh"
 #include "fs_tensor.hh"
 #include "symmetry.hh"
+#include "tensor.hh"
 
 /* This is straightforward and very similar to UFSTensor. */
 
@@ -65,23 +65,24 @@ class FRTensor;
 class URTensor : public UTensor
 {
   int nv;
+
 public:
-  URTensor(int c, int nvar, int d)
-    : UTensor(indor::along_row, IntSequence(d, nvar),
-              UFSTensor::calcMaxOffset(nvar, d), c, d), nv(nvar)
+  URTensor(int c, int nvar, int d) :
+      UTensor(indor::along_row, IntSequence(d, nvar), UFSTensor::calcMaxOffset(nvar, d), c, d),
+      nv(nvar)
   {
   }
-  URTensor(const URTensor &) = default;
-  URTensor(URTensor &&) = default;
-  explicit URTensor(const FRTensor &ft);
+  URTensor(const URTensor&) = default;
+  URTensor(URTensor&&) = default;
+  explicit URTensor(const FRTensor& ft);
 
   ~URTensor() override = default;
 
-  void increment(IntSequence &v) const override;
-  void decrement(IntSequence &v) const override;
+  void increment(IntSequence& v) const override;
+  void decrement(IntSequence& v) const override;
   std::unique_ptr<FTensor> fold() const override;
 
-  int getOffset(const IntSequence &v) const override;
+  int getOffset(const IntSequence& v) const override;
   int
   nvar() const
   {
@@ -90,7 +91,7 @@ public:
   Symmetry
   getSym() const
   {
-    return Symmetry{dimen()};
+    return Symmetry {dimen()};
   }
 };
 
@@ -99,20 +100,21 @@ public:
 class FRTensor : public FTensor
 {
   int nv;
+
 public:
-  FRTensor(int c, int nvar, int d)
-    : FTensor(indor::along_row, IntSequence(d, nvar),
-              FFSTensor::calcMaxOffset(nvar, d), c, d), nv(nvar)
+  FRTensor(int c, int nvar, int d) :
+      FTensor(indor::along_row, IntSequence(d, nvar), FFSTensor::calcMaxOffset(nvar, d), c, d),
+      nv(nvar)
   {
   }
-  FRTensor(const FRTensor &) = default;
-  FRTensor(FRTensor &&) = default;
-  explicit FRTensor(const URTensor &ut);
+  FRTensor(const FRTensor&) = default;
+  FRTensor(FRTensor&&) = default;
+  explicit FRTensor(const URTensor& ut);
 
   ~FRTensor() override = default;
 
-  void increment(IntSequence &v) const override;
-  void decrement(IntSequence &v) const override;
+  void increment(IntSequence& v) const override;
+  void decrement(IntSequence& v) const override;
   std::unique_ptr<UTensor> unfold() const override;
 
   int
@@ -121,14 +123,14 @@ public:
     return nv;
   }
   int
-  getOffset(const IntSequence &v) const override
+  getOffset(const IntSequence& v) const override
   {
     return FTensor::getOffset(v, nv);
   }
   Symmetry
   getSym() const
   {
-    return Symmetry{dimen()};
+    return Symmetry {dimen()};
   }
 };
 
@@ -141,14 +143,13 @@ public:
 class URSingleTensor : public URTensor
 {
 public:
-  URSingleTensor(int nvar, int d)
-    : URTensor(1, nvar, d)
+  URSingleTensor(int nvar, int d) : URTensor(1, nvar, d)
   {
   }
-  URSingleTensor(const std::vector<ConstVector> &cols);
-  URSingleTensor(const ConstVector &v, int d);
-  URSingleTensor(const URSingleTensor &) = default;
-  URSingleTensor(URSingleTensor &&) = default;
+  URSingleTensor(const std::vector<ConstVector>& cols);
+  URSingleTensor(const ConstVector& v, int d);
+  URSingleTensor(const URSingleTensor&) = default;
+  URSingleTensor(URSingleTensor&&) = default;
   ~URSingleTensor() override = default;
   std::unique_ptr<FTensor> fold() const override;
 };
@@ -161,13 +162,12 @@ public:
 class FRSingleTensor : public FRTensor
 {
 public:
-  FRSingleTensor(int nvar, int d)
-    : FRTensor(1, nvar, d)
+  FRSingleTensor(int nvar, int d) : FRTensor(1, nvar, d)
   {
   }
-  explicit FRSingleTensor(const URSingleTensor &ut);
-  FRSingleTensor(const FRSingleTensor &) = default;
-  FRSingleTensor(FRSingleTensor &&) = default;
+  explicit FRSingleTensor(const URSingleTensor& ut);
+  FRSingleTensor(const FRSingleTensor&) = default;
+  FRSingleTensor(FRSingleTensor&&) = default;
   ~FRSingleTensor() override = default;
 };
 

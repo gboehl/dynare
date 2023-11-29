@@ -20,18 +20,18 @@
 #ifndef K_ORD_DYNARE3_H
 #define K_ORD_DYNARE3_H
 
-#include <vector>
-#include <string>
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "journal.hh"
 #include "Vector.hh"
-#include "twod_matrix.hh"
-#include "t_container.hh"
-#include "sparse_tensor.hh"
 #include "decision_rule.hh"
-#include "dynamic_model.hh"
 #include "dynamic_abstract_class.hh"
+#include "dynamic_model.hh"
+#include "journal.hh"
+#include "sparse_tensor.hh"
+#include "t_container.hh"
+#include "twod_matrix.hh"
 
 class KordpDynare;
 
@@ -39,6 +39,7 @@ class KordpDynare;
 class DynareNameList : public NameList
 {
   std::vector<std::string> names;
+
 public:
   DynareNameList(std::vector<std::string> names_arg);
   int
@@ -46,7 +47,7 @@ public:
   {
     return static_cast<int>(names.size());
   }
-  const std::string &
+  const std::string&
   getName(int i) const override
   {
     return names[i];
@@ -56,15 +57,16 @@ public:
 class DynareStateNameList : public NameList
 {
   std::vector<std::string> names;
+
 public:
-  DynareStateNameList(const KordpDynare &dynare, const DynareNameList &dnl,
-                      const DynareNameList &denl);
+  DynareStateNameList(const KordpDynare& dynare, const DynareNameList& dnl,
+                      const DynareNameList& denl);
   int
   getNum() const override
   {
     return static_cast<int>(names.size());
   }
-  const std::string &
+  const std::string&
   getName(int i) const override
   {
     return names[i];
@@ -82,35 +84,35 @@ public:
   const int nForw;
   const int nExog;
   const int nPar;
-  const int nYs;      // = npred + nboth
-  const int nYss;     // = nboth + nforw
-  const int nY;       // = nstat + npred + nboth + nforw
-  const int nJcols;   // nb of jacobian columns = nExog+nY+nYs+nYss
-  const ConstVector &NNZD; /* the total number of non-zero derivative elements
+  const int nYs;           // = npred + nboth
+  const int nYss;          // = nboth + nforw
+  const int nY;            // = nstat + npred + nboth + nforw
+  const int nJcols;        // nb of jacobian columns = nExog+nY+nYs+nYss
+  const ConstVector& NNZD; /* the total number of non-zero derivative elements
                               where hessian is 2nd : NNZD(order=2) */
   const int nSteps;
   const int nOrder;
+
 private:
-  Journal &journal;
-  Vector &ySteady;
-  Vector &params;
-  TwoDMatrix &vCov;
+  Journal& journal;
+  Vector& ySteady;
+  Vector& params;
+  TwoDMatrix& vCov;
   TensorContainer<FSSparseTensor> md; // Model derivatives, in Dynare++ form
   DynareNameList dnl, denl;
   DynareStateNameList dsnl;
-  const ConstTwoDMatrix &ll_Incidence;
+  const ConstTwoDMatrix& ll_Incidence;
   std::vector<int> dynppToDyn; // Maps Dynare++ jacobian variable indices to Dynare ones
   std::vector<int> dynToDynpp; // Maps Dynare jacobian variable indices to Dynare++ ones
 
   std::unique_ptr<DynamicModelAC> dynamicModelFile;
+
 public:
-  KordpDynare(const std::vector<std::string> &endo,
-              const std::vector<std::string> &exo, int num_exo, int num_par,
-              Vector &ySteady, TwoDMatrix &vCov, Vector &params, int nstat, int nPred,
-              int nforw, int nboth, const ConstVector &NNZD,
-              int nSteps, int ord,
-              Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
-              const std::vector<int> &varOrder, const ConstTwoDMatrix &ll_Incidence);
+  KordpDynare(const std::vector<std::string>& endo, const std::vector<std::string>& exo,
+              int num_exo, int num_par, Vector& ySteady, TwoDMatrix& vCov, Vector& params,
+              int nstat, int nPred, int nforw, int nboth, const ConstVector& NNZD, int nSteps,
+              int ord, Journal& jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
+              const std::vector<int>& varOrder, const ConstTwoDMatrix& ll_Incidence);
 
   int
   nstat() const override
@@ -140,69 +142,69 @@ public:
   int
   ny() const
   {
-    return nStat+nBoth+nPred+nForw;
+    return nStat + nBoth + nPred + nForw;
   }
   int
   nys() const
   {
-    return nBoth+nPred;
+    return nBoth + nPred;
   }
   int
   order() const override
   {
     return nOrder;
   }
-  const std::vector<int> &
+  const std::vector<int>&
   getDynppToDyn() const
   {
     return dynppToDyn;
   }
-  const std::vector<int> &
+  const std::vector<int>&
   getDynToDynpp() const
   {
     return dynToDynpp;
   }
-  const NameList &
+  const NameList&
   getAllEndoNames() const override
   {
     return dnl;
   }
-  const NameList &
+  const NameList&
   getStateNames() const override
   {
     return dsnl;
   }
-  const NameList &
+  const NameList&
   getExogNames() const override
   {
     return denl;
   }
-  const TwoDMatrix &
+  const TwoDMatrix&
   getVcov() const override
   {
     return vCov;
   }
 
-  const TensorContainer<FSSparseTensor> &
+  const TensorContainer<FSSparseTensor>&
   getModelDerivatives() const override
   {
     return md;
   }
-  const Vector &
+  const Vector&
   getSteady() const override
   {
     return ySteady;
   }
-  Vector &
+  Vector&
   getSteady() override
   {
     return ySteady;
   }
 
   void solveDeterministicSteady() override;
-  void evaluateSystem(Vector &out, const ConstVector &yy, const Vector &xx) override;
-  void evaluateSystem(Vector &out, const ConstVector &yym, const ConstVector &yy,
-                      const ConstVector &yyp, const Vector &xx) override;
+  void evaluateSystem(Vector& out, const ConstVector& yy, const Vector& xx) override;
+  void evaluateSystem(Vector& out, const ConstVector& yym, const ConstVector& yy,
+                      const ConstVector& yyp, const Vector& xx) override;
   void calcDerivativesAtSteady() override;
   std::unique_ptr<DynamicModel>
   clone() const override
@@ -210,14 +212,16 @@ public:
     std::cerr << "KordpDynare::clone() not implemented" << std::endl;
     exit(EXIT_FAILURE);
   }
+
 private:
-  // Given the steady state in yS, returns in llxSteady the steady state extended with leads and lags
-  void LLxSteady(const Vector &yS, Vector &llxSteady);
+  // Given the steady state in yS, returns in llxSteady the steady state extended with leads and
+  // lags
+  void LLxSteady(const Vector& yS, Vector& llxSteady);
   /* Computes the permutations mapping back and forth between Dynare and
      Dynare++ orderings of variables */
-  void computeJacobianPermutation(const std::vector<int> &var_order);
+  void computeJacobianPermutation(const std::vector<int>& var_order);
   // Fills model derivatives in Dynare++ form (at a given order) given the Dynare form
-  void populateDerivativesContainer(const std::vector<TwoDMatrix> &dyn_md, int ord);
+  void populateDerivativesContainer(const std::vector<TwoDMatrix>& dyn_md, int ord);
 };
 
 #endif

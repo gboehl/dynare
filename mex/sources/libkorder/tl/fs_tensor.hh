@@ -27,9 +27,9 @@
 #ifndef FS_TENSOR_H
 #define FS_TENSOR_H
 
-#include "tensor.hh"
-#include "symmetry.hh"
 #include "int_power.hh"
+#include "symmetry.hh"
+#include "tensor.hh"
 
 class FGSTensor;
 class UGSTensor;
@@ -59,14 +59,13 @@ class UFSTensor;
 class FFSTensor : public FTensor
 {
   int nv;
+
 public:
   /* Constructs given the number of rows (explicit since the tensor is
      column-oriented), the number of variables in each dimension, and the
      number of dimensions */
-  FFSTensor(int r, int nvar, int d)
-    : FTensor(indor::along_col, IntSequence(d, nvar),
-              r, calcMaxOffset(nvar, d), d),
-      nv(nvar)
+  FFSTensor(int r, int nvar, int d) :
+      FTensor(indor::along_col, IntSequence(d, nvar), r, calcMaxOffset(nvar, d), d), nv(nvar)
   {
   }
 
@@ -76,35 +75,34 @@ public:
      [g_yⁿ]_α₁…αₙ = [t_yⁿ⁺¹]_α₁…αₙβ [x]^β
 
      See the implementation for details. */
-  FFSTensor(const FFSTensor &t, const ConstVector &x);
+  FFSTensor(const FFSTensor& t, const ConstVector& x);
 
   /* Converts from sparse tensor (which is fully symmetric and folded by
      nature). */
-  explicit FFSTensor(const FSSparseTensor &t);
+  explicit FFSTensor(const FSSparseTensor& t);
 
-  FFSTensor(const FFSTensor &) = default;
-  FFSTensor(FFSTensor &&) = default;
+  FFSTensor(const FFSTensor&) = default;
+  FFSTensor(FFSTensor&&) = default;
 
   // Constructs from unfolded fully symmetric
-  explicit FFSTensor(const UFSTensor &ut);
+  explicit FFSTensor(const UFSTensor& ut);
 
   // Constructs a subtensor of selected rows
-  FFSTensor(int first_row, int num, FFSTensor &t)
-    : FTensor(first_row, num, t), nv(t.nv)
+  FFSTensor(int first_row, int num, FFSTensor& t) : FTensor(first_row, num, t), nv(t.nv)
   {
   }
 
-  void increment(IntSequence &v) const override;
-  void decrement(IntSequence &v) const override;
+  void increment(IntSequence& v) const override;
+  void decrement(IntSequence& v) const override;
   std::unique_ptr<UTensor> unfold() const override;
   Symmetry
   getSym() const
   {
-    return Symmetry{dimen()};
+    return Symmetry {dimen()};
   }
 
-  int getOffset(const IntSequence &v) const override;
-  void addSubTensor(const FGSTensor &t);
+  int getOffset(const IntSequence& v) const override;
+  void addSubTensor(const FGSTensor& t);
   int
   nvar() const
   {
@@ -122,33 +120,31 @@ public:
 class UFSTensor : public UTensor
 {
   int nv;
+
 public:
-  UFSTensor(int r, int nvar, int d)
-    : UTensor(indor::along_col, IntSequence(d, nvar),
-              r, calcMaxOffset(nvar, d), d),
-      nv(nvar)
+  UFSTensor(int r, int nvar, int d) :
+      UTensor(indor::along_col, IntSequence(d, nvar), r, calcMaxOffset(nvar, d), d), nv(nvar)
   {
   }
-  UFSTensor(const UFSTensor &t, const ConstVector &x);
-  UFSTensor(const UFSTensor &) = default;
-  UFSTensor(UFSTensor &&) = default;
-  explicit UFSTensor(const FFSTensor &ft);
-  UFSTensor(int first_row, int num, UFSTensor &t)
-    : UTensor(first_row, num, t), nv(t.nv)
+  UFSTensor(const UFSTensor& t, const ConstVector& x);
+  UFSTensor(const UFSTensor&) = default;
+  UFSTensor(UFSTensor&&) = default;
+  explicit UFSTensor(const FFSTensor& ft);
+  UFSTensor(int first_row, int num, UFSTensor& t) : UTensor(first_row, num, t), nv(t.nv)
   {
   }
 
-  void increment(IntSequence &v) const override;
-  void decrement(IntSequence &v) const override;
+  void increment(IntSequence& v) const override;
+  void decrement(IntSequence& v) const override;
   std::unique_ptr<FTensor> fold() const override;
   Symmetry
   getSym() const
   {
-    return Symmetry{dimen()};
+    return Symmetry {dimen()};
   }
 
-  int getOffset(const IntSequence &v) const override;
-  void addSubTensor(const UGSTensor &t);
+  int getOffset(const IntSequence& v) const override;
+  void addSubTensor(const UGSTensor& t);
   int
   nvar() const
   {
@@ -159,6 +155,7 @@ public:
   {
     return power(nvar, d);
   }
+
 private:
   void unfoldData();
 };

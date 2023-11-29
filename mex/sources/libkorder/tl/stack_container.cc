@@ -19,8 +19,8 @@
  */
 
 #include "stack_container.hh"
-#include "pyramid_prod2.hh"
 #include "ps_tensor.hh"
+#include "pyramid_prod2.hh"
 
 #include <memory>
 
@@ -36,8 +36,7 @@
    preliminary examination shows that multAndAddSparse2() is the best in terms
    of time. */
 void
-FoldedStackContainer::multAndAdd(const FSSparseTensor &t,
-                                 FGSTensor &out) const
+FoldedStackContainer::multAndAdd(const FSSparseTensor& t, FGSTensor& out) const
 {
   TL_RAISE_IF(t.nvar() != getAllSize(),
               "Wrong number of variables of tensor for FoldedStackContainer::multAndAdd");
@@ -50,14 +49,14 @@ FoldedStackContainer::multAndAdd(const FSSparseTensor &t,
    of general symmetric tensors. The implementation is pretty the same as
    UnfoldedStackContainer::multAndAdd() dense code. */
 void
-FoldedStackContainer::multAndAdd(int dim, const FGSContainer &c, FGSTensor &out) const
+FoldedStackContainer::multAndAdd(int dim, const FGSContainer& c, FGSTensor& out) const
 {
   TL_RAISE_IF(c.num() != numStacks(),
               "Wrong symmetry length of container for FoldedStackContainer::multAndAdd");
 
   sthread::detach_thread_group gr;
 
-  for (auto &si : SymmetrySet(dim, c.num()))
+  for (auto& si : SymmetrySet(dim, c.num()))
     if (c.check(si))
       gr.insert(std::make_unique<WorkerFoldMAADense>(*this, si, c, out));
 
@@ -67,26 +66,24 @@ FoldedStackContainer::multAndAdd(int dim, const FGSContainer &c, FGSTensor &out)
 /* This is analogous to WorkerUnfoldMAADense::operator()() code. */
 
 void
-WorkerFoldMAADense::operator()(std::mutex &mut)
+WorkerFoldMAADense::operator()(std::mutex& mut)
 {
   Permutation iden(dense_cont.num());
   IntSequence coor(iden.getMap().unfold(sym));
-  const FGSTensor &g = dense_cont.get(sym);
+  const FGSTensor& g = dense_cont.get(sym);
   cont.multAndAddStacks(coor, g, out, mut);
 }
 
-WorkerFoldMAADense::WorkerFoldMAADense(const FoldedStackContainer &container,
-                                       Symmetry s,
-                                       const FGSContainer &dcontainer,
-                                       FGSTensor &outten)
-  : cont(container), sym(std::move(s)), dense_cont(dcontainer), out(outten)
+WorkerFoldMAADense::WorkerFoldMAADense(const FoldedStackContainer& container, Symmetry s,
+                                       const FGSContainer& dcontainer, FGSTensor& outten) :
+    cont(container),
+    sym(std::move(s)), dense_cont(dcontainer), out(outten)
 {
 }
 
 /* This is analogous to UnfoldedStackContainer::multAndAddSparse1() code. */
 void
-FoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
-                                        FGSTensor &out) const
+FoldedStackContainer::multAndAddSparse1(const FSSparseTensor& t, FGSTensor& out) const
 {
   sthread::detach_thread_group gr;
   UFSTensor dummy(0, numStacks(), t.dimen());
@@ -106,20 +103,19 @@ FoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
    vertically narrow out accordingly. */
 
 void
-WorkerFoldMAASparse1::operator()(std::mutex &mut)
+WorkerFoldMAASparse1::operator()(std::mutex& mut)
 {
-  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
-  const PermutationSet &pset = TLStatic::getPerm(t.dimen());
+  const EquivalenceSet& eset = TLStatic::getEquiv(out.dimen());
+  const PermutationSet& pset = TLStatic::getPerm(t.dimen());
   Permutation iden(t.dimen());
 
-  UPSTensor slice(t, cont.getStackSizes(), coor,
-                  PerTensorDimens(cont.getStackSizes(), coor));
+  UPSTensor slice(t, cont.getStackSizes(), coor, PerTensorDimens(cont.getStackSizes(), coor));
   for (int iper = 0; iper < pset.getNum(); iper++)
     {
-      const Permutation &per = pset.get(iper);
+      const Permutation& per = pset.get(iper);
       IntSequence percoor(coor.size());
       per.apply(coor, percoor);
-      for (const auto &it : eset)
+      for (const auto& it : eset)
         if (it.numClasses() == t.dimen())
           {
             StackProduct<FGSTensor> sp(cont, it, out.getSym());
@@ -127,12 +123,12 @@ WorkerFoldMAASparse1::operator()(std::mutex &mut)
               {
                 KronProdStack<FGSTensor> kp(sp, percoor);
                 kp.optimizeOrder();
-                const Permutation &oper = kp.getPer();
+                const Permutation& oper = kp.getPer();
                 if (Permutation(oper, per) == iden)
                   {
                     FPSTensor fps(out.getDims(), it, slice, kp);
                     {
-                      std::unique_lock<std::mutex> lk{mut};
+                      std::unique_lock<std::mutex> lk {mut};
                       fps.addTo(out);
                     }
                   }
@@ -141,10 +137,11 @@ WorkerFoldMAASparse1::operator()(std::mutex &mut)
     }
 }
 
-WorkerFoldMAASparse1::WorkerFoldMAASparse1(const FoldedStackContainer &container,
-                                           const FSSparseTensor &ten,
-                                           FGSTensor &outten, IntSequence c)
-  : cont(container), t(ten), out(outten), coor(std::move(c))
+WorkerFoldMAASparse1::WorkerFoldMAASparse1(const FoldedStackContainer& container,
+                                           const FSSparseTensor& ten, FGSTensor& outten,
+                                           IntSequence c) :
+    cont(container),
+    t(ten), out(outten), coor(std::move(c))
 {
 }
 
@@ -155,8 +152,7 @@ WorkerFoldMAASparse1::WorkerFoldMAASparse1(const FoldedStackContainer &container
    multiplies all the combinations compatible with the slice. */
 
 void
-FoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
-                                        FGSTensor &out) const
+FoldedStackContainer::multAndAddSparse2(const FSSparseTensor& t, FGSTensor& out) const
 {
   sthread::detach_thread_group gr;
   FFSTensor dummy_f(0, numStacks(), t.dimen());
@@ -178,10 +174,9 @@ FoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
    rows. */
 
 void
-WorkerFoldMAASparse2::operator()(std::mutex &mut)
+WorkerFoldMAASparse2::operator()(std::mutex& mut)
 {
-  GSSparseTensor slice(t, cont.getStackSizes(), coor,
-                       TensorDimens(cont.getStackSizes(), coor));
+  GSSparseTensor slice(t, cont.getStackSizes(), coor, TensorDimens(cont.getStackSizes(), coor));
   if (slice.getNumNonZero())
     {
       if (slice.getUnfoldIndexFillFactor() > FoldedStackContainer::fill_threshold)
@@ -189,8 +184,8 @@ WorkerFoldMAASparse2::operator()(std::mutex &mut)
           FGSTensor dense_slice(slice);
           int r1 = slice.getFirstNonZeroRow();
           int r2 = slice.getLastNonZeroRow();
-          FGSTensor dense_slice1(r1, r2-r1+1, dense_slice);
-          FGSTensor out1(r1, r2-r1+1, out);
+          FGSTensor dense_slice1(r1, r2 - r1 + 1, dense_slice);
+          FGSTensor out1(r1, r2 - r1 + 1, out);
           cont.multAndAddStacks(coor, dense_slice1, out1, mut);
         }
       else
@@ -198,10 +193,11 @@ WorkerFoldMAASparse2::operator()(std::mutex &mut)
     }
 }
 
-WorkerFoldMAASparse2::WorkerFoldMAASparse2(const FoldedStackContainer &container,
-                                           const FSSparseTensor &ten,
-                                           FGSTensor &outten, IntSequence c)
-  : cont(container), t(ten), out(outten), coor(std::move(c))
+WorkerFoldMAASparse2::WorkerFoldMAASparse2(const FoldedStackContainer& container,
+                                           const FSSparseTensor& ten, FGSTensor& outten,
+                                           IntSequence c) :
+    cont(container),
+    t(ten), out(outten), coor(std::move(c))
 {
 }
 
@@ -220,16 +216,15 @@ WorkerFoldMAASparse2::WorkerFoldMAASparse2(const FoldedStackContainer &container
    sparse tensor. */
 
 void
-FoldedStackContainer::multAndAddSparse3(const FSSparseTensor &t,
-                                        FGSTensor &out) const
+FoldedStackContainer::multAndAddSparse3(const FSSparseTensor& t, FGSTensor& out) const
 {
-  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
+  const EquivalenceSet& eset = TLStatic::getEquiv(out.dimen());
   for (Tensor::index run = out.begin(); run != out.end(); ++run)
     {
-      Vector outcol{out.getCol(*run)};
+      Vector outcol {out.getCol(*run)};
       FRSingleTensor sumcol(t.nvar(), t.dimen());
       sumcol.zeros();
-      for (const auto &it : eset)
+      for (const auto& it : eset)
         if (it.numClasses() == t.dimen())
           {
             StackProduct<FGSTensor> sp(*this, it, out.getSym());
@@ -250,7 +245,7 @@ FoldedStackContainer::multAndAddSparse3(const FSSparseTensor &t,
    FPSTensor| sparse constructor. */
 
 void
-FoldedStackContainer::multAndAddSparse4(const FSSparseTensor &t, FGSTensor &out) const
+FoldedStackContainer::multAndAddSparse4(const FSSparseTensor& t, FGSTensor& out) const
 {
   sthread::detach_thread_group gr;
   FFSTensor dummy_f(0, numStacks(), t.dimen());
@@ -265,18 +260,18 @@ FoldedStackContainer::multAndAddSparse4(const FSSparseTensor &t, FGSTensor &out)
    multAndAddStacks(). */
 
 void
-WorkerFoldMAASparse4::operator()(std::mutex &mut)
+WorkerFoldMAASparse4::operator()(std::mutex& mut)
 {
-  GSSparseTensor slice(t, cont.getStackSizes(), coor,
-                       TensorDimens(cont.getStackSizes(), coor));
+  GSSparseTensor slice(t, cont.getStackSizes(), coor, TensorDimens(cont.getStackSizes(), coor));
   if (slice.getNumNonZero())
     cont.multAndAddStacks(coor, slice, out, mut);
 }
 
-WorkerFoldMAASparse4::WorkerFoldMAASparse4(const FoldedStackContainer &container,
-                                           const FSSparseTensor &ten,
-                                           FGSTensor &outten, IntSequence c)
-  : cont(container), t(ten), out(outten), coor(std::move(c))
+WorkerFoldMAASparse4::WorkerFoldMAASparse4(const FoldedStackContainer& container,
+                                           const FSSparseTensor& ten, FGSTensor& outten,
+                                           IntSequence c) :
+    cont(container),
+    t(ten), out(outten), coor(std::move(c))
 {
 }
 
@@ -288,11 +283,10 @@ WorkerFoldMAASparse4::WorkerFoldMAASparse4(const FoldedStackContainer &container
    multiply with unfolded rows of Kronecker product. However, columns of such a
    product are partially folded giving a rise to the FPSTensor. */
 void
-FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
-                                       const FGSTensor &g,
-                                       FGSTensor &out, std::mutex &mut) const
+FoldedStackContainer::multAndAddStacks(const IntSequence& coor, const FGSTensor& g, FGSTensor& out,
+                                       std::mutex& mut) const
 {
-  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
+  const EquivalenceSet& eset = TLStatic::getEquiv(out.dimen());
 
   UGSTensor ug(g);
   UFSTensor dummy_u(0, numStacks(), g.dimen());
@@ -304,7 +298,7 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
         {
           Permutation sort_per(ui.getCoor());
           sort_per.inverse();
-          for (const auto &it : eset)
+          for (const auto& it : eset)
             if (it.numClasses() == g.dimen())
               {
                 StackProduct<FGSTensor> sp(*this, it, sort_per, out.getSym());
@@ -315,7 +309,7 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
                       kp.optimizeOrder();
                     FPSTensor fps(out.getDims(), it, sort_per, ug, kp);
                     {
-                      std::unique_lock<std::mutex> lk{mut};
+                      std::unique_lock<std::mutex> lk {mut};
                       fps.addTo(out);
                     }
                   }
@@ -330,11 +324,10 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
    with sparse slice GSSparseTensor (not dense slice FGSTensor). The
    multiplication is done in FPSTensor sparse constructor. */
 void
-FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
-                                       const GSSparseTensor &g,
-                                       FGSTensor &out, std::mutex &mut) const
+FoldedStackContainer::multAndAddStacks(const IntSequence& coor, const GSSparseTensor& g,
+                                       FGSTensor& out, std::mutex& mut) const
 {
-  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
+  const EquivalenceSet& eset = TLStatic::getEquiv(out.dimen());
   UFSTensor dummy_u(0, numStacks(), g.dimen());
   for (Tensor::index ui = dummy_u.begin(); ui != dummy_u.end(); ++ui)
     {
@@ -344,7 +337,7 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
         {
           Permutation sort_per(ui.getCoor());
           sort_per.inverse();
-          for (const auto &it : eset)
+          for (const auto& it : eset)
             if (it.numClasses() == g.dimen())
               {
                 StackProduct<FGSTensor> sp(*this, it, sort_per, out.getSym());
@@ -353,7 +346,7 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
                     KronProdStack<FGSTensor> kp(sp, coor);
                     FPSTensor fps(out.getDims(), it, sort_per, g, kp);
                     {
-                      std::unique_lock<std::mutex> lk{mut};
+                      std::unique_lock<std::mutex> lk {mut};
                       fps.addTo(out);
                     }
                   }
@@ -367,8 +360,7 @@ FoldedStackContainer::multAndAddStacks(const IntSequence &coor,
     multAndAddSparse2(). The first one allows for optimization of
     Kronecker products, so it seems to be more efficient. */
 void
-UnfoldedStackContainer::multAndAdd(const FSSparseTensor &t,
-                                   UGSTensor &out) const
+UnfoldedStackContainer::multAndAdd(const FSSparseTensor& t, UGSTensor& out) const
 {
   TL_RAISE_IF(t.nvar() != getAllSize(),
               "Wrong number of variables of tensor for UnfoldedStackContainer::multAndAdd");
@@ -389,14 +381,13 @@ UnfoldedStackContainer::multAndAdd(const FSSparseTensor &t,
    reason of doing this is that we are unable to calculate symmetry from
    stack coordinates as easily as stack coordinates from the symmetry. */
 void
-UnfoldedStackContainer::multAndAdd(int dim, const UGSContainer &c,
-                                   UGSTensor &out) const
+UnfoldedStackContainer::multAndAdd(int dim, const UGSContainer& c, UGSTensor& out) const
 {
   TL_RAISE_IF(c.num() != numStacks(),
               "Wrong symmetry length of container for UnfoldedStackContainer::multAndAdd");
 
   sthread::detach_thread_group gr;
-  for (auto &si : SymmetrySet(dim, c.num()))
+  for (auto& si : SymmetrySet(dim, c.num()))
     if (c.check(si))
       gr.insert(std::make_unique<WorkerUnfoldMAADense>(*this, si, c, out));
 
@@ -404,19 +395,18 @@ UnfoldedStackContainer::multAndAdd(int dim, const UGSContainer &c,
 }
 
 void
-WorkerUnfoldMAADense::operator()(std::mutex &mut)
+WorkerUnfoldMAADense::operator()(std::mutex& mut)
 {
   Permutation iden(dense_cont.num());
   IntSequence coor(iden.getMap().unfold(sym));
-  const UGSTensor &g = dense_cont.get(sym);
+  const UGSTensor& g = dense_cont.get(sym);
   cont.multAndAddStacks(coor, g, out, mut);
 }
 
-WorkerUnfoldMAADense::WorkerUnfoldMAADense(const UnfoldedStackContainer &container,
-                                           Symmetry s,
-                                           const UGSContainer &dcontainer,
-                                           UGSTensor &outten)
-  : cont(container), sym(std::move(s)), dense_cont(dcontainer), out(outten)
+WorkerUnfoldMAADense::WorkerUnfoldMAADense(const UnfoldedStackContainer& container, Symmetry s,
+                                           const UGSContainer& dcontainer, UGSTensor& outten) :
+    cont(container),
+    sym(std::move(s)), dense_cont(dcontainer), out(outten)
 {
 }
 
@@ -435,8 +425,7 @@ WorkerUnfoldMAADense::WorkerUnfoldMAADense(const UnfoldedStackContainer &contain
    operation for the slice corresponding to the combination of the stacks. */
 
 void
-UnfoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
-                                          UGSTensor &out) const
+UnfoldedStackContainer::multAndAddSparse1(const FSSparseTensor& t, UGSTensor& out) const
 {
   sthread::detach_thread_group gr;
   UFSTensor dummy(0, numStacks(), t.dimen());
@@ -470,20 +459,19 @@ UnfoldedStackContainer::multAndAddSparse1(const FSSparseTensor &t,
    TODO: vertically narrow slice and out according to the fill in t. */
 
 void
-WorkerUnfoldMAASparse1::operator()(std::mutex &mut)
+WorkerUnfoldMAASparse1::operator()(std::mutex& mut)
 {
-  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
-  const PermutationSet &pset = TLStatic::getPerm(t.dimen());
+  const EquivalenceSet& eset = TLStatic::getEquiv(out.dimen());
+  const PermutationSet& pset = TLStatic::getPerm(t.dimen());
   Permutation iden(t.dimen());
 
-  UPSTensor slice(t, cont.getStackSizes(), coor,
-                  PerTensorDimens(cont.getStackSizes(), coor));
+  UPSTensor slice(t, cont.getStackSizes(), coor, PerTensorDimens(cont.getStackSizes(), coor));
   for (int iper = 0; iper < pset.getNum(); iper++)
     {
-      const Permutation &per = pset.get(iper);
+      const Permutation& per = pset.get(iper);
       IntSequence percoor(coor.size());
       per.apply(coor, percoor);
-      for (const auto &it : eset)
+      for (const auto& it : eset)
         if (it.numClasses() == t.dimen())
           {
             StackProduct<UGSTensor> sp(cont, it, out.getSym());
@@ -491,12 +479,12 @@ WorkerUnfoldMAASparse1::operator()(std::mutex &mut)
               {
                 KronProdStack<UGSTensor> kp(sp, percoor);
                 kp.optimizeOrder();
-                const Permutation &oper = kp.getPer();
+                const Permutation& oper = kp.getPer();
                 if (Permutation(oper, per) == iden)
                   {
                     UPSTensor ups(out.getDims(), it, slice, kp);
                     {
-                      std::unique_lock<std::mutex> lk{mut};
+                      std::unique_lock<std::mutex> lk {mut};
                       ups.addTo(out);
                     }
                   }
@@ -505,10 +493,11 @@ WorkerUnfoldMAASparse1::operator()(std::mutex &mut)
     }
 }
 
-WorkerUnfoldMAASparse1::WorkerUnfoldMAASparse1(const UnfoldedStackContainer &container,
-                                               const FSSparseTensor &ten,
-                                               UGSTensor &outten, IntSequence c)
-  : cont(container), t(ten), out(outten), coor(std::move(c))
+WorkerUnfoldMAASparse1::WorkerUnfoldMAASparse1(const UnfoldedStackContainer& container,
+                                               const FSSparseTensor& ten, UGSTensor& outten,
+                                               IntSequence c) :
+    cont(container),
+    t(ten), out(outten), coor(std::move(c))
 {
 }
 
@@ -534,8 +523,7 @@ WorkerUnfoldMAASparse1::WorkerUnfoldMAASparse1(const UnfoldedStackContainer &con
    permutation of UPSTensor. */
 
 void
-UnfoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
-                                          UGSTensor &out) const
+UnfoldedStackContainer::multAndAddSparse2(const FSSparseTensor& t, UGSTensor& out) const
 {
   sthread::detach_thread_group gr;
   FFSTensor dummy_f(0, numStacks(), t.dimen());
@@ -553,27 +541,27 @@ UnfoldedStackContainer::multAndAddSparse2(const FSSparseTensor &t,
    WorkerFoldMAASparse2::operator()(). */
 
 void
-WorkerUnfoldMAASparse2::operator()(std::mutex &mut)
+WorkerUnfoldMAASparse2::operator()(std::mutex& mut)
 {
-  GSSparseTensor slice(t, cont.getStackSizes(), coor,
-                       TensorDimens(cont.getStackSizes(), coor));
+  GSSparseTensor slice(t, cont.getStackSizes(), coor, TensorDimens(cont.getStackSizes(), coor));
   if (slice.getNumNonZero())
     {
       FGSTensor fslice(slice);
       UGSTensor dense_slice(fslice);
       int r1 = slice.getFirstNonZeroRow();
       int r2 = slice.getLastNonZeroRow();
-      UGSTensor dense_slice1(r1, r2-r1+1, dense_slice);
-      UGSTensor out1(r1, r2-r1+1, out);
+      UGSTensor dense_slice1(r1, r2 - r1 + 1, dense_slice);
+      UGSTensor out1(r1, r2 - r1 + 1, out);
 
       cont.multAndAddStacks(coor, dense_slice1, out1, mut);
     }
 }
 
-WorkerUnfoldMAASparse2::WorkerUnfoldMAASparse2(const UnfoldedStackContainer &container,
-                                               const FSSparseTensor &ten,
-                                               UGSTensor &outten, IntSequence c)
-  : cont(container), t(ten), out(outten), coor(std::move(c))
+WorkerUnfoldMAASparse2::WorkerUnfoldMAASparse2(const UnfoldedStackContainer& container,
+                                               const FSSparseTensor& ten, UGSTensor& outten,
+                                               IntSequence c) :
+    cont(container),
+    t(ten), out(outten), coor(std::move(c))
 {
 }
 
@@ -594,11 +582,10 @@ WorkerUnfoldMAASparse2::WorkerUnfoldMAASparse2(const UnfoldedStackContainer &con
    ‘g’ is fully symmetric, we can do the optimization harmlessly. */
 
 void
-UnfoldedStackContainer::multAndAddStacks(const IntSequence &fi,
-                                         const UGSTensor &g,
-                                         UGSTensor &out, std::mutex &mut) const
+UnfoldedStackContainer::multAndAddStacks(const IntSequence& fi, const UGSTensor& g, UGSTensor& out,
+                                         std::mutex& mut) const
 {
-  const EquivalenceSet &eset = TLStatic::getEquiv(out.dimen());
+  const EquivalenceSet& eset = TLStatic::getEquiv(out.dimen());
 
   UFSTensor dummy_u(0, numStacks(), g.dimen());
   for (Tensor::index ui = dummy_u.begin(); ui != dummy_u.end(); ++ui)
@@ -609,7 +596,7 @@ UnfoldedStackContainer::multAndAddStacks(const IntSequence &fi,
         {
           Permutation sort_per(ui.getCoor());
           sort_per.inverse();
-          for (const auto &it : eset)
+          for (const auto& it : eset)
             if (it.numClasses() == g.dimen())
               {
                 StackProduct<UGSTensor> sp(*this, it, sort_per, out.getSym());
@@ -620,7 +607,7 @@ UnfoldedStackContainer::multAndAddStacks(const IntSequence &fi,
                       kp.optimizeOrder();
                     UPSTensor ups(out.getDims(), it, sort_per, g, kp);
                     {
-                      std::unique_lock<std::mutex> lk{mut};
+                      std::unique_lock<std::mutex> lk {mut};
                       ups.addTo(out);
                     }
                   }

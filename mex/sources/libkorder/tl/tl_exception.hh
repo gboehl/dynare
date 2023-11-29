@@ -31,8 +31,8 @@
 #define TL_EXCEPTION_H
 
 #include <iostream>
-#include <utility>
 #include <string>
+#include <utility>
 
 /* The basic idea of raising an exception if some condition fails is that the
    conditions is checked only if required. We define global TL_DEBUG macro
@@ -59,11 +59,11 @@
 # define TL_DEBUG 0
 #endif
 
-#define TL_RAISE(mes)                           \
-  throw TLException(__FILE__, __LINE__, mes)
+#define TL_RAISE(mes) throw TLException(__FILE__, __LINE__, mes)
 
-#define TL_RAISE_IF(expr, mes)                                          \
-  if (TL_DEBUG >= TL_DEBUG_EXCEPTION && (expr)) throw TLException(__FILE__, __LINE__, mes);
+#define TL_RAISE_IF(expr, mes)                                                                     \
+ if (TL_DEBUG >= TL_DEBUG_EXCEPTION && (expr))                                                     \
+  throw TLException(__FILE__, __LINE__, mes);
 
 /* Primitive exception class containing file name, line number and message. */
 
@@ -71,12 +71,11 @@ class TLException
 {
   const std::string fname;
   int lnum;
+
 public:
   const std::string message;
-  TLException(std::string fname_arg, int lnum_arg, std::string message_arg)
-    : fname{std::move(fname_arg)},
-      lnum{lnum_arg},
-      message{std::move(message_arg)}
+  TLException(std::string fname_arg, int lnum_arg, std::string message_arg) :
+      fname {std::move(fname_arg)}, lnum {lnum_arg}, message {std::move(message_arg)}
   {
   }
   virtual ~TLException() = default;

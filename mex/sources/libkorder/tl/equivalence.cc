@@ -27,8 +27,7 @@
 int
 OrdSequence::operator[](int i) const
 {
-  TL_RAISE_IF((i < 0 || i >= length()),
-              "Index out of range in OrdSequence::operator[]");
+  TL_RAISE_IF((i < 0 || i >= length()), "Index out of range in OrdSequence::operator[]");
   return data[i];
 }
 
@@ -37,7 +36,7 @@ OrdSequence::operator[](int i) const
    according to the average, and then according to the first item. */
 
 bool
-OrdSequence::operator<(const OrdSequence &s) const
+OrdSequence::operator<(const OrdSequence& s) const
 {
   double ta = average();
   double sa = s.average();
@@ -45,7 +44,7 @@ OrdSequence::operator<(const OrdSequence &s) const
 }
 
 bool
-OrdSequence::operator==(const OrdSequence &s) const
+OrdSequence::operator==(const OrdSequence& s) const
 {
   if (length() != s.length())
     return false;
@@ -73,7 +72,7 @@ OrdSequence::add(int i)
 }
 
 void
-OrdSequence::add(const OrdSequence &s)
+OrdSequence::add(const OrdSequence& s)
 {
   auto vit = s.data.begin();
   while (vit != s.data.end())
@@ -104,14 +103,13 @@ OrdSequence::average() const
   double res = 0;
   for (int i : data)
     res += i;
-  TL_RAISE_IF(data.size() == 0,
-              "Attempt to take average of empty class in OrdSequence::average");
-  return res/data.size();
+  TL_RAISE_IF(data.size() == 0, "Attempt to take average of empty class in OrdSequence::average");
+  return res / data.size();
 }
 
 /* Debug print. */
 void
-OrdSequence::print(const std::string &prefix) const
+OrdSequence::print(const std::string& prefix) const
 {
   std::cout << prefix;
   for (int i : data)
@@ -119,8 +117,7 @@ OrdSequence::print(const std::string &prefix) const
   std::cout << '\n';
 }
 
-Equivalence::Equivalence(int num)
-  : n(num)
+Equivalence::Equivalence(int num) : n(num)
 {
   for (int i = 0; i < num; i++)
     {
@@ -130,8 +127,7 @@ Equivalence::Equivalence(int num)
     }
 }
 
-Equivalence::Equivalence(int num, [[maybe_unused]] const std::string &dummy)
-  : n(num)
+Equivalence::Equivalence(int num, [[maybe_unused]] const std::string& dummy) : n(num)
 {
   OrdSequence s;
   for (int i = 0; i < num; i++)
@@ -141,9 +137,7 @@ Equivalence::Equivalence(int num, [[maybe_unused]] const std::string &dummy)
 
 /* Copy constructor that also glues a given couple. */
 
-Equivalence::Equivalence(const Equivalence &e, int i1, int i2)
-  : n(e.n),
-    classes(e.classes)
+Equivalence::Equivalence(const Equivalence& e, int i1, int i2) : n(e.n), classes(e.classes)
 {
   auto s1 = find(i1);
   auto s2 = find(i2);
@@ -158,7 +152,7 @@ Equivalence::Equivalence(const Equivalence &e, int i1, int i2)
 }
 
 bool
-Equivalence::operator==(const Equivalence &e) const
+Equivalence::operator==(const Equivalence& e) const
 {
   if (!std::operator==(classes, e.classes))
     return false;
@@ -181,8 +175,7 @@ Equivalence::findHaving(int i) const
         return si;
       ++si;
     }
-  TL_RAISE_IF(si == classes.end(),
-              "Couldn't find equivalence class in Equivalence::findHaving");
+  TL_RAISE_IF(si == classes.end(), "Couldn't find equivalence class in Equivalence::findHaving");
   return si;
 }
 
@@ -196,8 +189,7 @@ Equivalence::findHaving(int i)
         return si;
       ++si;
     }
-  TL_RAISE_IF(si == classes.end(),
-              "Couldn't find equivalence class in Equivalence::findHaving");
+  TL_RAISE_IF(si == classes.end(), "Couldn't find equivalence class in Equivalence::findHaving");
   return si;
 }
 
@@ -213,8 +205,7 @@ Equivalence::find(int j) const
       ++si;
       i++;
     }
-  TL_RAISE_IF(si == classes.end(),
-              "Couldn't find equivalence class in Equivalence::find");
+  TL_RAISE_IF(si == classes.end(), "Couldn't find equivalence class in Equivalence::find");
   return si;
 }
 
@@ -228,14 +219,13 @@ Equivalence::find(int j)
       ++si;
       i++;
     }
-  TL_RAISE_IF(si == classes.end(),
-              "Couldn't find equivalence class in Equivalence::find");
+  TL_RAISE_IF(si == classes.end(), "Couldn't find equivalence class in Equivalence::find");
   return si;
 }
 
 /* Insert a new class yielding the ordering. */
 void
-Equivalence::insert(const OrdSequence &s)
+Equivalence::insert(const OrdSequence& s)
 {
   auto si = classes.begin();
   while (si != classes.end() && *si < s)
@@ -250,26 +240,23 @@ Equivalence::insert(const OrdSequence &s)
    number of classes from the beginning. */
 
 void
-Equivalence::trace(IntSequence &out, int num) const
+Equivalence::trace(IntSequence& out, int num) const
 {
   int i = 0;
   int nc = 0;
   for (auto it = begin(); it != end() && nc < num; ++it, ++nc)
     for (int j = 0; j < it->length(); j++, i++)
       {
-        TL_RAISE_IF(i >= out.size(),
-                    "Wrong size of output sequence in Equivalence::trace");
+        TL_RAISE_IF(i >= out.size(), "Wrong size of output sequence in Equivalence::trace");
         out[i] = (*it)[j];
       }
 }
 
 void
-Equivalence::trace(IntSequence &out, const Permutation &per) const
+Equivalence::trace(IntSequence& out, const Permutation& per) const
 {
-  TL_RAISE_IF(out.size() != n,
-              "Wrong size of output sequence in Equivalence::trace");
-  TL_RAISE_IF(per.size() != numClasses(),
-              "Wrong permutation for permuted Equivalence::trace");
+  TL_RAISE_IF(out.size() != n, "Wrong size of output sequence in Equivalence::trace");
+  TL_RAISE_IF(per.size() != numClasses(), "Wrong permutation for permuted Equivalence::trace");
   int i = 0;
   for (int iclass = 0; iclass < numClasses(); iclass++)
     {
@@ -281,12 +268,10 @@ Equivalence::trace(IntSequence &out, const Permutation &per) const
 
 /* Debug print. */
 void
-Equivalence::print(const std::string &prefix) const
+Equivalence::print(const std::string& prefix) const
 {
   int i = 0;
-  for (auto it = classes.begin();
-       it != classes.end();
-       ++it, i++)
+  for (auto it = classes.begin(); it != classes.end(); ++it, i++)
     {
       std::cout << prefix << "class " << i << ": ";
       it->print("");
@@ -311,8 +296,7 @@ Equivalence::print(const std::string &prefix) const
    classes. Obviously, the list is decreasing in a number of classes
    (since it is constructed by gluing attempts). */
 
-EquivalenceSet::EquivalenceSet(int num)
-  : n(num)
+EquivalenceSet::EquivalenceSet(int num) : n(num)
 {
   std::list<Equivalence> added;
   Equivalence first(n);
@@ -338,7 +322,7 @@ EquivalenceSet::EquivalenceSet(int num)
    classes to more classes. hence the reverse order. */
 
 bool
-EquivalenceSet::has(const Equivalence &e) const
+EquivalenceSet::has(const Equivalence& e) const
 {
   auto rit = equis.rbegin();
   while (rit != equis.rend() && *rit != e)
@@ -356,16 +340,14 @@ EquivalenceSet::has(const Equivalence &e) const
    be added. */
 
 void
-EquivalenceSet::addParents(const Equivalence &e,
-                           std::list<Equivalence> &added)
+EquivalenceSet::addParents(const Equivalence& e, std::list<Equivalence>& added)
 {
   if (e.numClasses() == 2 || e.numClasses() == 1)
     return;
 
   for (int i1 = 0; i1 < e.numClasses(); i1++)
-    for (int i2 = i1+1; i2 < e.numClasses(); i2++)
-      if (Equivalence ns(e, i1, i2);
-          !has(ns))
+    for (int i2 = i1 + 1; i2 < e.numClasses(); i2++)
+      if (Equivalence ns(e, i1, i2); !has(ns))
         {
           added.push_back(ns);
           equis.push_back(std::move(ns));
@@ -374,15 +356,12 @@ EquivalenceSet::addParents(const Equivalence &e,
 
 /* Debug print. */
 void
-EquivalenceSet::print(const std::string &prefix) const
+EquivalenceSet::print(const std::string& prefix) const
 {
   int i = 0;
-  for (auto it = equis.begin();
-       it != equis.end();
-       ++it, i++)
+  for (auto it = equis.begin(); it != equis.end(); ++it, i++)
     {
-      std::cout << prefix << "equivalence " << i << ":(classes "
-                << it->numClasses() << ")\n";
+      std::cout << prefix << "equivalence " << i << ":(classes " << it->numClasses() << ")\n";
       it->print(prefix + "    ");
     }
 }
@@ -395,12 +374,12 @@ EquivalenceBundle::EquivalenceBundle(int nmax)
 }
 
 /* Remember, that the first item is EquivalenceSet(1). */
-const EquivalenceSet &
+const EquivalenceSet&
 EquivalenceBundle::get(int n) const
 {
   TL_RAISE_IF(n > static_cast<int>(bundle.size()) || n < 1,
               "Equivalence set not found in EquivalenceBundle::get");
-  return bundle[n-1];
+  return bundle[n - 1];
 }
 
 /* Get ‘curmax’ which is a maximum size in the bundle, and generate for
@@ -410,6 +389,6 @@ void
 EquivalenceBundle::generateUpTo(int nmax)
 {
   int curmax = bundle.size();
-  for (int i = curmax+1; i <= nmax; i++)
+  for (int i = curmax + 1; i <= nmax; i++)
     bundle.emplace_back(i);
 }

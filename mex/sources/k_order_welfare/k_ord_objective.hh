@@ -28,40 +28,43 @@ class KordwDynare;
 class KordwDynare
 {
 public:
-  KordpDynare &model;
-  const ConstVector &NNZD;
+  KordpDynare& model;
+  const ConstVector& NNZD;
+
 private:
-  Journal &journal;
-  Vector &params;
+  Journal& journal;
+  Vector& params;
   Vector resid;
   TensorContainer<FSSparseTensor> ud; // planner's objective derivatives, in Dynare++ form
-  std::vector<int> dynppToDyn; // Maps Dynare++ jacobian variable indices to Dynare ones
-  std::vector<int> dynToDynpp; // Maps Dynare jacobian variable indices to Dynare++ ones
+  std::vector<int> dynppToDyn;        // Maps Dynare++ jacobian variable indices to Dynare ones
+  std::vector<int> dynToDynpp;        // Maps Dynare jacobian variable indices to Dynare++ ones
   std::unique_ptr<ObjectiveAC> objectiveFile;
+
 public:
-  KordwDynare(KordpDynare &m, ConstVector &NNZD_arg, Journal &jr, Vector &inParams, std::unique_ptr<ObjectiveAC> objectiveFile_arg, const std::vector<int> &varOrder);
+  KordwDynare(KordpDynare& m, ConstVector& NNZD_arg, Journal& jr, Vector& inParams,
+              std::unique_ptr<ObjectiveAC> objectiveFile_arg, const std::vector<int>& varOrder);
   void calcDerivativesAtSteady();
-  void populateDerivativesContainer(const std::vector<TwoDMatrix> &dyn_ud, int ord);
-  const TensorContainer<FSSparseTensor> &
+  void populateDerivativesContainer(const std::vector<TwoDMatrix>& dyn_ud, int ord);
+  const TensorContainer<FSSparseTensor>&
   getPlannerObjDerivatives() const
   {
     return ud;
   }
-  const KordpDynare &
+  const KordpDynare&
   getModel() const
   {
     return model;
   }
-  const Vector &
+  const Vector&
   getResid() const
   {
     return resid;
   }
+
 private:
   /* Computes the permutations mapping back and forth between Dynare and
      Dynare++ orderings of variables */
-  void computeJacobianPermutation(const std::vector<int> &var_order);
-
+  void computeJacobianPermutation(const std::vector<int>& var_order);
 };
 
 class KOrderWelfare
@@ -98,54 +101,50 @@ public:
 
   /* Planner objective derivatives: just a reference to the container of sparse
      tensors of the derivatives, lives outside the class */
-  const TensorContainer<FSSparseTensor> &u;
+  const TensorContainer<FSSparseTensor>& u;
 
   /* These are the declarations of the template functions accessing the
      containers. We declare template methods for accessing containers depending
      on ‘fold’ and ‘unfold’ flag, we implement their specializations*/
   template<Storage t>
-  typename ctraits<t>::Tg &g();
+  typename ctraits<t>::Tg& g();
   template<Storage t>
-  const typename ctraits<t>::Tg &g() const;
+  const typename ctraits<t>::Tg& g() const;
   template<Storage t>
-  typename ctraits<t>::Tgs &gs();
+  typename ctraits<t>::Tgs& gs();
   template<Storage t>
-  const typename ctraits<t>::Tgs &gs() const;
+  const typename ctraits<t>::Tgs& gs() const;
   template<Storage t>
-  typename ctraits<t>::TU &U();
+  typename ctraits<t>::TU& U();
   template<Storage t>
-  const typename ctraits<t>::TU &U() const;
+  const typename ctraits<t>::TU& U() const;
   template<Storage t>
-  typename ctraits<t>::TW &W();
+  typename ctraits<t>::TW& W();
   template<Storage t>
-  const typename ctraits<t>::TW &W() const;
+  const typename ctraits<t>::TW& W() const;
   template<Storage t>
-  typename ctraits<t>::TWrond &Wrond();
+  typename ctraits<t>::TWrond& Wrond();
   template<Storage t>
-  const typename ctraits<t>::TWrond &Wrond() const;
+  const typename ctraits<t>::TWrond& Wrond() const;
   template<Storage t>
-  typename ctraits<t>::TXstack &Xstack();
+  typename ctraits<t>::TXstack& Xstack();
   template<Storage t>
-  const typename ctraits<t>::TXstack &Xstack() const;
+  const typename ctraits<t>::TXstack& Xstack() const;
   template<Storage t>
-  typename ctraits<t>::TGstack &Gstack();
+  typename ctraits<t>::TGstack& Gstack();
   template<Storage t>
-  const typename ctraits<t>::TGstack &Gstack() const;
+  const typename ctraits<t>::TGstack& Gstack() const;
   template<Storage t>
-  typename ctraits<t>::Tm &m();
+  typename ctraits<t>::Tm& m();
   template<Storage t>
-  const typename ctraits<t>::Tm &m() const;
+  const typename ctraits<t>::Tm& m() const;
 
-  Journal &journal;
+  Journal& journal;
 
 public:
-  KOrderWelfare(int num_stat, int num_pred, int num_both,
-                int num_forw, int nu, int ord, double discount_factor,
-                const TensorContainer<FSSparseTensor> &ucont,
-                const FGSContainer &g,
-                const FGSContainer &gs,
-                const TwoDMatrix &v,
-                Journal &jr);
+  KOrderWelfare(int num_stat, int num_pred, int num_both, int num_forw, int nu, int ord,
+                double discount_factor, const TensorContainer<FSSparseTensor>& ucont,
+                const FGSContainer& g, const FGSContainer& gs, const TwoDMatrix& v, Journal& jr);
 
   /* Performs k-order step provided that k=2 or the k−1-th step has been
      run, this is the core method */
@@ -156,22 +155,22 @@ public:
   template<Storage t>
   double check(int dim) const;
 
-  const FGSContainer &
+  const FGSContainer&
   getFoldU() const
   {
     return _fU;
   }
-  const UGSContainer &
+  const UGSContainer&
   getUnfoldU() const
   {
     return _uU;
   }
-  const FGSContainer &
+  const FGSContainer&
   getFoldW() const
   {
     return _fW;
   }
-  const UGSContainer &
+  const UGSContainer&
   getUnfoldW() const
   {
     return _uW;
@@ -186,14 +185,15 @@ protected:
   /* Calculates derivatives of U by Faà Di Bruno for the sparse container of
      planner's objective derivatives and the container for the decision rule derivatives*/
   template<Storage t>
-  std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoU(const Symmetry &sym) const;
-  /* Calculates derivatives of the compounded functions W and Gstack using the Faà Di Bruno formula*/
+  std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoU(const Symmetry& sym) const;
+  /* Calculates derivatives of the compounded functions W and Gstack using the Faà Di Bruno
+   * formula*/
   template<Storage t>
-  std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoW(const Symmetry &sym) const;
+  std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoW(const Symmetry& sym) const;
 
   /* Solves the sylvester equation (templated fold, and unfold) */
   template<Storage t>
-  void sylvesterSolve(typename ctraits<t>::Ttensor &der) const;
+  void sylvesterSolve(typename ctraits<t>::Ttensor& der) const;
 
   // Recovers W_y*ⁱ
   template<Storage t>
@@ -230,7 +230,6 @@ protected:
   typename ctraits<t>::Ttensor calcJ_ik(int i, int k) const;
   template<Storage t>
   typename ctraits<t>::Ttensor calcJ_k(int k) const;
-
 };
 
 /* Here we implement Faà Di Bruno formula
@@ -242,7 +241,7 @@ protected:
    where s is a given outer symmetry and k is the dimension of the symmetry. */
 template<Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
-KOrderWelfare::faaDiBrunoU(const Symmetry &sym) const
+KOrderWelfare::faaDiBrunoU(const Symmetry& sym) const
 {
   JournalRecordPair pa(journal);
   pa << "Faà Di Bruno U container for " << sym << endrec;
@@ -255,7 +254,7 @@ KOrderWelfare::faaDiBrunoU(const Symmetry &sym) const
 /* The same as KOrder::faaDiBrunoW(), but for W and G stack. */
 template<Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
-KOrderWelfare::faaDiBrunoW(const Symmetry &sym) const
+KOrderWelfare::faaDiBrunoW(const Symmetry& sym) const
 {
   JournalRecordPair pa(journal);
   pa << "Faà Di Bruno G container for " << sym << endrec;
@@ -270,32 +269,33 @@ template<Storage t>
 void
 KOrderWelfare::performStep(int order)
 {
-  KORD_RAISE_IF(order-1 != W<t>().getMaxDim() and order > 1, "Wrong order for KOrder::performStep");
+  KORD_RAISE_IF(order - 1 != W<t>().getMaxDim() and order > 1,
+                "Wrong order for KOrder::performStep");
   JournalRecordPair pa(journal);
   pa << "Performing step for order = " << order << endrec;
 
   recover_y<t>(order);
 
   for (int i = 0; i < order; i++)
-    recover_yu<t>(i, order-i);
+    recover_yu<t>(i, order - i);
 
-  recover_ys<t>(order-1, 1);
+  recover_ys<t>(order - 1, 1);
 
   for (int j = 2; j < order; j++)
     {
-      for (int i = 1; i <= j-1; i++)
-        recover_yus<t>(order-j, i, j-i);
-      recover_ys<t>(order-j, j);
-      recover_yus<t>(0, order-j, j);
+      for (int i = 1; i <= j - 1; i++)
+        recover_yus<t>(order - j, i, j - i);
+      recover_ys<t>(order - j, j);
+      recover_yus<t>(0, order - j, j);
     }
 
   recover_s<t>(order);
 }
 
-/* Here we solve [F_yⁱ]=0. First we calculate conditional W_yⁱ (it misses l=i since W_yⁱ does not exist yet). Then calculate conditional F_yⁱ and
-   we have the right hand side of equation. Since we miss two orders, we solve
-   by Sylvester, and  the solution as the derivative g_yⁱ. Then we need
-   to update G_yⁱ running multAndAdd() for both dimensions 1 and i.
+/* Here we solve [F_yⁱ]=0. First we calculate conditional W_yⁱ (it misses l=i since W_yⁱ does not
+   exist yet). Then calculate conditional F_yⁱ and we have the right hand side of equation. Since we
+   miss two orders, we solve by Sylvester, and  the solution as the derivative g_yⁱ. Then we need to
+   update G_yⁱ running multAndAdd() for both dimensions 1 and i.
 
    Requires: everything at order ≤ i−1
 
@@ -305,7 +305,7 @@ template<Storage t>
 void
 KOrderWelfare::recover_y(int i)
 {
-  Symmetry sym{i, 0, 0, 0};
+  Symmetry sym {i, 0, 0, 0};
   JournalRecordPair pa(journal);
   pa << "Conditional welfare: recovering symmetry " << sym << "\n" << endrec;
 
@@ -335,7 +335,7 @@ template<Storage t>
 void
 KOrderWelfare::recover_yu(int i, int j)
 {
-  Symmetry sym{i, j, 0, 0};
+  Symmetry sym {i, j, 0, 0};
   JournalRecordPair pa(journal);
   pa << "Conditional welfare: recovering symmetry " << sym << endrec;
 
@@ -347,7 +347,6 @@ KOrderWelfare::recover_yu(int i, int j)
   W_yiuj.add(discount_factor, *Wrond_yiuj_ptr);
 
   W<t>().insert(std::make_unique<typename ctraits<t>::Ttensor>(W_yiuj));
-
 }
 
 /* Here we solve [F_yⁱσʲ]+[Dᵢⱼ]+[Eᵢⱼ]=0 to obtain W_yⁱσʲ. We calculate
@@ -367,7 +366,7 @@ template<Storage t>
 void
 KOrderWelfare::recover_ys(int i, int j)
 {
-  Symmetry sym{i, 0, 0, j};
+  Symmetry sym {i, 0, 0, j};
   JournalRecordPair pa(journal);
   pa << "Conditional welfare: recovering symmetry " << sym << endrec;
 
@@ -396,7 +395,7 @@ KOrderWelfare::recover_ys(int i, int j)
 
       W<t>().insert(std::make_unique<typename ctraits<t>::Ttensor>(W_yisj));
 
-      Gstack<t>().multAndAdd(i+j, W<t>(), *Wrond_yisj_ptr);
+      Gstack<t>().multAndAdd(i + j, W<t>(), *Wrond_yisj_ptr);
     }
 }
 
@@ -417,7 +416,7 @@ template<Storage t>
 void
 KOrderWelfare::recover_yus(int i, int j, int k)
 {
-  Symmetry sym{i, j, 0, k};
+  Symmetry sym {i, j, 0, k};
   JournalRecordPair pa(journal);
   pa << "Conditional welfare: recovering symmetry " << sym << endrec;
 
@@ -443,7 +442,7 @@ KOrderWelfare::recover_yus(int i, int j, int k)
 
       W<t>().insert(std::make_unique<typename ctraits<t>::Ttensor>(W_yiujsk));
 
-      Gstack<t>().multAndAdd(i+j+k, W<t>(), *Wrond_yiujsk_ptr);
+      Gstack<t>().multAndAdd(i + j + k, W<t>(), *Wrond_yiujsk_ptr);
     }
 }
 
@@ -463,7 +462,7 @@ template<Storage t>
 void
 KOrderWelfare::recover_s(int i)
 {
-  Symmetry sym{0, 0, 0, i};
+  Symmetry sym {0, 0, 0, i};
   JournalRecordPair pa(journal);
   pa << "Conditional welfare: recovering symmetry " << sym << endrec;
 
@@ -489,7 +488,7 @@ KOrderWelfare::recover_s(int i)
           W_si.add(-1.0, J_i);
         }
 
-      W_si.mult(1/(1-discount_factor));
+      W_si.mult(1 / (1 - discount_factor));
 
       W<t>().insert(std::make_unique<typename ctraits<t>::Ttensor>(W_si));
 
@@ -497,15 +496,16 @@ KOrderWelfare::recover_s(int i)
     }
 }
 
-/* Here we calculate and insert Wrond_yⁱuʲu′ᵐσᵏ⁻ᵐ for m=1,…,k. The derivatives are inserted only for k−m being even. */
+/* Here we calculate and insert Wrond_yⁱuʲu′ᵐσᵏ⁻ᵐ for m=1,…,k. The derivatives are inserted only for
+ * k−m being even. */
 template<Storage t>
 void
 KOrderWelfare::fillWrond(int i, int j, int k)
 {
   for (int m = 1; m <= k; m++)
-    if (is_even(k-m))
+    if (is_even(k - m))
       {
-        auto Wrond_yiujupms = faaDiBrunoW<t>(Symmetry{i, j, m, k-m});
+        auto Wrond_yiujupms = faaDiBrunoW<t>(Symmetry {i, j, m, k - m});
         Wrond<t>().insert(std::move(Wrond_yiujupms));
       }
 }
@@ -519,12 +519,12 @@ template<Storage t>
 typename ctraits<t>::Ttensor
 KOrderWelfare::calcH_ijk(int i, int j, int k) const
 {
-  typename ctraits<t>::Ttensor res(1, TensorDimens(Symmetry{i, j, 0, 0}, nvs));
+  typename ctraits<t>::Ttensor res(1, TensorDimens(Symmetry {i, j, 0, 0}, nvs));
   res.zeros();
   if (is_even(k))
     {
-      auto tmp = faaDiBrunoW<t>(Symmetry{i, j, k, 0});
-      tmp->contractAndAdd(2, res, m<t>().get(Symmetry{k}));
+      auto tmp = faaDiBrunoW<t>(Symmetry {i, j, k, 0});
+      tmp->contractAndAdd(2, res, m<t>().get(Symmetry {k}));
     }
   res.mult(-discount_factor);
   return res;
@@ -542,13 +542,13 @@ template<Storage t>
 typename ctraits<t>::Ttensor
 KOrderWelfare::calcJ_ijk(int i, int j, int k) const
 {
-  typename ctraits<t>::Ttensor res(1, TensorDimens(Symmetry{i, j, 0, 0}, nvs));
+  typename ctraits<t>::Ttensor res(1, TensorDimens(Symmetry {i, j, 0, 0}, nvs));
   res.zeros();
-  for (int n = 2; n <= k-1; n += 2)
+  for (int n = 2; n <= k - 1; n += 2)
     {
-      auto tmp = faaDiBrunoW<t>(Symmetry{i, j, n, k-n});
+      auto tmp = faaDiBrunoW<t>(Symmetry {i, j, n, k - n});
       tmp->mult(static_cast<double>(PascalTriangle::noverk(k, n)));
-      tmp->contractAndAdd(2, res, m<t>().get(Symmetry{n}));
+      tmp->contractAndAdd(2, res, m<t>().get(Symmetry {n}));
     }
   res.mult(-discount_factor);
   return res;
@@ -590,8 +590,7 @@ template<Storage t>
 double
 KOrderWelfare::check(int dim) const
 {
-  KORD_RAISE_IF(dim > W<t>().getMaxDim(),
-                "Wrong dimension for KOrderWelfare::check");
+  KORD_RAISE_IF(dim > W<t>().getMaxDim(), "Wrong dimension for KOrderWelfare::check");
   JournalRecordPair pa(journal);
   pa << "Checking residuals for order = " << dim << endrec;
 
@@ -600,7 +599,7 @@ KOrderWelfare::check(int dim) const
   // Check for F_yⁱuʲ=0
   for (int i = 0; i <= dim; i++)
     {
-      Symmetry sym{dim-i, i, 0, 0};
+      Symmetry sym {dim - i, i, 0, 0};
       auto r = W<t>().get(sym);
       r.add(-1.0, U<t>().get(sym));
       r.add(-discount_factor, Wrond<t>().get(sym));
@@ -610,14 +609,14 @@ KOrderWelfare::check(int dim) const
     }
 
   // Check for F_yⁱuʲu′ᵏ+Hᵢⱼₖ+Jᵢⱼₖ=0
-  for (auto &si : SymmetrySet(dim, 3))
+  for (auto& si : SymmetrySet(dim, 3))
     {
       int i = si[0];
       int j = si[1];
       int k = si[2];
-      if (i+j > 0 && k > 0 && is_even(k))
+      if (i + j > 0 && k > 0 && is_even(k))
         {
-          Symmetry sym{i, j, 0, k};
+          Symmetry sym {i, j, 0, k};
           auto r = W<t>().get(sym);
           r.add(-1.0, U<t>().get(sym));
           r.add(-discount_factor, Wrond<t>().get(sym));
@@ -634,7 +633,7 @@ KOrderWelfare::check(int dim) const
   // Check for F_σⁱ+Dᵢ+Eᵢ=0
   if (is_even(dim))
     {
-      Symmetry sym{0, 0, 0, dim};
+      Symmetry sym {0, 0, 0, dim};
       auto r = W<t>().get(sym);
       r.add(-1.0, U<t>().get(sym));
       r.add(-discount_factor, Wrond<t>().get(sym));

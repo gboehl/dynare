@@ -42,10 +42,10 @@
 #ifndef INT_SEQUENCE_H
 #define INT_SEQUENCE_H
 
-#include <vector>
 #include <algorithm>
 #include <initializer_list>
 #include <utility>
+#include <vector>
 
 /* The implementation of IntSequence is straightforward. It has a pointer
    ‘data’, an ‘offset’ integer indicating the beginning of the data relatively
@@ -59,76 +59,72 @@
 class Symmetry;
 class IntSequence
 {
-  int *data;
+  int* data;
   int length;
-  bool destroy{true};
+  bool destroy {true};
+
 public:
   // Constructor allocating a given length of (uninitialized) data
-  explicit IntSequence(int l)
-    : data{new int[l]}, length{l}
+  explicit IntSequence(int l) : data {new int[l]}, length {l}
   {
   }
   // Constructor allocating and then initializing all members to a given number
-  IntSequence(int l, int n)
-    : data{new int[l]}, length{l}
+  IntSequence(int l, int n) : data {new int[l]}, length {l}
   {
     std::fill_n(data, length, n);
   }
   /* Constructor using an initializer list (gives the contents of the
      IntSequence, similarly to std::vector) */
-  IntSequence(std::initializer_list<int> init)
-    : data{new int[init.size()]},
-      length{static_cast<int>(init.size())}
+  IntSequence(std::initializer_list<int> init) :
+      data {new int[init.size()]}, length {static_cast<int>(init.size())}
   {
     std::copy(init.begin(), init.end(), data);
   }
   // Copy constructor
-  IntSequence(const IntSequence &s)
-    : data{new int[s.length]}, length{s.length}
+  IntSequence(const IntSequence& s) : data {new int[s.length]}, length {s.length}
   {
     std::copy_n(s.data, length, data);
   }
   // Move constructor
-  IntSequence(IntSequence &&s) noexcept
-    : data{std::exchange(s.data, nullptr)}, length{std::exchange(s.length, 0)},
-      destroy{std::exchange(s.destroy, false)}
+  IntSequence(IntSequence&& s) noexcept :
+      data {std::exchange(s.data, nullptr)}, length {std::exchange(s.length, 0)},
+      destroy {std::exchange(s.destroy, false)}
   {
   }
   // Subsequence constructor (which shares the data pointer)
-  IntSequence(IntSequence &s, int i1, int i2)
-    : data{s.data+i1}, length{i2-i1}, destroy{false}
+  IntSequence(IntSequence& s, int i1, int i2) :
+      data {s.data + i1}, length {i2 - i1}, destroy {false}
   {
   }
   // Subsequence constructor (without pointer sharing)
-  IntSequence(const IntSequence &s, int i1, int i2)
-    : data{new int[i2-i1]}, length{i2-i1}
+  IntSequence(const IntSequence& s, int i1, int i2) : data {new int[i2 - i1]}, length {i2 - i1}
   {
-    std::copy_n(s.data+i1, length, data);
+    std::copy_n(s.data + i1, length, data);
   }
   /* Unfolds a given integer sequence with respect to a given symmetry. If for
      example the sequence is (a,b) and the symmetry is (2,3), then the
      result is (a,a,b,b,b). */
-  IntSequence unfold(const Symmetry &sy) const;
+  IntSequence unfold(const Symmetry& sy) const;
 
   /* Constructs a symmetry from the integer sequence (supposed to be ordered) as
      a symmetry counting successively equal items. For instance the sequence
      (a,a,a,b,c,c,d,d,d,d) produces symmetry (3,1,2,4). */
   Symmetry getSymmetry() const;
 
-  IntSequence &operator=(const IntSequence &s);
-  IntSequence &operator=(IntSequence &&s);
+  IntSequence& operator=(const IntSequence& s);
+  IntSequence& operator=(IntSequence&& s);
   virtual ~IntSequence()
   {
     if (destroy)
       delete[] data;
   }
-  bool operator==(const IntSequence &s) const;
+  bool operator==(const IntSequence& s) const;
   bool
-  operator!=(const IntSequence &s) const
+  operator!=(const IntSequence& s) const
   {
     return !operator==(s);
   }
-  int &
+  int&
   operator[](int i)
   {
     return data[i];
@@ -147,14 +143,14 @@ public:
   /* We provide two orderings. The first operator<() is the linear
      lexicographic ordering, the second less() is the non-linear Cartesian
      ordering. */
-  bool operator<(const IntSequence &s) const;
+  bool operator<(const IntSequence& s) const;
   bool
-  operator<=(const IntSequence &s) const
+  operator<=(const IntSequence& s) const
   {
     return (operator==(s) || operator<(s));
   }
-  bool lessEq(const IntSequence &s) const;
-  bool less(const IntSequence &s) const;
+  bool lessEq(const IntSequence& s) const;
+  bool less(const IntSequence& s) const;
 
   // Inserts an element into an ordered sequence
   IntSequence insert(int i) const;
@@ -173,8 +169,7 @@ public:
    symmetry. So the subsequence given by the symmetry classes are
    monotonized. For example, if the symmetry is y²u³, and the
    IntSequence is (5,3,1,6,4), the result is (5,5,1,6,6). */
-  void pmonotone(const Symmetry &s);
-
+  void pmonotone(const Symmetry& s);
 
   // Returns the sum of all elements. Useful for symmetries
   int sum() const;
@@ -190,7 +185,7 @@ public:
     return mult(0, length);
   }
   void add(int i);
-  void add(int f, const IntSequence &s);
+  void add(int f, const IntSequence& s);
 
   /* Return the number of identical elements at the beginning of the sequence. */
   int getPrefixLength() const;

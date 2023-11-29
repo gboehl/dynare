@@ -20,24 +20,24 @@
 #ifndef _EVALUATE_HH
 #define _EVALUATE_HH
 
-#include <vector>
-#include <string>
-#include <map>
-#include <optional>
-#include <memory>
-#include <filesystem>
 #include <deque>
+#include <filesystem>
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
-#include "Bytecode.hh"
 #include "BasicSymbolTable.hh"
+#include "Bytecode.hh"
 
 class Evaluate
 {
 private:
-  using instructions_list_t = vector<BytecodeInstruction *>;
+  using instructions_list_t = vector<BytecodeInstruction*>;
   using it_code_type = instructions_list_t::const_iterator;
 
-  const BasicSymbolTable &symbol_table;
+  const BasicSymbolTable& symbol_table;
   const bool steady_state; // Whether this is a static or dynamic .cod file
 
   // Memory copy of the contents of the .cod file
@@ -55,14 +55,14 @@ private:
      Those are either pointers inside “raw_bytecode” or “deserialized_{fbeginblock,fcall}” */
   instructions_list_t instructions_list;
 
-   // Number of blocks in the model
+  // Number of blocks in the model
   int nb_blocks {0};
 
   // Index of beginnings of blocks within instructions_list
   vector<size_t> begin_block;
 
   int block_num; // Index of the current block
-  int size; // Size of the current block
+  int size;      // Size of the current block
 
   ExpressionType EQN_type;
   int EQN_equation, EQN_dvar1;
@@ -75,12 +75,14 @@ private:
      the expression that created a floating point exception, in which case the
      corresponding mathematical operator will be printed within braces.
      The second output argument points to the tag past the expression. */
-  pair<string, it_code_type> print_expression(const it_code_type &expr_begin, const optional<it_code_type> &faulty_op = nullopt) const;
+  pair<string, it_code_type> print_expression(const it_code_type& expr_begin,
+                                              const optional<it_code_type>& faulty_op
+                                              = nullopt) const;
 
-  FBEGINBLOCK_ *
+  FBEGINBLOCK_*
   currentBlockTag() const
   {
-    return reinterpret_cast<FBEGINBLOCK_ *>(instructions_list[begin_block[block_num]]);
+    return reinterpret_cast<FBEGINBLOCK_*>(instructions_list[begin_block[block_num]]);
   }
 
   // Returns iterator to first instruction in the current block (after FBEGINBLOCK)
@@ -91,9 +93,17 @@ private:
   }
 
 public:
-  Evaluate(const filesystem::path &codfile, bool steady_state_arg, const BasicSymbolTable &symbol_table_arg);
+  Evaluate(const filesystem::path& codfile, bool steady_state_arg,
+           const BasicSymbolTable& symbol_table_arg);
 
-  void evaluateBlock(int it_, int y_kmin, double *__restrict__ y, int y_size, double *__restrict__ x, int nb_row_x, double *__restrict__ params, const double *__restrict__ steady_y, double *__restrict__ u, int Per_u_, double *__restrict__ T, int T_nrows, map<int, double> &TEF, map<pair<int, int>, double> &TEFD, map<tuple<int, int, int>, double> &TEFDD, double *__restrict__ r, double *__restrict__ g1, double *__restrict__ jacob, double *__restrict__ jacob_exo, double *__restrict__ jacob_exo_det, bool evaluate, bool no_derivatives);
+  void evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
+                     double* __restrict__ x, int nb_row_x, double* __restrict__ params,
+                     const double* __restrict__ steady_y, double* __restrict__ u, int Per_u_,
+                     double* __restrict__ T, int T_nrows, map<int, double>& TEF,
+                     map<pair<int, int>, double>& TEFD, map<tuple<int, int, int>, double>& TEFDD,
+                     double* __restrict__ r, double* __restrict__ g1, double* __restrict__ jacob,
+                     double* __restrict__ jacob_exo, double* __restrict__ jacob_exo_det,
+                     bool evaluate, bool no_derivatives);
 
   // Prints current block
   void printCurrentBlock();

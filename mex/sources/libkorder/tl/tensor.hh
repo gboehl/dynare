@@ -63,8 +63,8 @@
 #include "int_sequence.hh"
 #include "twod_matrix.hh"
 
-#include <memory>
 #include <iostream>
+#include <memory>
 
 /* Here is the Tensor class, which is nothing else than a simple subclass of
    TwoDMatrix. The unique semantically new member is ‘dim’ which is tensor
@@ -83,7 +83,11 @@
 class Tensor : public TwoDMatrix
 {
 public:
-  enum class indor { along_row, along_col };
+  enum class indor
+  {
+    along_row,
+    along_col
+  };
 
   /* The index represents n-tuple α₁…αₙ. Since its movement is dependent on the
      underlying tensor (with storage and symmetry), we maintain a reference to
@@ -108,34 +112,33 @@ public:
      representations of past-the-end index. */
   class index
   {
-    const Tensor &tensor;
+    const Tensor& tensor;
     int offset;
     IntSequence coor;
+
   public:
-    index(const Tensor &t, int n)
-      : tensor(t), offset(0), coor(n, 0)
+    index(const Tensor& t, int n) : tensor(t), offset(0), coor(n, 0)
     {
     }
-    index(const Tensor &t, IntSequence cr, int c)
-      : tensor(t), offset(c), coor(std::move(cr))
+    index(const Tensor& t, IntSequence cr, int c) : tensor(t), offset(c), coor(std::move(cr))
     {
     }
-    index(const Tensor &t, IntSequence cr)
-      : tensor(t), offset(tensor.getOffset(cr)), coor(std::move(cr))
+    index(const Tensor& t, IntSequence cr) :
+        tensor(t), offset(tensor.getOffset(cr)), coor(std::move(cr))
     {
     }
-    index(const index &) = default;
-    index(index &&) = default;
-    index &operator=(const index &) = delete;
-    index &operator=(index &&) = delete;
-    index &
+    index(const index&) = default;
+    index(index&&) = default;
+    index& operator=(const index&) = delete;
+    index& operator=(index&&) = delete;
+    index&
     operator++()
     {
       tensor.increment(coor);
       offset++;
       return *this;
     }
-    index &
+    index&
     operator--()
     {
       tensor.decrement(coor);
@@ -148,16 +151,16 @@ public:
       return offset;
     }
     bool
-    operator==(const index &n) const
+    operator==(const index& n) const
     {
       return offset == n.offset;
     }
     bool
-    operator!=(const index &n) const
+    operator!=(const index& n) const
     {
       return offset != n.offset;
     }
-    const IntSequence &
+    const IntSequence&
     getCoor() const
     {
       return coor;
@@ -174,57 +177,48 @@ protected:
   const index in_beg;
   const index in_end;
   int dim;
+
 public:
-  Tensor(indor io, IntSequence last, int r, int c, int d)
-    : TwoDMatrix(r, c),
-      in_beg(*this, d),
-      in_end(*this, std::move(last), (io == indor::along_row) ? r : c),
-      dim(d)
+  Tensor(indor io, IntSequence last, int r, int c, int d) :
+      TwoDMatrix(r, c), in_beg(*this, d),
+      in_end(*this, std::move(last), (io == indor::along_row) ? r : c), dim(d)
   {
   }
-  Tensor(indor io, IntSequence first, IntSequence last,
-         int r, int c, int d)
-    : TwoDMatrix(r, c),
-      in_beg(*this, std::move(first), 0),
-      in_end(*this, std::move(last), (io == indor::along_row) ? r : c),
-      dim(d)
+  Tensor(indor io, IntSequence first, IntSequence last, int r, int c, int d) :
+      TwoDMatrix(r, c), in_beg(*this, std::move(first), 0),
+      in_end(*this, std::move(last), (io == indor::along_row) ? r : c), dim(d)
   {
   }
-  Tensor(int first_row, int num, Tensor &t)
-    : TwoDMatrix(first_row, num, t),
-      in_beg(t.in_beg),
-      in_end(t.in_end),
-      dim(t.dim)
+  Tensor(int first_row, int num, Tensor& t) :
+      TwoDMatrix(first_row, num, t), in_beg(t.in_beg), in_end(t.in_end), dim(t.dim)
   {
   }
-  Tensor(const Tensor &t)
-    : TwoDMatrix(t),
-      in_beg(*this, t.in_beg.getCoor(), *(t.in_beg)),
-      in_end(*this, t.in_end.getCoor(), *(t.in_end)),
-      dim(t.dim)
+  Tensor(const Tensor& t) :
+      TwoDMatrix(t), in_beg(*this, t.in_beg.getCoor(), *(t.in_beg)),
+      in_end(*this, t.in_end.getCoor(), *(t.in_end)), dim(t.dim)
   {
   }
-  Tensor(Tensor &&) = default;
+  Tensor(Tensor&&) = default;
   ~Tensor() override = default;
 
-  Tensor &operator=(const Tensor &) = delete;
-  Tensor &operator=(Tensor &&) = delete;
+  Tensor& operator=(const Tensor&) = delete;
+  Tensor& operator=(Tensor&&) = delete;
 
-  virtual void increment(IntSequence &v) const = 0;
-  virtual void decrement(IntSequence &v) const = 0;
-  virtual int getOffset(const IntSequence &v) const = 0;
+  virtual void increment(IntSequence& v) const = 0;
+  virtual void decrement(IntSequence& v) const = 0;
+  virtual int getOffset(const IntSequence& v) const = 0;
   int
   dimen() const
   {
     return dim;
   }
 
-  const index &
+  const index&
   begin() const
   {
     return in_beg;
   }
-  const index &
+  const index&
   end() const
   {
     return in_end;
@@ -240,33 +234,31 @@ class FTensor;
 class UTensor : public Tensor
 {
 public:
-  UTensor(indor io, IntSequence last, int r, int c, int d)
-    : Tensor(io, std::move(last), r, c, d)
+  UTensor(indor io, IntSequence last, int r, int c, int d) : Tensor(io, std::move(last), r, c, d)
   {
   }
-  UTensor(const UTensor &) = default;
-  UTensor(UTensor &&) = default;
-  UTensor(int first_row, int num, UTensor &t)
-    : Tensor(first_row, num, t)
+  UTensor(const UTensor&) = default;
+  UTensor(UTensor&&) = default;
+  UTensor(int first_row, int num, UTensor& t) : Tensor(first_row, num, t)
   {
   }
   ~UTensor() override = default;
   virtual std::unique_ptr<FTensor> fold() const = 0;
 
-  UTensor &operator=(const UTensor &) = delete;
-  UTensor &operator=(UTensor &&) = delete;
+  UTensor& operator=(const UTensor&) = delete;
+  UTensor& operator=(UTensor&&) = delete;
 
   // Ensure that the methods of the parent class are not overloaded
-  using Tensor::increment;
   using Tensor::decrement;
   using Tensor::getOffset;
+  using Tensor::increment;
 
-  static void increment(IntSequence &v, int nv);
-  static void decrement(IntSequence &v, int nv);
-  static void increment(IntSequence &v, const IntSequence &nvmx);
-  static void decrement(IntSequence &v, const IntSequence &nvmx);
-  static int getOffset(const IntSequence &v, int nv);
-  static int getOffset(const IntSequence &v, const IntSequence &nvmx);
+  static void increment(IntSequence& v, int nv);
+  static void decrement(IntSequence& v, int nv);
+  static void increment(IntSequence& v, const IntSequence& nvmx);
+  static void decrement(IntSequence& v, const IntSequence& nvmx);
+  static int getOffset(const IntSequence& v, int nv);
+  static int getOffset(const IntSequence& v, const IntSequence& nvmx);
 };
 
 /* This is an abstraction for folded tensor. It only provides a method
@@ -281,35 +273,34 @@ public:
 class FTensor : public Tensor
 {
 public:
-  FTensor(indor io, IntSequence last, int r, int c, int d)
-    : Tensor(io, std::move(last), r, c, d)
+  FTensor(indor io, IntSequence last, int r, int c, int d) : Tensor(io, std::move(last), r, c, d)
   {
   }
-  FTensor(const FTensor &) = default;
-  FTensor(FTensor &&) = default;
-  FTensor(int first_row, int num, FTensor &t)
-    : Tensor(first_row, num, t)
+  FTensor(const FTensor&) = default;
+  FTensor(FTensor&&) = default;
+  FTensor(int first_row, int num, FTensor& t) : Tensor(first_row, num, t)
   {
   }
   ~FTensor() override = default;
   virtual std::unique_ptr<UTensor> unfold() const = 0;
 
-  FTensor &operator=(const FTensor &) = delete;
-  FTensor &operator=(FTensor &&) = delete;
+  FTensor& operator=(const FTensor&) = delete;
+  FTensor& operator=(FTensor&&) = delete;
 
   // Ensure that the methods of the parent class are not overloaded
   using Tensor::decrement;
   using Tensor::getOffset;
 
-  static void decrement(IntSequence &v, int nv);
+  static void decrement(IntSequence& v, int nv);
   static int
-  getOffset(const IntSequence &v, int nv)
+  getOffset(const IntSequence& v, int nv)
   {
     IntSequence vtmp(v);
     return getOffsetRecurse(vtmp, nv);
   }
+
 private:
-  static int getOffsetRecurse(IntSequence &v, int nv);
+  static int getOffsetRecurse(IntSequence& v, int nv);
 };
 
 #endif

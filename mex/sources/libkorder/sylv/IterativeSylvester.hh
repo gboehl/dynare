@@ -21,31 +21,30 @@
 #ifndef ITERATIVE_SYLVESTER_H
 #define ITERATIVE_SYLVESTER_H
 
-#include "SylvesterSolver.hh"
 #include "KronVector.hh"
 #include "QuasiTriangular.hh"
 #include "SimilarityDecomp.hh"
+#include "SylvesterSolver.hh"
 
 class IterativeSylvester : public SylvesterSolver
 {
 public:
-  IterativeSylvester(const QuasiTriangular &k, const QuasiTriangular &f)
-    : SylvesterSolver(k, f)
+  IterativeSylvester(const QuasiTriangular& k, const QuasiTriangular& f) : SylvesterSolver(k, f)
   {
   }
-  IterativeSylvester(const SchurDecompZero &kdecomp, const SchurDecomp &fdecomp)
-    : SylvesterSolver(kdecomp, fdecomp)
+  IterativeSylvester(const SchurDecompZero& kdecomp, const SchurDecomp& fdecomp) :
+      SylvesterSolver(kdecomp, fdecomp)
   {
   }
-  IterativeSylvester(const SchurDecompZero &kdecomp, const SimilarityDecomp &fdecomp)
-    : SylvesterSolver(kdecomp, fdecomp)
+  IterativeSylvester(const SchurDecompZero& kdecomp, const SimilarityDecomp& fdecomp) :
+      SylvesterSolver(kdecomp, fdecomp)
   {
   }
-  void solve(SylvParams &pars, KronVector &x) const override;
+  void solve(SylvParams& pars, KronVector& x) const override;
+
 private:
-  double performFirstStep(KronVector &x) const;
-  static double performStep(const QuasiTriangular &k, const QuasiTriangular &f,
-                            KronVector &x);
+  double performFirstStep(KronVector& x) const;
+  static double performStep(const QuasiTriangular& k, const QuasiTriangular& f, KronVector& x);
 };
 
 #endif /* ITERATIVE_SYLVESTER_H */

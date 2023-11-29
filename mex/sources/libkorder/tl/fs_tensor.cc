@@ -20,10 +20,10 @@
 
 #include "fs_tensor.hh"
 #include "gs_tensor.hh"
-#include "sparse_tensor.hh"
-#include "rfs_tensor.hh"
-#include "tl_exception.hh"
 #include "pascal_triangle.hh"
+#include "rfs_tensor.hh"
+#include "sparse_tensor.hh"
+#include "tl_exception.hh"
 
 /* This constructs a fully symmetric tensor as given by the contraction:
 
@@ -34,13 +34,12 @@
    coordinates obtaining a column of tensor [t]. The column is multiplied
    by an appropriate item of x and added to the column of [g] tensor. */
 
-FFSTensor::FFSTensor(const FFSTensor &t, const ConstVector &x)
-  : FTensor(indor::along_col, IntSequence(t.dimen()-1, t.nvar()),
-            t.nrows(), calcMaxOffset(t.nvar(), t.dimen()-1), t.dimen()-1),
+FFSTensor::FFSTensor(const FFSTensor& t, const ConstVector& x) :
+    FTensor(indor::along_col, IntSequence(t.dimen() - 1, t.nvar()), t.nrows(),
+            calcMaxOffset(t.nvar(), t.dimen() - 1), t.dimen() - 1),
     nv(t.nvar())
 {
-  TL_RAISE_IF(t.dimen() < 1,
-              "Wrong dimension for tensor contraction of FFSTensor");
+  TL_RAISE_IF(t.dimen() < 1, "Wrong dimension for tensor contraction of FFSTensor");
   TL_RAISE_IF(t.nvar() != x.length(),
               "Wrong number of variables for tensor contraction of FFSTensor");
 
@@ -73,13 +72,13 @@ FFSTensor::calcMaxOffset(int nvar, int d)
 
 /* The conversion from sparse tensor is clear. We go through all the
    tensor and write to the dense what is found. */
-FFSTensor::FFSTensor(const FSSparseTensor &t)
-  : FTensor(indor::along_col, IntSequence(t.dimen(), t.nvar()),
-            t.nrows(), calcMaxOffset(t.nvar(), t.dimen()), t.dimen()),
+FFSTensor::FFSTensor(const FSSparseTensor& t) :
+    FTensor(indor::along_col, IntSequence(t.dimen(), t.nvar()), t.nrows(),
+            calcMaxOffset(t.nvar(), t.dimen()), t.dimen()),
     nv(t.nvar())
 {
   zeros();
-  for (const auto &it : t.getMap())
+  for (const auto& it : t.getMap())
     {
       index ind(*this, it.first);
       get(it.second.first, *ind) = it.second.second;
@@ -91,9 +90,9 @@ FFSTensor::FFSTensor(const FSSparseTensor &t)
    (this), make an index of the unfolded vector from coordinates, and
    copy the column. */
 
-FFSTensor::FFSTensor(const UFSTensor &ut)
-  : FTensor(indor::along_col, IntSequence(ut.dimen(), ut.nvar()),
-            ut.nrows(), calcMaxOffset(ut.nvar(), ut.dimen()), ut.dimen()),
+FFSTensor::FFSTensor(const UFSTensor& ut) :
+    FTensor(indor::along_col, IntSequence(ut.dimen(), ut.nvar()), ut.nrows(),
+            calcMaxOffset(ut.nvar(), ut.dimen()), ut.dimen()),
     nv(ut.nvar())
 {
   for (index in = begin(); in != end(); ++in)
@@ -116,10 +115,9 @@ FFSTensor::unfold() const
    which corresponds to monotonizeing the integer sequence. */
 
 void
-FFSTensor::increment(IntSequence &v) const
+FFSTensor::increment(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in FFSTensor::increment");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in FFSTensor::increment");
 
   UTensor::increment(v, nv);
   v.monotone();
@@ -128,19 +126,17 @@ FFSTensor::increment(IntSequence &v) const
 /* Decrement calls static FTensor::decrement(). */
 
 void
-FFSTensor::decrement(IntSequence &v) const
+FFSTensor::decrement(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in FFSTensor::decrement");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in FFSTensor::decrement");
 
   FTensor::decrement(v, nv);
 }
 
 int
-FFSTensor::getOffset(const IntSequence &v) const
+FFSTensor::getOffset(const IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input vector size in FFSTensor::getOffset");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input vector size in FFSTensor::getOffset");
 
   return FTensor::getOffset(v, nv);
 }
@@ -156,18 +152,16 @@ FFSTensor::getOffset(const IntSequence &v) const
    through the columns in general symmetry, adding the shift and sorting. */
 
 void
-FFSTensor::addSubTensor(const FGSTensor &t)
+FFSTensor::addSubTensor(const FGSTensor& t)
 {
-  TL_RAISE_IF(dimen() != t.getDims().dimen(),
-              "Wrong dimensions for FFSTensor::addSubTensor");
-  TL_RAISE_IF(nvar() != t.getDims().getNVS().sum(),
-              "Wrong nvs for FFSTensor::addSubTensor");
+  TL_RAISE_IF(dimen() != t.getDims().dimen(), "Wrong dimensions for FFSTensor::addSubTensor");
+  TL_RAISE_IF(nvar() != t.getDims().getNVS().sum(), "Wrong nvs for FFSTensor::addSubTensor");
 
   // set shift for addSubTensor()
   /* Code shared with UFSTensor::addSubTensor() */
   IntSequence shift_pre(t.getSym().num(), 0);
   for (int i = 1; i < t.getSym().num(); i++)
-    shift_pre[i] = shift_pre[i-1]+t.getDims().getNVS()[i-1];
+    shift_pre[i] = shift_pre[i - 1] + t.getDims().getNVS()[i - 1];
   IntSequence shift(shift_pre.unfold(t.getSym()));
 
   for (Tensor::index ind = t.begin(); ind != t.end(); ++ind)
@@ -185,13 +179,12 @@ FFSTensor::addSubTensor(const FGSTensor &t)
    We do not add column by column but we do it by submatrices due to
    regularity of the unfolded tensor. */
 
-UFSTensor::UFSTensor(const UFSTensor &t, const ConstVector &x)
-  : UTensor(indor::along_col, IntSequence(t.dimen()-1, t.nvar()),
-            t.nrows(), calcMaxOffset(t.nvar(), t.dimen()-1), t.dimen()-1),
+UFSTensor::UFSTensor(const UFSTensor& t, const ConstVector& x) :
+    UTensor(indor::along_col, IntSequence(t.dimen() - 1, t.nvar()), t.nrows(),
+            calcMaxOffset(t.nvar(), t.dimen() - 1), t.dimen() - 1),
     nv(t.nvar())
 {
-  TL_RAISE_IF(t.dimen() < 1,
-              "Wrong dimension for tensor contraction of UFSTensor");
+  TL_RAISE_IF(t.dimen() < 1, "Wrong dimension for tensor contraction of UFSTensor");
   TL_RAISE_IF(t.nvar() != x.length(),
               "Wrong number of variables for tensor contraction of UFSTensor");
 
@@ -199,8 +192,8 @@ UFSTensor::UFSTensor(const UFSTensor &t, const ConstVector &x)
 
   for (int i = 0; i < ncols(); i++)
     {
-      ConstTwoDMatrix tpart(t, i *nvar(), nvar());
-      Vector outcol{getCol(i)};
+      ConstTwoDMatrix tpart(t, i * nvar(), nvar());
+      Vector outcol {getCol(i)};
       tpart.multaVec(outcol, x);
     }
 }
@@ -208,9 +201,9 @@ UFSTensor::UFSTensor(const UFSTensor &t, const ConstVector &x)
 /* Here we convert folded full symmetry tensor to unfolded. We copy all
    columns of folded tensor, and then call unfoldData(). */
 
-UFSTensor::UFSTensor(const FFSTensor &ft)
-  : UTensor(indor::along_col, IntSequence(ft.dimen(), ft.nvar()),
-            ft.nrows(), calcMaxOffset(ft.nvar(), ft.dimen()), ft.dimen()),
+UFSTensor::UFSTensor(const FFSTensor& ft) :
+    UTensor(indor::along_col, IntSequence(ft.dimen(), ft.nvar()), ft.nrows(),
+            calcMaxOffset(ft.nvar(), ft.dimen()), ft.dimen()),
     nv(ft.nvar())
 {
   for (index src = ft.begin(); src != ft.end(); ++src)
@@ -230,28 +223,25 @@ UFSTensor::fold() const
 // UFSTensor increment and decrement
 /* Here we just call UTensor respective static methods. */
 void
-UFSTensor::increment(IntSequence &v) const
+UFSTensor::increment(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in UFSTensor::increment");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in UFSTensor::increment");
 
   UTensor::increment(v, nv);
 }
 
 void
-UFSTensor::decrement(IntSequence &v) const
+UFSTensor::decrement(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in UFSTensor::decrement");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in UFSTensor::decrement");
 
   UTensor::decrement(v, nv);
 }
 
 int
-UFSTensor::getOffset(const IntSequence &v) const
+UFSTensor::getOffset(const IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input vector size in UFSTensor::getOffset");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input vector size in UFSTensor::getOffset");
 
   return UTensor::getOffset(v, nv);
 }
@@ -263,18 +253,16 @@ UFSTensor::getOffset(const IntSequence &v) const
    tensor, and add it. */
 
 void
-UFSTensor::addSubTensor(const UGSTensor &t)
+UFSTensor::addSubTensor(const UGSTensor& t)
 {
-  TL_RAISE_IF(dimen() != t.getDims().dimen(),
-              "Wrong dimensions for UFSTensor::addSubTensor");
-  TL_RAISE_IF(nvar() != t.getDims().getNVS().sum(),
-              "Wrong nvs for UFSTensor::addSubTensor");
+  TL_RAISE_IF(dimen() != t.getDims().dimen(), "Wrong dimensions for UFSTensor::addSubTensor");
+  TL_RAISE_IF(nvar() != t.getDims().getNVS().sum(), "Wrong nvs for UFSTensor::addSubTensor");
 
   // set shift for addSubTensor()
   /* Code shared with FFSTensor::addSubTensor() */
   IntSequence shift_pre(t.getSym().num(), 0);
   for (int i = 1; i < t.getSym().num(); i++)
-    shift_pre[i] = shift_pre[i-1]+t.getDims().getNVS()[i-1];
+    shift_pre[i] = shift_pre[i - 1] + t.getDims().getNVS()[i - 1];
   IntSequence shift(shift_pre.unfold(t.getSym()));
 
   for (Tensor::index tar = begin(); tar != end(); ++tar)

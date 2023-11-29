@@ -48,26 +48,30 @@
 class DecisionRule
 {
 public:
-  enum class emethod { horner, trad };
+  enum class emethod
+  {
+    horner,
+    trad
+  };
   virtual ~DecisionRule() = default;
 
   /* primitive evaluation (it takes a vector of state variables (predetermined,
      both and shocks) and returns the next period variables. Both input and
      output are in deviations from the rule's steady. */
-  virtual void eval(emethod em, Vector &out, const ConstVector &v) const = 0;
+  virtual void eval(emethod em, Vector& out, const ConstVector& v) const = 0;
 
   /* makes only one step of simulation (in terms of absolute values, not
      deviations) */
-  virtual void evaluate(emethod em, Vector &out, const ConstVector &ys,
-                        const ConstVector &u) const = 0;
+  virtual void evaluate(emethod em, Vector& out, const ConstVector& ys, const ConstVector& u) const
+      = 0;
 
   /* returns a new copy of the decision rule, which is centralized about
      provided fix-point */
-  virtual std::unique_ptr<DecisionRule> centralizedClone(const Vector &fixpoint) const = 0;
+  virtual std::unique_ptr<DecisionRule> centralizedClone(const Vector& fixpoint) const = 0;
 
-  virtual const Vector &getSteady() const = 0;
+  virtual const Vector& getSteady() const = 0;
   virtual int nexog() const = 0;
-  virtual const PartitionY &getYPart() const = 0;
+  virtual const PartitionY& getYPart() const = 0;
 };
 
 /* The main purpose of this class is to implement DecisionRule interface, which
@@ -111,27 +115,27 @@ protected:
   const Vector ysteady;
   const PartitionY ypart;
   const int nu;
+
 public:
-  DecisionRuleImpl(const _Tpol &pol, const PartitionY &yp, int nuu,
-                   const ConstVector &ys)
-    : ctraits<t>::Tpol(pol), ysteady(ys), ypart(yp), nu(nuu)
+  DecisionRuleImpl(const _Tpol& pol, const PartitionY& yp, int nuu, const ConstVector& ys) :
+      ctraits<t>::Tpol(pol), ysteady(ys), ypart(yp), nu(nuu)
   {
   }
-  DecisionRuleImpl(_Tpol &pol, const PartitionY &yp, int nuu,
-                   const ConstVector &ys)
-    : ctraits<t>::Tpol(0, yp.ny(), pol), ysteady(ys), ypart(yp),
-    nu(nuu)
+  DecisionRuleImpl(_Tpol& pol, const PartitionY& yp, int nuu, const ConstVector& ys) :
+      ctraits<t>::Tpol(0, yp.ny(), pol), ysteady(ys), ypart(yp), nu(nuu)
   {
   }
-  DecisionRuleImpl(const _Tg &g, const PartitionY &yp, int nuu,
-                   const ConstVector &ys, double sigma)
-    : ctraits<t>::Tpol(yp.ny(), yp.nys()+nuu), ysteady(ys), ypart(yp), nu(nuu)
+  DecisionRuleImpl(const _Tg& g, const PartitionY& yp, int nuu, const ConstVector& ys,
+                   double sigma) :
+      ctraits<t>::Tpol(yp.ny(), yp.nys() + nuu),
+      ysteady(ys), ypart(yp), nu(nuu)
   {
     fillTensors(g, sigma);
   }
-  DecisionRuleImpl(const _Tg &g, const PartitionY &yp, int nuu,
-                   const ConstVector &ys, double sigma, bool pruning)
-    : ctraits<t>::Tpol(yp.ny(), yp.nys()+nuu), ysteady(ys), ypart(yp), nu(nuu)
+  DecisionRuleImpl(const _Tg& g, const PartitionY& yp, int nuu, const ConstVector& ys, double sigma,
+                   bool pruning) :
+      ctraits<t>::Tpol(yp.ny(), yp.nys() + nuu),
+      ysteady(ys), ypart(yp), nu(nuu)
   {
     if (pruning)
       fillTensorsPruning(g);
@@ -139,44 +143,45 @@ public:
       fillTensors(g, sigma);
   }
 
-  DecisionRuleImpl(const _TW &W, int nys, int nuu,
-                   const ConstVector &ys)
-    : ctraits<t>::Tpol(1, nys+nuu), ysteady(ys), nu(nuu)
+  DecisionRuleImpl(const _TW& W, int nys, int nuu, const ConstVector& ys) :
+      ctraits<t>::Tpol(1, nys + nuu), ysteady(ys), nu(nuu)
   {
     fillTensors(W, nys);
   }
-  DecisionRuleImpl(const DecisionRuleImpl<t> &dr, const ConstVector &fixpoint)
-    : ctraits<t>::Tpol(dr.ypart.ny(), dr.ypart.nys()+dr.nu),
-    ysteady(fixpoint), ypart(dr.ypart), nu(dr.nu)
+  DecisionRuleImpl(const DecisionRuleImpl<t>& dr, const ConstVector& fixpoint) :
+      ctraits<t>::Tpol(dr.ypart.ny(), dr.ypart.nys() + dr.nu), ysteady(fixpoint), ypart(dr.ypart),
+      nu(dr.nu)
   {
     centralize(dr);
   }
-  const Vector &
+  const Vector&
   getSteady() const override
   {
     return ysteady;
   }
-  void evaluate(emethod em, Vector &out, const ConstVector &ys,
-                const ConstVector &u) const override;
-  std::unique_ptr<DecisionRule> centralizedClone(const Vector &fixpoint) const override;
+  void evaluate(emethod em, Vector& out, const ConstVector& ys,
+                const ConstVector& u) const override;
+  std::unique_ptr<DecisionRule> centralizedClone(const Vector& fixpoint) const override;
 
   int
   nexog() const override
   {
     return nu;
   }
-  const PartitionY &
+  const PartitionY&
   getYPart() const override
   {
     return ypart;
   }
+
 protected:
-  void fillTensors(const _Tg &g, double sigma);
-  void fillTensorsPruning(const _Tg &g);
-  void fillTensors(const _TW &W, int nys);
-  void centralize(const DecisionRuleImpl &dr);
+  void fillTensors(const _Tg& g, double sigma);
+  void fillTensorsPruning(const _Tg& g);
+  void fillTensors(const _TW& W, int nys);
+  void centralize(const DecisionRuleImpl& dr);
+
 public:
-  void eval(emethod em, Vector &out, const ConstVector &v) const override;
+  void eval(emethod em, Vector& out, const ConstVector& v) const override;
 };
 
 /* Here we have to fill the tensor polynomial. This involves two separated
@@ -190,14 +195,14 @@ public:
    The q-order approximation to the solution can be written as:
 
                   ⎡                                                               ⎤
-             q  1 ⎢       ⎛  l  ⎞⎡        ⎤            ᵢ ⎡          ⎤αₘ ⱼ ⎡  ⎤βₘ  ⎥ 
-    yₜ − ȳ = ∑  ──⎢   ∑   ⎢     ⎥⎢g_yⁱuʲσᵏ⎥            ∏ ⎢y*ₜ₋₁ − ȳ*⎥   ∏ ⎢uₜ⎥  σᵏ⎥ 
+             q  1 ⎢       ⎛  l  ⎞⎡        ⎤            ᵢ ⎡          ⎤αₘ ⱼ ⎡  ⎤βₘ  ⎥
+    yₜ − ȳ = ∑  ──⎢   ∑   ⎢     ⎥⎢g_yⁱuʲσᵏ⎥            ∏ ⎢y*ₜ₋₁ − ȳ*⎥   ∏ ⎢uₜ⎥  σᵏ⎥
             ˡ⁼¹ l!⎢ⁱ⁺ʲ⁺ᵏ⁼ˡ⎝i,j,k⎠⎣        ⎦α₁…αⱼβ₁…βⱼ ᵐ⁼¹⎣          ⎦  ᵐ⁼¹⎣  ⎦    ⎥
                   ⎣                                                               ⎦
 
                ⎡           ⎡                                   ⎤                           ⎤
-             q ⎢      ⎛i+j⎞⎢ₗ₋ᵢ₋ⱼ 1  ⎛l⎞ ⎡        ⎤            ⎥  ᵢ ⎡          ⎤αₘ ⱼ ⎡  ⎤βₘ⎥ 
-           = ∑ ⎢  ∑   ⎢   ⎥⎢  ∑   ── ⎢ ⎥ ⎢g_yⁱuʲσᵏ⎥          σᵏ⎥  ∏ ⎢y*ₜ₋₁ − ȳ*⎥   ∏ ⎢uₜ⎥  ⎥ 
+             q ⎢      ⎛i+j⎞⎢ₗ₋ᵢ₋ⱼ 1  ⎛l⎞ ⎡        ⎤            ⎥  ᵢ ⎡          ⎤αₘ ⱼ ⎡  ⎤βₘ⎥
+           = ∑ ⎢  ∑   ⎢   ⎥⎢  ∑   ── ⎢ ⎥ ⎢g_yⁱuʲσᵏ⎥          σᵏ⎥  ∏ ⎢y*ₜ₋₁ − ȳ*⎥   ∏ ⎢uₜ⎥  ⎥
             ˡ⁼¹⎢i+j≤l ⎝ i ⎠⎢ ᵏ⁼⁰  l! ⎝k⎠ ⎣        ⎦α₁…αⱼβ₁…βⱼ  ⎥ ᵐ⁼¹⎣          ⎦  ᵐ⁼¹⎣  ⎦  ⎥
                ⎣           ⎣                                   ⎦                           ⎦
 
@@ -217,13 +222,13 @@ public:
 
 template<Storage t>
 void
-DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
+DecisionRuleImpl<t>::fillTensors(const _Tg& g, double sigma)
 {
-  IntSequence tns{ypart.nys(), nu};
+  IntSequence tns {ypart.nys(), nu};
   int dfact = 1;
   for (int d = 0; d <= g.getMaxDim(); d++, dfact *= d)
     {
-      auto g_yud = std::make_unique<_Ttensym>(ypart.ny(), ypart.nys()+nu, d);
+      auto g_yud = std::make_unique<_Ttensym>(ypart.ny(), ypart.nys() + nu, d);
       g_yud->zeros();
 
       // fill tensor of ‘g_yud’ of dimension ‘d’
@@ -239,16 +244,14 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
 
       for (int i = 0; i <= d; i++)
         {
-          int j = d-i;
+          int j = d - i;
           int kfact = 1;
-          _Ttensor tmp(ypart.ny(),
-                       TensorDimens(Symmetry{i, j}, tns));
+          _Ttensor tmp(ypart.ny(), TensorDimens(Symmetry {i, j}, tns));
           tmp.zeros();
-          for (int k = 0; k+d <= g.getMaxDim(); k++, kfact *= k)
-            if (Symmetry sym{i, j, 0, k};
-                g.check(sym))
+          for (int k = 0; k + d <= g.getMaxDim(); k++, kfact *= k)
+            if (Symmetry sym {i, j, 0, k}; g.check(sym))
               {
-                double mult = pow(sigma, k)/dfact/kfact;
+                double mult = pow(sigma, k) / dfact / kfact;
                 tmp.add(mult, g.get(sym));
               }
           g_yud->addSubTensor(tmp);
@@ -260,31 +263,30 @@ DecisionRuleImpl<t>::fillTensors(const _Tg &g, double sigma)
 
 template<Storage t>
 void
-DecisionRuleImpl<t>::fillTensorsPruning(const _Tg &g)
+DecisionRuleImpl<t>::fillTensorsPruning(const _Tg& g)
 {
-  IntSequence tns{ypart.nys(), nu, 1};
+  IntSequence tns {ypart.nys(), nu, 1};
   int dfact = 1;
   for (int d = 0; d <= g.getMaxDim(); d++, dfact *= d)
     {
-      auto g_yusd = std::make_unique<_Ttensym>(ypart.ny(), ypart.nys()+nu+1, d);
+      auto g_yusd = std::make_unique<_Ttensym>(ypart.ny(), ypart.nys() + nu + 1, d);
       g_yusd->zeros();
       // fill tensor of ‘g_yusd’ of dimension ‘d’
-      /* 
+      /*
         Here we have to fill the tensor [g_(yuσ)ᵈ]. So we go through all pairs
         (i,j,k) such that i+j+k=d. We weight it with 1/(i+j+k)! The factorial
         is denoted dfact.
       */
       for (int i = 0; i <= d; i++)
         {
-          for (int j = 0; j <= d-i; j++)
+          for (int j = 0; j <= d - i; j++)
             {
-              int k = d-i-j;
-              _Ttensor tmp(ypart.ny(),
-                           TensorDimens(Symmetry{i, j, k}, tns));
+              int k = d - i - j;
+              _Ttensor tmp(ypart.ny(), TensorDimens(Symmetry {i, j, k}, tns));
               tmp.zeros();
-              if (Symmetry sym{i, j, 0, k}; g.check(sym))
+              if (Symmetry sym {i, j, 0, k}; g.check(sym))
                 {
-                  double mult = 1.0/dfact;
+                  double mult = 1.0 / dfact;
                   // mexPrintf("Symmetry found: %d %d %d %.2f %d\n", i, j, k, mult, kfact);
                   tmp.add(mult, g.get(sym));
                 }
@@ -297,13 +299,13 @@ DecisionRuleImpl<t>::fillTensorsPruning(const _Tg &g)
 
 template<Storage t>
 void
-DecisionRuleImpl<t>::fillTensors(const _TW &W, int nys)
+DecisionRuleImpl<t>::fillTensors(const _TW& W, int nys)
 {
-  IntSequence tns{nys, nu};
+  IntSequence tns {nys, nu};
   int dfact = 1;
   for (int d = 0; d <= W.getMaxDim(); d++, dfact *= d)
     {
-      auto W_yud = std::make_unique<_Ttensym>(1, nys+nu, d);
+      auto W_yud = std::make_unique<_Ttensym>(1, nys + nu, d);
       W_yud->zeros();
 
       // fill tensor of ‘g_yud’ of dimension ‘d’
@@ -319,15 +321,14 @@ DecisionRuleImpl<t>::fillTensors(const _TW &W, int nys)
 
       for (int i = 0; i <= d; i++)
         {
-          int j = d-i;
+          int j = d - i;
           int kfact = 1;
-          _Ttensor tmp(1, TensorDimens(Symmetry{i, j}, tns));
+          _Ttensor tmp(1, TensorDimens(Symmetry {i, j}, tns));
           tmp.zeros();
-          for (int k = 0; k+d <= W.getMaxDim(); k++, kfact *= k)
-            if (Symmetry sym{i, j, 0, k};
-                W.check(sym))
+          for (int k = 0; k + d <= W.getMaxDim(); k++, kfact *= k)
+            if (Symmetry sym {i, j, 0, k}; W.check(sym))
               {
-                double mult = 1.0/dfact/kfact;
+                double mult = 1.0 / dfact / kfact;
                 tmp.add(mult, W.get(sym));
               }
           W_yud->addSubTensor(tmp);
@@ -351,7 +352,7 @@ DecisionRuleImpl<t>::fillTensors(const _TW &W, int nys)
 
 template<Storage t>
 void
-DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
+DecisionRuleImpl<t>::centralize(const DecisionRuleImpl& dr)
 {
   Vector dstate(ypart.nys() + nu);
   dstate.zeros();
@@ -365,9 +366,9 @@ DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
   int dfac = 1;
   for (int d = 1; d <= dr.getMaxDim(); d++, dfac *= d)
     {
-      pol.derivative(d-1);
+      pol.derivative(d - 1);
       auto der = pol.evalPartially(d, dstate);
-      der->mult(1.0/dfac);
+      der->mult(1.0 / dfac);
       this->insert(std::move(der));
     }
 }
@@ -379,15 +380,15 @@ DecisionRuleImpl<t>::centralize(const DecisionRuleImpl &dr)
 
 template<Storage t>
 void
-DecisionRuleImpl<t>::evaluate(emethod em, Vector &out, const ConstVector &ys,
-                              const ConstVector &u) const
+DecisionRuleImpl<t>::evaluate(emethod em, Vector& out, const ConstVector& ys,
+                              const ConstVector& u) const
 {
   KORD_RAISE_IF(ys.length() != ypart.nys() || u.length() != nu,
                 "Wrong dimensions of input vectors in DecisionRuleImpl::evaluate");
   KORD_RAISE_IF(out.length() != ypart.ny(),
                 "Wrong dimension of output vector in DecisionRuleImpl::evaluate");
   ConstVector ysteady_pred(ysteady, ypart.nstat, ypart.nys());
-  Vector ys_u(ypart.nys()+nu);
+  Vector ys_u(ypart.nys() + nu);
   Vector ys_u1(ys_u, 0, ypart.nys());
   ys_u1 = ys;
   ys_u1.add(-1.0, ysteady_pred);
@@ -402,7 +403,7 @@ DecisionRuleImpl<t>::evaluate(emethod em, Vector &out, const ConstVector &ys,
 
 template<Storage t>
 std::unique_ptr<DecisionRule>
-DecisionRuleImpl<t>::centralizedClone(const Vector &fixpoint) const
+DecisionRuleImpl<t>::centralizedClone(const Vector& fixpoint) const
 {
   return std::make_unique<DecisionRuleImpl<t>>(*this, fixpoint);
 }
@@ -412,7 +413,7 @@ DecisionRuleImpl<t>::centralizedClone(const Vector &fixpoint) const
 
 template<Storage t>
 void
-DecisionRuleImpl<t>::eval(emethod em, Vector &out, const ConstVector &v) const
+DecisionRuleImpl<t>::eval(emethod em, Vector& out, const ConstVector& v) const
 {
   if (em == emethod::horner)
     _Tpol::evalHorner(out, v);
@@ -428,37 +429,37 @@ class UnfoldDecisionRule;
 class FoldDecisionRule : public DecisionRuleImpl<Storage::fold>
 {
   friend class UnfoldDecisionRule;
+
 public:
-  FoldDecisionRule(const ctraits<Storage::fold>::Tpol &pol, const PartitionY &yp, int nuu,
-                   const ConstVector &ys)
-    : DecisionRuleImpl<Storage::fold>(pol, yp, nuu, ys)
+  FoldDecisionRule(const ctraits<Storage::fold>::Tpol& pol, const PartitionY& yp, int nuu,
+                   const ConstVector& ys) :
+      DecisionRuleImpl<Storage::fold>(pol, yp, nuu, ys)
   {
   }
-  FoldDecisionRule(ctraits<Storage::fold>::Tpol &pol, const PartitionY &yp, int nuu,
-                   const ConstVector &ys)
-    : DecisionRuleImpl<Storage::fold>(pol, yp, nuu, ys)
+  FoldDecisionRule(ctraits<Storage::fold>::Tpol& pol, const PartitionY& yp, int nuu,
+                   const ConstVector& ys) :
+      DecisionRuleImpl<Storage::fold>(pol, yp, nuu, ys)
   {
   }
-  FoldDecisionRule(const ctraits<Storage::fold>::Tg &g, const PartitionY &yp, int nuu,
-                   const ConstVector &ys, double sigma)
-    : DecisionRuleImpl<Storage::fold>(g, yp, nuu, ys, sigma)
+  FoldDecisionRule(const ctraits<Storage::fold>::Tg& g, const PartitionY& yp, int nuu,
+                   const ConstVector& ys, double sigma) :
+      DecisionRuleImpl<Storage::fold>(g, yp, nuu, ys, sigma)
   {
   }
-  FoldDecisionRule(const ctraits<Storage::fold>::Tg &g, const PartitionY &yp, int nuu,
-                   const ConstVector &ys, double sigma, bool pruning)
-    : DecisionRuleImpl<Storage::fold>(g, yp, nuu, ys, sigma, pruning)
+  FoldDecisionRule(const ctraits<Storage::fold>::Tg& g, const PartitionY& yp, int nuu,
+                   const ConstVector& ys, double sigma, bool pruning) :
+      DecisionRuleImpl<Storage::fold>(g, yp, nuu, ys, sigma, pruning)
   {
   }
-  FoldDecisionRule(const ctraits<Storage::fold>::TW &W, int nys, int nuu,
-                   const ConstVector &ys)
-    : DecisionRuleImpl<Storage::fold>(W, nys, nuu, ys)
+  FoldDecisionRule(const ctraits<Storage::fold>::TW& W, int nys, int nuu, const ConstVector& ys) :
+      DecisionRuleImpl<Storage::fold>(W, nys, nuu, ys)
   {
   }
-  FoldDecisionRule(const DecisionRuleImpl<Storage::fold> &dr, const ConstVector &fixpoint)
-    : DecisionRuleImpl<Storage::fold>(dr, fixpoint)
+  FoldDecisionRule(const DecisionRuleImpl<Storage::fold>& dr, const ConstVector& fixpoint) :
+      DecisionRuleImpl<Storage::fold>(dr, fixpoint)
   {
   }
-  FoldDecisionRule(const UnfoldDecisionRule &udr);
+  FoldDecisionRule(const UnfoldDecisionRule& udr);
 };
 
 /* This is exactly the same as DecisionRuleImpl<Storage::unfold>, but with a
@@ -468,27 +469,28 @@ public:
 class UnfoldDecisionRule : public DecisionRuleImpl<Storage::unfold>
 {
   friend class FoldDecisionRule;
+
 public:
-  UnfoldDecisionRule(const ctraits<Storage::unfold>::Tpol &pol, const PartitionY &yp, int nuu,
-                     const ConstVector &ys)
-    : DecisionRuleImpl<Storage::unfold>(pol, yp, nuu, ys)
+  UnfoldDecisionRule(const ctraits<Storage::unfold>::Tpol& pol, const PartitionY& yp, int nuu,
+                     const ConstVector& ys) :
+      DecisionRuleImpl<Storage::unfold>(pol, yp, nuu, ys)
   {
   }
-  UnfoldDecisionRule(ctraits<Storage::unfold>::Tpol &pol, const PartitionY &yp, int nuu,
-                     const ConstVector &ys)
-    : DecisionRuleImpl<Storage::unfold>(pol, yp, nuu, ys)
+  UnfoldDecisionRule(ctraits<Storage::unfold>::Tpol& pol, const PartitionY& yp, int nuu,
+                     const ConstVector& ys) :
+      DecisionRuleImpl<Storage::unfold>(pol, yp, nuu, ys)
   {
   }
-  UnfoldDecisionRule(const ctraits<Storage::unfold>::Tg &g, const PartitionY &yp, int nuu,
-                     const ConstVector &ys, double sigma)
-    : DecisionRuleImpl<Storage::unfold>(g, yp, nuu, ys, sigma)
+  UnfoldDecisionRule(const ctraits<Storage::unfold>::Tg& g, const PartitionY& yp, int nuu,
+                     const ConstVector& ys, double sigma) :
+      DecisionRuleImpl<Storage::unfold>(g, yp, nuu, ys, sigma)
   {
   }
-  UnfoldDecisionRule(const DecisionRuleImpl<Storage::unfold> &dr, const ConstVector &fixpoint)
-    : DecisionRuleImpl<Storage::unfold>(dr, fixpoint)
+  UnfoldDecisionRule(const DecisionRuleImpl<Storage::unfold>& dr, const ConstVector& fixpoint) :
+      DecisionRuleImpl<Storage::unfold>(dr, fixpoint)
   {
   }
-  UnfoldDecisionRule(const FoldDecisionRule &udr);
+  UnfoldDecisionRule(const FoldDecisionRule& udr);
 };
 
 /* This class serves for calculation of the fix point of the decision rule
@@ -518,12 +520,12 @@ class DRFixPoint : public ctraits<t>::Tpol
   const PartitionY ypart;
   std::unique_ptr<_Tpol> bigf;
   std::unique_ptr<_Tpol> bigfder;
+
 public:
   using emethod = typename DecisionRule::emethod;
-  DRFixPoint(const _Tg &g, const PartitionY &yp,
-             const Vector &ys, double sigma);
+  DRFixPoint(const _Tg& g, const PartitionY& yp, const Vector& ys, double sigma);
 
-  bool calcFixPoint(Vector &out);
+  bool calcFixPoint(Vector& out);
 
   int
   getNumIter() const
@@ -540,9 +542,11 @@ public:
   {
     return newton_iter_total;
   }
+
 protected:
-  void fillTensors(const _Tg &g, double sigma);
-  bool solveNewton(Vector &y);
+  void fillTensors(const _Tg& g, double sigma);
+  bool solveNewton(Vector& y);
+
 private:
   int iter;
   int newton_iter_last;
@@ -555,15 +559,13 @@ private:
    calculated. */
 
 template<Storage t>
-DRFixPoint<t>::DRFixPoint(const _Tg &g, const PartitionY &yp,
-                          const Vector &ys, double sigma)
-  : ctraits<t>::Tpol(yp.ny(), yp.nys()),
-  ysteady(ys), ypart(yp)
+DRFixPoint<t>::DRFixPoint(const _Tg& g, const PartitionY& yp, const Vector& ys, double sigma) :
+    ctraits<t>::Tpol(yp.ny(), yp.nys()), ysteady(ys), ypart(yp)
 {
   fillTensors(g, sigma);
   _Tpol yspol(ypart.nstat, ypart.nys(), *this);
-  bigf = std::make_unique<_Tpol>(const_cast<const _Tpol &>(yspol));
-  _Ttensym &frst = bigf->get(Symmetry{1});
+  bigf = std::make_unique<_Tpol>(const_cast<const _Tpol&>(yspol));
+  _Ttensym& frst = bigf->get(Symmetry {1});
   for (int i = 0; i < ypart.nys(); i++)
     frst.get(i, i) = frst.get(i, i) - 1;
   bigfder = std::make_unique<_Tpol>(*bigf, 0);
@@ -576,7 +578,7 @@ DRFixPoint<t>::DRFixPoint(const _Tg &g, const PartitionY &yp,
 
 template<Storage t>
 void
-DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
+DRFixPoint<t>::fillTensors(const _Tg& g, double sigma)
 {
   int dfact = 1;
   for (int d = 0; d <= g.getMaxDim(); d++, dfact *= d)
@@ -584,11 +586,11 @@ DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
       auto g_yd = std::make_unique<_Ttensym>(ypart.ny(), ypart.nys(), d);
       g_yd->zeros();
       int kfact = 1;
-      for (int k = 0; d+k <= g.getMaxDim(); k++, kfact *= k)
-        if (g.check(Symmetry{d, 0, 0, k}))
+      for (int k = 0; d + k <= g.getMaxDim(); k++, kfact *= k)
+        if (g.check(Symmetry {d, 0, 0, k}))
           {
-            const _Ttensor &ten = g.get(Symmetry{d, 0, 0, k});
-            double mult = pow(sigma, k)/dfact/kfact;
+            const _Ttensor& ten = g.get(Symmetry {d, 0, 0, k});
+            double mult = pow(sigma, k) / dfact / kfact;
             g_yd->add(mult, ten);
           }
       this->insert(std::move(g_yd));
@@ -609,10 +611,10 @@ DRFixPoint<t>::fillTensors(const _Tg &g, double sigma)
 
 template<Storage t>
 bool
-DRFixPoint<t>::solveNewton(Vector &y)
+DRFixPoint<t>::solveNewton(Vector& y)
 {
   const double urelax_threshold = 1.e-5;
-  Vector sol(const_cast<const Vector &>(y));
+  Vector sol(const_cast<const Vector&>(y));
   Vector delta(y.length());
   newton_iter_last = 0;
   bool delta_finite = true;
@@ -642,7 +644,7 @@ DRFixPoint<t>::solveNewton(Vector &y)
           urelax = 1.0;
           while (!urelax_found && urelax > urelax_threshold)
             {
-              Vector soltmp(const_cast<const Vector &>(sol));
+              Vector soltmp(const_cast<const Vector&>(sol));
               soltmp.add(-urelax, delta);
               Vector f(sol.length());
               bigf->evalHorner(f, soltmp);
@@ -650,7 +652,7 @@ DRFixPoint<t>::solveNewton(Vector &y)
               if (fnorm <= flastnorm)
                 urelax_found = true;
               else
-                urelax *= std::min(0.5, flastnorm/fnorm);
+                urelax *= std::min(0.5, flastnorm / fnorm);
             }
 
           sol.add(-urelax, delta);
@@ -660,13 +662,12 @@ DRFixPoint<t>::solveNewton(Vector &y)
       converged = delta_finite && fnorm < tol;
       flastnorm = fnorm;
     }
-  while (!converged && newton_iter_last < max_newton_iter
-         && urelax > urelax_threshold);
+  while (!converged && newton_iter_last < max_newton_iter && urelax > urelax_threshold);
 
   newton_iter_total += newton_iter_last;
   if (!converged)
     newton_iter_last = 0;
-  y = const_cast<const Vector &>(sol);
+  y = const_cast<const Vector&>(sol);
   return converged;
 }
 
@@ -685,10 +686,9 @@ DRFixPoint<t>::solveNewton(Vector &y)
 
 template<Storage t>
 bool
-DRFixPoint<t>::calcFixPoint(Vector &out)
+DRFixPoint<t>::calcFixPoint(Vector& out)
 {
-  KORD_RAISE_IF(out.length() != ypart.ny(),
-                "Wrong length of out in DRFixPoint::calcFixPoint");
+  KORD_RAISE_IF(out.length() != ypart.ny(), "Wrong length of out in DRFixPoint::calcFixPoint");
 
   Vector delta(ypart.nys());
   Vector ystar(ypart.nys());
@@ -700,13 +700,12 @@ DRFixPoint<t>::calcFixPoint(Vector &out)
   bool converged = false;
   do
     {
-      if ((iter/newton_pause)*newton_pause == iter)
+      if ((iter / newton_pause) * newton_pause == iter)
         converged = solveNewton(ystar);
       if (!converged)
         {
           bigf->evalHorner(delta, ystar);
-          KORD_RAISE_IF_X(!delta.isFinite(),
-                          "NaN or Inf asserted in DRFixPoint::calcFixPoint",
+          KORD_RAISE_IF_X(!delta.isFinite(), "NaN or Inf asserted in DRFixPoint::calcFixPoint",
                           KORD_FP_NOT_FINITE);
           ystar.add(1.0, delta);
           converged = delta.getNorm() < tol;

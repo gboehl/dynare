@@ -28,25 +28,26 @@ class SymSchurDecomp
 protected:
   Vector lambda;
   SqSylvMatrix q;
+
 public:
   /* Computes the factorization A = Q·Λ·Qᵀ, where A is assummed to be
      symmetric and Λ real diagonal, hence a vector. */
-  SymSchurDecomp(const ConstGeneralMatrix &a);
-  SymSchurDecomp(const SymSchurDecomp &ssd) = default;
+  SymSchurDecomp(const ConstGeneralMatrix& a);
+  SymSchurDecomp(const SymSchurDecomp& ssd) = default;
   virtual ~SymSchurDecomp() = default;
-  const Vector &
+  const Vector&
   getLambda() const
   {
     return lambda;
   }
-  const SqSylvMatrix &
+  const SqSylvMatrix&
   getQ() const
   {
     return q;
   }
   /* Return factor F·Fᵀ = A, raises and exception if A is not
      positive semidefinite, F must be square. */
-  void getFactor(GeneralMatrix &f) const;
+  void getFactor(GeneralMatrix& f) const;
   // Returns true if A is positive semidefinite.
   bool isPositiveSemidefinite() const;
   /* Correct definitness. This sets all eigenvalues between minus

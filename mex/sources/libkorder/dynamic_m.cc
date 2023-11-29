@@ -25,26 +25,25 @@
 
 #include "dynamic_m.hh"
 
-DynamicModelMFile::DynamicModelMFile(const std::string &modName, int ntt_arg) :
-  DynamicModelAC(ntt_arg),
-  DynamicMFilename{modName + ".dynamic"}
+DynamicModelMFile::DynamicModelMFile(const std::string& modName, int ntt_arg) :
+    DynamicModelAC(ntt_arg), DynamicMFilename {modName + ".dynamic"}
 {
 }
 
 /* NB: This is a duplicate of DynamicModelMatlabCaller::cmplxToReal() in
    perfect_foresight_problem MEX */
-mxArray *
-DynamicModelMFile::cmplxToReal(mxArray *cmplx_mx)
+mxArray*
+DynamicModelMFile::cmplxToReal(mxArray* cmplx_mx)
 {
-  mxArray *real_mx = mxCreateDoubleMatrix(mxGetM(cmplx_mx), mxGetN(cmplx_mx), mxREAL);
+  mxArray* real_mx = mxCreateDoubleMatrix(mxGetM(cmplx_mx), mxGetN(cmplx_mx), mxREAL);
 
 #if MX_HAS_INTERLEAVED_COMPLEX
-  mxComplexDouble *cmplx = mxGetComplexDoubles(cmplx_mx);
+  mxComplexDouble* cmplx = mxGetComplexDoubles(cmplx_mx);
 #else
-  double *cmplx_real = mxGetPr(cmplx_mx);
-  double *cmplx_imag = mxGetPi(cmplx_mx);
+  double* cmplx_real = mxGetPr(cmplx_mx);
+  double* cmplx_imag = mxGetPi(cmplx_mx);
 #endif
-  double *real = mxGetPr(real_mx);
+  double* real = mxGetPr(real_mx);
 
   for (size_t i = 0; i < mxGetNumberOfElements(cmplx_mx); i++)
 #if MX_HAS_INTERLEAVED_COMPLEX
@@ -62,11 +61,11 @@ DynamicModelMFile::cmplxToReal(mxArray *cmplx_mx)
 }
 
 void
-DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm)
+DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray* sparseMat, TwoDMatrix& tdm)
 {
   int totalCols = mxGetN(sparseMat);
-  mwIndex *rowIdxVector = mxGetIr(sparseMat);
-  mwIndex *colIdxVector = mxGetJc(sparseMat);
+  mwIndex* rowIdxVector = mxGetIr(sparseMat);
+  mwIndex* colIdxVector = mxGetJc(sparseMat);
 
   assert(tdm.ncols() == 3);
   /* Under MATLAB, the following check always holds at equality; under Octave,
@@ -78,7 +77,7 @@ DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, 
   int output_row = 0;
 
   for (int i = 0; i < totalCols; i++)
-    for (int j = 0; j < static_cast<int>((colIdxVector[i+1]-colIdxVector[i])); j++, rind++)
+    for (int j = 0; j < static_cast<int>((colIdxVector[i + 1] - colIdxVector[i])); j++, rind++)
       {
         tdm.get(output_row, 0) = rowIdxVector[rind] + 1;
         tdm.get(output_row, 1) = i + 1;
@@ -114,32 +113,34 @@ DynamicModelMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, 
 }
 
 void
-DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
-                        Vector &residual, std::vector<TwoDMatrix> &md) noexcept(false)
+DynamicModelMFile::eval(const Vector& y, const Vector& x, const Vector& modParams,
+                        const Vector& ySteady, Vector& residual,
+                        std::vector<TwoDMatrix>& md) noexcept(false)
 {
-  mxArray *T_m = mxCreateDoubleMatrix(ntt, 1, mxREAL);
+  mxArray* T_m = mxCreateDoubleMatrix(ntt, 1, mxREAL);
 
-  mxArray *y_m = mxCreateDoubleMatrix(y.length(), 1, mxREAL);
+  mxArray* y_m = mxCreateDoubleMatrix(y.length(), 1, mxREAL);
   std::copy_n(y.base(), y.length(), mxGetPr(y_m));
 
-  mxArray *x_m = mxCreateDoubleMatrix(1, x.length(), mxREAL);
+  mxArray* x_m = mxCreateDoubleMatrix(1, x.length(), mxREAL);
   std::copy_n(x.base(), x.length(), mxGetPr(x_m));
 
-  mxArray *params_m = mxCreateDoubleMatrix(modParams.length(), 1, mxREAL);
+  mxArray* params_m = mxCreateDoubleMatrix(modParams.length(), 1, mxREAL);
   std::copy_n(modParams.base(), modParams.length(), mxGetPr(params_m));
 
-  mxArray *steady_state_m = mxCreateDoubleMatrix(ySteady.length(), 1, mxREAL);
+  mxArray* steady_state_m = mxCreateDoubleMatrix(ySteady.length(), 1, mxREAL);
   std::copy_n(ySteady.base(), ySteady.length(), mxGetPr(steady_state_m));
 
-  mxArray *it_m = mxCreateDoubleScalar(1.0);
-  mxArray *T_flag_m = mxCreateLogicalScalar(false);
+  mxArray* it_m = mxCreateDoubleScalar(1.0);
+  mxArray* T_flag_m = mxCreateLogicalScalar(false);
 
   {
     // Compute temporary terms (for all orders)
     std::string funcname = DynamicMFilename + "_g" + std::to_string(md.size()) + "_tt";
-    mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m, steady_state_m, it_m };
+    mxArray *plhs[1], *prhs[] = {T_m, y_m, x_m, params_m, steady_state_m, it_m};
 
-    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str());
+    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>,
+                               prhs, funcname.c_str());
     if (retVal != 0)
       throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
@@ -150,19 +151,21 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
   {
     // Compute residuals
     std::string funcname = DynamicMFilename + "_resid";
-    mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m, steady_state_m, it_m, T_flag_m };
+    mxArray *plhs[1], *prhs[] = {T_m, y_m, x_m, params_m, steady_state_m, it_m, T_flag_m};
 
-    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str());
+    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>,
+                               prhs, funcname.c_str());
     if (retVal != 0)
       throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
     if (!mxIsDouble(plhs[0]) || mxIsSparse(plhs[0]))
-      throw DynareException(__FILE__, __LINE__, "Residual should be a dense array of double floats");
+      throw DynareException(__FILE__, __LINE__,
+                            "Residual should be a dense array of double floats");
 
     if (mxIsComplex(plhs[0]))
       plhs[0] = cmplxToReal(plhs[0]);
 
-    residual = Vector{plhs[0]};
+    residual = Vector {plhs[0]};
     mxDestroyArray(plhs[0]);
   }
 
@@ -170,28 +173,35 @@ DynamicModelMFile::eval(const Vector &y, const Vector &x, const Vector &modParam
     {
       // Compute model derivatives
       std::string funcname = DynamicMFilename + "_g" + std::to_string(i);
-      mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m, steady_state_m, it_m, T_flag_m };
+      mxArray *plhs[1], *prhs[] = {T_m, y_m, x_m, params_m, steady_state_m, it_m, T_flag_m};
 
-      int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str());
+      int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>,
+                                 prhs, funcname.c_str());
       if (retVal != 0)
         throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
       if (!mxIsDouble(plhs[0]))
-        throw DynareException(__FILE__, __LINE__, "Derivatives matrix at order " + std::to_string(i) + "should be an array of double floats");
+        throw DynareException(__FILE__, __LINE__,
+                              "Derivatives matrix at order " + std::to_string(i)
+                                  + "should be an array of double floats");
 
       if (i == 1)
         {
           if (mxIsSparse(plhs[0]))
-            throw DynareException(__FILE__, __LINE__, "Derivatives matrix at order " + std::to_string(i) + " should be dense");
-          assert(static_cast<int>(mxGetM(plhs[0])) == md[i-1].nrows());
-          assert(static_cast<int>(mxGetN(plhs[0])) == md[i-1].ncols());
-          std::copy_n(mxGetPr(plhs[0]), mxGetM(plhs[0])*mxGetN(plhs[0]), md[i-1].base());
+            throw DynareException(__FILE__, __LINE__,
+                                  "Derivatives matrix at order " + std::to_string(i)
+                                      + " should be dense");
+          assert(static_cast<int>(mxGetM(plhs[0])) == md[i - 1].nrows());
+          assert(static_cast<int>(mxGetN(plhs[0])) == md[i - 1].ncols());
+          std::copy_n(mxGetPr(plhs[0]), mxGetM(plhs[0]) * mxGetN(plhs[0]), md[i - 1].base());
         }
       else
         {
           if (!mxIsSparse(plhs[0]))
-            throw DynareException(__FILE__, __LINE__, "Derivatives matrix at order " + std::to_string(i) + " should be sparse");
-          unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[0], md[i-1]);
+            throw DynareException(__FILE__, __LINE__,
+                                  "Derivatives matrix at order " + std::to_string(i)
+                                      + " should be sparse");
+          unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[0], md[i - 1]);
         }
 
       mxDestroyArray(plhs[0]);

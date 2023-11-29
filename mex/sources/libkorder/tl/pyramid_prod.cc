@@ -33,22 +33,18 @@
    permutation and add the Kronecker product of the selected columns. This is
    done by addKronColumn(). */
 
-USubTensor::USubTensor(const TensorDimens &bdims,
-                       const TensorDimens &hdims,
-                       const FGSContainer &cont,
-                       const std::vector<IntSequence> &lst)
-  : URTensor(lst.size(), hdims.getNVX(0), hdims.dimen())
+USubTensor::USubTensor(const TensorDimens& bdims, const TensorDimens& hdims,
+                       const FGSContainer& cont, const std::vector<IntSequence>& lst) :
+    URTensor(lst.size(), hdims.getNVX(0), hdims.dimen())
 {
-  TL_RAISE_IF(!hdims.getNVX().isConstant(),
-              "Tensor has not full symmetry in USubTensor()");
-  const EquivalenceSet &eset = TLStatic::getEquiv(bdims.dimen());
+  TL_RAISE_IF(!hdims.getNVX().isConstant(), "Tensor has not full symmetry in USubTensor()");
+  const EquivalenceSet& eset = TLStatic::getEquiv(bdims.dimen());
   zeros();
-  for (const auto &it : eset)
+  for (const auto& it : eset)
     if (it.numClasses() == hdims.dimen())
       {
         Permutation per(it);
-        std::vector<const FGSTensor *> ts
-          = cont.fetchTensors(bdims.getSym(), it);
+        std::vector<const FGSTensor*> ts = cont.fetchTensors(bdims.getSym(), it);
         for (int i = 0; i < static_cast<int>(lst.size()); i++)
           {
             IntSequence perindex(lst[i].size());
@@ -72,20 +68,19 @@ USubTensor::USubTensor(const TensorDimens &bdims,
    of URSingleTensor to the i-th column. */
 
 void
-USubTensor::addKronColumn(int i, const std::vector<const FGSTensor *> &ts,
-                          const IntSequence &pindex)
+USubTensor::addKronColumn(int i, const std::vector<const FGSTensor*>& ts, const IntSequence& pindex)
 {
   std::vector<ConstVector> tmpcols;
   int lastdim = 0;
   for (auto t : ts)
     {
-      IntSequence ind(pindex, lastdim, lastdim+t->dimen());
+      IntSequence ind(pindex, lastdim, lastdim + t->dimen());
       lastdim += t->dimen();
       index in(*t, ind);
       tmpcols.push_back(t->getCol(*in));
     }
 
   URSingleTensor kronmult(tmpcols);
-  Vector coli{getCol(i)};
+  Vector coli {getCol(i)};
   coli.add(1.0, kronmult.getData());
 }

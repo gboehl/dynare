@@ -24,26 +24,24 @@
 
 #include <dynblas.h>
 
-#include <cmath>
 #include <algorithm>
-#include <limits>
-#include <iostream>
+#include <cmath>
 #include <iomanip>
+#include <iostream>
+#include <limits>
 
-Vector::Vector(const Vector &v)
-  : len(v.len), data{new double[len]}
+Vector::Vector(const Vector& v) : len(v.len), data {new double[len]}
 {
   copy(v.data, v.s);
 }
 
-Vector::Vector(const ConstVector &v)
-  : len(v.len), data{new double[len]}
+Vector::Vector(const ConstVector& v) : len(v.len), data {new double[len]}
 {
   copy(v.data, v.s);
 }
 
-Vector &
-Vector::operator=(const Vector &v)
+Vector&
+Vector::operator=(const Vector& v)
 {
   if (this == &v)
     return *this;
@@ -52,24 +50,24 @@ Vector::operator=(const Vector &v)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
 
   if (s == v.s
-      && ((data <= v.data && v.data < data+len*s)
-          || (v.data <= data && data < v.data+v.len*v.s))
-      && (data-v.data) % s == 0)
+      && ((data <= v.data && v.data < data + len * s)
+          || (v.data <= data && data < v.data + v.len * v.s))
+      && (data - v.data) % s == 0)
     throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
 
   copy(v.data, v.s);
   return *this;
 }
 
-Vector &
-Vector::operator=(const ConstVector &v)
+Vector&
+Vector::operator=(const ConstVector& v)
 {
   if (v.len != len)
     throw SYLV_MES_EXCEPTION("Attempt to assign vectors with different lengths.");
   if (s == v.s
-      && ((data <= v.data && v.data < data+len*s)
-          || (v.data <= data && data < v.data+v.len*v.s))
-      && (data-v.data) % s == 0)
+      && ((data <= v.data && v.data < data + len * s)
+          || (v.data <= data && data < v.data + v.len * v.s))
+      && (data - v.data) % s == 0)
     throw SYLV_MES_EXCEPTION("Attempt to assign overlapping vectors.");
 
   copy(v.data, v.s);
@@ -77,7 +75,7 @@ Vector::operator=(const ConstVector &v)
 }
 
 void
-Vector::copy(const double *d, int inc)
+Vector::copy(const double* d, int inc)
 {
   blas_int n = len;
   blas_int incy = s;
@@ -85,36 +83,33 @@ Vector::copy(const double *d, int inc)
   dcopy(&n, d, &inc2, data, &incy);
 }
 
-Vector::Vector(Vector &v, int off_arg, int l)
-  : len(l), s(v.s), data{v.data+off_arg*v.s}, destroy{false}
+Vector::Vector(Vector& v, int off_arg, int l) :
+    len(l), s(v.s), data {v.data + off_arg * v.s}, destroy {false}
 {
   if (off_arg < 0 || off_arg + len > v.len)
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
 }
 
-Vector::Vector(const Vector &v, int off_arg, int l)
-  : len(l), data{new double[len]}
+Vector::Vector(const Vector& v, int off_arg, int l) : len(l), data {new double[len]}
 {
   if (off_arg < 0 || off_arg + len > v.len)
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
-  copy(v.data+off_arg*v.s, v.s);
+  copy(v.data + off_arg * v.s, v.s);
 }
 
-Vector::Vector(Vector &v, int off_arg, int skip, int l)
-  : len(l), s(v.s*skip), data{v.data+off_arg*v.s}, destroy{false}
+Vector::Vector(Vector& v, int off_arg, int skip, int l) :
+    len(l), s(v.s * skip), data {v.data + off_arg * v.s}, destroy {false}
 {
 }
 
-Vector::Vector(const Vector &v, int off_arg, int skip, int l)
-  : len(l), data{new double[len]}
+Vector::Vector(const Vector& v, int off_arg, int skip, int l) : len(l), data {new double[len]}
 {
-  copy(v.data+off_arg*v.s, v.s*skip);
+  copy(v.data + off_arg * v.s, v.s * skip);
 }
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-Vector::Vector(mxArray *p)
-  : len{static_cast<int>(mxGetNumberOfElements(p))},
-    data{mxGetPr(p)}, destroy{false}
+Vector::Vector(mxArray* p) :
+    len {static_cast<int>(mxGetNumberOfElements(p))}, data {mxGetPr(p)}, destroy {false}
 {
   if (!mxIsDouble(p) || mxIsComplex(p) || mxIsSparse(p))
     throw SYLV_MES_EXCEPTION("This is not a dense array of real doubles.");
@@ -122,37 +117,37 @@ Vector::Vector(mxArray *p)
 #endif
 
 bool
-Vector::operator==(const Vector &y) const
+Vector::operator==(const Vector& y) const
 {
   return ConstVector(*this) == y;
 }
 
 bool
-Vector::operator!=(const Vector &y) const
+Vector::operator!=(const Vector& y) const
 {
   return ConstVector(*this) != y;
 }
 
 bool
-Vector::operator<(const Vector &y) const
+Vector::operator<(const Vector& y) const
 {
   return ConstVector(*this) < y;
 }
 
 bool
-Vector::operator<=(const Vector &y) const
+Vector::operator<=(const Vector& y) const
 {
   return ConstVector(*this) <= y;
 }
 
 bool
-Vector::operator>(const Vector &y) const
+Vector::operator>(const Vector& y) const
 {
   return ConstVector(*this) > y;
 }
 
 bool
-Vector::operator>=(const Vector &y) const
+Vector::operator>=(const Vector& y) const
 {
   return ConstVector(*this) >= y;
 }
@@ -184,19 +179,19 @@ Vector::infs()
 void
 Vector::rotatePair(double alpha, double beta1, double beta2, int i)
 {
-  double tmp = alpha*operator[](i) - beta1*operator[](i+1);
-  operator[](i+1) = alpha*operator[](i+1) - beta2*operator[](i);
+  double tmp = alpha * operator[](i) - beta1 * operator[](i + 1);
+  operator[](i + 1) = alpha * operator[](i + 1) - beta2 * operator[](i);
   operator[](i) = tmp;
 }
 
 void
-Vector::add(double r, const Vector &v)
+Vector::add(double r, const Vector& v)
 {
   add(r, ConstVector(v));
 }
 
 void
-Vector::add(double r, const ConstVector &v)
+Vector::add(double r, const ConstVector& v)
 {
   blas_int n = len;
   blas_int incx = v.s;
@@ -205,15 +200,15 @@ Vector::add(double r, const ConstVector &v)
 }
 
 void
-Vector::addComplex(const std::complex<double> &z, const Vector &v)
+Vector::addComplex(const std::complex<double>& z, const Vector& v)
 {
   addComplex(z, ConstVector(v));
 }
 
 void
-Vector::addComplex(const std::complex<double> &z, const ConstVector &v)
+Vector::addComplex(const std::complex<double>& z, const ConstVector& v)
 {
-  blas_int n = len/2;
+  blas_int n = len / 2;
   blas_int incx = v.s;
   blas_int incy = s;
   zaxpy(&n, reinterpret_cast<const double(&)[2]>(z), v.data, &incx, data, &incy);
@@ -228,9 +223,8 @@ Vector::mult(double r)
 }
 
 void
-Vector::mult2(double alpha, double beta1, double beta2,
-              Vector &x1, Vector &x2,
-              const Vector &b1, const Vector &b2)
+Vector::mult2(double alpha, double beta1, double beta2, Vector& x1, Vector& x2, const Vector& b1,
+              const Vector& b2)
 {
   x1.zeros();
   x2.zeros();
@@ -238,9 +232,8 @@ Vector::mult2(double alpha, double beta1, double beta2,
 }
 
 void
-Vector::mult2a(double alpha, double beta1, double beta2,
-               Vector &x1, Vector &x2,
-               const Vector &b1, const Vector &b2)
+Vector::mult2a(double alpha, double beta1, double beta2, Vector& x1, Vector& x2, const Vector& b1,
+               const Vector& b2)
 {
   x1.add(alpha, b1);
   x1.add(-beta1, b2);
@@ -270,7 +263,7 @@ Vector::getNorm1() const
 }
 
 double
-Vector::dot(const Vector &y) const
+Vector::dot(const Vector& y) const
 {
   return ConstVector(*this).dot(ConstVector(y));
 }
@@ -291,32 +284,29 @@ Vector::print() const
   std::cout.flags(ff);
 }
 
-ConstVector::ConstVector(const Vector &v)
-  : len{v.len}, s{v.s}, data{v.data}
+ConstVector::ConstVector(const Vector& v) : len {v.len}, s {v.s}, data {v.data}
 {
 }
 
-ConstVector::ConstVector(const ConstVector &v, int off_arg, int l)
-  : len{l}, s{v.s}, data{v.data+off_arg*v.s}
+ConstVector::ConstVector(const ConstVector& v, int off_arg, int l) :
+    len {l}, s {v.s}, data {v.data + off_arg * v.s}
 {
   if (off_arg < 0 || off_arg + len > v.len)
     throw SYLV_MES_EXCEPTION("Subvector not contained in supvector.");
 }
 
-ConstVector::ConstVector(const ConstVector &v, int off_arg, int skip, int l)
-  : len(l), s{v.s*skip}, data{v.data+off_arg*v.s}
+ConstVector::ConstVector(const ConstVector& v, int off_arg, int skip, int l) :
+    len(l), s {v.s * skip}, data {v.data + off_arg * v.s}
 {
 }
 
-ConstVector::ConstVector(const double *d, int skip, int l)
-  : len{l}, s{skip}, data{d}
+ConstVector::ConstVector(const double* d, int skip, int l) : len {l}, s {skip}, data {d}
 {
 }
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-ConstVector::ConstVector(const mxArray *p)
-  : len{static_cast<int>(mxGetNumberOfElements(p))},
-    data{mxGetPr(p)}
+ConstVector::ConstVector(const mxArray* p) :
+    len {static_cast<int>(mxGetNumberOfElements(p))}, data {mxGetPr(p)}
 {
   if (!mxIsDouble(p))
     throw SYLV_MES_EXCEPTION("This is not a MATLAB array of doubles.");
@@ -324,7 +314,7 @@ ConstVector::ConstVector(const mxArray *p)
 #endif
 
 bool
-ConstVector::operator==(const ConstVector &y) const
+ConstVector::operator==(const ConstVector& y) const
 {
   if (len != y.len)
     return false;
@@ -337,7 +327,7 @@ ConstVector::operator==(const ConstVector &y) const
 }
 
 bool
-ConstVector::operator<(const ConstVector &y) const
+ConstVector::operator<(const ConstVector& y) const
 {
   int i = std::min(len, y.len);
   int ii = 0;
@@ -354,7 +344,7 @@ ConstVector::getNorm() const
 {
   double s = 0;
   for (int i = 0; i < len; i++)
-    s += operator[](i)*operator[](i);
+    s += operator[](i) * operator[](i);
   return sqrt(s);
 }
 
@@ -377,7 +367,7 @@ ConstVector::getNorm1() const
 }
 
 double
-ConstVector::dot(const ConstVector &y) const
+ConstVector::dot(const ConstVector& y) const
 {
   if (len != y.len)
     throw SYLV_MES_EXCEPTION("Vector has different length in ConstVector::dot.");

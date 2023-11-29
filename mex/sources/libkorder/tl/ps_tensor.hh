@@ -57,12 +57,12 @@
 #ifndef PS_TENSOR_H
 #define PS_TENSOR_H
 
-#include "tensor.hh"
-#include "gs_tensor.hh"
 #include "equivalence.hh"
-#include "permutation.hh"
+#include "gs_tensor.hh"
 #include "kron_prod.hh"
+#include "permutation.hh"
 #include "sparse_tensor.hh"
+#include "tensor.hh"
 
 /* Here we declare a class describing dimensions of permuted symmetry tensor.
    It inherits from TensorDimens and adds a permutation which permutes ‘nvmax’.
@@ -92,31 +92,31 @@ private:
     s.sort();
     return s;
   }
+
 protected:
   Permutation per;
+
 public:
-  PerTensorDimens(Symmetry s, IntSequence nvars, const Equivalence &e)
-    : TensorDimens(std::move(s), std::move(nvars)), per(e)
+  PerTensorDimens(Symmetry s, IntSequence nvars, const Equivalence& e) :
+      TensorDimens(std::move(s), std::move(nvars)), per(e)
   {
     per.apply(nvmax);
   }
-  PerTensorDimens(TensorDimens td, const Equivalence &e)
-    : TensorDimens(std::move(td)), per(e)
+  PerTensorDimens(TensorDimens td, const Equivalence& e) : TensorDimens(std::move(td)), per(e)
   {
     per.apply(nvmax);
   }
-  PerTensorDimens(TensorDimens td, Permutation p)
-    : TensorDimens(std::move(td)), per(std::move(p))
+  PerTensorDimens(TensorDimens td, Permutation p) : TensorDimens(std::move(td)), per(std::move(p))
   {
     per.apply(nvmax);
   }
-  PerTensorDimens(IntSequence ss, IntSequence coor)
-    : TensorDimens(std::move(ss), sortIntSequence(coor)), per(std::move(coor))
+  PerTensorDimens(IntSequence ss, IntSequence coor) :
+      TensorDimens(std::move(ss), sortIntSequence(coor)), per(std::move(coor))
   {
     per.apply(nvmax);
   }
   bool
-  operator==(const PerTensorDimens &td) const
+  operator==(const PerTensorDimens& td) const
   {
     return TensorDimens::operator==(td) && per == td.per;
   }
@@ -125,7 +125,7 @@ public:
   {
     return per.tailIdentity();
   }
-  const Permutation &
+  const Permutation&
   getPer() const
   {
     return per;
@@ -158,6 +158,7 @@ public:
 class UPSTensor : public UTensor
 {
   const PerTensorDimens tdims;
+
 public:
   // UPSTensor constructors from Kronecker product
   /* Here we have four constructors making an UPSTensor from a product
@@ -165,10 +166,9 @@ public:
 
   /* Constructs the tensor from equivalence classes of the given equivalence in
      an order given by the equivalence */
-  UPSTensor(TensorDimens td, const Equivalence &e,
-            const ConstTwoDMatrix &a, const KronProdAll &kp)
-    : UTensor(indor::along_col, PerTensorDimens(td, e).getNVX(),
-              a.nrows(), kp.ncols(), td.dimen()),
+  UPSTensor(TensorDimens td, const Equivalence& e, const ConstTwoDMatrix& a,
+            const KronProdAll& kp) :
+      UTensor(indor::along_col, PerTensorDimens(td, e).getNVX(), a.nrows(), kp.ncols(), td.dimen()),
       tdims(std::move(td), e)
   {
     kp.mult(a, *this);
@@ -177,9 +177,9 @@ public:
   /* Same as the previous one but with optimized KronProdAllOptim, which has a
      different order of matrices than given by the classes in the equivalence.
      This permutation is projected to the permutation of the UPSTensor. */
-  UPSTensor(TensorDimens td, const Equivalence &e,
-            const ConstTwoDMatrix &a, const KronProdAllOptim &kp)
-    : UTensor(indor::along_col, PerTensorDimens(td, Permutation(e, kp.getPer())).getNVX(),
+  UPSTensor(TensorDimens td, const Equivalence& e, const ConstTwoDMatrix& a,
+            const KronProdAllOptim& kp) :
+      UTensor(indor::along_col, PerTensorDimens(td, Permutation(e, kp.getPer())).getNVX(),
               a.nrows(), kp.ncols(), td.dimen()),
       tdims(std::move(td), Permutation(e, kp.getPer()))
   {
@@ -188,10 +188,10 @@ public:
 
   /* Same as the first constructor, but the classes of the equivalence are
      permuted by the given permutation. */
-  UPSTensor(TensorDimens td, const Equivalence &e, const Permutation &p,
-            const ConstTwoDMatrix &a, const KronProdAll &kp)
-    : UTensor(indor::along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(),
-              a.nrows(), kp.ncols(), td.dimen()),
+  UPSTensor(TensorDimens td, const Equivalence& e, const Permutation& p, const ConstTwoDMatrix& a,
+            const KronProdAll& kp) :
+      UTensor(indor::along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(), a.nrows(),
+              kp.ncols(), td.dimen()),
       tdims(std::move(td), Permutation(e, p))
   {
     kp.mult(a, *this);
@@ -200,36 +200,40 @@ public:
   /* Most general constructor. It allows for a permutation of equivalence
      classes, and for optimized KronProdAllOptim, which permutes the permuted
      equivalence classes. */
-  UPSTensor(TensorDimens td, const Equivalence &e, const Permutation &p,
-            const ConstTwoDMatrix &a, const KronProdAllOptim &kp)
-    : UTensor(indor::along_col, PerTensorDimens(td, Permutation(e, Permutation(p, kp.getPer()))).getNVX(),
-              a.nrows(), kp.ncols(), td.dimen()),
+  UPSTensor(TensorDimens td, const Equivalence& e, const Permutation& p, const ConstTwoDMatrix& a,
+            const KronProdAllOptim& kp) :
+      UTensor(indor::along_col,
+              PerTensorDimens(td, Permutation(e, Permutation(p, kp.getPer()))).getNVX(), a.nrows(),
+              kp.ncols(), td.dimen()),
       tdims(std::move(td), Permutation(e, Permutation(p, kp.getPer())))
   {
     kp.mult(a, *this);
   }
 
-  UPSTensor(const FSSparseTensor &t, const IntSequence &ss,
-            const IntSequence &coor, PerTensorDimens ptd);
-  UPSTensor(const UPSTensor &) = default;
-  UPSTensor(UPSTensor &&) = default;
+  UPSTensor(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor,
+            PerTensorDimens ptd);
+  UPSTensor(const UPSTensor&) = default;
+  UPSTensor(UPSTensor&&) = default;
 
-  void increment(IntSequence &v) const override;
-  void decrement(IntSequence &v) const override;
+  void increment(IntSequence& v) const override;
+  void decrement(IntSequence& v) const override;
   std::unique_ptr<FTensor> fold() const override;
 
-  int getOffset(const IntSequence &v) const override;
-  void addTo(FGSTensor &out) const;
-  void addTo(UGSTensor &out) const;
+  int getOffset(const IntSequence& v) const override;
+  void addTo(FGSTensor& out) const;
+  void addTo(UGSTensor& out) const;
 
-  enum class fill_method { first, second };
-  static fill_method decideFillMethod(const FSSparseTensor &t);
+  enum class fill_method
+  {
+    first,
+    second
+  };
+  static fill_method decideFillMethod(const FSSparseTensor& t);
+
 private:
   int tailIdentitySize() const;
-  void fillFromSparseOne(const FSSparseTensor &t, const IntSequence &ss,
-                         const IntSequence &coor);
-  void fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
-                         const IntSequence &coor);
+  void fillFromSparseOne(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor);
+  void fillFromSparseTwo(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor);
 };
 
 /* Here we define an abstraction for the tensor dimension with the symmetry
@@ -250,19 +254,15 @@ class PerTensorDimens2 : public PerTensorDimens
 {
   InducedSymmetries syms;
   IntSequence ds;
+
 public:
-  PerTensorDimens2(const TensorDimens &td, const Equivalence &e,
-                   const Permutation &p)
-    : PerTensorDimens(td, Permutation(e, p)),
-      syms(e, p, td.getSym()),
-      ds(syms.size())
+  PerTensorDimens2(const TensorDimens& td, const Equivalence& e, const Permutation& p) :
+      PerTensorDimens(td, Permutation(e, p)), syms(e, p, td.getSym()), ds(syms.size())
   {
     setDimensionSizes();
   }
-  PerTensorDimens2(const TensorDimens &td, const Equivalence &e)
-    : PerTensorDimens(td, e),
-      syms(e, td.getSym()),
-      ds(syms.size())
+  PerTensorDimens2(const TensorDimens& td, const Equivalence& e) :
+      PerTensorDimens(td, e), syms(e, td.getSym()), ds(syms.size())
   {
     setDimensionSizes();
   }
@@ -271,7 +271,7 @@ public:
   {
     return static_cast<int>(syms.size());
   }
-  const Symmetry &
+  const Symmetry&
   getSym(int i) const
   {
     return syms[i];
@@ -281,8 +281,9 @@ public:
   {
     return ds.mult();
   }
-  int calcOffset(const IntSequence &coor) const;
+  int calcOffset(const IntSequence& coor) const;
   void print() const;
+
 protected:
   void setDimensionSizes();
 };
@@ -299,7 +300,7 @@ protected:
       ⎝     y    ⎠
    we get for one concrete equivalence:
 
-    [F_x⁴y³u³v²] = … + [f_g²h²x²y]·([g]_xv ⊗ [g]_u²v ⊗ [h]_xu ⊗ [h]_y² ⊗ 
+    [F_x⁴y³u³v²] = … + [f_g²h²x²y]·([g]_xv ⊗ [g]_u²v ⊗ [h]_xu ⊗ [h]_y² ⊗
                                     [I]_x ⊗ [I]_x ⊗ [I]_y)
                      + …
 
@@ -326,6 +327,7 @@ class StackProduct;
 class FPSTensor : public FTensor
 {
   const PerTensorDimens2 tdims;
+
 public:
   /* As for UPSTensor, we provide four constructors allowing for
      combinations of permuting equivalence classes, and optimization of
@@ -335,51 +337,51 @@ public:
      constructors, we have one constructor multiplying with general
      symmetry sparse tensor (coming as a sparse slice of the full symmetry
      sparse tensor). */
-  FPSTensor(const TensorDimens &td, const Equivalence &e,
-            const ConstTwoDMatrix &a, const KronProdAll &kp)
-    : FTensor(indor::along_col, PerTensorDimens(td, e).getNVX(),
-              a.nrows(), kp.ncols(), td.dimen()),
+  FPSTensor(const TensorDimens& td, const Equivalence& e, const ConstTwoDMatrix& a,
+            const KronProdAll& kp) :
+      FTensor(indor::along_col, PerTensorDimens(td, e).getNVX(), a.nrows(), kp.ncols(), td.dimen()),
       tdims(td, e)
   {
     kp.mult(a, *this);
   }
-  FPSTensor(const TensorDimens &td, const Equivalence &e,
-            const ConstTwoDMatrix &a, const KronProdAllOptim &kp)
-    : FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, kp.getPer())).getNVX(),
+  FPSTensor(const TensorDimens& td, const Equivalence& e, const ConstTwoDMatrix& a,
+            const KronProdAllOptim& kp) :
+      FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, kp.getPer())).getNVX(),
               a.nrows(), kp.ncols(), td.dimen()),
       tdims(td, e, kp.getPer())
   {
     kp.mult(a, *this);
   }
-  FPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
-            const ConstTwoDMatrix &a, const KronProdAll &kp)
-    : FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(),
-              a.nrows(), kp.ncols(), td.dimen()),
+  FPSTensor(const TensorDimens& td, const Equivalence& e, const Permutation& p,
+            const ConstTwoDMatrix& a, const KronProdAll& kp) :
+      FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(), a.nrows(),
+              kp.ncols(), td.dimen()),
       tdims(td, e, p)
   {
     kp.mult(a, *this);
   }
-  FPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
-            const ConstTwoDMatrix &a, const KronProdAllOptim &kp)
-    : FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, Permutation(p, kp.getPer()))).getNVX(),
-              a.nrows(), kp.ncols(), td.dimen()),
+  FPSTensor(const TensorDimens& td, const Equivalence& e, const Permutation& p,
+            const ConstTwoDMatrix& a, const KronProdAllOptim& kp) :
+      FTensor(indor::along_col,
+              PerTensorDimens(td, Permutation(e, Permutation(p, kp.getPer()))).getNVX(), a.nrows(),
+              kp.ncols(), td.dimen()),
       tdims(td, e, Permutation(p, kp.getPer()))
   {
     kp.mult(a, *this);
   }
 
-  FPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
-            const GSSparseTensor &t, const KronProdAll &kp);
+  FPSTensor(const TensorDimens& td, const Equivalence& e, const Permutation& p,
+            const GSSparseTensor& t, const KronProdAll& kp);
 
-  FPSTensor(const FPSTensor &) = default;
-  FPSTensor(FPSTensor &&) = default;
+  FPSTensor(const FPSTensor&) = default;
+  FPSTensor(FPSTensor&&) = default;
 
-  void increment(IntSequence &v) const override;
-  void decrement(IntSequence &v) const override;
+  void increment(IntSequence& v) const override;
+  void decrement(IntSequence& v) const override;
   std::unique_ptr<UTensor> unfold() const override;
 
-  int getOffset(const IntSequence &v) const override;
-  void addTo(FGSTensor &out) const;
+  int getOffset(const IntSequence& v) const override;
+  void addTo(FGSTensor& out) const;
 };
 
 #endif

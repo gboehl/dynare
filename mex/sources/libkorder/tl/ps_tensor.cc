@@ -20,9 +20,9 @@
 
 #include "ps_tensor.hh"
 #include "fs_tensor.hh"
+#include "stack_container.hh"
 #include "tl_exception.hh"
 #include "tl_static.hh"
-#include "stack_container.hh"
 
 #include <iostream>
 
@@ -32,7 +32,7 @@
    1%, the second can be 3 times quicker. */
 
 UPSTensor::fill_method
-UPSTensor::decideFillMethod(const FSSparseTensor &t)
+UPSTensor::decideFillMethod(const FSSparseTensor& t)
 {
   if (t.getFillFactor() > 0.08)
     return fill_method::first;
@@ -42,16 +42,14 @@ UPSTensor::decideFillMethod(const FSSparseTensor &t)
 
 /* Here we make a slice. We decide what fill method to use and set it. */
 
-UPSTensor::UPSTensor(const FSSparseTensor &t, const IntSequence &ss,
-                     const IntSequence &coor, PerTensorDimens ptd)
-  : UTensor(indor::along_col, ptd.getNVX(),
-            t.nrows(), ptd.calcUnfoldMaxOffset(), ptd.dimen()),
+UPSTensor::UPSTensor(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor,
+                     PerTensorDimens ptd) :
+    UTensor(indor::along_col, ptd.getNVX(), t.nrows(), ptd.calcUnfoldMaxOffset(), ptd.dimen()),
     tdims(std::move(ptd))
 {
   TL_RAISE_IF(coor.size() != t.dimen(),
               "Wrong coordinates length of stacks for UPSTensor slicing constructor");
-  TL_RAISE_IF(ss.sum() != t.nvar(),
-              "Wrong length of stacks for UPSTensor slicing constructor");
+  TL_RAISE_IF(ss.sum() != t.nvar(), "Wrong length of stacks for UPSTensor slicing constructor");
 
   if (decideFillMethod(t) == fill_method::first)
     fillFromSparseOne(t, ss, coor);
@@ -60,19 +58,17 @@ UPSTensor::UPSTensor(const FSSparseTensor &t, const IntSequence &ss,
 }
 
 void
-UPSTensor::increment(IntSequence &v) const
+UPSTensor::increment(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in UPSTensor::increment");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in UPSTensor::increment");
 
   UTensor::increment(v, tdims.getNVX());
 }
 
 void
-UPSTensor::decrement(IntSequence &v) const
+UPSTensor::decrement(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input/output vector size in UPSTensor::decrement");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input/output vector size in UPSTensor::decrement");
 
   UTensor::decrement(v, tdims.getNVX());
 }
@@ -84,19 +80,17 @@ UPSTensor::fold() const
 }
 
 int
-UPSTensor::getOffset(const IntSequence &v) const
+UPSTensor::getOffset(const IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong input vector size in UPSTensor::getOffset");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong input vector size in UPSTensor::getOffset");
 
   return UTensor::getOffset(v, tdims.getNVX());
 }
 
 void
-UPSTensor::addTo(FGSTensor &out) const
+UPSTensor::addTo(FGSTensor& out) const
 {
-  TL_RAISE_IF(out.getDims() != tdims,
-              "Tensors have incompatible dimens in UPSTensor::addTo");
+  TL_RAISE_IF(out.getDims() != tdims, "Tensors have incompatible dimens in UPSTensor::addTo");
   for (index in = out.begin(); in != out.end(); ++in)
     {
       IntSequence vtmp(dimen());
@@ -130,15 +124,14 @@ UPSTensor::addTo(FGSTensor &out) const
    construct submatrices, add them, and increment ‘outrun’. */
 
 void
-UPSTensor::addTo(UGSTensor &out) const
+UPSTensor::addTo(UGSTensor& out) const
 {
-  TL_RAISE_IF(out.getDims() != tdims,
-              "Tensors have incompatible dimens in UPSTensor::addTo");
+  TL_RAISE_IF(out.getDims() != tdims, "Tensors have incompatible dimens in UPSTensor::addTo");
   int cols = tailIdentitySize();
   int off = tdims.tailIdentity();
   IntSequence outrun(out.dimen(), 0);
-  IntSequence outrun_part(outrun, 0, out.dimen()-off);
-  IntSequence nvmax_part(out.getDims().getNVX(), 0, out.dimen()-off);
+  IntSequence outrun_part(outrun, 0, out.dimen() - off);
+  IntSequence nvmax_part(out.getDims().getNVX(), 0, out.dimen() - off);
   for (int out_col = 0; out_col < out.ncols(); out_col += cols)
     {
       // permute ‘outrun’
@@ -161,7 +154,7 @@ UPSTensor::addTo(UGSTensor &out) const
 int
 UPSTensor::tailIdentitySize() const
 {
-  return tdims.getNVX().mult(dimen()-tdims.tailIdentity(), dimen());
+  return tdims.getNVX().mult(dimen() - tdims.tailIdentity(), dimen());
 }
 
 /* This fill method is pretty dumb. We go through all columns in ‘this’
@@ -171,13 +164,13 @@ UPSTensor::tailIdentitySize() const
    really sparse tensors. */
 
 void
-UPSTensor::fillFromSparseOne(const FSSparseTensor &t, const IntSequence &ss,
-                             const IntSequence &coor)
+UPSTensor::fillFromSparseOne(const FSSparseTensor& t, const IntSequence& ss,
+                             const IntSequence& coor)
 {
   IntSequence cumtmp(ss.size());
   cumtmp[0] = 0;
   for (int i = 1; i < ss.size(); i++)
-    cumtmp[i] = cumtmp[i-1] + ss[i-1];
+    cumtmp[i] = cumtmp[i - 1] + ss[i - 1];
   IntSequence cum(coor.size());
   for (int i = 0; i < coor.size(); i++)
     cum[i] = cumtmp[coor[i]];
@@ -212,15 +205,15 @@ UPSTensor::fillFromSparseOne(const FSSparseTensor &t, const IntSequence &ss,
    item of the sparse tensor to the appropriate column. */
 
 void
-UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
-                             const IntSequence &coor)
+UPSTensor::fillFromSparseTwo(const FSSparseTensor& t, const IntSequence& ss,
+                             const IntSequence& coor)
 {
   IntSequence coor_srt(coor);
   coor_srt.sort();
   IntSequence cum(ss.size());
   cum[0] = 0;
   for (int i = 1; i < ss.size(); i++)
-    cum[i] = cum[i-1] + ss[i-1];
+    cum[i] = cum[i - 1] + ss[i - 1];
   IntSequence lb_srt(coor.size());
   IntSequence ub_srt(coor.size());
   for (int i = 0; i < coor.size(); i++)
@@ -229,7 +222,7 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
       ub_srt[i] = cum[coor_srt[i]] + ss[coor_srt[i]] - 1;
     }
 
-  const PermutationSet &pset = TLStatic::getPerm(coor.size());
+  const PermutationSet& pset = TLStatic::getPerm(coor.size());
   std::vector<Permutation> pp = pset.getPreserving(coor);
 
   Permutation unsort(coor);
@@ -242,7 +235,7 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
         IntSequence c(run->first);
         c.add(-1, lb_srt);
         unsort.apply(c);
-        for (auto &i : pp)
+        for (auto& i : pp)
           {
             IntSequence cp(coor.size());
             i.apply(c, cp);
@@ -260,7 +253,7 @@ UPSTensor::fillFromSparseTwo(const FSSparseTensor &t, const IntSequence &ss,
 void
 PerTensorDimens2::setDimensionSizes()
 {
-  const IntSequence &nvs = getNVS();
+  const IntSequence& nvs = getNVS();
   for (int i = 0; i < numSyms(); i++)
     {
       TensorDimens td(syms[i], nvs);
@@ -276,7 +269,7 @@ PerTensorDimens2::setDimensionSizes()
    code does. */
 
 int
-PerTensorDimens2::calcOffset(const IntSequence &coor) const
+PerTensorDimens2::calcOffset(const IntSequence& coor) const
 {
   TL_RAISE_IF(coor.size() != dimen(),
               "Wrong length of coordinates in PerTensorDimens2::calcOffset");
@@ -286,9 +279,9 @@ PerTensorDimens2::calcOffset(const IntSequence &coor) const
   for (int i = 0; i < numSyms(); i++)
     {
       TensorDimens td(syms[i], getNVS());
-      IntSequence c(cc, off, off+syms[i].dimen());
+      IntSequence c(cc, off, off + syms[i].dimen());
       int a = td.calcFoldOffset(c);
-      ret = ret*ds[i] + a;
+      ret = ret * ds[i] + a;
       off += syms[i].dimen();
     }
   return ret;
@@ -312,22 +305,21 @@ PerTensorDimens2::print() const
    the subsequences with respect to the symmetries of each dimension. */
 
 void
-FPSTensor::increment(IntSequence &v) const
+FPSTensor::increment(IntSequence& v) const
 {
-  TL_RAISE_IF(v.size() != dimen(),
-              "Wrong length of coordinates in FPSTensor::increment");
+  TL_RAISE_IF(v.size() != dimen(), "Wrong length of coordinates in FPSTensor::increment");
   UTensor::increment(v, tdims.getNVX());
   int off = 0;
   for (int i = 0; i < tdims.numSyms(); i++)
     {
-      IntSequence c(v, off, off+tdims.getSym(i).dimen());
+      IntSequence c(v, off, off + tdims.getSym(i).dimen());
       c.pmonotone(tdims.getSym(i));
       off += tdims.getSym(i).dimen();
     }
 }
 
 void
-FPSTensor::decrement([[maybe_unused]] IntSequence &v) const
+FPSTensor::decrement([[maybe_unused]] IntSequence& v) const
 {
   TL_RAISE("FPSTensor::decrement not implemented");
 }
@@ -341,7 +333,7 @@ FPSTensor::unfold() const
 /* We only call calcOffset() on the PerTensorDimens2. */
 
 int
-FPSTensor::getOffset(const IntSequence &v) const
+FPSTensor::getOffset(const IntSequence& v) const
 {
   return tdims.calcOffset(v);
 }
@@ -353,7 +345,7 @@ FPSTensor::getOffset(const IntSequence &v) const
    folded). */
 
 void
-FPSTensor::addTo(FGSTensor &out) const
+FPSTensor::addTo(FGSTensor& out) const
 {
   for (index tar = out.begin(); tar != out.end(); ++tar)
     {
@@ -384,10 +376,10 @@ FPSTensor::addTo(FGSTensor &out) const
    Kronecker product of the rows, and go through all of items with the
    coordinates, and add to appropriate rows of ‘this’ tensor. */
 
-FPSTensor::FPSTensor(const TensorDimens &td, const Equivalence &e, const Permutation &p,
-                     const GSSparseTensor &a, const KronProdAll &kp)
-  : FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(),
-            a.nrows(), kp.ncols(), td.dimen()),
+FPSTensor::FPSTensor(const TensorDimens& td, const Equivalence& e, const Permutation& p,
+                     const GSSparseTensor& a, const KronProdAll& kp) :
+    FTensor(indor::along_col, PerTensorDimens(td, Permutation(e, p)).getNVX(), a.nrows(),
+            kp.ncols(), td.dimen()),
     tdims(td, e, p)
 {
   zeros();
@@ -396,7 +388,7 @@ FPSTensor::FPSTensor(const TensorDimens &td, const Equivalence &e, const Permuta
   for (Tensor::index run = dummy.begin(); run != dummy.end(); ++run)
     {
       Tensor::index fold_ind = dummy.getFirstIndexOf(run);
-      const IntSequence &c = fold_ind.getCoor();
+      const IntSequence& c = fold_ind.getCoor();
       auto sl = a.getMap().lower_bound(c);
       if (sl != a.getMap().end())
         {
@@ -404,7 +396,7 @@ FPSTensor::FPSTensor(const TensorDimens &td, const Equivalence &e, const Permuta
           auto su = a.getMap().upper_bound(c);
           for (auto srun = sl; srun != su; ++srun)
             {
-              Vector out_row{getRow(srun->second.first)};
+              Vector out_row {getRow(srun->second.first)};
               out_row.add(srun->second.second, *row_prod);
             }
         }

@@ -51,17 +51,18 @@ Mem_Mngr::init_CHUNK_BLCK_SIZE(int u_count)
   CHUNK_BLCK_SIZE = u_count;
 }
 
-NonZeroElem *
+NonZeroElem*
 Mem_Mngr::mxMalloc_NZE()
 {
   long unsigned int i;
   if (!Chunk_Stack.empty()) /*An unused block of memory available inside the heap*/
     {
-      NonZeroElem *p1 = Chunk_Stack.back();
+      NonZeroElem* p1 = Chunk_Stack.back();
       Chunk_Stack.pop_back();
       return p1;
     }
-  else if (CHUNK_heap_pos < CHUNK_SIZE) /*there is enough allocated memory space available we keep it at the top of the heap*/
+  else if (CHUNK_heap_pos < CHUNK_SIZE) /*there is enough allocated memory space available we keep
+                                           it at the top of the heap*/
     {
       i = CHUNK_heap_pos++;
       return NZE_Mem_add[i];
@@ -70,43 +71,54 @@ Mem_Mngr::mxMalloc_NZE()
     {
       CHUNK_SIZE += CHUNK_BLCK_SIZE;
       Nb_CHUNK++;
-      NZE_Mem = static_cast<NonZeroElem *>(mxMalloc(CHUNK_BLCK_SIZE*sizeof(NonZeroElem))); /*The block of memory allocated*/
-      test_mxMalloc(NZE_Mem, __LINE__, __FILE__, __func__, CHUNK_BLCK_SIZE*sizeof(NonZeroElem));
+      NZE_Mem = static_cast<NonZeroElem*>(
+          mxMalloc(CHUNK_BLCK_SIZE * sizeof(NonZeroElem))); /*The block of memory allocated*/
+      test_mxMalloc(NZE_Mem, __LINE__, __FILE__, __func__, CHUNK_BLCK_SIZE * sizeof(NonZeroElem));
       NZE_Mem_Allocated.push_back(NZE_Mem);
       if (!NZE_Mem)
         mexPrintf("Not enough memory available\n");
       if (NZE_Mem_add)
         {
-          NZE_Mem_add = static_cast<NonZeroElem **>(mxRealloc(NZE_Mem_add, CHUNK_SIZE*sizeof(NonZeroElem *))); /*We have to redefine the size of pointer on the memory*/
-          test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
+          NZE_Mem_add = static_cast<NonZeroElem**>(mxRealloc(
+              NZE_Mem_add,
+              CHUNK_SIZE
+                  * sizeof(
+                      NonZeroElem*))); /*We have to redefine the size of pointer on the memory*/
+          test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__,
+                        CHUNK_SIZE * sizeof(NonZeroElem*));
         }
       else
         {
-          NZE_Mem_add = static_cast<NonZeroElem **>(mxMalloc(CHUNK_SIZE*sizeof(NonZeroElem *))); /*We have to define the size of pointer on the memory*/
-          test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__, CHUNK_SIZE*sizeof(NonZeroElem *));
+          NZE_Mem_add = static_cast<NonZeroElem**>(mxMalloc(
+              CHUNK_SIZE
+              * sizeof(NonZeroElem*))); /*We have to define the size of pointer on the memory*/
+          test_mxMalloc(NZE_Mem_add, __LINE__, __FILE__, __func__,
+                        CHUNK_SIZE * sizeof(NonZeroElem*));
         }
 
       if (!NZE_Mem_add)
         mexPrintf("Not enough memory available\n");
       for (i = CHUNK_heap_pos; i < CHUNK_SIZE; i++)
-        NZE_Mem_add[i] = const_cast<NonZeroElem *>(NZE_Mem+(i-CHUNK_heap_pos));
+        NZE_Mem_add[i] = const_cast<NonZeroElem*>(NZE_Mem + (i - CHUNK_heap_pos));
       i = CHUNK_heap_pos++;
       return NZE_Mem_add[i];
     }
 }
 
 void
-Mem_Mngr::mxFree_NZE(void *pos)
+Mem_Mngr::mxFree_NZE(void* pos)
 {
   unsigned int i;
   ptrdiff_t gap;
   for (i = 0; i < Nb_CHUNK; i++)
     {
-      gap = (reinterpret_cast<ptrdiff_t>(pos)-reinterpret_cast<ptrdiff_t>(NZE_Mem_add[i*CHUNK_BLCK_SIZE]))/sizeof(NonZeroElem);
+      gap = (reinterpret_cast<ptrdiff_t>(pos)
+             - reinterpret_cast<ptrdiff_t>(NZE_Mem_add[i * CHUNK_BLCK_SIZE]))
+            / sizeof(NonZeroElem);
       if (gap < CHUNK_BLCK_SIZE && gap >= 0)
         break;
     }
-  Chunk_Stack.push_back(static_cast<NonZeroElem *>(pos));
+  Chunk_Stack.push_back(static_cast<NonZeroElem*>(pos));
 }
 
 void

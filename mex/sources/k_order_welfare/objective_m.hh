@@ -33,11 +33,12 @@ class ObjectiveMFile : public ObjectiveAC
 {
 private:
   const std::string ObjectiveMFilename;
-  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm);
+  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray* sparseMat, TwoDMatrix& tdm);
+
 public:
-  explicit ObjectiveMFile(const std::string &modName, int ntt_arg);
+  explicit ObjectiveMFile(const std::string& modName, int ntt_arg);
   virtual ~ObjectiveMFile() = default;
-  void eval(const Vector &y, const Vector &x, const Vector &params,
-            Vector &residual, std::vector<TwoDMatrix> &md) override;
+  void eval(const Vector& y, const Vector& x, const Vector& params, Vector& residual,
+            std::vector<TwoDMatrix>& md) override;
 };
 #endif

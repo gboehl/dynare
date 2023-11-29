@@ -41,45 +41,45 @@
 #ifndef STHREAD_H
 #define STHREAD_H
 
-#include <vector>
+#include <condition_variable>
 #include <map>
 #include <memory>
-#include <utility>
-#include <thread>
 #include <mutex>
-#include <condition_variable>
+#include <thread>
+#include <utility>
+#include <vector>
 
 namespace sthread
 {
-  class detach_thread
+class detach_thread
+{
+public:
+  virtual ~detach_thread() = default;
+  virtual void operator()(std::mutex& mut) = 0;
+};
+
+class detach_thread_group
+{
+  std::vector<std::unique_ptr<detach_thread>> tlist;
+  std::mutex mut_cv; // For the condition variable and the counter
+  std::condition_variable cv;
+  int counter {0};
+  std::mutex mut_threads; // Passed to the workers and shared between them
+public:
+  static int max_parallel_threads;
+
+  void
+  insert(std::unique_ptr<detach_thread> c)
   {
-  public:
-    virtual ~detach_thread() = default;
-    virtual void operator()(std::mutex &mut) = 0;
-  };
+    tlist.push_back(std::move(c));
+  }
 
-  class detach_thread_group
-  {
-    std::vector<std::unique_ptr<detach_thread>> tlist;
-    std::mutex mut_cv; // For the condition variable and the counter
-    std::condition_variable cv;
-    int counter{0};
-    std::mutex mut_threads; // Passed to the workers and shared between them
-  public:
-    static int max_parallel_threads;
+  ~detach_thread_group() = default;
 
-    void
-    insert(std::unique_ptr<detach_thread> c)
-    {
-      tlist.push_back(std::move(c));
-    }
+  void run();
+};
 
-    ~detach_thread_group() = default;
-
-    void run();
-  };
-
-  int default_threads_number();
+int default_threads_number();
 };
 
 #endif

@@ -25,18 +25,17 @@
 
 #include "objective_m.hh"
 
-ObjectiveMFile::ObjectiveMFile(const std::string &modName, int ntt_arg) :
-  ObjectiveAC(ntt_arg),
-  ObjectiveMFilename{modName + ".objective.static"}
+ObjectiveMFile::ObjectiveMFile(const std::string& modName, int ntt_arg) :
+    ObjectiveAC(ntt_arg), ObjectiveMFilename {modName + ".objective.static"}
 {
 }
 
 void
-ObjectiveMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm)
+ObjectiveMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray* sparseMat, TwoDMatrix& tdm)
 {
   int totalCols = mxGetN(sparseMat);
-  mwIndex *rowIdxVector = mxGetIr(sparseMat);
-  mwIndex *colIdxVector = mxGetJc(sparseMat);
+  mwIndex* rowIdxVector = mxGetIr(sparseMat);
+  mwIndex* colIdxVector = mxGetJc(sparseMat);
 
   assert(tdm.ncols() == 3);
   /* Under MATLAB, the following check always holds at equality; under Octave,
@@ -44,13 +43,13 @@ ObjectiveMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, Two
      zeros in the values vector when calling sparse(). */
   assert(tdm.nrows() >= static_cast<int>(mxGetNzmax(sparseMat)));
 
-  double *ptr = mxGetPr(sparseMat);
+  double* ptr = mxGetPr(sparseMat);
 
   int rind = 0;
   int output_row = 0;
 
   for (int i = 0; i < totalCols; i++)
-    for (int j = 0; j < static_cast<int>((colIdxVector[i+1]-colIdxVector[i])); j++, rind++)
+    for (int j = 0; j < static_cast<int>((colIdxVector[i + 1] - colIdxVector[i])); j++, rind++)
       {
         tdm.get(output_row, 0) = rowIdxVector[rind] + 1;
         tdm.get(output_row, 1) = i + 1;
@@ -72,28 +71,29 @@ ObjectiveMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, Two
 }
 
 void
-ObjectiveMFile::eval(const Vector &y, const Vector &x, const Vector &modParams,
-                     Vector &residual, std::vector<TwoDMatrix> &md) noexcept(false)
+ObjectiveMFile::eval(const Vector& y, const Vector& x, const Vector& modParams, Vector& residual,
+                     std::vector<TwoDMatrix>& md) noexcept(false)
 {
-  mxArray *T_m = mxCreateDoubleMatrix(ntt, 1, mxREAL);
+  mxArray* T_m = mxCreateDoubleMatrix(ntt, 1, mxREAL);
 
-  mxArray *y_m = mxCreateDoubleMatrix(y.length(), 1, mxREAL);
+  mxArray* y_m = mxCreateDoubleMatrix(y.length(), 1, mxREAL);
   std::copy_n(y.base(), y.length(), mxGetPr(y_m));
 
-  mxArray *x_m = mxCreateDoubleMatrix(1, x.length(), mxREAL);
+  mxArray* x_m = mxCreateDoubleMatrix(1, x.length(), mxREAL);
   std::copy_n(x.base(), x.length(), mxGetPr(x_m));
 
-  mxArray *params_m = mxCreateDoubleMatrix(modParams.length(), 1, mxREAL);
+  mxArray* params_m = mxCreateDoubleMatrix(modParams.length(), 1, mxREAL);
   std::copy_n(modParams.base(), modParams.length(), mxGetPr(params_m));
 
-  mxArray *T_flag_m = mxCreateLogicalScalar(false);
+  mxArray* T_flag_m = mxCreateLogicalScalar(false);
 
   {
     // Compute temporary terms (for all orders)
     std::string funcname = ObjectiveMFilename + "_g" + std::to_string(md.size()) + "_tt";
-    mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m };
+    mxArray *plhs[1], *prhs[] = {T_m, y_m, x_m, params_m};
 
-    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str());
+    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>,
+                               prhs, funcname.c_str());
     if (retVal != 0)
       throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
@@ -104,13 +104,14 @@ ObjectiveMFile::eval(const Vector &y, const Vector &x, const Vector &modParams,
   {
     // Compute residuals
     std::string funcname = ObjectiveMFilename + "_resid";
-    mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m, T_flag_m };
+    mxArray *plhs[1], *prhs[] = {T_m, y_m, x_m, params_m, T_flag_m};
 
-    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str());
+    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>,
+                               prhs, funcname.c_str());
     if (retVal != 0)
       throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
-    residual = Vector{plhs[0]};
+    residual = Vector {plhs[0]};
     mxDestroyArray(plhs[0]);
   }
 
@@ -118,20 +119,21 @@ ObjectiveMFile::eval(const Vector &y, const Vector &x, const Vector &modParams,
     {
       // Compute model derivatives
       std::string funcname = ObjectiveMFilename + "_g" + std::to_string(i);
-      mxArray *plhs[1], *prhs[] = { T_m, y_m, x_m, params_m, T_flag_m };
+      mxArray *plhs[1], *prhs[] = {T_m, y_m, x_m, params_m, T_flag_m};
 
-      int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>, prhs, funcname.c_str());
+      int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>,
+                                 prhs, funcname.c_str());
       if (retVal != 0)
         throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
       if (i == 1)
         {
-          assert(static_cast<int>(mxGetM(plhs[0])) == md[i-1].nrows());
-          assert(static_cast<int>(mxGetN(plhs[0])) == md[i-1].ncols());
-          std::copy_n(mxGetPr(plhs[0]), mxGetM(plhs[0])*mxGetN(plhs[0]), md[i-1].base());
+          assert(static_cast<int>(mxGetM(plhs[0])) == md[i - 1].nrows());
+          assert(static_cast<int>(mxGetN(plhs[0])) == md[i - 1].ncols());
+          std::copy_n(mxGetPr(plhs[0]), mxGetM(plhs[0]) * mxGetN(plhs[0]), md[i - 1].base());
         }
       else
-        unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[0], md[i-1]);
+        unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[0], md[i - 1]);
 
       mxDestroyArray(plhs[0]);
     }

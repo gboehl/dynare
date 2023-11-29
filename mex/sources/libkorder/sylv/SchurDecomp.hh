@@ -21,8 +21,8 @@
 #ifndef SCHUR_DECOMP_H
 #define SCHUR_DECOMP_H
 
-#include "SylvMatrix.hh"
 #include "QuasiTriangular.hh"
+#include "SylvMatrix.hh"
 
 #include <memory>
 
@@ -32,27 +32,28 @@ class SchurDecomp
   SqSylvMatrix q;
   // Stores t if is owned
   std::unique_ptr<QuasiTriangular> t_storage;
-  QuasiTriangular *t;
+  QuasiTriangular* t;
+
 public:
-  SchurDecomp(const SqSylvMatrix &m);
-  SchurDecomp(const QuasiTriangular &tr);
-  SchurDecomp(QuasiTriangular &tr);
-  const SqSylvMatrix &
+  SchurDecomp(const SqSylvMatrix& m);
+  SchurDecomp(const QuasiTriangular& tr);
+  SchurDecomp(QuasiTriangular& tr);
+  const SqSylvMatrix&
   getQ() const
   {
     return q;
   }
-  const QuasiTriangular &
+  const QuasiTriangular&
   getT() const
   {
     return *t;
   }
-  SqSylvMatrix &
+  SqSylvMatrix&
   getQ()
   {
     return q;
   }
-  QuasiTriangular &
+  QuasiTriangular&
   getT()
   {
     return *t;
@@ -65,7 +66,7 @@ class SchurDecompZero : public SchurDecomp
 {
   GeneralMatrix ru; // right upper matrix
 public:
-  SchurDecompZero(const GeneralMatrix &m);
+  SchurDecompZero(const GeneralMatrix& m);
   ConstGeneralMatrix
   getRU() const
   {

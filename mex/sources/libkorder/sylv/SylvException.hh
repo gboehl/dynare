@@ -28,6 +28,7 @@ class SylvException
 protected:
   std::string file;
   int line;
+
 public:
   SylvException(std::string f, int l);
   virtual ~SylvException() = default;
@@ -38,6 +39,7 @@ public:
 class SylvExceptionMessage : public SylvException
 {
   std::string message;
+
 public:
   SylvExceptionMessage(std::string f, int l, std::string mes);
   std::string getMessage() const override;

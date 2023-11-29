@@ -22,9 +22,9 @@
 ** AUTHOR(S): stephane DOT adjemian AT univ DASH lemans DOT fr
 */
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
-#include <algorithm>
 #include <numbers>
 
 #include <omp.h>
@@ -44,45 +44,21 @@ icdf(const T uniform)
 **
 */
 {
-  static T A[6] =
-    {
-     -3.969683028665376e+01,
-     2.209460984245205e+02,
-     -2.759285104469687e+02,
-     1.383577518672690e+02,
-     -3.066479806614716e+01,
-     2.506628277459239e+00
-    };
-  static T B[5] =
-    {
-     -5.447609879822406e+01,
-     1.615858368580409e+02,
-     -1.556989798598866e+02,
-     6.680131188771972e+01,
-     -1.328068155288572e+01
-    };
-  static T C[6] =
-    {
-     -7.784894002430293e-03,
-     -3.223964580411365e-01,
-     -2.400758277161838e+00,
-     -2.549732539343734e+00,
-     4.374664141464968e+00,
-     2.938163982698783e+00
-    };
-  static T D[4] =
-    {
-     7.784695709041462e-03,
-     3.224671290700398e-01,
-     2.445134137142996e+00,
-     3.754408661907416e+00
-    };
+  static T A[6] = {-3.969683028665376e+01, 2.209460984245205e+02,  -2.759285104469687e+02,
+                   1.383577518672690e+02,  -3.066479806614716e+01, 2.506628277459239e+00};
+  static T B[5] = {-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+                   6.680131188771972e+01, -1.328068155288572e+01};
+  static T C[6] = {-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+                   -2.549732539343734e+00, 4.374664141464968e+00,  2.938163982698783e+00};
+  static T D[4] = {7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00,
+                   3.754408661907416e+00};
   T gaussian = static_cast<T>(0.0);
   if (0 < uniform && uniform < lb)
     {
       T tmp;
-      tmp = sqrt(-2*log(uniform));
-      gaussian = (((((C[0]*tmp+C[1])*tmp+C[2])*tmp+C[3])*tmp+C[4])*tmp+C[5])/((((D[0]*tmp+D[1])*tmp+D[2])*tmp+D[3])*tmp+1);
+      tmp = sqrt(-2 * log(uniform));
+      gaussian = (((((C[0] * tmp + C[1]) * tmp + C[2]) * tmp + C[3]) * tmp + C[4]) * tmp + C[5])
+                 / ((((D[0] * tmp + D[1]) * tmp + D[2]) * tmp + D[3]) * tmp + 1);
     }
   else
     {
@@ -90,25 +66,29 @@ icdf(const T uniform)
         {
           T tmp, TMP;
           tmp = uniform - .5;
-          TMP = tmp*tmp;
-          gaussian = (((((A[0]*TMP+A[1])*TMP+A[2])*TMP+A[3])*TMP+A[4])*TMP+A[5])*tmp/(((((B[0]*TMP+B[1])*TMP+B[2])*TMP+B[3])*TMP+B[4])*TMP+1);
+          TMP = tmp * tmp;
+          gaussian = (((((A[0] * TMP + A[1]) * TMP + A[2]) * TMP + A[3]) * TMP + A[4]) * TMP + A[5])
+                     * tmp
+                     / (((((B[0] * TMP + B[1]) * TMP + B[2]) * TMP + B[3]) * TMP + B[4]) * TMP + 1);
         }
       else
         {
           if (ub < uniform && uniform < 1)
             {
               T tmp;
-              tmp = sqrt(-2*log(1-uniform));
-              gaussian = -(((((C[0]*tmp+C[1])*tmp+C[2])*tmp+C[3])*tmp+C[4])*tmp+C[5])/((((D[0]*tmp+D[1])*tmp+D[2])*tmp+D[3])*tmp+1);
+              tmp = sqrt(-2 * log(1 - uniform));
+              gaussian
+                  = -(((((C[0] * tmp + C[1]) * tmp + C[2]) * tmp + C[3]) * tmp + C[4]) * tmp + C[5])
+                    / ((((D[0] * tmp + D[1]) * tmp + D[2]) * tmp + D[3]) * tmp + 1);
             }
         }
     }
   if (0 < uniform && uniform < 1)
     {
       T tmp, tmp_;
-      tmp = .5*erfc(-gaussian/sqrt(2.0))-uniform;
-      tmp_ = tmp*sqrt(2*numbers::pi)*exp(.5*gaussian*gaussian);
-      gaussian = gaussian - tmp_/(1+.5*gaussian*tmp_);
+      tmp = .5 * erfc(-gaussian / sqrt(2.0)) - uniform;
+      tmp_ = tmp * sqrt(2 * numbers::pi) * exp(.5 * gaussian * gaussian);
+      gaussian = gaussian - tmp_ / (1 + .5 * gaussian * tmp_);
     }
   if (uniform == 0)
     gaussian = -numeric_limits<T>::infinity();
@@ -121,7 +101,7 @@ icdf(const T uniform)
 
 template<typename T>
 void
-icdfm(int n, T *U)
+icdfm(int n, T* U)
 {
 #pragma omp parallel for
   for (int i = 0; i < n; i++)
@@ -131,52 +111,52 @@ icdfm(int n, T *U)
 
 template<typename T>
 void
-icdfmSigma(int d, int n, T *U, const double *LowerCholSigma)
+icdfmSigma(int d, int n, T* U, const double* LowerCholSigma)
 {
   double one = 1.0;
   double zero = 0.0;
   blas_int dd(d);
   blas_int nn(n);
-  icdfm(n*d, U);
-  double tmp[n*d];
+  icdfm(n * d, U);
+  double tmp[n * d];
   dgemm("N", "N", &dd, &nn, &dd, &one, LowerCholSigma, &dd, U, &dd, &zero, tmp, &dd);
-  copy_n(tmp, d*n, U);
+  copy_n(tmp, d * n, U);
 }
 
 template<typename T>
 void
-usphere(int d, int n, T *U)
+usphere(int d, int n, T* U)
 {
-  icdfm(n*d, U);
+  icdfm(n * d, U);
 #pragma omp parallel for
   for (int j = 0; j < n; j++) // sequence index.
     {
-      int k = j*d;
+      int k = j * d;
       double norm = 0.0;
       for (int i = 0; i < d; i++) // dimension index.
-        norm = norm + U[k+i]*U[k+i];
+        norm = norm + U[k + i] * U[k + i];
 
       norm = sqrt(norm);
       for (int i = 0; i < d; i++) // dimension index.
-        U[k+i] = U[k+i]/norm;
+        U[k + i] = U[k + i] / norm;
     }
 }
 
 template<typename T>
 void
-usphereRadius(int d, int n, double radius, T *U)
+usphereRadius(int d, int n, double radius, T* U)
 {
-  icdfm(n*d, U);
+  icdfm(n * d, U);
 #pragma omp parallel for
   for (int j = 0; j < n; j++) // sequence index.
     {
-      int k = j*d;
+      int k = j * d;
       double norm = 0.0;
       for (int i = 0; i < d; i++) // dimension index.
-        norm = norm + U[k+i]*U[k+i];
+        norm = norm + U[k + i] * U[k + i];
 
       norm = sqrt(norm);
       for (int i = 0; i < d; i++) // dimension index.
-        U[k+i] = radius*U[k+i]/norm;
+        U[k + i] = radius * U[k + i] / norm;
     }
 }

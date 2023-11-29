@@ -36,16 +36,17 @@ private:
   /* Unpack a sparse matrix (of double floats) into a TwoDMatrix object.
      Real elements of the original matrix are copied as-is to the new one.
      Complex elements are replaced by NaNs. */
-  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray *sparseMat, TwoDMatrix &tdm);
+  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray* sparseMat, TwoDMatrix& tdm);
   /* Given a complex dense matrix (of double floats), returns a real dense matrix of same size.
      Real elements of the original matrix are copied as-is to the new one.
      Complex elements are replaced by NaNs.
      Destroys the original matrix. */
-  static mxArray *cmplxToReal(mxArray *m);
+  static mxArray* cmplxToReal(mxArray* m);
+
 public:
-  explicit DynamicModelMFile(const std::string &modName, int ntt_arg);
+  explicit DynamicModelMFile(const std::string& modName, int ntt_arg);
   virtual ~DynamicModelMFile() = default;
-  void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-            Vector &residual, std::vector<TwoDMatrix> &md) override;
+  void eval(const Vector& y, const Vector& x, const Vector& params, const Vector& ySteady,
+            Vector& residual, std::vector<TwoDMatrix>& md) override;
 };
 #endif

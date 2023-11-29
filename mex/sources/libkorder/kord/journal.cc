@@ -21,30 +21,31 @@
 #include "journal.hh"
 #include "kord_exception.hh"
 
-#include <iomanip>
 #include <cmath>
 #include <ctime>
+#include <iomanip>
 #include <limits>
 #include <thread>
 
 #ifndef _WIN32
-# include <sys/time.h>     // For getrusage()
-# include <sys/resource.h> // For getrusage()
-# include <sys/utsname.h>  // For uname()
 # include <cstdlib>        // For getloadavg()
+# include <sys/resource.h> // For getrusage()
+# include <sys/time.h>     // For getrusage()
+# include <sys/utsname.h>  // For uname()
 # include <unistd.h>       // For sysconf()
 # ifdef __APPLE__
-#  include <sys/types.h>
 #  include <sys/sysctl.h>
+#  include <sys/types.h>
 # endif
 #else
 # ifndef NOMINMAX
-#  define NOMINMAX         // Do not define "min" and "max" macros
+#  define NOMINMAX // Do not define "min" and "max" macros
 # endif
-# include <windows.h>      // For GlobalMemoryStatus()
+# include <windows.h> // For GlobalMemoryStatus()
 #endif
 
-const std::chrono::time_point<std::chrono::high_resolution_clock> SystemResources::start = std::chrono::high_resolution_clock::now();
+const std::chrono::time_point<std::chrono::high_resolution_clock> SystemResources::start
+    = std::chrono::high_resolution_clock::now();
 
 #ifndef _WIN32
 long
@@ -58,11 +59,11 @@ long
 SystemResources::availableMemory()
 {
 #if !defined(_WIN32) && !defined(__APPLE__)
-  return sysconf(_SC_AVPHYS_PAGES)*pageSize();
+  return sysconf(_SC_AVPHYS_PAGES) * pageSize();
 #elif defined(__APPLE__)
   unsigned long usermem = 0;
   size_t len = sizeof usermem;
-  static int mib[2] = { CTL_HW, HW_USERMEM };
+  static int mib[2] = {CTL_HW, HW_USERMEM};
   int retval = sysctl(mib, 2, &usermem, &len, NULL, 0);
   if (retval == 0)
     return static_cast<long>(usermem);
@@ -83,8 +84,8 @@ SystemResources::SystemResources()
 #ifndef _WIN32
   struct rusage rus;
   getrusage(RUSAGE_SELF, &rus);
-  utime = rus.ru_utime.tv_sec+rus.ru_utime.tv_usec*1.0e-6;
-  stime = rus.ru_stime.tv_sec+rus.ru_stime.tv_usec*1.0e-6;
+  utime = rus.ru_utime.tv_sec + rus.ru_utime.tv_usec * 1.0e-6;
+  stime = rus.ru_stime.tv_sec + rus.ru_stime.tv_usec * 1.0e-6;
   idrss = rus.ru_idrss;
   majflt = rus.ru_majflt * pageSize();
 #else
@@ -104,7 +105,7 @@ SystemResources::SystemResources()
 }
 
 void
-SystemResources::diff(const SystemResources &pre)
+SystemResources::diff(const SystemResources& pre)
 {
   utime -= pre.utime;
   stime -= pre.stime;
@@ -114,14 +115,14 @@ SystemResources::diff(const SystemResources &pre)
 }
 
 // JournalRecord::operator<<() symmetry code
-JournalRecord &
-JournalRecord::operator<<(const IntSequence &s)
+JournalRecord&
+JournalRecord::operator<<(const IntSequence& s)
 {
   operator<<('[');
   for (int i = 0; i < s.size(); i++)
     {
       operator<<(s[i]);
-      if (i < s.size()-1)
+      if (i < s.size() - 1)
         operator<<(',');
     }
   operator<<(']');
@@ -129,49 +130,49 @@ JournalRecord::operator<<(const IntSequence &s)
 }
 
 void
-JournalRecord::writeFloatTabular(std::ostream &s, double d, int width)
+JournalRecord::writeFloatTabular(std::ostream& s, double d, int width)
 {
   // Number of digits of integer part
-  int intdigits = std::max(static_cast<int>(std::floor(log10(d))+1), 1);
+  int intdigits = std::max(static_cast<int>(std::floor(log10(d)) + 1), 1);
 
   int prec = std::max(width - 1 - intdigits, 0);
   s << std::fixed << std::setw(width) << std::setprecision(prec) << d;
 }
 
 void
-JournalRecord::writePrefix(const SystemResources &f)
+JournalRecord::writePrefix(const SystemResources& f)
 {
-  constexpr double mb = 1024*1024;
+  constexpr double mb = 1024 * 1024;
   std::ostringstream s;
   s << std::setfill('0');
   writeFloatTabular(s, f.elapsed, 7);
   s << "│" << recChar << std::setw(5) << ord << "│";
   writeFloatTabular(s, f.load_avg, 3);
   s << "│";
-  writeFloatTabular(s, f.mem_avail/mb, 5);
+  writeFloatTabular(s, f.mem_avail / mb, 5);
   s << "│      │ ";
-  for (int i = 0; i < 2*journal.getDepth(); i++)
+  for (int i = 0; i < 2 * journal.getDepth(); i++)
     s << ' ';
   prefix = s.str();
 }
 
 void
-JournalRecordPair::writePrefixForEnd(const SystemResources &f)
+JournalRecordPair::writePrefixForEnd(const SystemResources& f)
 {
-  constexpr double mb = 1024*1024;
+  constexpr double mb = 1024 * 1024;
   SystemResources difnow;
   difnow.diff(f);
   std::ostringstream s;
   s << std::setfill('0');
-  writeFloatTabular(s, f.elapsed+difnow.elapsed, 7);
+  writeFloatTabular(s, f.elapsed + difnow.elapsed, 7);
   s << "│E" << std::setw(5) << ord << "│";
   writeFloatTabular(s, difnow.load_avg, 3);
   s << "│";
-  writeFloatTabular(s, difnow.mem_avail/mb, 5);
+  writeFloatTabular(s, difnow.mem_avail / mb, 5);
   s << "│";
-  writeFloatTabular(s, difnow.majflt/mb, 6);
+  writeFloatTabular(s, difnow.majflt / mb, 6);
   s << "│ ";
-  for (int i = 0; i < 2*journal.getDepth(); i++)
+  for (int i = 0; i < 2 * journal.getDepth(); i++)
     s << ' ';
   prefix_end = s.str();
 }
@@ -186,8 +187,8 @@ JournalRecordPair::~JournalRecordPair()
   journal.flush();
 }
 
-JournalRecord &
-endrec(JournalRecord &rec)
+JournalRecord&
+endrec(JournalRecord& rec)
 {
   rec.journal << rec.prefix;
   rec.journal << rec.mes;
@@ -200,19 +201,15 @@ endrec(JournalRecord &rec)
 void
 Journal::printHeader()
 {
-  *this << "Dynare, version " << PACKAGE_VERSION << '\n'
-        << '\n'
-        << "System info: ";
+  *this << "Dynare, version " << PACKAGE_VERSION << '\n' << '\n' << "System info: ";
 #ifndef _WIN32
   utsname info;
   uname(&info);
-  *this << info.sysname << " " << info.release << " " << info.version << " "
-        << info.machine;
+  *this << info.sysname << " " << info.release << " " << info.version << " " << info.machine;
 #else
   *this << "Windows";
 #endif
-  *this << ", processors online: " << std::thread::hardware_concurrency()
-        << "\n\nStart time: ";
+  *this << ", processors online: " << std::thread::hardware_concurrency() << "\n\nStart time: ";
   std::time_t t = std::time(nullptr);
   // NB: in the date/time string, we avoid using locale-specific strings (#1751)
   *this << std::put_time(std::localtime(&t),

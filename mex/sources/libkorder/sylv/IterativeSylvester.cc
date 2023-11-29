@@ -22,7 +22,7 @@
 #include "KronUtils.hh"
 
 void
-IterativeSylvester::solve(SylvParams &pars, KronVector &x) const
+IterativeSylvester::solve(SylvParams& pars, KronVector& x) const
 {
   int max_steps = *(pars.max_num_iter);
   int steps = 1;
@@ -45,9 +45,9 @@ IterativeSylvester::solve(SylvParams &pars, KronVector &x) const
 }
 
 double
-IterativeSylvester::performFirstStep(KronVector &x) const
+IterativeSylvester::performFirstStep(KronVector& x) const
 {
-  KronVector xtmp(const_cast<const KronVector &>(x));
+  KronVector xtmp(const_cast<const KronVector&>(x));
   KronUtils::multKron(*matrixF, *matrixK, xtmp);
   x.add(-1., xtmp);
   double norm = xtmp.getMax();
@@ -55,10 +55,9 @@ IterativeSylvester::performFirstStep(KronVector &x) const
 }
 
 double
-IterativeSylvester::performStep(const QuasiTriangular &k, const QuasiTriangular &f,
-                                KronVector &x)
+IterativeSylvester::performStep(const QuasiTriangular& k, const QuasiTriangular& f, KronVector& x)
 {
-  KronVector xtmp(const_cast<const KronVector &>(x));
+  KronVector xtmp(const_cast<const KronVector&>(x));
   KronUtils::multKron(f, k, xtmp);
   x.add(1.0, xtmp);
   double norm = xtmp.getMax();

@@ -21,38 +21,37 @@
 #include "twod_matrix.hh"
 #include "tl_exception.hh"
 
-#include <memory>
 #include <fstream>
 #include <iomanip>
 #include <limits>
+#include <memory>
 
-ConstTwoDMatrix::ConstTwoDMatrix(const TwoDMatrix &m)
-  : ConstGeneralMatrix(m)
+ConstTwoDMatrix::ConstTwoDMatrix(const TwoDMatrix& m) : ConstGeneralMatrix(m)
 {
 }
 
-ConstTwoDMatrix::ConstTwoDMatrix(const TwoDMatrix &m, int first_col, int num)
-  : ConstGeneralMatrix(m, 0, first_col, m.nrows(), num)
+ConstTwoDMatrix::ConstTwoDMatrix(const TwoDMatrix& m, int first_col, int num) :
+    ConstGeneralMatrix(m, 0, first_col, m.nrows(), num)
 {
 }
 
-ConstTwoDMatrix::ConstTwoDMatrix(const ConstTwoDMatrix &m, int first_col, int num)
-  : ConstGeneralMatrix(m, 0, first_col, m.nrows(), num)
+ConstTwoDMatrix::ConstTwoDMatrix(const ConstTwoDMatrix& m, int first_col, int num) :
+    ConstGeneralMatrix(m, 0, first_col, m.nrows(), num)
 {
 }
 
-ConstTwoDMatrix::ConstTwoDMatrix(int first_row, int num, const TwoDMatrix &m)
-  : ConstGeneralMatrix(m, first_row, 0, num, m.ncols())
+ConstTwoDMatrix::ConstTwoDMatrix(int first_row, int num, const TwoDMatrix& m) :
+    ConstGeneralMatrix(m, first_row, 0, num, m.ncols())
 {
 }
 
-ConstTwoDMatrix::ConstTwoDMatrix(int first_row, int num, const ConstTwoDMatrix &m)
-  : ConstGeneralMatrix(m, first_row, 0, num, m.ncols())
+ConstTwoDMatrix::ConstTwoDMatrix(int first_row, int num, const ConstTwoDMatrix& m) :
+    ConstGeneralMatrix(m, first_row, 0, num, m.ncols())
 {
 }
 
-TwoDMatrix &
-TwoDMatrix::operator=(const ConstTwoDMatrix &m)
+TwoDMatrix&
+TwoDMatrix::operator=(const ConstTwoDMatrix& m)
 {
   GeneralMatrix::operator=(m);
   return *this;
@@ -66,13 +65,13 @@ TwoDMatrix::copyRow(int from, int to)
 }
 
 void
-TwoDMatrix::copyRow(const ConstTwoDMatrix &m, int from, int to)
+TwoDMatrix::copyRow(const ConstTwoDMatrix& m, int from, int to)
 {
   getRow(to) = m.getRow(from);
 }
 
 void
-TwoDMatrix::addRow(double d, const ConstTwoDMatrix &m, int from, int to)
+TwoDMatrix::addRow(double d, const ConstTwoDMatrix& m, int from, int to)
 {
   getRow(to).add(d, m.getRow(from));
 }
@@ -85,21 +84,21 @@ TwoDMatrix::copyColumn(int from, int to)
 }
 
 void
-TwoDMatrix::copyColumn(const ConstTwoDMatrix &m, int from, int to)
+TwoDMatrix::copyColumn(const ConstTwoDMatrix& m, int from, int to)
 {
   getCol(to) = m.getCol(from);
 }
 
 void
-TwoDMatrix::addColumn(double d, const ConstTwoDMatrix &m, int from, int to)
+TwoDMatrix::addColumn(double d, const ConstTwoDMatrix& m, int from, int to)
 {
   getCol(to).add(d, m.getCol(from));
 }
 
 void
-TwoDMatrix::save(const std::string &fname) const
+TwoDMatrix::save(const std::string& fname) const
 {
-  std::ofstream fd{fname, std::ios::out | std::ios::trunc};
+  std::ofstream fd {fname, std::ios::out | std::ios::trunc};
   if (fd.fail())
     TL_RAISE("Cannot open file for writing in TwoDMatrix::save");
 

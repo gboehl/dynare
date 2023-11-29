@@ -21,8 +21,8 @@
 #ifndef GENERAL_SYLVESTER_H
 #define GENERAL_SYLVESTER_H
 
-#include "SylvMatrix.hh"
 #include "SimilarityDecomp.hh"
+#include "SylvMatrix.hh"
 #include "SylvesterSolver.hh"
 
 #include <memory>
@@ -39,25 +39,21 @@ class GeneralSylvester
   std::unique_ptr<SchurDecompZero> bdecomp;
   std::unique_ptr<SimilarityDecomp> cdecomp;
   std::unique_ptr<SylvesterSolver> sylv;
+
 public:
   // Construct with my copy of d
-  GeneralSylvester(int ord, int n, int m, int zero_cols,
-                   const ConstVector &da, const ConstVector &db,
-                   const ConstVector &dc, const ConstVector &dd,
-                   const SylvParams &ps);
-  GeneralSylvester(int ord, int n, int m, int zero_cols,
-                   const ConstVector &da, const ConstVector &db,
-                   const ConstVector &dc, const ConstVector &dd,
+  GeneralSylvester(int ord, int n, int m, int zero_cols, const ConstVector& da,
+                   const ConstVector& db, const ConstVector& dc, const ConstVector& dd,
+                   const SylvParams& ps);
+  GeneralSylvester(int ord, int n, int m, int zero_cols, const ConstVector& da,
+                   const ConstVector& db, const ConstVector& dc, const ConstVector& dd,
                    bool alloc_for_check = false);
   // Construct with provided storage for d
-  GeneralSylvester(int ord, int n, int m, int zero_cols,
-                   const ConstVector &da, const ConstVector &db,
-                   const ConstVector &dc, Vector &dd,
+  GeneralSylvester(int ord, int n, int m, int zero_cols, const ConstVector& da,
+                   const ConstVector& db, const ConstVector& dc, Vector& dd,
                    bool alloc_for_check = false);
-  GeneralSylvester(int ord, int n, int m, int zero_cols,
-                   const ConstVector &da, const ConstVector &db,
-                   const ConstVector &dc, Vector &dd,
-                   const SylvParams &ps);
+  GeneralSylvester(int ord, int n, int m, int zero_cols, const ConstVector& da,
+                   const ConstVector& db, const ConstVector& dc, Vector& dd, const SylvParams& ps);
   virtual ~GeneralSylvester() = default;
   int
   getM() const
@@ -69,23 +65,24 @@ public:
   {
     return a.nrows();
   }
-  const double *
+  const double*
   getResult() const
   {
     return d.base();
   }
-  const SylvParams &
+  const SylvParams&
   getParams() const
   {
     return pars;
   }
-  SylvParams &
+  SylvParams&
   getParams()
   {
     return pars;
   }
   void solve();
-  void check(const ConstVector &ds);
+  void check(const ConstVector& ds);
+
 private:
   void init();
 };

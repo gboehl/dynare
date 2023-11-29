@@ -67,7 +67,7 @@ SchurDecompEig::bubbleEigen(diag_iter from, diag_iter to)
    The success is signaled by returned true.
 */
 bool
-SchurDecompEig::tryToSwap(diag_iter &it, diag_iter &itadd)
+SchurDecompEig::tryToSwap(diag_iter& it, diag_iter& itadd)
 {
   itadd = it;
   --itadd;
@@ -77,8 +77,7 @@ SchurDecompEig::tryToSwap(diag_iter &it, diag_iter &itadd)
   lapack_int ilst = itadd->getIndex() + 1;
   auto work = std::make_unique<double[]>(n);
   lapack_int info;
-  dtrexc("V", &n, getT().base(), &ldt, getQ().base(), &ldq, &ifst, &ilst, work.get(),
-         &info);
+  dtrexc("V", &n, getT().base(), &ldt, getQ().base(), &ldq, &ifst, &ilst, work.get(), &info);
   if (info < 0)
     throw SYLV_MES_EXCEPTION("Wrong argument to dtrexc.");
 
@@ -105,8 +104,7 @@ SchurDecompEig::orderEigen()
   double last_size = 0.0;
   while (runp != getT().diag_end())
     {
-      diag_iter least = getT().findNextLargerBlock(run, getT().diag_end(),
-                                                   last_size);
+      diag_iter least = getT().findNextLargerBlock(run, getT().diag_end(), last_size);
       last_size = least->getSize();
       if (run == least)
         ++run;

@@ -20,9 +20,9 @@
 #ifndef _MEM_MNGR_HH
 #define _MEM_MNGR_HH
 
+#include <fstream>
 #include <string>
 #include <vector>
-#include <fstream>
 
 #include "ErrorHandling.hh"
 
@@ -35,26 +35,27 @@ struct NonZeroElem
   NonZeroElem *NZE_R_N, *NZE_C_N;
 };
 
-using v_NonZeroElem = vector<NonZeroElem *>;
+using v_NonZeroElem = vector<NonZeroElem*>;
 
 class Mem_Mngr
 {
 public:
   void init_Mem();
-  void mxFree_NZE(void *pos);
-  NonZeroElem *mxMalloc_NZE();
+  void mxFree_NZE(void* pos);
+  NonZeroElem* mxMalloc_NZE();
   void init_CHUNK_BLCK_SIZE(int u_count);
   void Free_All();
   Mem_Mngr();
   void fixe_file_name(string filename_arg);
   bool swp_f;
+
 private:
   v_NonZeroElem Chunk_Stack;
   unsigned int CHUNK_SIZE, CHUNK_BLCK_SIZE, Nb_CHUNK;
   unsigned int CHUNK_heap_pos;
-  NonZeroElem **NZE_Mem_add;
-  NonZeroElem *NZE_Mem;
-  vector<NonZeroElem *> NZE_Mem_Allocated;
+  NonZeroElem** NZE_Mem_add;
+  NonZeroElem* NZE_Mem;
+  vector<NonZeroElem*> NZE_Mem_Allocated;
   int swp_f_b;
   fstream SaveCode_swp;
   string filename_mem;

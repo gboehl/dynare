@@ -29,17 +29,23 @@
 # include <dlfcn.h> // unix/linux DLL (.so) handling routines
 #endif
 
-#include <string>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "dynare_exception.hh"
 
 #include "dynamic_abstract_class.hh"
 
-using dynamic_tt_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, double *T);
-using dynamic_resid_or_g1_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *resid_or_g1);
-using dynamic_higher_deriv_fct = void (*)(const double *y, const double *x, int nb_row_x, const double *params, const double *steady_state, int it_, const double *T, double *g_i, double *g_j, double *g_v);
+using dynamic_tt_fct
+    = void (*)(const double* y, const double* x, int nb_row_x, const double* params,
+               const double* steady_state, int it_, double* T);
+using dynamic_resid_or_g1_fct
+    = void (*)(const double* y, const double* x, int nb_row_x, const double* params,
+               const double* steady_state, int it_, const double* T, double* resid_or_g1);
+using dynamic_higher_deriv_fct = void (*)(const double* y, const double* x, int nb_row_x,
+                                          const double* params, const double* steady_state, int it_,
+                                          const double* T, double* g_i, double* g_j, double* g_v);
 
 /**
  * creates pointer to Dynamic function inside <model>_dynamic.dll
@@ -54,13 +60,13 @@ private:
 #if defined(_WIN32) || defined(__CYGWIN32__)
   HINSTANCE dynamicHinstance; // DLL instance pointer in Windows
 #else
-  void *dynamicHinstance; // and in Linux or Mac
+  void* dynamicHinstance; // and in Linux or Mac
 #endif
   std::unique_ptr<double[]> tt; // Vector of temporary terms
 
   template<typename T>
   std::pair<T, dynamic_tt_fct>
-  getSymbolsFromDLL(const std::string &funcname, const std::string &fName)
+  getSymbolsFromDLL(const std::string& funcname, const std::string& fName)
   {
     dynamic_tt_fct tt;
     T deriv;
@@ -68,33 +74,36 @@ private:
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wcast-function-type"
     deriv = reinterpret_cast<T>(GetProcAddress(dynamicHinstance, funcname.c_str()));
-    tt = reinterpret_cast<dynamic_tt_fct>(GetProcAddress(dynamicHinstance, (funcname + "_tt").c_str()));
+    tt = reinterpret_cast<dynamic_tt_fct>(
+        GetProcAddress(dynamicHinstance, (funcname + "_tt").c_str()));
 # pragma GCC diagnostic pop
 #else
-      deriv = reinterpret_cast<T>(dlsym(dynamicHinstance, funcname.c_str()));
-      tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, (funcname + "_tt").c_str()));
+    deriv = reinterpret_cast<T>(dlsym(dynamicHinstance, funcname.c_str()));
+    tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, (funcname + "_tt").c_str()));
 #endif
-      if (!deriv || !tt)
-        {
+    if (!deriv || !tt)
+      {
 #if defined(__CYGWIN32__) || defined(_WIN32)
-          FreeLibrary(dynamicHinstance);
+        FreeLibrary(dynamicHinstance);
 #else
-          dlclose(dynamicHinstance);
+        dlclose(dynamicHinstance);
 #endif
-          throw DynareException(__FILE__, __LINE__, "Error when loading symbols from " + fName
+        throw DynareException(__FILE__, __LINE__,
+                              "Error when loading symbols from " + fName
 #if !defined(__CYGWIN32__) && !defined(_WIN32)
-                                + ": " + dlerror()
+                                  + ": " + dlerror()
 #endif
-                                );
-        }
-      return { deriv, tt };
+        );
+      }
+    return {deriv, tt};
   }
+
 public:
   // construct and load Dynamic model DLL
-  explicit DynamicModelDLL(const std::string &fname, int ntt_arg, int order);
+  explicit DynamicModelDLL(const std::string& fname, int ntt_arg, int order);
   virtual ~DynamicModelDLL();
 
-  void eval(const Vector &y, const Vector &x, const Vector &params, const Vector &ySteady,
-            Vector &residual, std::vector<TwoDMatrix> &md) override;
+  void eval(const Vector& y, const Vector& x, const Vector& params, const Vector& ySteady,
+            Vector& residual, std::vector<TwoDMatrix>& md) override;
 };
 #endif

@@ -30,8 +30,8 @@
 #ifndef DYNAMIC_MODEL_H
 #define DYNAMIC_MODEL_H
 
-#include "t_container.hh"
 #include "sparse_tensor.hh"
+#include "t_container.hh"
 
 #include "Vector.hh"
 
@@ -46,7 +46,7 @@ class NameList
 public:
   virtual ~NameList() = default;
   virtual int getNum() const = 0;
-  virtual const std::string &getName(int i) const = 0;
+  virtual const std::string& getName(int i) const = 0;
   void print() const;
 };
 
@@ -121,21 +121,22 @@ public:
   int
   numeq() const
   {
-    return nstat()+nboth()+npred()+nforw();
+    return nstat() + nboth() + npred() + nforw();
   }
 
-  virtual const NameList &getAllEndoNames() const = 0;
-  virtual const NameList &getStateNames() const = 0;
-  virtual const NameList &getExogNames() const = 0;
-  virtual const TwoDMatrix &getVcov() const = 0;
-  virtual const TensorContainer<FSSparseTensor> &getModelDerivatives() const = 0;
-  virtual const Vector &getSteady() const = 0;
-  virtual Vector &getSteady() = 0;
+  virtual const NameList& getAllEndoNames() const = 0;
+  virtual const NameList& getStateNames() const = 0;
+  virtual const NameList& getExogNames() const = 0;
+  virtual const TwoDMatrix& getVcov() const = 0;
+  virtual const TensorContainer<FSSparseTensor>& getModelDerivatives() const = 0;
+  virtual const Vector& getSteady() const = 0;
+  virtual Vector& getSteady() = 0;
 
   virtual void solveDeterministicSteady() = 0;
-  virtual void evaluateSystem(Vector &out, const ConstVector &yy, const Vector &xx) = 0;
-  virtual void evaluateSystem(Vector &out, const ConstVector &yym, const ConstVector &yy,
-                              const ConstVector &yyp, const Vector &xx) = 0;
+  virtual void evaluateSystem(Vector& out, const ConstVector& yy, const Vector& xx) = 0;
+  virtual void evaluateSystem(Vector& out, const ConstVector& yym, const ConstVector& yy,
+                              const ConstVector& yyp, const Vector& xx)
+      = 0;
   virtual void calcDerivativesAtSteady() = 0;
 };
 

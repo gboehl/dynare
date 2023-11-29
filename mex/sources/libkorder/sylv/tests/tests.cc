@@ -18,29 +18,29 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SylvException.hh"
+#include "GeneralSylvester.hh"
+#include "IterativeSylvester.hh"
+#include "KronUtils.hh"
+#include "KronVector.hh"
 #include "QuasiTriangular.hh"
 #include "QuasiTriangularZero.hh"
-#include "Vector.hh"
-#include "KronVector.hh"
-#include "KronUtils.hh"
-#include "TriangularSylvester.hh"
-#include "GeneralSylvester.hh"
 #include "SchurDecompEig.hh"
 #include "SimilarityDecomp.hh"
-#include "IterativeSylvester.hh"
+#include "SylvException.hh"
 #include "SylvMatrix.hh"
+#include "TriangularSylvester.hh"
+#include "Vector.hh"
 #include "int_power.hh"
 
 #include "MMMatrix.hh"
 
-#include <ctime>
 #include <cmath>
+#include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <memory>
 #include <string>
 #include <utility>
-#include <iostream>
-#include <iomanip>
-#include <memory>
 
 class TestRunnable
 {
@@ -53,30 +53,31 @@ public:
   virtual ~TestRunnable() = default;
   bool test() const;
   virtual bool run() const = 0;
+
 protected:
   // declaration of auxiliary static methods
-  static bool quasi_solve(bool trans, const std::string &mname, const std::string &vname);
-  static bool mult_kron(bool trans, const std::string &mname, const std::string &vname,
-                        const std::string &cname, int m, int n, int depth);
-  static bool level_kron(bool trans, const std::string &mname, const std::string &vname,
-                         const std::string &cname, int level, int m, int n, int depth);
-  static bool kron_power(const std::string &m1name, const std::string &m2name, const std::string &vname,
-                         const std::string &cname, int m, int n, int depth);
-  static bool lin_eval(const std::string &m1name, const std::string &m2name, const std::string &vname,
-                       const std::string &cname, int m, int n, int depth,
+  static bool quasi_solve(bool trans, const std::string& mname, const std::string& vname);
+  static bool mult_kron(bool trans, const std::string& mname, const std::string& vname,
+                        const std::string& cname, int m, int n, int depth);
+  static bool level_kron(bool trans, const std::string& mname, const std::string& vname,
+                         const std::string& cname, int level, int m, int n, int depth);
+  static bool kron_power(const std::string& m1name, const std::string& m2name,
+                         const std::string& vname, const std::string& cname, int m, int n,
+                         int depth);
+  static bool lin_eval(const std::string& m1name, const std::string& m2name,
+                       const std::string& vname, const std::string& cname, int m, int n, int depth,
                        double alpha, double beta1, double beta2);
-  static bool qua_eval(const std::string &m1name, const std::string &m2name, const std::string &vname,
-                       const std::string &cname, int m, int n, int depth,
-                       double alpha, double betas, double gamma,
-                       double delta1, double delta2);
-  static bool tri_sylv(const std::string &m1name, const std::string &m2name, const std::string &vname,
-                       int m, int n, int depth);
-  static bool gen_sylv(const std::string &aname, const std::string &bname, const std::string &cname,
-                       const std::string &dname, int m, int n, int order);
-  static bool eig_bubble(const std::string &aname, int from, int to);
-  static bool block_diag(const std::string &aname, double log10norm = 3.0);
-  static bool iter_sylv(const std::string &m1name, const std::string &m2name, const std::string &vname,
-                        int m, int n, int depth);
+  static bool qua_eval(const std::string& m1name, const std::string& m2name,
+                       const std::string& vname, const std::string& cname, int m, int n, int depth,
+                       double alpha, double betas, double gamma, double delta1, double delta2);
+  static bool tri_sylv(const std::string& m1name, const std::string& m2name,
+                       const std::string& vname, int m, int n, int depth);
+  static bool gen_sylv(const std::string& aname, const std::string& bname, const std::string& cname,
+                       const std::string& dname, int m, int n, int order);
+  static bool eig_bubble(const std::string& aname, int from, int to);
+  static bool block_diag(const std::string& aname, double log10norm = 3.0);
+  static bool iter_sylv(const std::string& m1name, const std::string& m2name,
+                        const std::string& vname, int m, int n, int depth);
 };
 
 bool
@@ -86,7 +87,8 @@ TestRunnable::test() const
   clock_t start = clock();
   bool passed = run();
   clock_t end = clock();
-  std::cout << "CPU time " << (static_cast<double>(end-start))/CLOCKS_PER_SEC << " (CPU seconds)..................";
+  std::cout << "CPU time " << (static_cast<double>(end - start)) / CLOCKS_PER_SEC
+            << " (CPU seconds)..................";
   if (passed)
     std::cout << "passed";
   else
@@ -100,7 +102,7 @@ TestRunnable::test() const
 /**********************************************************/
 
 bool
-TestRunnable::quasi_solve(bool trans, const std::string &mname, const std::string &vname)
+TestRunnable::quasi_solve(bool trans, const std::string& mname, const std::string& vname)
 {
   MMMatrixIn mmt(mname);
   MMMatrixIn mmv(vname);
@@ -114,15 +116,16 @@ TestRunnable::quasi_solve(bool trans, const std::string &mname, const std::strin
     }
   else if (mmt.row() > mmt.col())
     {
-      t = std::make_unique<QuasiTriangularZero>(mmt.row()-mmt.col(), mmt.getData(), mmt.col());
-      tsave = std::make_unique<QuasiTriangularZero>(const_cast<const QuasiTriangularZero &>(dynamic_cast<QuasiTriangularZero &>(*t)));
+      t = std::make_unique<QuasiTriangularZero>(mmt.row() - mmt.col(), mmt.getData(), mmt.col());
+      tsave = std::make_unique<QuasiTriangularZero>(
+          const_cast<const QuasiTriangularZero&>(dynamic_cast<QuasiTriangularZero&>(*t)));
     }
   else
     {
       std::cout << "  Wrong quasi triangular dimensions, rows must be >= cols.\n";
       return false;
     }
-  ConstVector v{mmv.getData()};
+  ConstVector v {mmv.getData()};
   Vector x(v.length());
   double eig_min = 1.0e20;
   if (trans)
@@ -143,29 +146,26 @@ TestRunnable::quasi_solve(bool trans, const std::string &mname, const std::strin
 }
 
 bool
-TestRunnable::mult_kron(bool trans, const std::string &mname, const std::string &vname,
-                        const std::string &cname, int m, int n, int depth)
+TestRunnable::mult_kron(bool trans, const std::string& mname, const std::string& vname,
+                        const std::string& cname, int m, int n, int depth)
 {
   MMMatrixIn mmt(mname);
   MMMatrixIn mmv(vname);
   MMMatrixIn mmc(cname);
 
-  int length = power(m, depth)*n;
-  if (mmt.row() != m
-      || mmv.row() != length
-      || mmc.row() != length)
+  int length = power(m, depth) * n;
+  if (mmt.row() != m || mmv.row() != length || mmc.row() != length)
     {
       std::cout << "  Incompatible sizes for kron mult action, len=" << length
-                << ", matrow=" << mmt.row() << ", m=" << m
-                << ", vrow=" << mmv.row() << ", crow=" << mmc.row()
-                << std::endl;
+                << ", matrow=" << mmt.row() << ", m=" << m << ", vrow=" << mmv.row()
+                << ", crow=" << mmc.row() << std::endl;
       return false;
     }
 
   QuasiTriangular t(mmt.getData(), mmt.row());
-  Vector vraw{mmv.getData()};
+  Vector vraw {mmv.getData()};
   KronVector v(vraw, m, n, depth);
-  Vector craw{mmc.getData()};
+  Vector craw {mmc.getData()};
   KronVector c(craw, m, n, depth);
   if (trans)
     t.multKronTrans(v);
@@ -178,30 +178,27 @@ TestRunnable::mult_kron(bool trans, const std::string &mname, const std::string 
 }
 
 bool
-TestRunnable::level_kron(bool trans, const std::string &mname, const std::string &vname,
-                         const std::string &cname, int level, int m, int n, int depth)
+TestRunnable::level_kron(bool trans, const std::string& mname, const std::string& vname,
+                         const std::string& cname, int level, int m, int n, int depth)
 {
   MMMatrixIn mmt(mname);
   MMMatrixIn mmv(vname);
   MMMatrixIn mmc(cname);
 
-  int length = power(m, depth)*n;
-  if ((level > 0 && mmt.row() != m)
-      || (level == 0 && mmt.row() != n)
-      || mmv.row() != length
+  int length = power(m, depth) * n;
+  if ((level > 0 && mmt.row() != m) || (level == 0 && mmt.row() != n) || mmv.row() != length
       || mmc.row() != length)
     {
       std::cout << "  Incompatible sizes for kron mult action, len=" << length
-                << ", matrow=" << mmt.row() << ", m=" << m << ", n=" << n
-                << ", vrow=" << mmv.row() << ", crow=" << mmc.row()
-                << std::endl;
+                << ", matrow=" << mmt.row() << ", m=" << m << ", n=" << n << ", vrow=" << mmv.row()
+                << ", crow=" << mmc.row() << std::endl;
       return false;
     }
 
   QuasiTriangular t(mmt.getData(), mmt.row());
-  Vector vraw{mmv.getData()};
+  Vector vraw {mmv.getData()};
   ConstKronVector v(vraw, m, n, depth);
-  Vector craw{mmc.getData()};
+  Vector craw {mmc.getData()};
   KronVector c(craw, m, n, depth);
   KronVector x(v);
   if (trans)
@@ -215,33 +212,29 @@ TestRunnable::level_kron(bool trans, const std::string &mname, const std::string
 }
 
 bool
-TestRunnable::kron_power(const std::string &m1name, const std::string &m2name, const std::string &vname,
-                         const std::string &cname, int m, int n, int depth)
+TestRunnable::kron_power(const std::string& m1name, const std::string& m2name,
+                         const std::string& vname, const std::string& cname, int m, int n,
+                         int depth)
 {
   MMMatrixIn mmt1(m1name);
   MMMatrixIn mmt2(m2name);
   MMMatrixIn mmv(vname);
   MMMatrixIn mmc(cname);
 
-  int length = power(m, depth)*n;
-  if (mmt1.row() != m
-      || mmt2.row() != n
-      || mmv.row() != length
-      || mmc.row() != length)
+  int length = power(m, depth) * n;
+  if (mmt1.row() != m || mmt2.row() != n || mmv.row() != length || mmc.row() != length)
     {
       std::cout << "  Incompatible sizes for kron power mult action, len=" << length
-                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row()
-                << ", m=" << m << ", n=" << n
-                << ", vrow=" << mmv.row() << ", crow=" << mmc.row()
-                << std::endl;
+                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row() << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row() << ", crow=" << mmc.row() << std::endl;
       return false;
     }
 
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
-  Vector vraw{mmv.getData()};
+  Vector vraw {mmv.getData()};
   ConstKronVector v(vraw, m, n, depth);
-  Vector craw{mmc.getData()};
+  Vector craw {mmc.getData()};
   KronVector c(craw, m, n, depth);
   KronVector x(v);
   KronUtils::multKron(t1, t2, x);
@@ -252,8 +245,8 @@ TestRunnable::kron_power(const std::string &m1name, const std::string &m2name, c
 }
 
 bool
-TestRunnable::lin_eval(const std::string &m1name, const std::string &m2name, const std::string &vname,
-                       const std::string &cname, int m, int n, int depth,
+TestRunnable::lin_eval(const std::string& m1name, const std::string& m2name,
+                       const std::string& vname, const std::string& cname, int m, int n, int depth,
                        double alpha, double beta1, double beta2)
 {
   MMMatrixIn mmt1(m1name);
@@ -261,30 +254,25 @@ TestRunnable::lin_eval(const std::string &m1name, const std::string &m2name, con
   MMMatrixIn mmv(vname);
   MMMatrixIn mmc(cname);
 
-  int length = power(m, depth)*n;
-  if (mmt1.row() != m
-      || mmt2.row() != n
-      || mmv.row() != 2*length
-      || mmc.row() != 2*length)
+  int length = power(m, depth) * n;
+  if (mmt1.row() != m || mmt2.row() != n || mmv.row() != 2 * length || mmc.row() != 2 * length)
     {
       std::cout << "  Incompatible sizes for lin eval action, len=" << length
-                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row()
-                << ", m=" << m << ", n=" << n
-                << ", vrow=" << mmv.row() << ", crow=" << mmc.row()
-                << std::endl;
+                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row() << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row() << ", crow=" << mmc.row() << std::endl;
       return false;
     }
 
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   TriangularSylvester ts(t2, t1);
-  ConstVector vraw1{mmv.getData(), 0, length};
+  ConstVector vraw1 {mmv.getData(), 0, length};
   ConstKronVector v1(vraw1, m, n, depth);
-  ConstVector vraw2{mmv.getData(), length, length};
+  ConstVector vraw2 {mmv.getData(), length, length};
   ConstKronVector v2(vraw2, m, n, depth);
-  ConstVector craw1{mmc.getData(), 0, length};
+  ConstVector craw1 {mmc.getData(), 0, length};
   ConstKronVector c1(craw1, m, n, depth);
-  ConstVector craw2{mmc.getData(), length, length};
+  ConstVector craw2 {mmc.getData(), length, length};
   ConstKronVector c2(craw2, m, n, depth);
   KronVector x1(m, n, depth);
   KronVector x2(m, n, depth);
@@ -294,44 +282,38 @@ TestRunnable::lin_eval(const std::string &m1name, const std::string &m2name, con
   double norm1 = x1.getNorm();
   double norm2 = x2.getNorm();
   std::cout << "\terror norm1 = " << norm1 << "\n\terror norm2 = " << norm2 << '\n';
-  return (norm1*norm1+norm2*norm2 < eps_norm*eps_norm);
+  return (norm1 * norm1 + norm2 * norm2 < eps_norm * eps_norm);
 }
 
 bool
-TestRunnable::qua_eval(const std::string &m1name, const std::string &m2name, const std::string &vname,
-                       const std::string &cname, int m, int n, int depth,
-                       double alpha, double betas, double gamma,
-                       double delta1, double delta2)
+TestRunnable::qua_eval(const std::string& m1name, const std::string& m2name,
+                       const std::string& vname, const std::string& cname, int m, int n, int depth,
+                       double alpha, double betas, double gamma, double delta1, double delta2)
 {
   MMMatrixIn mmt1(m1name);
   MMMatrixIn mmt2(m2name);
   MMMatrixIn mmv(vname);
   MMMatrixIn mmc(cname);
 
-  int length = power(m, depth)*n;
-  if (mmt1.row() != m
-      || mmt2.row() != n
-      || mmv.row() != 2*length
-      || mmc.row() != 2*length)
+  int length = power(m, depth) * n;
+  if (mmt1.row() != m || mmt2.row() != n || mmv.row() != 2 * length || mmc.row() != 2 * length)
     {
       std::cout << "  Incompatible sizes for qua eval action, len=" << length
-                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row()
-                << ", m=" << m << ", n=" << n
-                << ", vrow=" << mmv.row() << ", crow=" << mmc.row()
-                << std::endl;
+                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row() << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row() << ", crow=" << mmc.row() << std::endl;
       return false;
     }
 
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   TriangularSylvester ts(t2, t1);
-  ConstVector vraw1{mmv.getData(), 0, length};
+  ConstVector vraw1 {mmv.getData(), 0, length};
   ConstKronVector v1(vraw1, m, n, depth);
-  ConstVector vraw2{mmv.getData(), length, length};
+  ConstVector vraw2 {mmv.getData(), length, length};
   ConstKronVector v2(vraw2, m, n, depth);
-  ConstVector craw1{mmc.getData(), 0, length};
+  ConstVector craw1 {mmc.getData(), 0, length};
   ConstKronVector c1(craw1, m, n, depth);
-  ConstVector craw2{mmc.getData(), length, length};
+  ConstVector craw2 {mmc.getData(), length, length};
   ConstKronVector c2(craw2, m, n, depth);
   KronVector x1(m, n, depth);
   KronVector x2(m, n, depth);
@@ -341,86 +323,77 @@ TestRunnable::qua_eval(const std::string &m1name, const std::string &m2name, con
   double norm1 = x1.getNorm();
   double norm2 = x2.getNorm();
   std::cout << "\terror norm1 = " << norm1 << "\n\terror norm2 = " << norm2 << std::endl;
-  return (norm1*norm1+norm2*norm2 < 100*eps_norm*eps_norm); // relax norm
+  return (norm1 * norm1 + norm2 * norm2 < 100 * eps_norm * eps_norm); // relax norm
 }
 
 bool
-TestRunnable::tri_sylv(const std::string &m1name, const std::string &m2name, const std::string &vname,
-                       int m, int n, int depth)
+TestRunnable::tri_sylv(const std::string& m1name, const std::string& m2name,
+                       const std::string& vname, int m, int n, int depth)
 {
   MMMatrixIn mmt1(m1name);
   MMMatrixIn mmt2(m2name);
   MMMatrixIn mmv(vname);
 
-  int length = power(m, depth)*n;
-  if (mmt1.row() != m
-      || mmt2.row() != n
-      || mmv.row() != length)
+  int length = power(m, depth) * n;
+  if (mmt1.row() != m || mmt2.row() != n || mmv.row() != length)
     {
       std::cout << "  Incompatible sizes for triangular sylvester action, len=" << length
-                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row()
-                << ", m=" << m << ", n=" << n
-                << ", vrow=" << mmv.row()
-                << std::endl;
+                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row() << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row() << std::endl;
       return false;
     }
 
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   TriangularSylvester ts(t2, t1);
-  Vector vraw{mmv.getData()};
+  Vector vraw {mmv.getData()};
   ConstKronVector v(vraw, m, n, depth);
   KronVector d(v); // copy of v
   SylvParams pars;
   ts.solve(pars, d);
   pars.print("\t");
-  KronVector dcheck(const_cast<const KronVector &>(d));
+  KronVector dcheck(const_cast<const KronVector&>(d));
   KronUtils::multKron(t1, t2, dcheck);
   dcheck.add(1.0, d);
   dcheck.add(-1.0, v);
   double norm = dcheck.getNorm();
   double xnorm = v.getNorm();
-  std::cout << "\trel. error norm = " << norm/xnorm << std::endl;
+  std::cout << "\trel. error norm = " << norm / xnorm << std::endl;
   double max = dcheck.getMax();
   double xmax = v.getMax();
-  std::cout << "\trel. error max = " << max/xmax << std::endl;
-  return (norm < xnorm*eps_norm);
+  std::cout << "\trel. error max = " << max / xmax << std::endl;
+  return (norm < xnorm * eps_norm);
 }
 
 bool
-TestRunnable::gen_sylv(const std::string &aname, const std::string &bname, const std::string &cname,
-                       const std::string &dname, int m, int n, int order)
+TestRunnable::gen_sylv(const std::string& aname, const std::string& bname, const std::string& cname,
+                       const std::string& dname, int m, int n, int order)
 {
   MMMatrixIn mma(aname);
   MMMatrixIn mmb(bname);
   MMMatrixIn mmc(cname);
   MMMatrixIn mmd(dname);
 
-  if (m != mmc.row() || m != mmc.col()
-      || n != mma.row() || n != mma.col()
-      || n != mmb.row() || n < mmb.col()
-      || n != mmd.row() || power(m, order) != mmd.col())
+  if (m != mmc.row() || m != mmc.col() || n != mma.row() || n != mma.col() || n != mmb.row()
+      || n < mmb.col() || n != mmd.row() || power(m, order) != mmd.col())
     {
       std::cout << "  Incompatible sizes for gen_sylv.\n";
       return false;
     }
 
   SylvParams ps(true);
-  GeneralSylvester gs(order, n, m, n-mmb.col(),
-                      mma.getData(), mmb.getData(),
-                      mmc.getData(), mmd.getData(),
-                      ps);
+  GeneralSylvester gs(order, n, m, n - mmb.col(), mma.getData(), mmb.getData(), mmc.getData(),
+                      mmd.getData(), ps);
   gs.solve();
   gs.check(mmd.getData());
-  const SylvParams &pars = gs.getParams();
+  const SylvParams& pars = gs.getParams();
   pars.print("\t");
-  return (*(pars.mat_err1) < eps_norm && *(pars.mat_errI) < eps_norm
-          && *(pars.mat_errF) < eps_norm && *(pars.vec_err1) < eps_norm
-          && *(pars.vec_errI) < eps_norm);
+  return (*(pars.mat_err1) < eps_norm && *(pars.mat_errI) < eps_norm && *(pars.mat_errF) < eps_norm
+          && *(pars.vec_err1) < eps_norm && *(pars.vec_errI) < eps_norm);
 }
 
 bool
-TestRunnable::eig_bubble(const std::string &aname, int from, int to)
+TestRunnable::eig_bubble(const std::string& aname, int from, int to)
 {
   MMMatrixIn mma(aname);
 
@@ -432,7 +405,7 @@ TestRunnable::eig_bubble(const std::string &aname, int from, int to)
 
   int n = mma.row();
   QuasiTriangular orig(mma.getData(), n);
-  SchurDecompEig dec(const_cast<const QuasiTriangular &>(orig));
+  SchurDecompEig dec(const_cast<const QuasiTriangular&>(orig));
   QuasiTriangular::diag_iter itf = dec.getT().diag_begin();
   QuasiTriangular::diag_iter itt = dec.getT().diag_begin();
   for (int i = 0; i < from; i++)
@@ -449,13 +422,13 @@ TestRunnable::eig_bubble(const std::string &aname, int from, int to)
   double onormInf = orig.getNormInf();
   std::cout << "\tabs. error1 = " << norm1 << std::endl
             << "\tabs. error∞ = " << normInf << std::endl
-            << "\trel. error1 = " << norm1/onorm1 << std::endl
-            << "\trel. error∞ = " << normInf/onormInf << std::endl;
-  return (norm1 < eps_norm*onorm1 && normInf < eps_norm*onormInf);
+            << "\trel. error1 = " << norm1 / onorm1 << std::endl
+            << "\trel. error∞ = " << normInf / onormInf << std::endl;
+  return (norm1 < eps_norm * onorm1 && normInf < eps_norm * onormInf);
 }
 
 bool
-TestRunnable::block_diag(const std::string &aname, double log10norm)
+TestRunnable::block_diag(const std::string& aname, double log10norm)
 {
   MMMatrixIn mma(aname);
 
@@ -479,8 +452,8 @@ TestRunnable::block_diag(const std::string &aname, double log10norm)
   std::cout << "\terror Q·B·Q⁻¹:" << std::endl
             << "\tabs. error1 = " << norm1 << std::endl
             << "\tabs. error∞ = " << normInf << std::endl
-            << "\trel. error1 = " << norm1/onorm1 << std::endl
-            << "\trel. error∞ = " << normInf/onormInf << std::endl;
+            << "\trel. error1 = " << norm1 / onorm1 << std::endl
+            << "\trel. error∞ = " << normInf / onormInf << std::endl;
   SqSylvMatrix check2(dec.getQ() * dec.getInvQ());
   SqSylvMatrix in(n);
   in.setUnit();
@@ -490,51 +463,47 @@ TestRunnable::block_diag(const std::string &aname, double log10norm)
   std::cout << "\terror Q·Q⁻¹:" << std::endl
             << "\tabs. error1 = " << nor1 << std::endl
             << "\tabs. error∞ = " << norInf << std::endl;
-  return (norm1 < eps_norm*pow(10, log10norm)*onorm1);
+  return (norm1 < eps_norm * pow(10, log10norm) * onorm1);
 }
 
 bool
-TestRunnable::iter_sylv(const std::string &m1name, const std::string &m2name, const std::string &vname,
-                        int m, int n, int depth)
+TestRunnable::iter_sylv(const std::string& m1name, const std::string& m2name,
+                        const std::string& vname, int m, int n, int depth)
 {
   MMMatrixIn mmt1(m1name);
   MMMatrixIn mmt2(m2name);
   MMMatrixIn mmv(vname);
 
-  int length = power(m, depth)*n;
-  if (mmt1.row() != m
-      || mmt2.row() != n
-      || mmv.row() != length)
+  int length = power(m, depth) * n;
+  if (mmt1.row() != m || mmt2.row() != n || mmv.row() != length)
     {
       std::cout << "  Incompatible sizes for triangular sylvester iteration, len=" << length
-                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row()
-                << ", m=" << m << ", n=" << n
-                << ", vrow=" << mmv.row()
-                << std::endl;
+                << ", row1=" << mmt1.row() << ", row2=" << mmt2.row() << ", m=" << m << ", n=" << n
+                << ", vrow=" << mmv.row() << std::endl;
       return false;
     }
 
   QuasiTriangular t1(mmt1.getData(), mmt1.row());
   QuasiTriangular t2(mmt2.getData(), mmt2.row());
   IterativeSylvester is(t2, t1);
-  Vector vraw{mmv.getData()};
+  Vector vraw {mmv.getData()};
   ConstKronVector v(vraw, m, n, depth);
   KronVector d(v); // copy of v
   SylvParams pars;
   pars.method = SylvParams::solve_method::iter;
   is.solve(pars, d);
   pars.print("\t");
-  KronVector dcheck(const_cast<const KronVector &>(d));
+  KronVector dcheck(const_cast<const KronVector&>(d));
   KronUtils::multKron(t1, t2, dcheck);
   dcheck.add(1.0, d);
   dcheck.add(-1.0, v);
   double cnorm = dcheck.getNorm();
   double xnorm = v.getNorm();
-  std::cout << "\trel. error norm = " << cnorm/xnorm << std::endl;
+  std::cout << "\trel. error norm = " << cnorm / xnorm << std::endl;
   double max = dcheck.getMax();
   double xmax = v.getMax();
-  std::cout << "\trel. error max = " << max/xmax << std::endl;
-  return (cnorm < xnorm*eps_norm);
+  std::cout << "\trel. error max = " << max / xmax << std::endl;
+  return (cnorm < xnorm * eps_norm);
 }
 
 /**********************************************************/
@@ -1018,29 +987,25 @@ KronPowerTest::run() const
 bool
 SmallLinEvalTest::run() const
 {
-  return lin_eval("qt2x2.mm", "qt3x3.mm", "v24.mm", "vcheck24.mm", 2, 3, 2,
-                  2, 1, 3);
+  return lin_eval("qt2x2.mm", "qt3x3.mm", "v24.mm", "vcheck24.mm", 2, 3, 2, 2, 1, 3);
 }
 
 bool
 LinEvalTest::run() const
 {
-  return lin_eval("qt7x7.mm", "tr5x5.mm", "v490.mm", "vcheck490.mm", 7, 5, 2,
-                  2, 1, 3);
+  return lin_eval("qt7x7.mm", "tr5x5.mm", "v490.mm", "vcheck490.mm", 7, 5, 2, 2, 1, 3);
 }
 
 bool
 SmallQuaEvalTest::run() const
 {
-  return qua_eval("qt2x2.mm", "qt3x3.mm", "v24.mm", "vcheck24q.mm", 2, 3, 2,
-                  -0.5, 3, 2, 1, 3);
+  return qua_eval("qt2x2.mm", "qt3x3.mm", "v24.mm", "vcheck24q.mm", 2, 3, 2, -0.5, 3, 2, 1, 3);
 }
 
 bool
 QuaEvalTest::run() const
 {
-  return qua_eval("qt7x7.mm", "tr5x5.mm", "v490.mm", "vcheck490q.mm", 7, 5, 2,
-                  -0.5, 3, 2, 1, 3);
+  return qua_eval("qt7x7.mm", "tr5x5.mm", "v490.mm", "vcheck490q.mm", 7, 5, 2, -0.5, 3, 2, 1, 3);
 }
 
 bool
@@ -1204,18 +1169,18 @@ main()
   // launch the tests
   std::cout << std::setprecision(4);
   int success = 0;
-  for (const auto &test : all_tests)
+  for (const auto& test : all_tests)
     {
       try
         {
           if (test->test())
             success++;
         }
-      catch (const MMException &e)
+      catch (const MMException& e)
         {
           std::cout << "Caught MM exception in <" << test->name << ">:\n" << e.getMessage();
         }
-      catch (SylvException &e)
+      catch (SylvException& e)
         {
           std::cout << "Caught Sylv exception in " << test->name << ":\n";
           e.printMessage();
@@ -1223,8 +1188,8 @@ main()
     }
 
   int nfailed = all_tests.size() - success;
-  std::cout << "There were " << nfailed << " tests that failed out of "
-            << all_tests.size() << " tests run." << std::endl;
+  std::cout << "There were " << nfailed << " tests that failed out of " << all_tests.size()
+            << " tests run." << std::endl;
 
   if (nfailed)
     return EXIT_FAILURE;

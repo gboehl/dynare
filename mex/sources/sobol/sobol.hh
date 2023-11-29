@@ -27,37 +27,38 @@ constexpr int DIM_MAX = 1111;
 extern "C"
 {
 #define i8_sobol FORTRAN_WRAPPER(i8_sobol)
-  void i8_sobol(const int64_t *dim_num, int64_t *seed, double *quasi);
+  void i8_sobol(const int64_t* dim_num, int64_t* seed, double* quasi);
 }
 
 inline void
-next_sobol(int dim_num, int64_t *seed, double *quasi)
+next_sobol(int dim_num, int64_t* seed, double* quasi)
 {
   int64_t dim_num2 {dim_num};
   i8_sobol(&dim_num2, seed, quasi);
 }
 
 inline int64_t
-sobol_block(int dimension, int block_size, int64_t seed, double *block)
+sobol_block(int dimension, int block_size, int64_t seed, double* block)
 {
   for (int iter = 0; iter < block_size; iter++)
-    next_sobol(dimension, &seed, &block[iter*dimension]);
+    next_sobol(dimension, &seed, &block[iter * dimension]);
   return seed;
 }
 
 template<typename T>
 void
-expand_unit_hypercube(int dimension, int block_size, T *block, const T *lower_bound, const T *upper_bound)
+expand_unit_hypercube(int dimension, int block_size, T* block, const T* lower_bound,
+                      const T* upper_bound)
 {
-  T *hypercube_length = new T[dimension];
+  T* hypercube_length = new T[dimension];
   for (int dim = 0; dim < dimension; dim++)
-    hypercube_length[dim] = upper_bound[dim]-lower_bound[dim];
+    hypercube_length[dim] = upper_bound[dim] - lower_bound[dim];
 
   int base = 0;
   for (int sim = 0; sim < block_size; sim++)
     {
       for (int dim = 0; dim < dimension; dim++)
-        block[base+dim] = lower_bound[dim] + hypercube_length[dim]*block[base+dim];
+        block[base + dim] = lower_bound[dim] + hypercube_length[dim] * block[base + dim];
       base += dimension;
     }
   delete[] hypercube_length;

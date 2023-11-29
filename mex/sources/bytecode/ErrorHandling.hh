@@ -20,9 +20,9 @@
 #ifndef _ERROR_HANDLING_HH
 #define _ERROR_HANDLING_HH
 
-#include <string>
-#include <sstream>
 #include <cmath>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -34,23 +34,22 @@ struct GeneralException
 struct FloatingPointException : public GeneralException
 {
   const string location;
-  FloatingPointException(const string &details, string location_arg) :
-    GeneralException {"Floating point error: " + details},
-    location {move(location_arg)}
+  FloatingPointException(const string& details, string location_arg) :
+      GeneralException {"Floating point error: " + details}, location {move(location_arg)}
   {
   }
 };
 
 struct UnaryOpException : public FloatingPointException
 {
-  UnaryOpException(const string &op, double value, string location_arg) :
-    FloatingPointException { [=]
-    {
-      // We don’t use std::to_string(), because it uses fixed formatting
-      ostringstream s;
-      s << op << "(X) with X=" << defaultfloat << value;
-      return s.str();
-    }(), move(location_arg) }
+  UnaryOpException(const string& op, double value, string location_arg) :
+      FloatingPointException {[=] {
+                                // We don’t use std::to_string(), because it uses fixed formatting
+                                ostringstream s;
+                                s << op << "(X) with X=" << defaultfloat << value;
+                                return s.str();
+                              }(),
+                              move(location_arg)}
   {
   }
 };
@@ -58,13 +57,13 @@ struct UnaryOpException : public FloatingPointException
 struct DivideException : public FloatingPointException
 {
   DivideException(double v1, double v2, string location_arg) :
-    FloatingPointException { [=]
-    {
-      // We don’t use std::to_string(), because it uses fixed formatting
-      ostringstream s;
-      s << "a/X with a=" << defaultfloat << v1 << " and X= " << v2;
-      return s.str();
-    }(), move(location_arg) }
+      FloatingPointException {[=] {
+                                // We don’t use std::to_string(), because it uses fixed formatting
+                                ostringstream s;
+                                s << "a/X with a=" << defaultfloat << v1 << " and X= " << v2;
+                                return s.str();
+                              }(),
+                              move(location_arg)}
   {
   }
 };
@@ -72,15 +71,15 @@ struct DivideException : public FloatingPointException
 struct PowException : public FloatingPointException
 {
   PowException(double base, double exponent, string location_arg) :
-    FloatingPointException { [=]
-    {
-      // We don’t use std::to_string(), because it uses fixed formatting
-      ostringstream s;
-      s << "X^a with X=" << defaultfloat << base;
-      if (fabs(base) <= 1e-10)
-        s << " and a=" << exponent;
-      return s.str();
-    }(), move(location_arg) }
+      FloatingPointException {[=] {
+                                // We don’t use std::to_string(), because it uses fixed formatting
+                                ostringstream s;
+                                s << "X^a with X=" << defaultfloat << base;
+                                if (fabs(base) <= 1e-10)
+                                  s << " and a=" << exponent;
+                                return s.str();
+                              }(),
+                              move(location_arg)}
   {
   }
 };
@@ -94,17 +93,18 @@ struct UserException : public GeneralException
 
 struct FatalException : public GeneralException
 {
-  FatalException(const string &details) :
-    GeneralException {"Fatal error: " + details}
+  FatalException(const string& details) : GeneralException {"Fatal error: " + details}
   {
   }
 };
 
 inline void
-test_mxMalloc(void *z, int line, const string &file, const string &func, int amount)
+test_mxMalloc(void* z, int line, const string& file, const string& func, int amount)
 {
   if (!z && amount > 0)
-    throw FatalException{"mxMalloc: out of memory " + to_string(amount) + " bytes required at line " + to_string(line) + " in function " + func + " (file " + file};
+    throw FatalException {"mxMalloc: out of memory " + to_string(amount)
+                          + " bytes required at line " + to_string(line) + " in function " + func
+                          + " (file " + file};
 }
 
 #ifdef MATLAB_MEX_FILE

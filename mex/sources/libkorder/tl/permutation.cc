@@ -24,7 +24,7 @@
 /* This is easy, we simply apply the map in the fashion s∘m */
 
 void
-Permutation::apply(const IntSequence &src, IntSequence &tar) const
+Permutation::apply(const IntSequence& src, IntSequence& tar) const
 {
   TL_RAISE_IF(src.size() != permap.size() || tar.size() != permap.size(),
               "Wrong sizes of input or output in Permutation::apply");
@@ -33,7 +33,7 @@ Permutation::apply(const IntSequence &src, IntSequence &tar) const
 }
 
 void
-Permutation::apply(IntSequence &tar) const
+Permutation::apply(IntSequence& tar) const
 {
   IntSequence tmp(tar);
   apply(tmp, tar);
@@ -54,7 +54,7 @@ int
 Permutation::tailIdentity() const
 {
   int i = permap.size();
-  while (i > 0 && permap[i-1] == i-1)
+  while (i > 0 && permap[i - 1] == i - 1)
     i--;
   return permap.size() - i;
 }
@@ -69,7 +69,7 @@ Permutation::tailIdentity() const
    indices from the sorted ‘s’ already assigned. */
 
 void
-Permutation::computeSortingMap(const IntSequence &s)
+Permutation::computeSortingMap(const IntSequence& s)
 {
   IntSequence srt(s);
   srt.sort();
@@ -80,8 +80,7 @@ Permutation::computeSortingMap(const IntSequence &s)
       int j = 0;
       while (j < s.size() && (flags[j] || srt[j] != s[i]))
         j++;
-      TL_RAISE_IF(j == s.size(),
-                  "Internal algorithm error in Permutation::computeSortingMap");
+      TL_RAISE_IF(j == s.size(), "Internal algorithm error in Permutation::computeSortingMap");
       flags[j] = 1;
       permap[i] = j;
     }
@@ -92,11 +91,9 @@ PermutationSet::PermutationSet()
   pers.emplace_back(1);
 }
 
-PermutationSet::PermutationSet(const PermutationSet &sp, int n)
-  : order(n), size(n*sp.size)
+PermutationSet::PermutationSet(const PermutationSet& sp, int n) : order(n), size(n * sp.size)
 {
-  TL_RAISE_IF(n != sp.order+1,
-              "Wrong new order in PermutationSet constructor");
+  TL_RAISE_IF(n != sp.order + 1, "Wrong new order in PermutationSet constructor");
 
   for (int i = 0; i < sp.size; i++)
     for (int j = 0; j < order; j++)
@@ -104,10 +101,9 @@ PermutationSet::PermutationSet(const PermutationSet &sp, int n)
 }
 
 std::vector<Permutation>
-PermutationSet::getPreserving(const IntSequence &s) const
+PermutationSet::getPreserving(const IntSequence& s) const
 {
-  TL_RAISE_IF(s.size() != order,
-              "Wrong sequence length in PermutationSet::getPreserving");
+  TL_RAISE_IF(s.size() != order, "Wrong sequence length in PermutationSet::getPreserving");
 
   std::vector<Permutation> res;
   IntSequence tmp(s.size());
@@ -127,7 +123,7 @@ PermutationBundle::PermutationBundle(int nmax)
   generateUpTo(nmax);
 }
 
-const PermutationSet &
+const PermutationSet&
 PermutationBundle::get(int n) const
 {
   if (n > static_cast<int>(bundle.size()) || n < 1)
@@ -136,7 +132,7 @@ PermutationBundle::get(int n) const
       return bundle[0];
     }
   else
-    return bundle[n-1];
+    return bundle[n - 1];
 }
 
 void
@@ -146,6 +142,6 @@ PermutationBundle::generateUpTo(int nmax)
     bundle.emplace_back();
 
   int curmax = bundle.size();
-  for (int n = curmax+1; n <= nmax; n++)
+  for (int n = curmax + 1; n <= nmax; n++)
     bundle.emplace_back(bundle.back(), n);
 }

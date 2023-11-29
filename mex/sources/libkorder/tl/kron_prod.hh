@@ -40,13 +40,13 @@
 #ifndef KRON_PROD_H
 #define KRON_PROD_H
 
+#include <memory>
 #include <utility>
 #include <vector>
-#include <memory>
 
-#include "twod_matrix.hh"
-#include "permutation.hh"
 #include "int_sequence.hh"
+#include "permutation.hh"
+#include "twod_matrix.hh"
 
 class KronProdAll;
 class KronProdAllOptim;
@@ -64,29 +64,30 @@ class KronProdDimens
   friend class KronProdIA;
   friend class KronProdIAI;
   friend class KronProdAI;
+
 private:
   IntSequence rows;
   IntSequence cols;
+
 public:
   // Initializes to a given dimension, and all rows and cols are set to zeros
-  KronProdDimens(int dim)
-    : rows(dim, 0), cols(dim, 0)
+  KronProdDimens(int dim) : rows(dim, 0), cols(dim, 0)
   {
   }
-  KronProdDimens(const KronProdDimens &kd) = default;
-  KronProdDimens(KronProdDimens &&kd) = default;
+  KronProdDimens(const KronProdDimens& kd) = default;
+  KronProdDimens(KronProdDimens&& kd) = default;
 
   /* Takes dimensions of A₁⊗…⊗Aₙ, and makes dimensions of A₁⊗I, I⊗Aᵢ⊗I or I⊗Aₙ
      for a given i. The dimensions of identity matrices are such that
      A₁⊗…⊗Aₙ=(A₁⊗I)·…·(I⊗Aᵢ⊗I)·…·(I⊗Aₙ). Note that the matrices on the right do
      not commute only because sizes of identity matrices which are then given
      by this ordering. */
-  KronProdDimens(const KronProdDimens &kd, int i);
+  KronProdDimens(const KronProdDimens& kd, int i);
 
-  KronProdDimens &operator=(const KronProdDimens &kd) = default;
-  KronProdDimens &operator=(KronProdDimens &&kd) = default;
+  KronProdDimens& operator=(const KronProdDimens& kd) = default;
+  KronProdDimens& operator=(KronProdDimens&& kd) = default;
   bool
-  operator==(const KronProdDimens &kd) const
+  operator==(const KronProdDimens& kd) const
   {
     return rows == kd.rows && cols == kd.cols;
   }
@@ -105,12 +106,12 @@ public:
   std::pair<int, int>
   getRC(int i) const
   {
-    return { rows[i], cols[i] };
+    return {rows[i], cols[i]};
   }
   std::pair<int, int>
   getRC() const
   {
-    return { rows.mult(), cols.mult() };
+    return {rows.mult(), cols.mult()};
   }
   int
   nrows() const
@@ -148,17 +149,16 @@ class KronProd
 {
 protected:
   KronProdDimens kpd;
+
 public:
-  KronProd(int dim)
-    : kpd(dim)
+  KronProd(int dim) : kpd(dim)
   {
   }
-  KronProd(const KronProdDimens &kd)
-    : kpd(kd)
+  KronProd(const KronProdDimens& kd) : kpd(kd)
   {
   }
-  KronProd(const KronProd &kp) = default;
-  KronProd(KronProd &&kp) = default;
+  KronProd(const KronProd& kp) = default;
+  KronProd(KronProd&& kp) = default;
   virtual ~KronProd() = default;
 
   int
@@ -167,22 +167,21 @@ public:
     return kpd.dimen();
   }
 
-  virtual void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const = 0;
+  virtual void mult(const ConstTwoDMatrix& in, TwoDMatrix& out) const = 0;
   void
-  mult(const TwoDMatrix &in, TwoDMatrix &out) const
+  mult(const TwoDMatrix& in, TwoDMatrix& out) const
   {
     mult(ConstTwoDMatrix(in), out);
   }
 
-  void checkDimForMult(const ConstTwoDMatrix &in, const TwoDMatrix &out) const;
+  void checkDimForMult(const ConstTwoDMatrix& in, const TwoDMatrix& out) const;
   void
-  checkDimForMult(const TwoDMatrix &in, const TwoDMatrix &out) const
+  checkDimForMult(const TwoDMatrix& in, const TwoDMatrix& out) const
   {
     checkDimForMult(ConstTwoDMatrix(in), out);
   }
 
-  static void kronMult(const ConstVector &v1, const ConstVector &v2,
-                       Vector &res);
+  static void kronMult(const ConstVector& v1, const ConstVector& v2, Vector& res);
 
   int
   nrows() const
@@ -225,24 +224,26 @@ class KronProdAll : public KronProd
   friend class KronProdIA;
   friend class KronProdIAI;
   friend class KronProdAI;
+
 protected:
-  std::vector<const TwoDMatrix *> matlist;
+  std::vector<const TwoDMatrix*> matlist;
+
 public:
-  KronProdAll(int dim)
-    : KronProd(dim), matlist(dim)
+  KronProdAll(int dim) : KronProd(dim), matlist(dim)
   {
   }
   ~KronProdAll() override = default;
-  void setMat(int i, const TwoDMatrix &m);
+  void setMat(int i, const TwoDMatrix& m);
   void setUnit(int i, int n);
-  const TwoDMatrix &
+  const TwoDMatrix&
   getMat(int i) const
   {
     return *(matlist[i]);
   }
 
-  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
-  std::unique_ptr<Vector> multRows(const IntSequence &irows) const;
+  void mult(const ConstTwoDMatrix& in, TwoDMatrix& out) const override;
+  std::unique_ptr<Vector> multRows(const IntSequence& irows) const;
+
 private:
   bool isUnit() const;
 };
@@ -281,13 +282,13 @@ class KronProdAllOptim : public KronProdAll
 {
 protected:
   Permutation oper;
+
 public:
-  KronProdAllOptim(int dim)
-    : KronProdAll(dim), oper(dim)
+  KronProdAllOptim(int dim) : KronProdAll(dim), oper(dim)
   {
   }
   void optimizeOrder();
-  const Permutation &
+  const Permutation&
   getPer() const
   {
     return oper;
@@ -300,14 +301,14 @@ public:
 class KronProdIA : public KronProd
 {
   friend class KronProdAll;
-  const TwoDMatrix &mat;
+  const TwoDMatrix& mat;
+
 public:
-  KronProdIA(const KronProdAll &kpa)
-    : KronProd(KronProdDimens(kpa.kpd, kpa.dimen()-1)),
-      mat(kpa.getMat(kpa.dimen()-1))
+  KronProdIA(const KronProdAll& kpa) :
+      KronProd(KronProdDimens(kpa.kpd, kpa.dimen() - 1)), mat(kpa.getMat(kpa.dimen() - 1))
   {
   }
-  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
+  void mult(const ConstTwoDMatrix& in, TwoDMatrix& out) const override;
 };
 
 /* This class represents A⊗I. We have only one reference to the matrix, which
@@ -317,16 +318,15 @@ class KronProdAI : public KronProd
 {
   friend class KronProdIAI;
   friend class KronProdAll;
-  const TwoDMatrix &mat;
+  const TwoDMatrix& mat;
+
 public:
-  KronProdAI(const KronProdAll &kpa)
-    : KronProd(KronProdDimens(kpa.kpd, 0)),
-      mat(kpa.getMat(0))
+  KronProdAI(const KronProdAll& kpa) : KronProd(KronProdDimens(kpa.kpd, 0)), mat(kpa.getMat(0))
   {
   }
-  KronProdAI(const KronProdIAI &kpiai);
+  KronProdAI(const KronProdIAI& kpiai);
 
-  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
+  void mult(const ConstTwoDMatrix& in, TwoDMatrix& out) const override;
 };
 
 /* This class represents I⊗A⊗I. We have only one reference to the matrix, which
@@ -336,14 +336,14 @@ class KronProdIAI : public KronProd
 {
   friend class KronProdAI;
   friend class KronProdAll;
-  const TwoDMatrix &mat;
+  const TwoDMatrix& mat;
+
 public:
-  KronProdIAI(const KronProdAll &kpa, int i)
-    : KronProd(KronProdDimens(kpa.kpd, i)),
-      mat(kpa.getMat(i))
+  KronProdIAI(const KronProdAll& kpa, int i) :
+      KronProd(KronProdDimens(kpa.kpd, i)), mat(kpa.getMat(i))
   {
   }
-  void mult(const ConstTwoDMatrix &in, TwoDMatrix &out) const override;
+  void mult(const ConstTwoDMatrix& in, TwoDMatrix& out) const override;
 };
 
 #endif

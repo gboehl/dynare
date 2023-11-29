@@ -20,13 +20,12 @@
 
 #include <memory>
 
+#include "kron_prod.hh"
 #include "normal_moments.hh"
 #include "permutation.hh"
-#include "kron_prod.hh"
 #include "tl_static.hh"
 
-UNormalMoments::UNormalMoments(int maxdim, const TwoDMatrix &v)
-  : TensorContainer<URSingleTensor>(1)
+UNormalMoments::UNormalMoments(int maxdim, const TwoDMatrix& v) : TensorContainer<URSingleTensor>(1)
 {
   if (maxdim >= 2)
     generateMoments(maxdim, v);
@@ -39,7 +38,7 @@ UNormalMoments::UNormalMoments(int maxdim, const TwoDMatrix &v)
    Here we sequentially construct the Kronecker power ⊗ⁿv and apply Fₙ.
 */
 void
-UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
+UNormalMoments::generateMoments(int maxdim, const TwoDMatrix& v)
 {
   TL_RAISE_IF(v.nrows() != v.ncols(),
               "Variance-covariance matrix is not square in UNormalMoments constructor");
@@ -53,8 +52,7 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
   for (int d = 4; d <= maxdim; d += 2)
     {
       auto newkronv = std::make_unique<URSingleTensor>(nv, d);
-      KronProd::kronMult(ConstVector(v.getData()),
-                         ConstVector(kronv->getData()),
+      KronProd::kronMult(ConstVector(v.getData()), ConstVector(kronv->getData()),
                          newkronv->getData());
       kronv = std::move(newkronv);
       auto mom = std::make_unique<URSingleTensor>(nv, d);
@@ -69,7 +67,7 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
          how the Equivalence::apply() method works. */
       mom->zeros();
       const EquivalenceSet eset = TLStatic::getEquiv(d);
-      for (const auto &cit : eset)
+      for (const auto& cit : eset)
         if (selectEquiv(cit))
           {
             Permutation per(cit);
@@ -89,11 +87,11 @@ UNormalMoments::generateMoments(int maxdim, const TwoDMatrix &v)
 /* We return true for an equivalence whose each class has 2 elements. */
 
 bool
-UNormalMoments::selectEquiv(const Equivalence &e)
+UNormalMoments::selectEquiv(const Equivalence& e)
 {
-  if (2*e.numClasses() != e.getN())
+  if (2 * e.numClasses() != e.getN())
     return false;
-  for (const auto &si : e)
+  for (const auto& si : e)
     if (si.length() != 2)
       return false;
   return true;
@@ -101,9 +99,8 @@ UNormalMoments::selectEquiv(const Equivalence &e)
 
 /* Here we go through all the unfolded container, fold each tensor and
    insert it. */
-FNormalMoments::FNormalMoments(const UNormalMoments &moms)
-  : TensorContainer<FRSingleTensor>(1)
+FNormalMoments::FNormalMoments(const UNormalMoments& moms) : TensorContainer<FRSingleTensor>(1)
 {
-  for (const auto &mom : moms)
+  for (const auto& mom : moms)
     insert(std::make_unique<FRSingleTensor>(*(mom.second)));
 }

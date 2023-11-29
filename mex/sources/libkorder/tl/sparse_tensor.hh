@@ -42,17 +42,17 @@
 #ifndef SPARSE_TENSOR_H
 #define SPARSE_TENSOR_H
 
+#include "Vector.hh"
+#include "gs_tensor.hh"
 #include "symmetry.hh"
 #include "tensor.hh"
-#include "gs_tensor.hh"
-#include "Vector.hh"
 
 #include <map>
 
 struct ltseq
 {
   bool
-  operator()(const IntSequence &s1, const IntSequence &s2) const
+  operator()(const IntSequence& s1, const IntSequence& s2) const
   {
     return s1 < s2;
   }
@@ -66,6 +66,7 @@ class SparseTensor
 {
 public:
   using Map = std::multimap<IntSequence, std::pair<int, double>, ltseq>;
+
 protected:
   Map m;
   int dim;
@@ -73,13 +74,14 @@ protected:
   int nc;
   int first_nz_row;
   int last_nz_row;
+
 public:
-  SparseTensor(int d, int nnr, int nnc)
-    : dim(d), nr(nnr), nc(nnc), first_nz_row(nr), last_nz_row(-1)
+  SparseTensor(int d, int nnr, int nnc) :
+      dim(d), nr(nnr), nc(nnc), first_nz_row(nr), last_nz_row(-1)
   {
   }
   void insert(IntSequence s, int r, double c);
-  const Map &
+  const Map&
   getMap() const
   {
     return m;
@@ -102,7 +104,7 @@ public:
   double
   getFillFactor() const
   {
-    return static_cast<double>(m.size())/nrows()/ncols();
+    return static_cast<double>(m.size()) / nrows() / ncols();
   }
   double getFoldIndexFillFactor() const;
   double getUnfoldIndexFillFactor() const;
@@ -121,7 +123,7 @@ public:
   {
     return last_nz_row;
   }
-  virtual const Symmetry &getSym() const = 0;
+  virtual const Symmetry& getSym() const = 0;
   void print() const;
   bool isFinite() const;
 };
@@ -135,11 +137,12 @@ class FSSparseTensor : public SparseTensor
 private:
   int nv;
   Symmetry sym;
+
 public:
   FSSparseTensor(int d, int nvar, int r);
   void insert(IntSequence s, int r, double c);
-  void multColumnAndAdd(const Tensor &t, Vector &v) const;
-  const Symmetry &
+  void multColumnAndAdd(const Tensor& t, Vector& v) const;
+  const Symmetry&
   getSym() const override
   {
     return sym;
@@ -161,22 +164,22 @@ class GSSparseTensor : public SparseTensor
 {
 private:
   TensorDimens tdims;
+
 public:
-  GSSparseTensor(const FSSparseTensor &t, const IntSequence &ss,
-                 const IntSequence &coor, TensorDimens td);
+  GSSparseTensor(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor,
+                 TensorDimens td);
   void insert(IntSequence s, int r, double c);
-  const Symmetry &
+  const Symmetry&
   getSym() const override
   {
     return tdims.getSym();
   }
-  const TensorDimens &
+  const TensorDimens&
   getDims() const
   {
     return tdims;
   }
   void print() const;
-
 };
 
 #endif

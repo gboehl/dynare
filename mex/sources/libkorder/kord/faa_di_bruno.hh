@@ -32,32 +32,31 @@
 #ifndef FAA_DI_BRUNO_H
 #define FAA_DI_BRUNO_H
 
+#include "gs_tensor.hh"
 #include "journal.hh"
+#include "sparse_tensor.hh"
 #include "stack_container.hh"
 #include "t_container.hh"
-#include "sparse_tensor.hh"
-#include "gs_tensor.hh"
 
 #include <tuple>
 
 class FaaDiBruno
 {
-  Journal &journal;
+  Journal& journal;
+
 public:
-  FaaDiBruno(Journal &jr)
-    : journal(jr)
+  FaaDiBruno(Journal& jr) : journal(jr)
   {
   }
-  void calculate(const StackContainer<FGSTensor> &cont, const TensorContainer<FSSparseTensor> &f,
-                 FGSTensor &out);
-  void calculate(const FoldedStackContainer &cont, const FGSContainer &g,
-                 FGSTensor &out);
-  void calculate(const StackContainer<UGSTensor> &cont, const TensorContainer<FSSparseTensor> &f,
-                 UGSTensor &out);
-  void calculate(const UnfoldedStackContainer &cont, const UGSContainer &g,
-                 UGSTensor &out);
+  void calculate(const StackContainer<FGSTensor>& cont, const TensorContainer<FSSparseTensor>& f,
+                 FGSTensor& out);
+  void calculate(const FoldedStackContainer& cont, const FGSContainer& g, FGSTensor& out);
+  void calculate(const StackContainer<UGSTensor>& cont, const TensorContainer<FSSparseTensor>& f,
+                 UGSTensor& out);
+  void calculate(const UnfoldedStackContainer& cont, const UGSContainer& g, UGSTensor& out);
+
 protected:
-  std::tuple<int, int, int> estimRefinement(const TensorDimens &tdims, int nr, int l);
+  std::tuple<int, int, int> estimRefinement(const TensorDimens& tdims, int nr, int l);
 
   // See FaaDiBruno::calculate() folded sparse code for why we have magic_mult
   constexpr static double magic_mult = 1.5;

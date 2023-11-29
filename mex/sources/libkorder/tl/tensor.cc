@@ -19,9 +19,9 @@
  */
 
 #include "tensor.hh"
+#include "pascal_triangle.hh"
 #include "tl_exception.hh"
 #include "tl_static.hh"
-#include "pascal_triangle.hh"
 
 /* Here we increment a given sequence within full symmetry given by ‘nv’, which
    is number of variables in each dimension. The underlying tensor is unfolded,
@@ -29,11 +29,11 @@
    increase the next one to the left. */
 
 void
-UTensor::increment(IntSequence &v, int nv)
+UTensor::increment(IntSequence& v, int nv)
 {
   if (v.size() == 0)
     return;
-  int i = v.size()-1;
+  int i = v.size() - 1;
   v[i]++;
   while (i > 0 && v[i] == nv)
     {
@@ -45,15 +45,15 @@ UTensor::increment(IntSequence &v, int nv)
 /* This is dual to UTensor::increment(IntSequence& v, int nv). */
 
 void
-UTensor::decrement(IntSequence &v, int nv)
+UTensor::decrement(IntSequence& v, int nv)
 {
   if (v.size() == 0)
     return;
-  int i = v.size()-1;
+  int i = v.size() - 1;
   v[i]--;
   while (i > 0 && v[i] == -1)
     {
-      v[i] = nv -1;
+      v[i] = nv - 1;
       v[--i]--;
     }
 }
@@ -64,11 +64,11 @@ UTensor::decrement(IntSequence &v, int nv)
    symmetric, everything necessary is given by ‘nvmx’. */
 
 void
-UTensor::increment(IntSequence &v, const IntSequence &nvmx)
+UTensor::increment(IntSequence& v, const IntSequence& nvmx)
 {
   if (v.size() == 0)
     return;
-  int i = v.size()-1;
+  int i = v.size() - 1;
   v[i]++;
   while (i > 0 && v[i] == nvmx[i])
     {
@@ -81,15 +81,15 @@ UTensor::increment(IntSequence &v, const IntSequence &nvmx)
    nvmx). */
 
 void
-UTensor::decrement(IntSequence &v, const IntSequence &nvmx)
+UTensor::decrement(IntSequence& v, const IntSequence& nvmx)
 {
   if (v.size() == 0)
     return;
-  int i = v.size()-1;
+  int i = v.size() - 1;
   v[i]--;
   while (i > 0 && v[i] == -1)
     {
-      v[i] = nvmx[i] -1;
+      v[i] = nvmx[i] - 1;
       v[--i]--;
     }
 }
@@ -98,7 +98,7 @@ UTensor::decrement(IntSequence &v, const IntSequence &nvmx)
    tensor. This is easy. */
 
 int
-UTensor::getOffset(const IntSequence &v, int nv)
+UTensor::getOffset(const IntSequence& v, int nv)
 {
   int res = 0;
   for (int i = 0; i < v.size(); i++)
@@ -112,7 +112,7 @@ UTensor::getOffset(const IntSequence &v, int nv)
 /* Also easy. */
 
 int
-UTensor::getOffset(const IntSequence &v, const IntSequence &nvmx)
+UTensor::getOffset(const IntSequence& v, const IntSequence& nvmx)
 {
   int res = 0;
   for (int i = 0; i < v.size(); i++)
@@ -130,14 +130,14 @@ UTensor::getOffset(const IntSequence &v, const IntSequence &nvmx)
    decrease it by one, and then set all elements to the right to n−1. */
 
 void
-FTensor::decrement(IntSequence &v, int nv)
+FTensor::decrement(IntSequence& v, int nv)
 {
-  int i = v.size()-1;
-  while (i > 0 && v[i-1] == v[i])
+  int i = v.size() - 1;
+  while (i > 0 && v[i - 1] == v[i])
     i--;
   v[i]--;
-  for (int j = i+1; j < v.size(); j++)
-    v[j] = nv-1;
+  for (int j = i + 1; j < v.size(); j++)
+    v[j] = nv - 1;
 }
 
 /* This calculates order of the given index of our ordering of indices. In
@@ -181,16 +181,16 @@ FTensor::decrement(IntSequence &v, int nv)
    (m₂−m₁,m₃−m₁,…,mₖ−m₁) for n−m₁ variables. */
 
 int
-FTensor::getOffsetRecurse(IntSequence &v, int nv)
+FTensor::getOffsetRecurse(IntSequence& v, int nv)
 {
   if (v.size() == 0)
     return 0;
   int prefix = v.getPrefixLength();
   int m = v[0];
   int k = v.size();
-  int s1 = PascalTriangle::noverk(nv+k-1, k) - PascalTriangle::noverk(nv-m+k-1, k);
+  int s1 = PascalTriangle::noverk(nv + k - 1, k) - PascalTriangle::noverk(nv - m + k - 1, k);
   IntSequence subv(v, prefix, k);
   subv.add(-m);
-  int s2 = getOffsetRecurse(subv, nv-m);
-  return s1+s2;
+  int s2 = getOffsetRecurse(subv, nv - m);
+  return s1 + s2;
 }

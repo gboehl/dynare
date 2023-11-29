@@ -20,11 +20,16 @@
 
 #include <utility>
 
-#include "kord_exception.hh"
 #include "approximation_welfare.hh"
+#include "kord_exception.hh"
 
-ApproximationWelfare::ApproximationWelfare(KordwDynare &w, double discount_factor_arg, const FGSContainer &rule_ders_arg, const FGSContainer &rule_ders_s_arg, Journal &j)
-  : welfare{w}, discount_factor(discount_factor_arg), nvs{welfare.getModel().nys(), welfare.getModel().nexog(), welfare.getModel().nexog(), 1}, journal{j}
+ApproximationWelfare::ApproximationWelfare(KordwDynare& w, double discount_factor_arg,
+                                           const FGSContainer& rule_ders_arg,
+                                           const FGSContainer& rule_ders_s_arg, Journal& j) :
+    welfare {w},
+    discount_factor(discount_factor_arg), nvs {welfare.getModel().nys(), welfare.getModel().nexog(),
+                                               welfare.getModel().nexog(), 1},
+    journal {j}
 {
   rule_ders = std::make_unique<FGSContainer>(rule_ders_arg);
   rule_ders_s = std::make_unique<FGSContainer>(rule_ders_s_arg);
@@ -38,25 +43,32 @@ void
 ApproximationWelfare::approxAtSteady()
 {
   welfare.calcDerivativesAtSteady();
-  KOrderWelfare korderwel(welfare.getModel().nstat(), welfare.getModel().npred(), welfare.getModel().nboth(), welfare.getModel().nforw(), welfare.getModel().nexog(), welfare.getModel().order(), discount_factor, welfare.getPlannerObjDerivatives(), get_rule_ders(), get_rule_ders_s(), welfare.getModel().getVcov(), journal); 
+  KOrderWelfare korderwel(welfare.getModel().nstat(), welfare.getModel().npred(),
+                          welfare.getModel().nboth(), welfare.getModel().nforw(),
+                          welfare.getModel().nexog(), welfare.getModel().order(), discount_factor,
+                          welfare.getPlannerObjDerivatives(), get_rule_ders(), get_rule_ders_s(),
+                          welfare.getModel().getVcov(), journal);
   for (int k = 1; k <= welfare.getModel().order(); k++)
     korderwel.performStep<Storage::fold>(k);
   saveRuleDerivs(korderwel.getFoldW());
 
   // construct the resulting decision rule
-  cond_fdr = std::make_unique<FoldDecisionRule>(*cond_ders, welfare.getModel().nys(), welfare.getModel().nexog(), welfare.getModel().getSteady());
+  cond_fdr = std::make_unique<FoldDecisionRule>(*cond_ders, welfare.getModel().nys(),
+                                                welfare.getModel().nexog(),
+                                                welfare.getModel().getSteady());
 }
 
-const FoldDecisionRule &
+const FoldDecisionRule&
 ApproximationWelfare::getFoldCondWel() const
 {
-  KORD_RAISE_IF(!cond_fdr,
-                "Folded decision rule has not been created in ApproximationWelfare::getFoldCondWel");
+  KORD_RAISE_IF(
+      !cond_fdr,
+      "Folded decision rule has not been created in ApproximationWelfare::getFoldCondWel");
   return *cond_fdr;
 }
 
 void
-ApproximationWelfare::saveRuleDerivs(const FGSContainer &W)
+ApproximationWelfare::saveRuleDerivs(const FGSContainer& W)
 {
   cond_ders = std::make_unique<FGSContainer>(W);
 }

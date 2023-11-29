@@ -23,38 +23,38 @@
 #include <iostream>
 
 void
-SylvParams::print(const std::string &prefix) const
+SylvParams::print(const std::string& prefix) const
 {
   print(std::cout, prefix);
 }
 
 void
-SylvParams::print(std::ostream &fdesc, const std::string &prefix) const
+SylvParams::print(std::ostream& fdesc, const std::string& prefix) const
 {
-  method.print(fdesc, prefix,    "method             ");
-  rcondA1.print(fdesc, prefix,   "reci. cond1 A      ");
-  rcondAI.print(fdesc, prefix,   "reci. cond∞ A      ");
-  bs_norm.print(fdesc, prefix,   "log₁₀ diag norm    ");
-  f_err1.print(fdesc, prefix,    "abs. err 1 F diag  ");
-  f_errI.print(fdesc, prefix,    "abs. err ∞ F diag  ");
-  viv_err1.print(fdesc, prefix,  "abs. err 1 V·V⁻¹   ");
-  viv_errI.print(fdesc, prefix,  "abs. err ∞ V·V⁻¹   ");
-  ivv_err1.print(fdesc, prefix,  "abs. err 1 V⁻¹·V   ");
-  ivv_errI.print(fdesc, prefix,  "abs. err ∞ V⁻¹·V   ");
-  f_blocks.print(fdesc, prefix,  "num blocks in F    ");
+  method.print(fdesc, prefix, "method             ");
+  rcondA1.print(fdesc, prefix, "reci. cond1 A      ");
+  rcondAI.print(fdesc, prefix, "reci. cond∞ A      ");
+  bs_norm.print(fdesc, prefix, "log₁₀ diag norm    ");
+  f_err1.print(fdesc, prefix, "abs. err 1 F diag  ");
+  f_errI.print(fdesc, prefix, "abs. err ∞ F diag  ");
+  viv_err1.print(fdesc, prefix, "abs. err 1 V·V⁻¹   ");
+  viv_errI.print(fdesc, prefix, "abs. err ∞ V·V⁻¹   ");
+  ivv_err1.print(fdesc, prefix, "abs. err 1 V⁻¹·V   ");
+  ivv_errI.print(fdesc, prefix, "abs. err ∞ V⁻¹·V   ");
+  f_blocks.print(fdesc, prefix, "num blocks in F    ");
   f_largest.print(fdesc, prefix, "largest block in F ");
-  f_zeros.print(fdesc, prefix,   "num zeros in F     ");
+  f_zeros.print(fdesc, prefix, "num zeros in F     ");
   f_offdiag.print(fdesc, prefix, "num offdiag in F   ");
   if (*method == solve_method::iter)
     {
-      converged.print(fdesc, prefix,       "converged          ");
+      converged.print(fdesc, prefix, "converged          ");
       convergence_tol.print(fdesc, prefix, "convergence tol.   ");
-      iter_last_norm.print(fdesc, prefix,  "last norm          ");
-      max_num_iter.print(fdesc, prefix,    "max num iter       ");
-      num_iter.print(fdesc, prefix,        "num iter           ");
+      iter_last_norm.print(fdesc, prefix, "last norm          ");
+      max_num_iter.print(fdesc, prefix, "max num iter       ");
+      num_iter.print(fdesc, prefix, "num iter           ");
     }
   else
-    eig_min.print(fdesc, prefix,         "minimum eigenvalue ");
+    eig_min.print(fdesc, prefix, "minimum eigenvalue ");
 
   mat_err1.print(fdesc, prefix, "rel. matrix norm1  ");
   mat_errI.print(fdesc, prefix, "rel. matrix norm∞  ");
@@ -65,7 +65,7 @@ SylvParams::print(std::ostream &fdesc, const std::string &prefix) const
 }
 
 void
-SylvParams::setArrayNames(int &num, const char **names) const
+SylvParams::setArrayNames(int& num, const char** names) const
 {
   num = 0;
   if (method.getStatus() != status::undef)
@@ -123,25 +123,25 @@ SylvParams::setArrayNames(int &num, const char **names) const
 }
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-mxArray *
+mxArray*
 SylvParams::DoubleParamItem::createMatlabArray() const
 {
   return mxCreateDoubleScalar(value);
 }
 
-mxArray *
+mxArray*
 SylvParams::IntParamItem::createMatlabArray() const
 {
-  mxArray *res = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+  mxArray* res = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
 # if MX_HAS_INTERLEAVED_COMPLEX
   *mxGetInt32s(res) = value;
 # else
-  *static_cast<int *>(mxGetData(res)) = value;
+  *static_cast<int*>(mxGetData(res)) = value;
 # endif
   return res;
 }
 
-mxArray *
+mxArray*
 SylvParams::BoolParamItem::createMatlabArray() const
 {
   if (value)
@@ -150,7 +150,7 @@ SylvParams::BoolParamItem::createMatlabArray() const
     return mxCreateString("false");
 }
 
-mxArray *
+mxArray*
 SylvParams::MethodParamItem::createMatlabArray() const
 {
   if (value == solve_method::iter)
@@ -159,14 +159,14 @@ SylvParams::MethodParamItem::createMatlabArray() const
     return mxCreateString("recursive");
 }
 
-mxArray *
+mxArray*
 SylvParams::createStructArray() const
 {
-  const char *names[50];
+  const char* names[50];
   int num;
   setArrayNames(num, names);
   const mwSize dims[] = {1, 1};
-  mxArray *const res = mxCreateStructArray(2, dims, num, names);
+  mxArray* const res = mxCreateStructArray(2, dims, num, names);
 
   int i = 0;
   if (method.getStatus() != status::undef)

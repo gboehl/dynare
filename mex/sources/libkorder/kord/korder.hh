@@ -41,19 +41,19 @@
 #ifndef KORDER_H
 #define KORDER_H
 
-#include "int_sequence.hh"
+#include "faa_di_bruno.hh"
 #include "fs_tensor.hh"
 #include "gs_tensor.hh"
-#include "t_container.hh"
-#include "stack_container.hh"
-#include "normal_moments.hh"
-#include "t_polynomial.hh"
-#include "faa_di_bruno.hh"
+#include "int_sequence.hh"
 #include "journal.hh"
+#include "normal_moments.hh"
 #include "pascal_triangle.hh"
+#include "stack_container.hh"
+#include "t_container.hh"
+#include "t_polynomial.hh"
 
-#include "kord_exception.hh"
 #include "GeneralSylvester.hh"
+#include "kord_exception.hh"
 
 #include <dynlapack.h>
 
@@ -61,7 +61,11 @@
 #include <type_traits>
 
 // The enum class passed as template parameter for many data structures
-enum class Storage { fold, unfold };
+enum class Storage
+{
+  fold,
+  unfold
+};
 
 /* In ‘ctraits’ we define a number of types. We have a type for tensor Ttensor,
    and types for each pair of folded/unfolded containers used as a member in
@@ -90,8 +94,10 @@ public:
   using TGstack = std::conditional_t<type == Storage::fold, FoldedGContainer, UnfoldedGContainer>;
   using Tm = std::conditional_t<type == Storage::fold, FNormalMoments, UNormalMoments>;
   using Tpol = std::conditional_t<type == Storage::fold, FTensorPolynomial, UTensorPolynomial>;
-  using TZXstack = std::conditional_t<type == Storage::fold, FoldedZXContainer, UnfoldedZXContainer>;
-  using TGXstack = std::conditional_t<type == Storage::fold, FoldedGXContainer, UnfoldedGXContainer>;
+  using TZXstack
+      = std::conditional_t<type == Storage::fold, FoldedZXContainer, UnfoldedZXContainer>;
+  using TGXstack
+      = std::conditional_t<type == Storage::fold, FoldedGXContainer, UnfoldedGXContainer>;
 };
 
 /* The PartitionY class defines the partitioning of state variables y. The
@@ -117,27 +123,27 @@ struct PartitionY
   const int npred;
   const int nboth;
   const int nforw;
-  PartitionY() : PartitionY(0,0,0,0) {}
-  PartitionY(int num_stat, int num_pred,
-             int num_both, int num_forw)
-    : nstat(num_stat), npred(num_pred),
-      nboth(num_both), nforw(num_forw)
+  PartitionY() : PartitionY(0, 0, 0, 0)
+  {
+  }
+  PartitionY(int num_stat, int num_pred, int num_both, int num_forw) :
+      nstat(num_stat), npred(num_pred), nboth(num_both), nforw(num_forw)
   {
   }
   int
   ny() const
   {
-    return nstat+npred+nboth+nforw;
+    return nstat + npred + nboth + nforw;
   }
   int
   nys() const
   {
-    return npred+nboth;
+    return npred + nboth;
   }
   int
   nyss() const
   {
-    return nboth+nforw;
+    return nboth + nforw;
   }
 };
 
@@ -151,16 +157,15 @@ struct PartitionY
 class PLUMatrix : public TwoDMatrix
 {
 public:
-  PLUMatrix(int n)
-    : TwoDMatrix(n, n),
-      inv(nrows()*ncols()),
-      ipiv(nrows())
+  PLUMatrix(int n) : TwoDMatrix(n, n), inv(nrows() * ncols()), ipiv(nrows())
   {
   }
-  void multInv(TwoDMatrix &m) const;
+  void multInv(TwoDMatrix& m) const;
+
 private:
   Vector inv;
   std::vector<lapack_int> ipiv;
+
 protected:
   void calcPLU();
 };
@@ -171,8 +176,8 @@ protected:
 class MatrixA : public PLUMatrix
 {
 public:
-  MatrixA(const FSSparseTensor &f, const IntSequence &ss,
-          const TwoDMatrix &gy, const PartitionY &ypart);
+  MatrixA(const FSSparseTensor& f, const IntSequence& ss, const TwoDMatrix& gy,
+          const PartitionY& ypart);
 };
 
 /* The class MatrixS slightly differs from MatrixA. It is used for
@@ -182,8 +187,8 @@ public:
 class MatrixS : public PLUMatrix
 {
 public:
-  MatrixS(const FSSparseTensor &f, const IntSequence &ss,
-          const TwoDMatrix &gy, const PartitionY &ypart);
+  MatrixS(const FSSparseTensor& f, const IntSequence& ss, const TwoDMatrix& gy,
+          const PartitionY& ypart);
 };
 
 /* The B matrix is equal to [f_y**₊]. We have just a constructor. */
@@ -191,9 +196,8 @@ public:
 class MatrixB : public TwoDMatrix
 {
 public:
-  MatrixB(const FSSparseTensor &f, const IntSequence &ss)
-    : TwoDMatrix(FGSTensor(f, ss, IntSequence(1, 0),
-                           TensorDimens(ss, IntSequence(1, 0))))
+  MatrixB(const FSSparseTensor& f, const IntSequence& ss) :
+      TwoDMatrix(FGSTensor(f, ss, IntSequence(1, 0), TensorDimens(ss, IntSequence(1, 0))))
   {
   }
 };
@@ -246,7 +250,7 @@ protected:
 
   /* Dynamic model derivatives: just a reference to the container of sparse
      tensors of the system derivatives, lives outside the class */
-  const TensorContainer<FSSparseTensor> &f;
+  const TensorContainer<FSSparseTensor>& f;
 
   /* Matrices: matrix A, matrix S, and matrix B, see MatrixA and MatrixB class
      declarations */
@@ -258,46 +262,46 @@ protected:
      containers. We declare template methods for accessing containers depending
      on ‘fold’ and ‘unfold’ flag, we implement their specializations*/
   template<Storage t>
-  typename ctraits<t>::Tg &g();
+  typename ctraits<t>::Tg& g();
   template<Storage t>
-  const typename ctraits<t>::Tg &g() const;
+  const typename ctraits<t>::Tg& g() const;
 
   template<Storage t>
-  typename ctraits<t>::Tgs &gs();
+  typename ctraits<t>::Tgs& gs();
   template<Storage t>
-  const typename ctraits<t>::Tgs &gs() const;
+  const typename ctraits<t>::Tgs& gs() const;
 
   template<Storage t>
-  typename ctraits<t>::Tgss &gss();
+  typename ctraits<t>::Tgss& gss();
   template<Storage t>
-  const typename ctraits<t>::Tgss &gss() const;
+  const typename ctraits<t>::Tgss& gss() const;
 
   template<Storage t>
-  typename ctraits<t>::TG &G();
+  typename ctraits<t>::TG& G();
   template<Storage t>
-  const typename ctraits<t>::TG &G() const;
+  const typename ctraits<t>::TG& G() const;
 
   template<Storage t>
-  typename ctraits<t>::TZstack &Zstack();
+  typename ctraits<t>::TZstack& Zstack();
   template<Storage t>
-  const typename ctraits<t>::TZstack &Zstack() const;
+  const typename ctraits<t>::TZstack& Zstack() const;
 
   template<Storage t>
-  typename ctraits<t>::TGstack &Gstack();
+  typename ctraits<t>::TGstack& Gstack();
   template<Storage t>
-  const typename ctraits<t>::TGstack &Gstack() const;
+  const typename ctraits<t>::TGstack& Gstack() const;
 
   template<Storage t>
-  typename ctraits<t>::Tm &m();
+  typename ctraits<t>::Tm& m();
   template<Storage t>
-  const typename ctraits<t>::Tm &m() const;
+  const typename ctraits<t>::Tm& m() const;
 
-  Journal &journal;
+  Journal& journal;
+
 public:
   KOrder(int num_stat, int num_pred, int num_both, int num_forw,
-         const TensorContainer<FSSparseTensor> &fcont,
-         const TwoDMatrix &gy, const TwoDMatrix &gu, const TwoDMatrix &v,
-         Journal &jr);
+         const TensorContainer<FSSparseTensor>& fcont, const TwoDMatrix& gy, const TwoDMatrix& gu,
+         const TwoDMatrix& v, Journal& jr);
 
   /* Performs k-order step provided that k=2 or the k−1-th step has been
      run, this is the core method */
@@ -312,22 +316,22 @@ public:
   template<Storage t>
   Vector calcStochShift(int order, double sigma) const;
   void switchToFolded();
-  const PartitionY &
+  const PartitionY&
   getPartY() const
   {
     return ypart;
   }
-  const FGSContainer &
+  const FGSContainer&
   getFoldDers() const
   {
     return _fg;
   }
-  const UGSContainer &
+  const UGSContainer&
   getUnfoldDers() const
   {
     return _ug;
   }
-  const FGSContainer &
+  const FGSContainer&
   getFoldDersS() const
   {
     return _fgs;
@@ -337,6 +341,7 @@ public:
   {
     return i % 2 == 0;
   }
+
 protected:
   /* Inserts a g derivative to the g container and also creates subtensors and
      insert them to g_y* and g_y** containers */
@@ -345,17 +350,17 @@ protected:
 
   /* Solves the sylvester equation (templated fold, and unfold) */
   template<Storage t>
-  void sylvesterSolve(typename ctraits<t>::Ttensor &der) const;
+  void sylvesterSolve(typename ctraits<t>::Ttensor& der) const;
 
   /* Calculates derivatives of F by Faà Di Bruno for the sparse container of
      system derivatives and Z stack container */
   template<Storage t>
-  std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoZ(const Symmetry &sym) const;
+  std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoZ(const Symmetry& sym) const;
 
   /* Calculates derivatives of G by Faà Di Bruno for the dense container g**
      and G stack */
   template<Storage t>
-  std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoG(const Symmetry &sym) const;
+  std::unique_ptr<typename ctraits<t>::Ttensor> faaDiBrunoG(const Symmetry& sym) const;
 
   // Recovers g_y*ⁱ
   template<Storage t>
@@ -402,8 +407,9 @@ KOrder::insertDerivative(std::unique_ptr<typename ctraits<t>::Ttensor> der)
 {
   auto der_ptr = der.get();
   g<t>().insert(std::move(der));
-  gs<t>().insert(std::make_unique<typename ctraits<t>::Ttensor>(ypart.nstat, ypart.nys(), *der_ptr));
-  gss<t>().insert(std::make_unique<typename ctraits<t>::Ttensor>(ypart.nstat+ypart.npred,
+  gs<t>().insert(
+      std::make_unique<typename ctraits<t>::Ttensor>(ypart.nstat, ypart.nys(), *der_ptr));
+  gss<t>().insert(std::make_unique<typename ctraits<t>::Ttensor>(ypart.nstat + ypart.npred,
                                                                  ypart.nyss(), *der_ptr));
 }
 
@@ -417,7 +423,7 @@ KOrder::insertDerivative(std::unique_ptr<typename ctraits<t>::Ttensor> der)
 
 template<Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
-KOrder::faaDiBrunoZ(const Symmetry &sym) const
+KOrder::faaDiBrunoZ(const Symmetry& sym) const
 {
   JournalRecordPair pa(journal);
   pa << "Faà Di Bruno Z container for " << sym << endrec;
@@ -431,7 +437,7 @@ KOrder::faaDiBrunoZ(const Symmetry &sym) const
 
 template<Storage t>
 std::unique_ptr<typename ctraits<t>::Ttensor>
-KOrder::faaDiBrunoG(const Symmetry &sym) const
+KOrder::faaDiBrunoG(const Symmetry& sym) const
 {
   JournalRecordPair pa(journal);
   pa << "Faà Di Bruno G container for " << sym << endrec;
@@ -456,7 +462,7 @@ template<Storage t>
 void
 KOrder::recover_y(int i)
 {
-  Symmetry sym{i, 0, 0, 0};
+  Symmetry sym {i, 0, 0, 0};
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
@@ -471,9 +477,9 @@ KOrder::recover_y(int i)
 
   insertDerivative<t>(std::move(g_yi));
 
-  auto &gss_y = gss<t>().get(Symmetry{1, 0, 0, 0});
+  auto& gss_y = gss<t>().get(Symmetry {1, 0, 0, 0});
   gs<t>().multAndAdd(gss_y, *G_yi_ptr);
-  auto &gss_yi = gss<t>().get(sym);
+  auto& gss_yi = gss<t>().get(sym);
   gs<t>().multAndAdd(gss_yi, *G_yi_ptr);
 }
 
@@ -490,7 +496,7 @@ template<Storage t>
 void
 KOrder::recover_yu(int i, int j)
 {
-  Symmetry sym{i, j, 0, 0};
+  Symmetry sym {i, j, 0, 0};
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
@@ -503,7 +509,7 @@ KOrder::recover_yu(int i, int j)
   matA.multInv(*g_yiuj);
   insertDerivative<t>(std::move(g_yiuj));
 
-  gs<t>().multAndAdd(gss<t>().get(Symmetry{1, 0, 0, 0}), *G_yiuj_ptr);
+  gs<t>().multAndAdd(gss<t>().get(Symmetry {1, 0, 0, 0}), *G_yiuj_ptr);
 }
 
 /* Here we solve [F_yⁱσʲ]+[Dᵢⱼ]+[Eᵢⱼ]=0 to obtain g_yⁱσʲ. We calculate
@@ -523,7 +529,7 @@ template<Storage t>
 void
 KOrder::recover_ys(int i, int j)
 {
-  Symmetry sym{i, 0, 0, j};
+  Symmetry sym {i, 0, 0, j};
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
@@ -555,7 +561,7 @@ KOrder::recover_ys(int i, int j)
       insertDerivative<t>(std::move(g_yisj));
 
       Gstack<t>().multAndAdd(1, gss<t>(), *G_yisj_ptr);
-      Gstack<t>().multAndAdd(i+j, gss<t>(), *G_yisj_ptr);
+      Gstack<t>().multAndAdd(i + j, gss<t>(), *G_yisj_ptr);
     }
 }
 
@@ -576,7 +582,7 @@ template<Storage t>
 void
 KOrder::recover_yus(int i, int j, int k)
 {
-  Symmetry sym{i, j, 0, k};
+  Symmetry sym {i, j, 0, k};
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
@@ -634,7 +640,7 @@ template<Storage t>
 void
 KOrder::recover_s(int i)
 {
-  Symmetry sym{0, 0, 0, i};
+  Symmetry sym {0, 0, 0, i};
   JournalRecordPair pa(journal);
   pa << "Recovering symmetry " << sym << endrec;
 
@@ -677,9 +683,9 @@ void
 KOrder::fillG(int i, int j, int k)
 {
   for (int m = 1; m <= k; m++)
-    if (is_even(k-m))
+    if (is_even(k - m))
       {
-        auto G_yiujupms = faaDiBrunoG<t>(Symmetry{i, j, m, k-m});
+        auto G_yiujupms = faaDiBrunoG<t>(Symmetry {i, j, m, k - m});
         G<t>().insert(std::move(G_yiujupms));
       }
 }
@@ -694,12 +700,12 @@ template<Storage t>
 typename ctraits<t>::Ttensor
 KOrder::calcD_ijk(int i, int j, int k) const
 {
-  typename ctraits<t>::Ttensor res(ny, TensorDimens(Symmetry{i, j, 0, 0}, nvs));
+  typename ctraits<t>::Ttensor res(ny, TensorDimens(Symmetry {i, j, 0, 0}, nvs));
   res.zeros();
   if (is_even(k))
     {
-      auto tmp = faaDiBrunoZ<t>(Symmetry{i, j, k, 0});
-      tmp->contractAndAdd(2, res, m<t>().get(Symmetry{k}));
+      auto tmp = faaDiBrunoZ<t>(Symmetry {i, j, k, 0});
+      tmp->contractAndAdd(2, res, m<t>().get(Symmetry {k}));
     }
   return res;
 }
@@ -714,13 +720,13 @@ template<Storage t>
 typename ctraits<t>::Ttensor
 KOrder::calcE_ijk(int i, int j, int k) const
 {
-  typename ctraits<t>::Ttensor res(ny, TensorDimens(Symmetry{i, j, 0, 0}, nvs));
+  typename ctraits<t>::Ttensor res(ny, TensorDimens(Symmetry {i, j, 0, 0}, nvs));
   res.zeros();
-  for (int n = 2; n <= k-1; n += 2)
+  for (int n = 2; n <= k - 1; n += 2)
     {
-      auto tmp = faaDiBrunoZ<t>(Symmetry{i, j, n, k-n});
+      auto tmp = faaDiBrunoZ<t>(Symmetry {i, j, n, k - n});
       tmp->mult(static_cast<double>(PascalTriangle::noverk(k, n)));
-      tmp->contractAndAdd(2, res, m<t>().get(Symmetry{n}));
+      tmp->contractAndAdd(2, res, m<t>().get(Symmetry {n}));
     }
   return res;
 }
@@ -777,25 +783,24 @@ template<Storage t>
 void
 KOrder::performStep(int order)
 {
-  KORD_RAISE_IF(order-1 != g<t>().getMaxDim(),
-                "Wrong order for KOrder::performStep");
+  KORD_RAISE_IF(order - 1 != g<t>().getMaxDim(), "Wrong order for KOrder::performStep");
   JournalRecordPair pa(journal);
   pa << "Performing step for order = " << order << endrec;
 
   recover_y<t>(order);
 
   for (int i = 0; i < order; i++)
-    recover_yu<t>(i, order-i);
+    recover_yu<t>(i, order - i);
 
   for (int j = 1; j < order; j++)
     {
-      for (int i = j-1; i >= 1; i--)
-        recover_yus<t>(order-j, i, j-i);
-      recover_ys<t>(order-j, j);
+      for (int i = j - 1; i >= 1; i--)
+        recover_yus<t>(order - j, i, j - i);
+      recover_ys<t>(order - j, j);
     }
 
-  for (int i = order-1; i >= 1; i--)
-    recover_yus<t>(0, i, order-i);
+  for (int i = order - 1; i >= 1; i--)
+    recover_yus<t>(0, i, order - i);
 
   recover_s<t>(order);
 }
@@ -808,8 +813,7 @@ template<Storage t>
 double
 KOrder::check(int dim) const
 {
-  KORD_RAISE_IF(dim > g<t>().getMaxDim(),
-                "Wrong dimension for KOrder::check");
+  KORD_RAISE_IF(dim > g<t>().getMaxDim(), "Wrong dimension for KOrder::check");
   JournalRecordPair pa(journal);
   pa << "Checking residuals for order = " << dim << endrec;
 
@@ -818,7 +822,7 @@ KOrder::check(int dim) const
   // Check for F_yⁱuʲ=0
   for (int i = 0; i <= dim; i++)
     {
-      Symmetry sym{dim-i, i, 0, 0};
+      Symmetry sym {dim - i, i, 0, 0};
       auto r = faaDiBrunoZ<t>(sym);
       double err = r->getData().getMax();
       JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
@@ -826,14 +830,14 @@ KOrder::check(int dim) const
     }
 
   // Check for F_yⁱuʲu′ᵏ+Dᵢⱼₖ+Eᵢⱼₖ=0
-  for (auto &si : SymmetrySet(dim, 3))
+  for (auto& si : SymmetrySet(dim, 3))
     {
       int i = si[0];
       int j = si[1];
       int k = si[2];
-      if (i+j > 0 && k > 0)
+      if (i + j > 0 && k > 0)
         {
-          Symmetry sym{i, j, 0, k};
+          Symmetry sym {i, j, 0, k};
           auto r = faaDiBrunoZ<t>(sym);
           auto D_ijk = calcD_ijk<t>(i, j, k);
           r->add(1.0, D_ijk);
@@ -846,13 +850,13 @@ KOrder::check(int dim) const
     }
 
   // Check for F_σⁱ+Dᵢ+Eᵢ=0
-  auto r = faaDiBrunoZ<t>(Symmetry{0, 0, 0, dim});
+  auto r = faaDiBrunoZ<t>(Symmetry {0, 0, 0, dim});
   auto D_k = calcD_k<t>(dim);
   r->add(1.0, D_k);
   auto E_k = calcE_k<t>(dim);
   r->add(1.0, E_k);
   double err = r->getData().getMax();
-  Symmetry sym{0, 0, 0, dim};
+  Symmetry sym {0, 0, 0, dim};
   JournalRecord(journal) << "\terror for symmetry " << sym << "\tis " << err << endrec;
   maxerror = std::max(err, maxerror);
 
@@ -870,7 +874,7 @@ KOrder::calcStochShift(int order, double sigma) const
     if (is_even(j))
       {
         auto ten = calcD_k<t>(j);
-        res.add(std::pow(sigma, j)/jfac, ten.getData());
+        res.add(std::pow(sigma, j) / jfac, ten.getData());
       }
   return res;
 }

@@ -29,10 +29,10 @@ class ObjectiveAC
 protected:
   int ntt; // Size of vector of temporary terms
 public:
-  ObjectiveAC(int ntt_arg) : ntt{ntt_arg}
-  {
-  };
+  ObjectiveAC(int ntt_arg) : ntt {ntt_arg} {};
   virtual ~ObjectiveAC() = default;
-  virtual void eval(const Vector &y, const Vector &x, const Vector &params, Vector &residual, std::vector<TwoDMatrix> &md) = 0;
+  virtual void eval(const Vector& y, const Vector& x, const Vector& params, Vector& residual,
+                    std::vector<TwoDMatrix>& md)
+      = 0;
 };
 #endif

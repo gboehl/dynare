@@ -17,11 +17,11 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <string>
-#include <memory>
-#include <limits>
-#include <type_traits>
 #include <algorithm>
+#include <limits>
+#include <memory>
+#include <string>
+#include <type_traits>
 
 #if defined(_WIN32) || defined(__CYGWIN32__)
 # ifndef NOMINMAX
@@ -36,21 +36,23 @@ class DynamicModelCaller
 {
 public:
   const bool linear;
-  bool compute_jacobian; // Not constant, because will be changed from true to false for linear models after first evaluation
+  bool compute_jacobian; // Not constant, because will be changed from true to false for linear
+                         // models after first evaluation
 
   // Used to store error messages (as exceptions cannot cross the OpenMP boundary)
   static std::string error_msg;
 
-  DynamicModelCaller(bool linear_arg, bool compute_jacobian_arg) : linear{linear_arg}, compute_jacobian{compute_jacobian_arg}
+  DynamicModelCaller(bool linear_arg, bool compute_jacobian_arg) :
+      linear {linear_arg}, compute_jacobian {compute_jacobian_arg}
   {
   }
   virtual ~DynamicModelCaller() = default;
-  virtual double *y() const = 0;
-  virtual double *x() const = 0;
+  virtual double* y() const = 0;
+  virtual double* x() const = 0;
   /* Copy a column of the Jacobian to dest.
      Only copies non-zero elements, according to g1_sparse_{rowval,colval,colptr}. */
-  virtual void copy_jacobian_column(mwIndex col, double *dest) const = 0;
-  virtual void eval(double *resid) = 0;
+  virtual void copy_jacobian_column(mwIndex col, double* dest) const = 0;
+  virtual void eval(double* resid) = 0;
 };
 
 class DynamicModelDllCaller : public DynamicModelCaller
@@ -61,30 +63,34 @@ private:
 #else
   static void *resid_mex, *g1_mex;
 #endif
-  using dynamic_tt_fct = void (*)(const double *y, const double *x, const double *params, const double *steady_state, double *T);
-  using dynamic_fct = void (*)(const double *y, const double *x, const double *params, const double *steady_state, const double *T, double *value);
+  using dynamic_tt_fct = void (*)(const double* y, const double* x, const double* params,
+                                  const double* steady_state, double* T);
+  using dynamic_fct = void (*)(const double* y, const double* x, const double* params,
+                               const double* steady_state, const double* T, double* value);
   static dynamic_tt_fct residual_tt_fct, g1_tt_fct;
   static dynamic_fct residual_fct, g1_fct;
   const double *params, *steady_state;
   std::unique_ptr<double[]> tt, y_p, x_p, jacobian_p;
-  const int32_T *g1_sparse_colptr;
+  const int32_T* g1_sparse_colptr;
 
 public:
-  DynamicModelDllCaller(size_t ntt, mwIndex ny, mwIndex nx, const double *params_arg, const double *steady_state_arg, const int32_T *g1_sparse_colptr_arg, bool linear_arg, bool compute_jacobian_arg);
+  DynamicModelDllCaller(size_t ntt, mwIndex ny, mwIndex nx, const double* params_arg,
+                        const double* steady_state_arg, const int32_T* g1_sparse_colptr_arg,
+                        bool linear_arg, bool compute_jacobian_arg);
   virtual ~DynamicModelDllCaller() = default;
-  double *
+  double*
   y() const override
   {
     return y_p.get();
   }
-  double *
+  double*
   x() const override
   {
     return x_p.get();
   }
-  void copy_jacobian_column(mwIndex col, double *dest) const override;
-  void eval(double *resid) override;
-  static void load_dll(const std::string &basename);
+  void copy_jacobian_column(mwIndex col, double* dest) const override;
+  void eval(double* resid) override;
+  static void load_dll(const std::string& basename);
   static void unload_dll();
 };
 
@@ -92,7 +98,8 @@ class DynamicModelMatlabCaller : public DynamicModelCaller
 {
 private:
   std::string basename;
-  mxArray *y_mx, *x_mx, *jacobian_mx, *params_mx, *steady_state_mx, *g1_sparse_rowval_mx, *g1_sparse_colval_mx, *g1_sparse_colptr_mx;
+  mxArray *y_mx, *x_mx, *jacobian_mx, *params_mx, *steady_state_mx, *g1_sparse_rowval_mx,
+      *g1_sparse_colval_mx, *g1_sparse_colptr_mx;
   /* Given a complex matrix (of double floats), returns a sparse matrix of same size.
      Real elements of the original matrix are copied as-is to the new one.
      Complex elements are replaced by NaNs.
@@ -100,55 +107,68 @@ private:
      There are two versions, one for dense matrices, another for sparse
      matrices. */
   template<bool sparse>
-  static mxArray *cmplxToReal(mxArray *cmplx_mx);
+  static mxArray* cmplxToReal(mxArray* cmplx_mx);
+
 public:
-  DynamicModelMatlabCaller(std::string basename_arg, mwIndex ny, mwIndex nx, const mxArray *params_mx_arg, const mxArray *steady_state_mx_arg, const mxArray *g1_sparse_rowval_mx_arg, const mxArray *g1_sparse_colval_mx_arg, const mxArray *g1_sparse_colptr_mx_arg, bool linear_arg, bool compute_jacobian_arg);
+  DynamicModelMatlabCaller(std::string basename_arg, mwIndex ny, mwIndex nx,
+                           const mxArray* params_mx_arg, const mxArray* steady_state_mx_arg,
+                           const mxArray* g1_sparse_rowval_mx_arg,
+                           const mxArray* g1_sparse_colval_mx_arg,
+                           const mxArray* g1_sparse_colptr_mx_arg, bool linear_arg,
+                           bool compute_jacobian_arg);
   ~DynamicModelMatlabCaller() override;
-  double *
+  double*
   y() const override
   {
     return mxGetPr(y_mx);
   }
-  double *
+  double*
   x() const override
   {
     return mxGetPr(x_mx);
   }
-  void copy_jacobian_column(mwIndex col, double *dest) const override;
-  void eval(double *resid) override;
+  void copy_jacobian_column(mwIndex col, double* dest) const override;
+  void eval(double* resid) override;
   class Exception
   {
   public:
     const std::string msg;
-    Exception(std::string msg_arg) : msg{std::move(msg_arg)}
+    Exception(std::string msg_arg) : msg {std::move(msg_arg)}
     {
     }
   };
 };
 
 template<bool sparse>
-mxArray *
-DynamicModelMatlabCaller::cmplxToReal(mxArray *cmplx_mx)
+mxArray*
+DynamicModelMatlabCaller::cmplxToReal(mxArray* cmplx_mx)
 {
-  mxArray *real_mx {sparse ?
-      mxCreateSparse(mxGetM(cmplx_mx), mxGetN(cmplx_mx), mxGetNzmax(cmplx_mx), mxREAL) :
-      mxCreateDoubleMatrix(mxGetM(cmplx_mx), mxGetN(cmplx_mx), mxREAL)};
+  mxArray* real_mx {
+      sparse ? mxCreateSparse(mxGetM(cmplx_mx), mxGetN(cmplx_mx), mxGetNzmax(cmplx_mx), mxREAL)
+             : mxCreateDoubleMatrix(mxGetM(cmplx_mx), mxGetN(cmplx_mx), mxREAL)};
 
-  if constexpr(sparse)
+  if constexpr (sparse)
     {
       std::copy_n(mxGetIr(cmplx_mx), mxGetNzmax(cmplx_mx), mxGetIr(real_mx));
-      std::copy_n(mxGetJc(cmplx_mx), mxGetN(cmplx_mx)+1, mxGetJc(real_mx));
+      std::copy_n(mxGetJc(cmplx_mx), mxGetN(cmplx_mx) + 1, mxGetJc(real_mx));
     }
 
 #if MX_HAS_INTERLEAVED_COMPLEX
-  mxComplexDouble *cmplx {mxGetComplexDoubles(cmplx_mx)};
+  mxComplexDouble* cmplx {mxGetComplexDoubles(cmplx_mx)};
 #else
-  double *cmplx_real {mxGetPr(cmplx_mx)};
-  double *cmplx_imag {mxGetPi(cmplx_mx)};
+  double* cmplx_real {mxGetPr(cmplx_mx)};
+  double* cmplx_imag {mxGetPi(cmplx_mx)};
 #endif
-  double *real {mxGetPr(real_mx)};
+  double* real {mxGetPr(real_mx)};
   for (std::conditional_t<sparse, mwSize, size_t> i {0};
-       i < [&]{ if constexpr(sparse) return mxGetNzmax(cmplx_mx); else return mxGetNumberOfElements(cmplx_mx); }(); // Use a lambda instead of the ternary operator to have the right type (there is no constexpr ternary operator)
+       i <
+       [&] {
+         if constexpr (sparse)
+           return mxGetNzmax(cmplx_mx);
+         else
+           return mxGetNumberOfElements(cmplx_mx);
+       }(); // Use a lambda instead of the ternary operator to have the right type (there is no
+            // constexpr ternary operator)
        i++)
 #if MX_HAS_INTERLEAVED_COMPLEX
     if (cmplx[i].imag == 0.0)

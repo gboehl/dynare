@@ -48,8 +48,8 @@
 #ifndef PERMUTATION_H
 #define PERMUTATION_H
 
-#include "int_sequence.hh"
 #include "equivalence.hh"
+#include "int_sequence.hh"
 
 #include <vector>
 
@@ -69,39 +69,34 @@ class Permutation
 {
 protected:
   IntSequence permap;
+
 public:
-  explicit Permutation(int len)
-    : permap(len)
+  explicit Permutation(int len) : permap(len)
   {
     for (int i = 0; i < len; i++)
       permap[i] = i;
   }
-  explicit Permutation(const Equivalence &e)
-    : permap(e.getN())
+  explicit Permutation(const Equivalence& e) : permap(e.getN())
   {
     e.trace(permap);
   }
-  Permutation(const Equivalence &e, const Permutation &per)
-    : permap(e.getN())
+  Permutation(const Equivalence& e, const Permutation& per) : permap(e.getN())
   {
     e.trace(permap, per);
   }
-  explicit Permutation(const IntSequence &s)
-    : permap(s.size())
+  explicit Permutation(const IntSequence& s) : permap(s.size())
   {
     computeSortingMap(s);
   };
-  Permutation(const Permutation &p1, const Permutation &p2)
-    : permap(p2.permap)
+  Permutation(const Permutation& p1, const Permutation& p2) : permap(p2.permap)
   {
     p1.apply(permap);
   }
-  Permutation(const Permutation &p, int i)
-    : permap(p.permap.insert(p.size(), i))
+  Permutation(const Permutation& p, int i) : permap(p.permap.insert(p.size(), i))
   {
   }
   bool
-  operator==(const Permutation &p) const
+  operator==(const Permutation& p) const
   {
     return permap == p.permap;
   }
@@ -115,22 +110,23 @@ public:
   {
     permap.print();
   }
-  void apply(const IntSequence &src, IntSequence &tar) const;
-  void apply(IntSequence &tar) const;
+  void apply(const IntSequence& src, IntSequence& tar) const;
+  void apply(IntSequence& tar) const;
   void inverse();
   int tailIdentity() const;
-  const IntSequence &
+  const IntSequence&
   getMap() const
   {
     return permap;
   }
-  IntSequence &
+  IntSequence&
   getMap()
   {
     return permap;
   }
+
 protected:
-  void computeSortingMap(const IntSequence &s);
+  void computeSortingMap(const IntSequence& s);
 };
 
 /* The PermutationSet maintains an array of of all permutations. The default
@@ -145,23 +141,24 @@ protected:
 
 class PermutationSet
 {
-  int order{1};
-  int size{1};
+  int order {1};
+  int size {1};
   std::vector<Permutation> pers;
+
 public:
   PermutationSet();
-  PermutationSet(const PermutationSet &ps, int n);
+  PermutationSet(const PermutationSet& ps, int n);
   int
   getNum() const
   {
     return size;
   }
-  const Permutation &
+  const Permutation&
   get(int i) const
   {
     return pers[i];
   }
-  std::vector<Permutation> getPreserving(const IntSequence &s) const;
+  std::vector<Permutation> getPreserving(const IntSequence& s) const;
 };
 
 /* The permutation bundle encapsulates all permutations sets up to some
@@ -170,9 +167,10 @@ public:
 class PermutationBundle
 {
   std::vector<PermutationSet> bundle;
+
 public:
   PermutationBundle(int nmax);
-  const PermutationSet &get(int n) const;
+  const PermutationSet& get(int n) const;
   void generateUpTo(int nmax);
 };
 

@@ -23,11 +23,11 @@
 #include <fstream>
 #include <iomanip>
 
-MMMatrixIn::MMMatrixIn(const std::string &fname)
+MMMatrixIn::MMMatrixIn(const std::string& fname)
 {
-  std::ifstream fd{fname};
+  std::ifstream fd {fname};
   if (fd.fail())
-    throw MMException("Cannot open file "+fname+" for reading\n");
+    throw MMException("Cannot open file " + fname + " for reading\n");
 
   // jump over initial comments
   while (fd.peek() == '%')
@@ -38,7 +38,7 @@ MMMatrixIn::MMMatrixIn(const std::string &fname)
   if (fd.fail())
     throw MMException("Couldn't parse rows and cols\n");
   // read in data
-  int len = rows*cols;
+  int len = rows * cols;
   data.resize(len);
   int i = 0;
   while (!fd.eof() && i < len)
@@ -55,11 +55,11 @@ MMMatrixIn::MMMatrixIn(const std::string &fname)
 }
 
 void
-MMMatrixOut::write(const std::string &fname, const GeneralMatrix &m)
+MMMatrixOut::write(const std::string& fname, const GeneralMatrix& m)
 {
-  std::ofstream fd{fname, std::ios::out | std::ios::trunc};
+  std::ofstream fd {fname, std::ios::out | std::ios::trunc};
   if (fd.fail())
-    throw MMException("Cannot open file "+fname+" for writing\n");
+    throw MMException("Cannot open file " + fname + " for writing\n");
 
   fd << "%%%%MatrixMarket matrix array real general" << std::endl
      << m.nrows() << ' ' << m.ncols() << std::endl

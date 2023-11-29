@@ -21,9 +21,9 @@
 #ifndef QUASI_TRIANGULAR_H
 #define QUASI_TRIANGULAR_H
 
-#include "Vector.hh"
 #include "KronVector.hh"
 #include "SylvMatrix.hh"
+#include "Vector.hh"
 
 #include <list>
 #include <memory>
@@ -33,23 +33,24 @@ class Diagonal;
 class DiagPair
 {
 private:
-  double *a1;
-  double *a2;
+  double* a1;
+  double* a2;
+
 public:
   DiagPair() = default;
-  DiagPair(double *aa1, double *aa2) : a1{aa1}, a2{aa2}
+  DiagPair(double* aa1, double* aa2) : a1 {aa1}, a2 {aa2}
   {
   }
-  DiagPair(const DiagPair &p) = default;
-  DiagPair &operator=(const DiagPair &p) = default;
-  DiagPair &
+  DiagPair(const DiagPair& p) = default;
+  DiagPair& operator=(const DiagPair& p) = default;
+  DiagPair&
   operator=(double v)
   {
     *a1 = v;
     *a2 = v;
     return *this;
   }
-  const double &
+  const double&
   operator*() const
   {
     return *a1;
@@ -71,29 +72,28 @@ private:
   int jbar; // Index of block in the diagonal
   bool real;
   DiagPair alpha;
-  double *beta1;
-  double *beta2;
+  double* beta1;
+  double* beta2;
 
 public:
   DiagonalBlock() = default;
-  DiagonalBlock(int jb, bool r, double *a1, double *a2,
-                double *b1, double *b2)
-    : jbar{jb}, real{r}, alpha{a1, a2}, beta1{b1}, beta2{b2}
+  DiagonalBlock(int jb, bool r, double* a1, double* a2, double* b1, double* b2) :
+      jbar {jb}, real {r}, alpha {a1, a2}, beta1 {b1}, beta2 {b2}
   {
   }
   // Construct a complex 2×2 block
   /* β₁ and β₂ will be deduced from pointers to α₁ and α₂ */
-  DiagonalBlock(int jb, double *a1, double *a2)
-    : jbar{jb}, real{false}, alpha{a1, a2}, beta1{a2-1}, beta2{a1+1}
+  DiagonalBlock(int jb, double* a1, double* a2) :
+      jbar {jb}, real {false}, alpha {a1, a2}, beta1 {a2 - 1}, beta2 {a1 + 1}
   {
   }
   // Construct a real 1×1 block
-  DiagonalBlock(int jb, double *a1)
-    : jbar{jb}, real{true}, alpha{a1, a1}, beta1{nullptr}, beta2{nullptr}
+  DiagonalBlock(int jb, double* a1) :
+      jbar {jb}, real {true}, alpha {a1, a1}, beta1 {nullptr}, beta2 {nullptr}
   {
   }
-  DiagonalBlock(const DiagonalBlock &b) = default;
-  DiagonalBlock &operator=(const DiagonalBlock &b) = default;
+  DiagonalBlock(const DiagonalBlock& b) = default;
+  DiagonalBlock& operator=(const DiagonalBlock& b) = default;
   int
   getIndex() const
   {
@@ -104,22 +104,22 @@ public:
   {
     return real;
   }
-  const DiagPair &
+  const DiagPair&
   getAlpha() const
   {
     return alpha;
   }
-  DiagPair &
+  DiagPair&
   getAlpha()
   {
     return alpha;
   }
-  double &
+  double&
   getBeta1() const
   {
     return *beta1;
   }
-  double &
+  double&
   getBeta2() const
   {
     return *beta2;
@@ -133,7 +133,7 @@ public:
   // Transforms this block into a real one
   void setReal();
   // Verifies that the block information is consistent with the matrix d (for debugging)
-  void checkBlock(const double *d, int d_size);
+  void checkBlock(const double* d, int d_size);
   friend class Diagonal;
 };
 
@@ -143,19 +143,20 @@ class Diagonal
 public:
   using const_diag_iter = std::list<DiagonalBlock>::const_iterator;
   using diag_iter = std::list<DiagonalBlock>::iterator;
+
 private:
-  int num_all{0}; // Total number of blocks
+  int num_all {0}; // Total number of blocks
   std::list<DiagonalBlock> blocks;
-  int num_real{0}; // Number of 1×1 (real) blocks
+  int num_real {0}; // Number of 1×1 (real) blocks
 public:
   Diagonal() = default;
   // Construct the diagonal blocks of (quasi-triangular) matrix ‘data’
-  Diagonal(double *data, int d_size);
+  Diagonal(double* data, int d_size);
   /* Construct the diagonal blocks of (quasi-triangular) matrix ‘data’,
      assuming it has the same shape as ‘d’ */
-  Diagonal(double *data, const Diagonal &d);
-  Diagonal(const Diagonal &d) = default;
-  Diagonal &operator=(const Diagonal &d) = default;
+  Diagonal(double* data, const Diagonal& d);
+  Diagonal(const Diagonal& d) = default;
+  Diagonal& operator=(const Diagonal& d) = default;
   virtual ~Diagonal() = default;
 
   // Returns number of 2×2 blocks on the diagonal
@@ -174,7 +175,7 @@ public:
   int
   getSize() const
   {
-    return getNumReal() + 2*getNumComplex();
+    return getNumReal() + 2 * getNumComplex();
   }
   // Returns total number of blocks on the diagonal
   int
@@ -182,7 +183,7 @@ public:
   {
     return num_all;
   }
-  void getEigenValues(Vector &eig) const;
+  void getEigenValues(Vector& eig) const;
   void swapLogically(diag_iter it);
   void checkConsistency(diag_iter it);
   double getAverageSize(diag_iter start, diag_iter end);
@@ -212,12 +213,13 @@ public:
   }
 
   /* redefine pointers as data start at p */
-  void changeBase(double *p);
+  void changeBase(double* p);
+
 private:
   constexpr static double EPS = 1.0e-300;
   /* Computes number of 2×2 diagonal blocks on the quasi-triangular matrix
      represented by data (of size d_size×d_size) */
-  static int getNumComplex(const double *data, int d_size);
+  static int getNumComplex(const double* data, int d_size);
   // Checks whether |p|<EPS
   static bool isZero(double p);
 };
@@ -229,6 +231,7 @@ struct _matrix_iter
   int d_size;
   bool real;
   _TPtr ptr;
+
 public:
   _matrix_iter(_TPtr base, int ds, bool r)
   {
@@ -238,12 +241,12 @@ public:
   }
   virtual ~_matrix_iter() = default;
   bool
-  operator==(const _Self &it) const
+  operator==(const _Self& it) const
   {
     return ptr == it.ptr;
   }
   bool
-  operator!=(const _Self &it) const
+  operator!=(const _Self& it) const
   {
     return ptr != it.ptr;
   }
@@ -257,7 +260,7 @@ public:
   {
     return *ptr;
   }
-  virtual _Self &operator++() = 0;
+  virtual _Self& operator++() = 0;
 };
 
 template<class _TRef, class _TPtr>
@@ -266,12 +269,11 @@ class _column_iter : public _matrix_iter<_TRef, _TPtr>
   using _Tparent = _matrix_iter<_TRef, _TPtr>;
   using _Self = _column_iter<_TRef, _TPtr>;
   int row;
+
 public:
-  _column_iter(_TPtr base, int ds, bool r, int rw)
-    : _matrix_iter<_TRef, _TPtr>(base, ds, r), row(rw)
-  {
-  };
-  _Self &
+  _column_iter(_TPtr base, int ds, bool r, int rw) :
+      _matrix_iter<_TRef, _TPtr>(base, ds, r), row(rw) {};
+  _Self&
   operator++() override
   {
     _Tparent::ptr++;
@@ -284,7 +286,7 @@ public:
     if (_Tparent::real)
       return *(_Tparent::ptr);
     else
-      return *(_Tparent::ptr+_Tparent::d_size);
+      return *(_Tparent::ptr + _Tparent::d_size);
   }
   int
   getRow() const
@@ -299,12 +301,11 @@ class _row_iter : public _matrix_iter<_TRef, _TPtr>
   using _Tparent = _matrix_iter<_TRef, _TPtr>;
   using _Self = _row_iter<_TRef, _TPtr>;
   int col;
+
 public:
-  _row_iter(_TPtr base, int ds, bool r, int cl)
-    : _matrix_iter<_TRef, _TPtr>(base, ds, r), col(cl)
-  {
-  };
-  _Self &
+  _row_iter(_TPtr base, int ds, bool r, int cl) :
+      _matrix_iter<_TRef, _TPtr>(base, ds, r), col(cl) {};
+  _Self&
   operator++() override
   {
     _Tparent::ptr += _Tparent::d_size;
@@ -317,7 +318,7 @@ public:
     if (_Tparent::real)
       return *(_Tparent::ptr);
     else
-      return *(_Tparent::ptr+1);
+      return *(_Tparent::ptr + 1);
   }
   int
   getCol() const
@@ -338,29 +339,30 @@ class SchurDecompZero;
 class QuasiTriangular : public SqSylvMatrix
 {
 public:
-  using const_col_iter = _column_iter<const double &, const double *>;
-  using col_iter = _column_iter<double &, double *>;
-  using const_row_iter = _row_iter<const double &, const double *>;
-  using row_iter = _row_iter<double &, double *>;
+  using const_col_iter = _column_iter<const double&, const double*>;
+  using col_iter = _column_iter<double&, double*>;
+  using const_row_iter = _row_iter<const double&, const double*>;
+  using row_iter = _row_iter<double&, double*>;
   using const_diag_iter = Diagonal::const_diag_iter;
   using diag_iter = Diagonal::diag_iter;
+
 protected:
   Diagonal diagonal;
+
 public:
-  QuasiTriangular(const ConstVector &d, int d_size);
+  QuasiTriangular(const ConstVector& d, int d_size);
   // Initializes with r·t
-  QuasiTriangular(double r, const QuasiTriangular &t);
+  QuasiTriangular(double r, const QuasiTriangular& t);
   // Initializes with r·t+r₂·t₂
-  QuasiTriangular(double r, const QuasiTriangular &t,
-                  double r2, const QuasiTriangular &t2);
+  QuasiTriangular(double r, const QuasiTriangular& t, double r2, const QuasiTriangular& t2);
   // Initializes with t²
-  QuasiTriangular(const std::string &dummy, const QuasiTriangular &t);
-  explicit QuasiTriangular(const SchurDecomp &decomp);
-  explicit QuasiTriangular(const SchurDecompZero &decomp);
-  QuasiTriangular(const QuasiTriangular &t);
+  QuasiTriangular(const std::string& dummy, const QuasiTriangular& t);
+  explicit QuasiTriangular(const SchurDecomp& decomp);
+  explicit QuasiTriangular(const SchurDecompZero& decomp);
+  QuasiTriangular(const QuasiTriangular& t);
 
   ~QuasiTriangular() override = default;
-  const Diagonal &
+  const Diagonal&
   getDiagonal() const
   {
     return diagonal;
@@ -373,29 +375,29 @@ public:
   diag_iter findNextLargerBlock(diag_iter start, diag_iter end, double a);
 
   /* (I+this)·y = x, y→x  */
-  virtual void solvePre(Vector &x, double &eig_min);
+  virtual void solvePre(Vector& x, double& eig_min);
   /* (I+thisᵀ)·y = x, y→x */
-  virtual void solvePreTrans(Vector &x, double &eig_min);
+  virtual void solvePreTrans(Vector& x, double& eig_min);
   /* (I+this)·x = b */
-  virtual void solve(Vector &x, const ConstVector &b, double &eig_min);
+  virtual void solve(Vector& x, const ConstVector& b, double& eig_min);
   /* (I+thisᵀ)·x = b */
-  virtual void solveTrans(Vector &x, const ConstVector &b, double &eig_min);
+  virtual void solveTrans(Vector& x, const ConstVector& b, double& eig_min);
   /* x = this·b */
-  virtual void multVec(Vector &x, const ConstVector &b) const;
+  virtual void multVec(Vector& x, const ConstVector& b) const;
   /* x = thisᵀ·b */
-  virtual void multVecTrans(Vector &x, const ConstVector &b) const;
+  virtual void multVecTrans(Vector& x, const ConstVector& b) const;
   /* x = x + this·b */
-  virtual void multaVec(Vector &x, const ConstVector &b) const;
+  virtual void multaVec(Vector& x, const ConstVector& b) const;
   /* x = x + thisᵀ·b */
-  virtual void multaVecTrans(Vector &x, const ConstVector &b) const;
+  virtual void multaVecTrans(Vector& x, const ConstVector& b) const;
   /* x = (this⊗I)·x */
-  virtual void multKron(KronVector &x) const;
+  virtual void multKron(KronVector& x) const;
   /* x = (thisᵀ⊗I)·x */
-  virtual void multKronTrans(KronVector &x) const;
+  virtual void multKronTrans(KronVector& x) const;
   /* A = this·A */
-  virtual void multLeftOther(GeneralMatrix &a) const;
+  virtual void multLeftOther(GeneralMatrix& a) const;
   /* A = thisᵀ·A */
-  virtual void multLeftOtherTrans(GeneralMatrix &a) const;
+  virtual void multLeftOtherTrans(GeneralMatrix& a) const;
 
   const_diag_iter
   diag_begin() const
@@ -419,14 +421,14 @@ public:
   }
 
   /* iterators for off diagonal elements */
-  virtual const_col_iter col_begin(const DiagonalBlock &b) const;
-  virtual col_iter col_begin(const DiagonalBlock &b);
-  virtual const_row_iter row_begin(const DiagonalBlock &b) const;
-  virtual row_iter row_begin(const DiagonalBlock &b);
-  virtual const_col_iter col_end(const DiagonalBlock &b) const;
-  virtual col_iter col_end(const DiagonalBlock &b);
-  virtual const_row_iter row_end(const DiagonalBlock &b) const;
-  virtual row_iter row_end(const DiagonalBlock &b);
+  virtual const_col_iter col_begin(const DiagonalBlock& b) const;
+  virtual col_iter col_begin(const DiagonalBlock& b);
+  virtual const_row_iter row_begin(const DiagonalBlock& b) const;
+  virtual row_iter row_begin(const DiagonalBlock& b);
+  virtual const_col_iter col_end(const DiagonalBlock& b) const;
+  virtual col_iter col_end(const DiagonalBlock& b);
+  virtual const_row_iter row_end(const DiagonalBlock& b) const;
+  virtual row_iter row_end(const DiagonalBlock& b);
 
   virtual std::unique_ptr<QuasiTriangular>
   clone() const
@@ -447,25 +449,27 @@ public:
   }
   // Returns r·this + r₂·t₂
   virtual std::unique_ptr<QuasiTriangular>
-  linearlyCombine(double r, double r2, const QuasiTriangular &t2) const
+  linearlyCombine(double r, double r2, const QuasiTriangular& t2) const
   {
     return std::make_unique<QuasiTriangular>(r, *this, r2, t2);
   }
+
 protected:
   // this = r·t
-  void setMatrix(double r, const QuasiTriangular &t);
+  void setMatrix(double r, const QuasiTriangular& t);
   // this = this + r·t
-  void addMatrix(double r, const QuasiTriangular &t);
+  void addMatrix(double r, const QuasiTriangular& t);
+
 private:
   // this = this + I
   void addUnit();
   /* x = x + (this⊗I)·b */
-  void multaKron(KronVector &x, const ConstKronVector &b) const;
+  void multaKron(KronVector& x, const ConstKronVector& b) const;
   /* x = x + (thisᵀ⊗I)·b */
-  void multaKronTrans(KronVector &x, const ConstKronVector &b) const;
+  void multaKronTrans(KronVector& x, const ConstKronVector& b) const;
   /* hide noneffective implementations of parents */
-  void multsVec(Vector &x, const ConstVector &d) const;
-  void multsVecTrans(Vector &x, const ConstVector &d) const;
+  void multsVec(Vector& x, const ConstVector& d) const;
+  void multsVecTrans(Vector& x, const ConstVector& d) const;
 };
 
 #endif /* QUASI_TRIANGULAR_H */

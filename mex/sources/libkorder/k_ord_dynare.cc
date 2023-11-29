@@ -23,23 +23,21 @@
 #include "dynamic_abstract_class.hh"
 #include "dynare_exception.hh"
 
-#include <utility>
 #include <cassert>
+#include <utility>
 
-KordpDynare::KordpDynare(const std::vector<std::string> &endo,
-                         const std::vector<std::string> &exo, int nexog, int npar,
-                         Vector &ysteady, TwoDMatrix &vcov, Vector &inParams, int nstat,
-                         int npred, int nforw, int nboth, const ConstVector &nnzd,
-                         int nsteps, int norder,
-                         Journal &jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
-                         const std::vector<int> &dr_order, const ConstTwoDMatrix &llincidence) :
-  nStat{nstat}, nBoth{nboth}, nPred{npred}, nForw{nforw}, nExog{nexog}, nPar{npar},
-  nYs{npred + nboth}, nYss{nboth + nforw}, nY{nstat + npred + nboth + nforw},
-  nJcols{nExog+nY+nYs+nYss}, NNZD{nnzd}, nSteps{nsteps},
-  nOrder{norder}, journal{jr}, ySteady{ysteady}, params{inParams}, vCov{vcov},
-  md{1}, dnl{endo}, denl{exo}, dsnl{*this, dnl, denl},
-  ll_Incidence{llincidence},
-  dynamicModelFile{std::move(dynamicModelFile_arg)}
+KordpDynare::KordpDynare(const std::vector<std::string>& endo, const std::vector<std::string>& exo,
+                         int nexog, int npar, Vector& ysteady, TwoDMatrix& vcov, Vector& inParams,
+                         int nstat, int npred, int nforw, int nboth, const ConstVector& nnzd,
+                         int nsteps, int norder, Journal& jr,
+                         std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
+                         const std::vector<int>& dr_order, const ConstTwoDMatrix& llincidence) :
+    nStat {nstat},
+    nBoth {nboth}, nPred {npred}, nForw {nforw}, nExog {nexog}, nPar {npar}, nYs {npred + nboth},
+    nYss {nboth + nforw}, nY {nstat + npred + nboth + nforw}, nJcols {nExog + nY + nYs + nYss},
+    NNZD {nnzd}, nSteps {nsteps}, nOrder {norder}, journal {jr}, ySteady {ysteady},
+    params {inParams}, vCov {vcov}, md {1}, dnl {endo}, denl {exo}, dsnl {*this, dnl, denl},
+    ll_Incidence {llincidence}, dynamicModelFile {std::move(dynamicModelFile_arg)}
 {
   computeJacobianPermutation(dr_order);
 }
@@ -52,20 +50,22 @@ KordpDynare::solveDeterministicSteady()
 }
 
 void
-KordpDynare::evaluateSystem(Vector &out, [[maybe_unused]] const ConstVector &yy,
-                            [[maybe_unused]] const Vector &xx)
+KordpDynare::evaluateSystem(Vector& out, [[maybe_unused]] const ConstVector& yy,
+                            [[maybe_unused]] const Vector& xx)
 {
-  // This method is only called when checking the residuals at steady state (Approximation::check), so return zero residuals
+  // This method is only called when checking the residuals at steady state (Approximation::check),
+  // so return zero residuals
   out.zeros();
 }
 
 void
-KordpDynare::evaluateSystem(Vector &out, [[maybe_unused]] const ConstVector &yym,
-                            [[maybe_unused]] const ConstVector &yy,
-                            [[maybe_unused]] const ConstVector &yyp,
-                            [[maybe_unused]] const Vector &xx)
+KordpDynare::evaluateSystem(Vector& out, [[maybe_unused]] const ConstVector& yym,
+                            [[maybe_unused]] const ConstVector& yy,
+                            [[maybe_unused]] const ConstVector& yyp,
+                            [[maybe_unused]] const Vector& xx)
 {
-  // This method is only called when checking the residuals at steady state (Approximation::check), so return zero residuals
+  // This method is only called when checking the residuals at steady state (Approximation::check),
+  // so return zero residuals
   out.zeros();
 }
 
@@ -82,7 +82,7 @@ KordpDynare::calcDerivativesAtSteady()
   for (int i = 2; i <= nOrder; i++)
     {
       // Higher order derivatives, as sparse (3-column) matrices
-      dyn_md.emplace_back(static_cast<int>(NNZD[i-1]), 3);
+      dyn_md.emplace_back(static_cast<int>(NNZD[i - 1]), 3);
       dyn_md.back().zeros();
     }
 
@@ -91,7 +91,7 @@ KordpDynare::calcDerivativesAtSteady()
 
   Vector out(nY);
   out.zeros();
-  Vector llxSteady(nJcols-nExog);
+  Vector llxSteady(nJcols - nExog);
   LLxSteady(ySteady, llxSteady);
 
   dynamicModelFile->eval(llxSteady, xx, params, ySteady, out, dyn_md);
@@ -101,9 +101,9 @@ KordpDynare::calcDerivativesAtSteady()
 }
 
 void
-KordpDynare::populateDerivativesContainer(const std::vector<TwoDMatrix> &dyn_md, int ord)
+KordpDynare::populateDerivativesContainer(const std::vector<TwoDMatrix>& dyn_md, int ord)
 {
-  const TwoDMatrix &g = dyn_md[ord-1];
+  const TwoDMatrix& g = dyn_md[ord - 1];
 
   // model derivatives FSSparseTensor instance
   auto mdTi = std::make_unique<FSSparseTensor>(ord, nJcols, nY);
@@ -124,8 +124,8 @@ KordpDynare::populateDerivativesContainer(const std::vector<TwoDMatrix> &dyn_md,
   else // ord ≥ 2
     for (int i = 0; i < g.nrows(); i++)
       {
-        int j = static_cast<int>(g.get(i, 0))-1;
-        int i1 = static_cast<int>(g.get(i, 1))-1;
+        int j = static_cast<int>(g.get(i, 0)) - 1;
+        int i1 = static_cast<int>(g.get(i, 1)) - 1;
         if (j < 0 || i1 < 0)
           continue; // Discard empty entries (see comment in DynamicModelAC::unpackSparseMatrix())
 
@@ -150,21 +150,21 @@ KordpDynare::populateDerivativesContainer(const std::vector<TwoDMatrix> &dyn_md,
 /* Returns ySteady extended with leads and lags suitable for passing to
    <model>_dynamic */
 void
-KordpDynare::LLxSteady(const Vector &yS, Vector &llxSteady)
+KordpDynare::LLxSteady(const Vector& yS, Vector& llxSteady)
 {
-  if (yS.length() == nJcols-nExog)
+  if (yS.length() == nJcols - nExog)
     throw DynareException(__FILE__, __LINE__, "ySteady already of right size");
 
   /* Create temporary square 2D matrix size nEndo×nEndo (sparse)
      for the lag, current and lead blocks of the jacobian */
-  if (llxSteady.length() != nJcols-nExog)
+  if (llxSteady.length() != nJcols - nExog)
     throw DynareException(__FILE__, __LINE__, "llxSteady has wrong size");
 
   for (int ll_row = 0; ll_row < ll_Incidence.nrows(); ll_row++)
     // populate (non-sparse) vector with ysteady values
     for (int i = 0; i < nY; i++)
       if (ll_Incidence.get(ll_row, i))
-        llxSteady[static_cast<int>(ll_Incidence.get(ll_row, i))-1] = yS[i];
+        llxSteady[static_cast<int>(ll_Incidence.get(ll_row, i)) - 1] = yS[i];
 }
 
 /*
@@ -186,33 +186,34 @@ KordpDynare::LLxSteady(const Vector &yS, Vector &llxSteady)
    dr_order is typically equal to oo_.dr.order_var.
 */
 void
-KordpDynare::computeJacobianPermutation(const std::vector<int> &dr_order)
+KordpDynare::computeJacobianPermutation(const std::vector<int>& dr_order)
 {
   // Compute restricted inverse DR-orderings: x⁻→y⁻ and x⁺→y⁺
-  std::vector<int> dr_inv_order_forw(nBoth+nForw), dr_inv_order_pred(nBoth+nPred);
+  std::vector<int> dr_inv_order_forw(nBoth + nForw), dr_inv_order_pred(nBoth + nPred);
   std::iota(dr_inv_order_forw.begin(), dr_inv_order_forw.end(), 0);
-  std::sort(dr_inv_order_forw.begin(), dr_inv_order_forw.end(),
-            [&](int i, int j) { return dr_order[nStat+nPred+i] < dr_order[nStat+nPred+j]; });
+  std::sort(dr_inv_order_forw.begin(), dr_inv_order_forw.end(), [&](int i, int j) {
+    return dr_order[nStat + nPred + i] < dr_order[nStat + nPred + j];
+  });
   std::iota(dr_inv_order_pred.begin(), dr_inv_order_pred.end(), 0);
   std::sort(dr_inv_order_pred.begin(), dr_inv_order_pred.end(),
-            [&](int i, int j) { return dr_order[nStat+i] < dr_order[nStat+j]; });
+            [&](int i, int j) { return dr_order[nStat + i] < dr_order[nStat + j]; });
 
   // Compute restricted DR-orderings: y⁻→x⁻ and y⁺→x⁺
-  std::vector<int> dr_order_forw(nBoth+nForw), dr_order_pred(nBoth+nPred);
-  for (int i = 0; i < nBoth+nForw; i++)
+  std::vector<int> dr_order_forw(nBoth + nForw), dr_order_pred(nBoth + nPred);
+  for (int i = 0; i < nBoth + nForw; i++)
     dr_order_forw[dr_inv_order_forw[i]] = i;
-  for (int i = 0; i < nBoth+nPred; i++)
+  for (int i = 0; i < nBoth + nPred; i++)
     dr_order_pred[dr_inv_order_pred[i]] = i;
 
   // Compute Dynare++ → Dynare ordering
   dynppToDyn.resize(nJcols);
   int j = 0;
   for (; j < nYss; j++)
-    dynppToDyn[j] = dr_order_forw[j]+nYs+nY; // Forward variables
-  for (; j < nYss+nY; j++)
-    dynppToDyn[j] = dr_order[j-nYss]+nYs; // Variables in current period
-  for (; j < nYss+nY+nYs; j++)
-    dynppToDyn[j] = dr_order_pred[j-nY-nYss]; // Predetermined variables
+    dynppToDyn[j] = dr_order_forw[j] + nYs + nY; // Forward variables
+  for (; j < nYss + nY; j++)
+    dynppToDyn[j] = dr_order[j - nYss] + nYs; // Variables in current period
+  for (; j < nYss + nY + nYs; j++)
+    dynppToDyn[j] = dr_order_pred[j - nY - nYss]; // Predetermined variables
   for (; j < nJcols; j++)
     dynppToDyn[j] = j; // Exogenous
 
@@ -222,16 +223,15 @@ KordpDynare::computeJacobianPermutation(const std::vector<int> &dr_order)
     dynToDynpp[dynppToDyn[i]] = i;
 }
 
-DynareNameList::DynareNameList(std::vector<std::string> names_arg)
-  : names(std::move(names_arg))
+DynareNameList::DynareNameList(std::vector<std::string> names_arg) : names(std::move(names_arg))
 {
 }
 
-DynareStateNameList::DynareStateNameList(const KordpDynare &dynare, const DynareNameList &dnl,
-                                         const DynareNameList &denl)
+DynareStateNameList::DynareStateNameList(const KordpDynare& dynare, const DynareNameList& dnl,
+                                         const DynareNameList& denl)
 {
   for (int i = 0; i < dynare.nYs; i++)
-    names.emplace_back(dnl.getName(i+dynare.nstat()));
+    names.emplace_back(dnl.getName(i + dynare.nstat()));
   for (int i = 0; i < dynare.nexog(); i++)
     names.emplace_back(denl.getName(i));
 }

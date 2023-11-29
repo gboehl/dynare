@@ -69,9 +69,9 @@
 #ifndef PYRAMID_PROD_H
 #define PYRAMID_PROD_H
 
+#include "gs_tensor.hh"
 #include "int_sequence.hh"
 #include "rfs_tensor.hh"
-#include "gs_tensor.hh"
 #include "t_container.hh"
 
 #include <vector>
@@ -84,10 +84,9 @@
 class USubTensor : public URTensor
 {
 public:
-  USubTensor(const TensorDimens &bdims, const TensorDimens &hdims,
-             const FGSContainer &cont, const std::vector<IntSequence> &lst);
-  void addKronColumn(int i, const std::vector<const FGSTensor *> &ts,
-                     const IntSequence &pindex);
+  USubTensor(const TensorDimens& bdims, const TensorDimens& hdims, const FGSContainer& cont,
+             const std::vector<IntSequence>& lst);
+  void addKronColumn(int i, const std::vector<const FGSTensor*>& ts, const IntSequence& pindex);
 };
 
 #endif

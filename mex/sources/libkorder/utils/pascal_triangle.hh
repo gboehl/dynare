@@ -25,26 +25,27 @@
 
 class PascalRow : public std::vector<int>
 {
-  int k{1};
+  int k {1};
+
 public:
-  PascalRow() : std::vector<int>{}
+  PascalRow() : std::vector<int> {}
   {
     push_back(2);
   }
-  void setFromPrevious(const PascalRow &prev);
-  void prolong(const PascalRow &prev);
+  void setFromPrevious(const PascalRow& prev);
+  void prolong(const PascalRow& prev);
   void prolongFirst(int n);
   void print() const;
 };
 
 namespace PascalTriangle
 {
-  void ensure(int n, int k);
-  /*                              ⎛n⎞
-    Computes binomial coefficient ⎝k⎠, hence the function name (“n over k”).
-  */
-  int noverk(int n, int k);
-  void print();
+void ensure(int n, int k);
+/*                              ⎛n⎞
+  Computes binomial coefficient ⎝k⎠, hence the function name (“n over k”).
+*/
+int noverk(int n, int k);
+void print();
 };
 
 #endif

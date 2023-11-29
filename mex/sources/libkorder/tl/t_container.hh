@@ -61,18 +61,18 @@
 #ifndef T_CONTAINER_H
 #define T_CONTAINER_H
 
-#include "symmetry.hh"
+#include "Vector.hh"
+#include "equivalence.hh"
 #include "gs_tensor.hh"
+#include "rfs_tensor.hh"
+#include "sparse_tensor.hh"
+#include "symmetry.hh"
 #include "tl_exception.hh"
 #include "tl_static.hh"
-#include "sparse_tensor.hh"
-#include "equivalence.hh"
-#include "rfs_tensor.hh"
-#include "Vector.hh"
 
 #include <map>
-#include <string>
 #include <memory>
+#include <string>
 #include <utility>
 
 // ltsym predicate
@@ -81,7 +81,7 @@
 struct ltsym
 {
   bool
-  operator()(const Symmetry &s1, const Symmetry &s2) const
+  operator()(const Symmetry& s1, const Symmetry& s2) const
   {
     return s1 < s2;
   }
@@ -107,68 +107,64 @@ class TensorContainer
 {
 protected:
   using _Map = std::map<Symmetry, std::unique_ptr<_Ttype>, ltsym>;
+
 private:
   int n;
   _Map m;
+
 public:
-  TensorContainer(int nn)
-    : n(nn)
+  TensorContainer(int nn) : n(nn)
   {
   }
   /* This is just a copy constructor. This makes a hard copy of all tensors. */
-  TensorContainer(const TensorContainer<_Ttype> &c)
-    : n(c.n)
+  TensorContainer(const TensorContainer<_Ttype>& c) : n(c.n)
   {
-    for (const auto &it : c.m)
+    for (const auto& it : c.m)
       insert(std::make_unique<_Ttype>(*(it.second)));
   }
-  TensorContainer(TensorContainer<_Ttype> &&) = default;
+  TensorContainer(TensorContainer<_Ttype>&&) = default;
 
   // TensorContainer subtensor constructor
   /* This constructor constructs a new tensor container, whose tensors
      are in-place subtensors of the given container. */
-  TensorContainer(int first_row, int num, TensorContainer<_Ttype> &c)
-    : n(c.n)
+  TensorContainer(int first_row, int num, TensorContainer<_Ttype>& c) : n(c.n)
   {
-    for (const auto &it : c.m)
+    for (const auto& it : c.m)
       insert(std::make_unique<_Ttype>(first_row, num, *(it.second)));
   }
 
-  TensorContainer<_Ttype> &
-  operator=(const TensorContainer<_Ttype> &c)
+  TensorContainer<_Ttype>&
+  operator=(const TensorContainer<_Ttype>& c)
   {
     n = c.n;
     m.clear();
-    for (const auto &it : c.m)
+    for (const auto& it : c.m)
       insert(std::make_unique<_Ttype>(*(it.second)));
   }
-  TensorContainer<_Ttype> &operator=(TensorContainer<_Ttype> &&) = default;
+  TensorContainer<_Ttype>& operator=(TensorContainer<_Ttype>&&) = default;
 
-  const _Ttype &
-  get(const Symmetry &s) const
+  const _Ttype&
+  get(const Symmetry& s) const
   {
-    TL_RAISE_IF(s.num() != num(),
-                "Incompatible symmetry lookup in TensorContainer::get");
+    TL_RAISE_IF(s.num() != num(), "Incompatible symmetry lookup in TensorContainer::get");
     auto it = m.find(s);
     TL_RAISE_IF(it == m.end(), "Symmetry not found in TensorContainer::get");
     return *(it->second);
   }
 
-  _Ttype &
-  get(const Symmetry &s)
+  _Ttype&
+  get(const Symmetry& s)
   {
-    TL_RAISE_IF(s.num() != num(),
-                "Incompatible symmetry lookup in TensorContainer::get");
+    TL_RAISE_IF(s.num() != num(), "Incompatible symmetry lookup in TensorContainer::get");
     auto it = m.find(s);
     TL_RAISE_IF(it == m.end(), "Symmetry not found in TensorContainer::get");
     return *(it->second);
   }
 
   bool
-  check(const Symmetry &s) const
+  check(const Symmetry& s) const
   {
-    TL_RAISE_IF(s.num() != num(),
-                "Incompatible symmetry lookup in TensorContainer::check");
+    TL_RAISE_IF(s.num() != num(), "Incompatible symmetry lookup in TensorContainer::check");
     auto it = m.find(s);
     return it != m.end();
   }
@@ -178,15 +174,14 @@ public:
   {
     TL_RAISE_IF(t->getSym().num() != num(),
                 "Incompatible symmetry insertion in TensorContainer::insert");
-    TL_RAISE_IF(check(t->getSym()),
-                "Tensor already in container in TensorContainer::insert");
+    TL_RAISE_IF(check(t->getSym()), "Tensor already in container in TensorContainer::insert");
     if (!t->isFinite())
       throw TLException(__FILE__, __LINE__, "NaN or Inf asserted in TensorContainer::insert");
     m.emplace(t->getSym(), std::move(t));
   }
 
   void
-  remove(const Symmetry &s)
+  remove(const Symmetry& s)
   {
     m.erase(s);
   }
@@ -201,9 +196,8 @@ public:
   getMaxDim() const
   {
     int res = -1;
-    for (const auto &run : m)
-      if (int dim { run.first.dimen() };
-          dim > res)
+    for (const auto& run : m)
+      if (int dim {run.first.dimen()}; dim > res)
         res = dim;
     return res;
   }
@@ -213,7 +207,7 @@ public:
   print() const
   {
     std::cout << "Tensor container: nvars=" << n << ", tensors=" << m.size() << '\n';
-    for (auto &it : *this)
+    for (auto& it : *this)
       {
         std::cout << "Symmetry: ";
         it.first.print();
@@ -223,12 +217,12 @@ public:
 
   /* Output to the Memory Map. */
   void
-  writeMMap(std::map<std::string, ConstTwoDMatrix> &mm, const std::string &prefix) const
+  writeMMap(std::map<std::string, ConstTwoDMatrix>& mm, const std::string& prefix) const
   {
-    for (auto &it : *this)
+    for (auto& it : *this)
       {
         std::string lname = prefix + "_g";
-        const Symmetry &sym = it.first;
+        const Symmetry& sym = it.first;
         for (int i = 0; i < sym.num(); i++)
           lname += '_' + std::to_string(sym[i]);
         mm.emplace(lname, ConstTwoDMatrix(*(it.second)));
@@ -239,10 +233,10 @@ public:
      through all equivalence classes, calculate implied symmetry, and
      fetch its tensor storing it in the same order to the vector. */
 
-  std::vector<const _Ttype *>
-  fetchTensors(const Symmetry &rsym, const Equivalence &e) const
+  std::vector<const _Ttype*>
+  fetchTensors(const Symmetry& rsym, const Equivalence& e) const
   {
-    std::vector<const _Ttype *> res(e.numClasses());
+    std::vector<const _Ttype*> res(e.numClasses());
     int i = 0;
     for (auto it = e.begin(); it != e.end(); ++it, i++)
       {
@@ -288,12 +282,11 @@ class FGSContainer;
 class UGSContainer : public TensorContainer<UGSTensor>
 {
 public:
-  UGSContainer(int nn)
-    : TensorContainer<UGSTensor>(nn)
+  UGSContainer(int nn) : TensorContainer<UGSTensor>(nn)
   {
   }
-  UGSContainer(const FGSContainer &c);
-  void multAndAdd(const UGSTensor &t, UGSTensor &out) const;
+  UGSContainer(const FGSContainer& c);
+  void multAndAdd(const UGSTensor& t, UGSTensor& out) const;
 };
 
 /* Here is a container storing FGSTensor’s. We declare two versions of
@@ -311,18 +304,18 @@ public:
 class FGSContainer : public TensorContainer<FGSTensor>
 {
   static constexpr int num_one_time = 10;
+
 public:
-  FGSContainer(int nn)
-    : TensorContainer<FGSTensor>(nn)
+  FGSContainer(int nn) : TensorContainer<FGSTensor>(nn)
   {
   }
-  FGSContainer(const UGSContainer &c);
-  void multAndAdd(const FGSTensor &t, FGSTensor &out) const;
-  void multAndAdd(const UGSTensor &t, FGSTensor &out) const;
+  FGSContainer(const UGSContainer& c);
+  void multAndAdd(const FGSTensor& t, FGSTensor& out) const;
+  void multAndAdd(const UGSTensor& t, FGSTensor& out) const;
+
 private:
-  static Tensor::index getIndices(int num, std::vector<IntSequence> &out,
-                                  const Tensor::index &start,
-                                  const Tensor::index &end);
+  static Tensor::index getIndices(int num, std::vector<IntSequence>& out,
+                                  const Tensor::index& start, const Tensor::index& end);
 };
 
 #endif

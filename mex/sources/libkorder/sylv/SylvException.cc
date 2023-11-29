@@ -23,8 +23,7 @@
 #include <iostream>
 #include <utility>
 
-SylvException::SylvException(std::string f, int l)
-  : file{std::move(f)}, line{l}
+SylvException::SylvException(std::string f, int l) : file {std::move(f)}, line {l}
 {
 }
 
@@ -40,9 +39,8 @@ SylvException::getMessage() const
   return "From " + file + ':' + std::to_string(line) + '\n';
 }
 
-SylvExceptionMessage::SylvExceptionMessage(std::string f, int i,
-                                           std::string mes)
-  : SylvException{std::move(f), i}, message{std::move(mes)}
+SylvExceptionMessage::SylvExceptionMessage(std::string f, int i, std::string mes) :
+    SylvException {std::move(f), i}, message {std::move(mes)}
 {
 }
 

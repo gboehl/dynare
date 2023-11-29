@@ -21,30 +21,31 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
-#include <random>
 #include <memory>
+#include <random>
 
-#include "symmetry.hh"
-#include "int_sequence.hh"
-#include "twod_matrix.hh"
 #include "equivalence.hh"
+#include "int_sequence.hh"
 #include "rfs_tensor.hh"
+#include "symmetry.hh"
 #include "t_container.hh"
+#include "twod_matrix.hh"
 
 class Factory
 {
   std::mt19937 mtgen;
   std::uniform_real_distribution<> dis;
 
-  void init(const Symmetry &s, const IntSequence &nvs);
+  void init(const Symmetry& s, const IntSequence& nvs);
   void init(int dim, int nv);
-  void fillMatrix(TwoDMatrix &m);
+  void fillMatrix(TwoDMatrix& m);
+
 public:
   double get();
   // This can be used with UGSTensor, FGSTensor
   template<class _Ttype>
   std::unique_ptr<_Ttype>
-  make(int r, const Symmetry &s, const IntSequence &nvs)
+  make(int r, const Symmetry& s, const IntSequence& nvs)
   {
     auto res = std::make_unique<_Ttype>(r, TensorDimens(s, nvs));
     init(s, nvs);
@@ -65,18 +66,18 @@ public:
 
   template<class _Ttype, class _Ctype>
   _Ctype
-  makeCont(int r, const IntSequence &nvs, int maxdim)
+  makeCont(int r, const IntSequence& nvs, int maxdim)
   {
     int symnum = nvs.size();
     _Ctype res(symnum);
     for (int dim = 1; dim <= maxdim; dim++)
       if (symnum == 1)
         // Full symmetry
-        res.insert(make<_Ttype>(r, Symmetry{dim}, nvs));
+        res.insert(make<_Ttype>(r, Symmetry {dim}, nvs));
       else
         // General symmetry
         for (int i = 0; i <= dim; i++)
-          res.insert(make<_Ttype>(r, Symmetry{i, dim-i}, nvs));
+          res.insert(make<_Ttype>(r, Symmetry {i, dim - i}, nvs));
     return res;
   }
 

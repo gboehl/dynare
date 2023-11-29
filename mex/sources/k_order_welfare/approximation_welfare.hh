@@ -20,50 +20,52 @@
 #ifndef APPROXIMATION_WELFARE_H
 #define APPROXIMATION_WELFARE_H
 
-#include "k_ord_objective.hh"
 #include "journal.hh"
+#include "k_ord_objective.hh"
 
 #include <memory>
 
 class ApproximationWelfare
 {
-  KordwDynare &welfare;
+  KordwDynare& welfare;
   double discount_factor;
   std::unique_ptr<FGSContainer> rule_ders;
   std::unique_ptr<FGSContainer> rule_ders_s;
   std::unique_ptr<FGSContainer> cond_ders;
   std::unique_ptr<FoldDecisionRule> cond_fdr;
   IntSequence nvs;
-  Journal &journal;
-public:
-  ApproximationWelfare(KordwDynare &w, double discount_factor, const FGSContainer &rule_ders, const FGSContainer &rule_ders_s, Journal &j);
+  Journal& journal;
 
-  const KordwDynare &
+public:
+  ApproximationWelfare(KordwDynare& w, double discount_factor, const FGSContainer& rule_ders,
+                       const FGSContainer& rule_ders_s, Journal& j);
+
+  const KordwDynare&
   getWelfare() const
   {
     return welfare;
   }
-  const FGSContainer &
+  const FGSContainer&
   get_rule_ders() const
   {
     return *rule_ders;
   }
-  const FGSContainer &
+  const FGSContainer&
   get_rule_ders_s() const
   {
     return *rule_ders_s;
   }
-  const FGSContainer &
+  const FGSContainer&
   get_cond_ders() const
   {
     return *cond_ders;
   }
-  const FoldDecisionRule & getFoldCondWel() const;
+  const FoldDecisionRule& getFoldCondWel() const;
 
   void approxAtSteady();
 
 protected:
-  void saveRuleDerivs(const FGSContainer &W);
+  void saveRuleDerivs(const FGSContainer& W);
 };
 
 #endif

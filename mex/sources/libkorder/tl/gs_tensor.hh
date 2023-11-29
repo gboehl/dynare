@@ -37,10 +37,10 @@
 #ifndef GS_TENSOR_H
 #define GS_TENSOR_H
 
-#include "tensor.hh"
 #include "fs_tensor.hh"
-#include "symmetry.hh"
 #include "rfs_tensor.hh"
+#include "symmetry.hh"
+#include "tensor.hh"
 
 class FGSTensor;
 class UGSTensor;
@@ -63,26 +63,26 @@ protected:
   IntSequence nvs;
   Symmetry sym;
   IntSequence nvmax;
+
 public:
-  TensorDimens(Symmetry s, IntSequence nvars)
-    : nvs(std::move(nvars)), sym(std::move(s)), nvmax(nvs.unfold(sym))
+  TensorDimens(Symmetry s, IntSequence nvars) :
+      nvs(std::move(nvars)), sym(std::move(s)), nvmax(nvs.unfold(sym))
   {
   }
   // Full-symmetry special case
-  TensorDimens(int nvar, int dimen)
-    : nvs{nvar}, sym{dimen}, nvmax(dimen, nvar)
+  TensorDimens(int nvar, int dimen) : nvs {nvar}, sym {dimen}, nvmax(dimen, nvar)
   {
   }
   // Constructs the tensor dimensions for slicing (see the implementation for details)
-  TensorDimens(const IntSequence &ss, const IntSequence &coor);
+  TensorDimens(const IntSequence& ss, const IntSequence& coor);
 
   bool
-  operator==(const TensorDimens &td) const
+  operator==(const TensorDimens& td) const
   {
     return nvs == td.nvs && sym == td.sym;
   }
   bool
-  operator!=(const TensorDimens &td) const
+  operator!=(const TensorDimens& td) const
   {
     return !operator==(td);
   }
@@ -97,17 +97,17 @@ public:
   {
     return nvmax[i];
   }
-  const IntSequence &
+  const IntSequence&
   getNVS() const
   {
     return nvs;
   }
-  const IntSequence &
+  const IntSequence&
   getNVX() const
   {
     return nvmax;
   }
-  const Symmetry &
+  const Symmetry&
   getSym() const
   {
     return sym;
@@ -115,8 +115,8 @@ public:
 
   int calcUnfoldMaxOffset() const;
   int calcFoldMaxOffset() const;
-  int calcFoldOffset(const IntSequence &v) const;
-  void decrement(IntSequence &v) const;
+  int calcFoldOffset(const IntSequence& v) const;
+  void decrement(IntSequence& v) const;
 };
 
 /* Here is a class for folded general symmetry tensor. It only contains
@@ -129,51 +129,49 @@ class FGSTensor : public FTensor
   friend class UGSTensor;
 
   const TensorDimens tdims;
+
 public:
-  FGSTensor(int r, TensorDimens td)
-    : FTensor(indor::along_col, td.getNVX(), r,
-              td.calcFoldMaxOffset(), td.dimen()), tdims(std::move(td))
+  FGSTensor(int r, TensorDimens td) :
+      FTensor(indor::along_col, td.getNVX(), r, td.calcFoldMaxOffset(), td.dimen()),
+      tdims(std::move(td))
   {
   }
-  FGSTensor(const FGSTensor &) = default;
-  FGSTensor(FGSTensor &&) = default;
+  FGSTensor(const FGSTensor&) = default;
+  FGSTensor(FGSTensor&&) = default;
 
-  FGSTensor(int first_row, int num, FGSTensor &t)
-    : FTensor(first_row, num, t), tdims(t.tdims)
+  FGSTensor(int first_row, int num, FGSTensor& t) : FTensor(first_row, num, t), tdims(t.tdims)
   {
   }
 
   // Constructs a slice from a fully symmetric sparse tensor
-  FGSTensor(const FSSparseTensor &t, const IntSequence &ss,
-            const IntSequence &coor, TensorDimens td);
+  FGSTensor(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor,
+            TensorDimens td);
 
   // Constructs a slice from a fully symmetric dense tensor
-  FGSTensor(const FFSTensor &t, const IntSequence &ss,
-            const IntSequence &coor, TensorDimens td);
+  FGSTensor(const FFSTensor& t, const IntSequence& ss, const IntSequence& coor, TensorDimens td);
 
   // Converting constructors
-  explicit FGSTensor(const UGSTensor &ut);
-  explicit FGSTensor(const GSSparseTensor &sp);
-  explicit FGSTensor(FFSTensor &t)
-    : FTensor(0, t.nrows(), t), tdims(t.nvar(), t.dimen())
+  explicit FGSTensor(const UGSTensor& ut);
+  explicit FGSTensor(const GSSparseTensor& sp);
+  explicit FGSTensor(FFSTensor& t) : FTensor(0, t.nrows(), t), tdims(t.nvar(), t.dimen())
   {
   }
 
   ~FGSTensor() override = default;
 
-  void increment(IntSequence &v) const override;
+  void increment(IntSequence& v) const override;
   void
-  decrement(IntSequence &v) const override
+  decrement(IntSequence& v) const override
   {
     tdims.decrement(v);
   }
   std::unique_ptr<UTensor> unfold() const override;
-  const TensorDimens &
+  const TensorDimens&
   getDims() const
   {
     return tdims;
   }
-  const Symmetry &
+  const Symmetry&
   getSym() const
   {
     return getDims().getSym();
@@ -184,11 +182,10 @@ public:
 
       [r_xⁱzᵏ]_α₁…αᵢγ₁…γₖ = [t_xⁱyʲzᵏ]_α₁…αᵢβ₁…βⱼγ₁…γₖ·[c]^β₁…βⱼ
   */
-  void contractAndAdd(int i, FGSTensor &out,
-                      const FRSingleTensor &col) const;
+  void contractAndAdd(int i, FGSTensor& out, const FRSingleTensor& col) const;
 
   int
-  getOffset(const IntSequence &v) const override
+  getOffset(const IntSequence& v) const override
   {
     return tdims.calcFoldOffset(v);
   }
@@ -204,59 +201,58 @@ class UGSTensor : public UTensor
   friend class FGSTensor;
 
   const TensorDimens tdims;
+
 public:
-  UGSTensor(int r, TensorDimens td)
-    : UTensor(indor::along_col, td.getNVX(), r,
-              td.calcUnfoldMaxOffset(), td.dimen()), tdims(std::move(td))
+  UGSTensor(int r, TensorDimens td) :
+      UTensor(indor::along_col, td.getNVX(), r, td.calcUnfoldMaxOffset(), td.dimen()),
+      tdims(std::move(td))
   {
   }
 
-  UGSTensor(const UGSTensor &) = default;
-  UGSTensor(UGSTensor &&) = default;
+  UGSTensor(const UGSTensor&) = default;
+  UGSTensor(UGSTensor&&) = default;
 
-  UGSTensor(int first_row, int num, UGSTensor &t)
-    : UTensor(first_row, num, t), tdims(t.tdims)
+  UGSTensor(int first_row, int num, UGSTensor& t) : UTensor(first_row, num, t), tdims(t.tdims)
   {
   }
 
   // Constructs a slice from fully symmetric sparse tensor
-  UGSTensor(const FSSparseTensor &t, const IntSequence &ss,
-            const IntSequence &coor, TensorDimens td);
+  UGSTensor(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor,
+            TensorDimens td);
 
   // Constructs a slice from fully symmetric dense unfolded tensor
-  UGSTensor(const UFSTensor &t, const IntSequence &ss,
-            const IntSequence &coor, TensorDimens td);
+  UGSTensor(const UFSTensor& t, const IntSequence& ss, const IntSequence& coor, TensorDimens td);
 
   // Converting constructors
-  explicit UGSTensor(const FGSTensor &ft);
-  explicit UGSTensor(UFSTensor &t)
-    : UTensor(0, t.nrows(), t), tdims(t.nvar(), t.dimen())
+  explicit UGSTensor(const FGSTensor& ft);
+  explicit UGSTensor(UFSTensor& t) : UTensor(0, t.nrows(), t), tdims(t.nvar(), t.dimen())
   {
   }
 
   ~UGSTensor() override = default;
 
-  void increment(IntSequence &v) const override;
-  void decrement(IntSequence &v) const override;
+  void increment(IntSequence& v) const override;
+  void decrement(IntSequence& v) const override;
   std::unique_ptr<FTensor> fold() const override;
-  const TensorDimens &
+  const TensorDimens&
   getDims() const
   {
     return tdims;
   }
-  const Symmetry &
+  const Symmetry&
   getSym() const
   {
     return getDims().getSym();
   }
 
-  void contractAndAdd(int i, UGSTensor &out,
-                      const URSingleTensor &col) const;
-  int getOffset(const IntSequence &v) const override;
+  void contractAndAdd(int i, UGSTensor& out, const URSingleTensor& col) const;
+  int getOffset(const IntSequence& v) const override;
+
 private:
   void unfoldData();
+
 public:
-  index getFirstIndexOf(const index &in) const;
+  index getFirstIndexOf(const index& in) const;
 };
 
 #endif

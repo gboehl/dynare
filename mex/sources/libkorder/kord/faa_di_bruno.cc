@@ -27,9 +27,8 @@
 /* We take an opportunity to refine the stack container to avoid allocation of
    more memory than available. */
 void
-FaaDiBruno::calculate(const StackContainer<FGSTensor> &cont,
-                      const TensorContainer<FSSparseTensor> &f,
-                      FGSTensor &out)
+FaaDiBruno::calculate(const StackContainer<FGSTensor>& cont,
+                      const TensorContainer<FSSparseTensor>& f, FGSTensor& out)
 {
   out.zeros();
   for (int l = 1; l <= out.dimen(); l++)
@@ -47,8 +46,7 @@ FaaDiBruno::calculate(const StackContainer<FGSTensor> &cont,
 /* Here we just simply evaluate multAndAdd() for the dense container. There is
    no opportunity for tuning. */
 void
-FaaDiBruno::calculate(const FoldedStackContainer &cont, const FGSContainer &g,
-                      FGSTensor &out)
+FaaDiBruno::calculate(const FoldedStackContainer& cont, const FGSContainer& g, FGSTensor& out)
 {
   out.zeros();
   for (int l = 1; l <= out.dimen(); l++)
@@ -56,7 +54,7 @@ FaaDiBruno::calculate(const FoldedStackContainer &cont, const FGSContainer &g,
       long int mem = SystemResources::availableMemory();
       cont.multAndAdd(l, g, out);
       JournalRecord rec(journal);
-      int mem_mb = mem/1024/1024;
+      int mem_mb = mem / 1024 / 1024;
       rec << "dim=" << l << " avmem=" << mem_mb << endrec;
     }
 }
@@ -65,9 +63,8 @@ FaaDiBruno::calculate(const FoldedStackContainer &cont, const FGSContainer &g,
 /* This is the same as FaaDiBruno::calculate() folded sparse code. The only
    difference is that we construct unfolded fine container. */
 void
-FaaDiBruno::calculate(const StackContainer<UGSTensor> &cont,
-                      const TensorContainer<FSSparseTensor> &f,
-                      UGSTensor &out)
+FaaDiBruno::calculate(const StackContainer<UGSTensor>& cont,
+                      const TensorContainer<FSSparseTensor>& f, UGSTensor& out)
 {
   out.zeros();
   for (int l = 1; l <= out.dimen(); l++)
@@ -84,8 +81,7 @@ FaaDiBruno::calculate(const StackContainer<UGSTensor> &cont,
 // FaaDiBruno::calculate() unfolded dense code
 /* Again, no tuning opportunity here. */
 void
-FaaDiBruno::calculate(const UnfoldedStackContainer &cont, const UGSContainer &g,
-                      UGSTensor &out)
+FaaDiBruno::calculate(const UnfoldedStackContainer& cont, const UGSContainer& g, UGSTensor& out)
 {
   out.zeros();
   for (int l = 1; l <= out.dimen(); l++)
@@ -93,7 +89,7 @@ FaaDiBruno::calculate(const UnfoldedStackContainer &cont, const UGSContainer &g,
       long int mem = SystemResources::availableMemory();
       cont.multAndAdd(l, g, out);
       JournalRecord rec(journal);
-      int mem_mb = mem/1024/1024;
+      int mem_mb = mem / 1024 / 1024;
       rec << "dim=" << l << " avmem=" << mem_mb << endrec;
     }
 }
@@ -129,21 +125,21 @@ FaaDiBruno::calculate(const UnfoldedStackContainer &cont, const UGSContainer &g,
    do something. */
 
 std::tuple<int, int, int>
-FaaDiBruno::estimRefinement(const TensorDimens &tdims, int nr, int l)
+FaaDiBruno::estimRefinement(const TensorDimens& tdims, int nr, int l)
 {
   int nthreads = sthread::detach_thread_group::max_parallel_threads;
   long per_size1 = tdims.calcUnfoldMaxOffset();
   long per_size2 = static_cast<long>(std::pow(tdims.getNVS().getMax(), l));
   double lambda = 0.0;
-  long per_size = sizeof(double)*nr
-    *static_cast<long>(lambda*per_size1+(1-lambda)*per_size2);
+  long per_size
+      = sizeof(double) * nr * static_cast<long>(lambda * per_size1 + (1 - lambda) * per_size2);
   long mem = SystemResources::availableMemory();
   int max = 0;
-  if (double num_cols {static_cast<double>(mem-magic_mult*nthreads*per_size)
-                       /nthreads/sizeof(double)/nr};
+  if (double num_cols {static_cast<double>(mem - magic_mult * nthreads * per_size) / nthreads
+                       / sizeof(double) / nr};
       num_cols > 0)
     {
-      double maxd = std::pow(num_cols, 1.0/l);
+      double maxd = std::pow(num_cols, 1.0 / l);
       max = static_cast<int>(std::floor(maxd));
     }
   if (max == 0)
@@ -155,7 +151,7 @@ FaaDiBruno::estimRefinement(const TensorDimens &tdims, int nr, int l)
         rec << " (decrease number of threads)";
       rec << endrec;
     }
-  int avmem_mb = mem/1024/1024;
-  int tmpmem_mb = nthreads*per_size/1024/1024;
-  return { max, avmem_mb, tmpmem_mb };
+  int avmem_mb = mem / 1024 / 1024;
+  int tmpmem_mb = nthreads * per_size / 1024 / 1024;
+  return {max, avmem_mb, tmpmem_mb};
 }

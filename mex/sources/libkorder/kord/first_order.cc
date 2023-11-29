@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "kord_exception.hh"
 #include "first_order.hh"
+#include "kord_exception.hh"
 
 #include <dynlapack.h>
 
@@ -31,9 +31,10 @@ std::mutex FirstOrder::mut;
    criterium). */
 
 lapack_int
-FirstOrder::order_eigs(const double *alphar, const double *alphai, const double *beta)
+FirstOrder::order_eigs(const double* alphar, const double* alphai, const double* beta)
 {
-  return (*alphar **alphar + *alphai **alphai < *beta **beta * qz_criterium_global * qz_criterium_global);
+  return (*alphar * *alphar + *alphai * *alphai
+          < *beta * *beta * qz_criterium_global * qz_criterium_global);
 }
 
 /* Here we solve the linear approximation. The result are the matrices
@@ -49,7 +50,7 @@ FirstOrder::order_eigs(const double *alphar, const double *alphai, const double 
    and partitioning of the vector y (from object). */
 
 void
-FirstOrder::solve(const TwoDMatrix &fd)
+FirstOrder::solve(const TwoDMatrix& fd)
 {
   JournalRecordPair pa(journal);
   pa << "Recovering first order derivatives " << endrec;
@@ -144,14 +145,14 @@ FirstOrder::solve(const TwoDMatrix &fd)
   off += nu;
 
   // Form matrix D
-  lapack_int n = ypart.ny()+ypart.nboth;
+  lapack_int n = ypart.ny() + ypart.nboth;
   TwoDMatrix matD(n, n);
   matD.zeros();
   matD.place(fypzero, 0, 0);
   matD.place(fybzero, 0, ypart.npred);
-  matD.place(fyplus, 0, ypart.nys()+ypart.nstat);
+  matD.place(fyplus, 0, ypart.nys() + ypart.nstat);
   for (int i = 0; i < ypart.nboth; i++)
-    matD.get(ypart.ny()+i, ypart.npred+i) = 1.0;
+    matD.get(ypart.ny() + i, ypart.npred + i) = 1.0;
   lapack_int ldb = matD.getLD();
 
   // Form matrix E
@@ -159,9 +160,9 @@ FirstOrder::solve(const TwoDMatrix &fd)
   matE.zeros();
   matE.place(fymins, 0, 0);
   matE.place(fyszero, 0, ypart.nys());
-  matE.place(fyfzero, 0, ypart.nys()+ypart.nstat+ypart.nboth);
+  matE.place(fyfzero, 0, ypart.nys() + ypart.nstat + ypart.nboth);
   for (int i = 0; i < ypart.nboth; i++)
-    matE.get(ypart.ny()+i, ypart.nys()+ypart.nstat+i) = -1.0;
+    matE.get(ypart.ny() + i, ypart.nys() + ypart.nstat + i) = -1.0;
   matE.mult(-1.0);
   lapack_int lda = matE.getLD();
 
@@ -169,30 +170,28 @@ FirstOrder::solve(const TwoDMatrix &fd)
   TwoDMatrix vsl(n, n);
   TwoDMatrix vsr(n, n);
   lapack_int ldvsl = vsl.getLD(), ldvsr = vsr.getLD();
-  lapack_int lwork = 100*n+16;
+  lapack_int lwork = 100 * n + 16;
   Vector work(lwork);
   auto bwork = std::make_unique<lapack_int[]>(n);
   lapack_int info;
   lapack_int sdim2 = sdim;
   {
-    std::lock_guard<std::mutex> lk{mut};
+    std::lock_guard<std::mutex> lk {mut};
     qz_criterium_global = qz_criterium;
-    dgges("N", "V", "S", order_eigs, &n, matE.getData().base(), &lda,
-          matD.getData().base(), &ldb, &sdim2, alphar.base(), alphai.base(),
-          beta.base(), vsl.getData().base(), &ldvsl, vsr.getData().base(), &ldvsr,
-          work.base(), &lwork, bwork.get(), &info);
+    dgges("N", "V", "S", order_eigs, &n, matE.getData().base(), &lda, matD.getData().base(), &ldb,
+          &sdim2, alphar.base(), alphai.base(), beta.base(), vsl.getData().base(), &ldvsl,
+          vsr.getData().base(), &ldvsr, work.base(), &lwork, bwork.get(), &info);
   }
   if (info)
-    throw KordException(__FILE__, __LINE__,
-                        "DGGES returns an error in FirstOrder::solve");
+    throw KordException(__FILE__, __LINE__, "DGGES returns an error in FirstOrder::solve");
   sdim = sdim2;
   bk_cond = (sdim == ypart.nys());
 
   // Setup submatrices of Z
   ConstGeneralMatrix z11(vsr, 0, 0, ypart.nys(), ypart.nys());
-  ConstGeneralMatrix z12(vsr, 0, ypart.nys(), ypart.nys(), n-ypart.nys());
-  ConstGeneralMatrix z21(vsr, ypart.nys(), 0, n-ypart.nys(), ypart.nys());
-  ConstGeneralMatrix z22(vsr, ypart.nys(), ypart.nys(), n-ypart.nys(), n-ypart.nys());
+  ConstGeneralMatrix z12(vsr, 0, ypart.nys(), ypart.nys(), n - ypart.nys());
+  ConstGeneralMatrix z21(vsr, ypart.nys(), 0, n - ypart.nys(), ypart.nys());
+  ConstGeneralMatrix z22(vsr, ypart.nys(), ypart.nys(), n - ypart.nys(), n - ypart.nys());
 
   // Calculate derivatives of static and forward
   /* Here we calculate X=−Z₂₂⁻ᵀZ₁₂ᵀ, where X is ‘sfder’ in the code. */
@@ -214,11 +213,12 @@ FirstOrder::solve(const TwoDMatrix &fd)
   gy.place(preder, ypart.nstat, 0);
   GeneralMatrix sder(sfder, 0, 0, ypart.nstat, ypart.nys());
   gy.place(sder, 0, 0);
-  GeneralMatrix fder(sfder, ypart.nstat+ypart.nboth, 0, ypart.nforw, ypart.nys());
-  gy.place(fder, ypart.nstat+ypart.nys(), 0);
+  GeneralMatrix fder(sfder, ypart.nstat + ypart.nboth, 0, ypart.nforw, ypart.nys());
+  gy.place(fder, ypart.nstat + ypart.nys(), 0);
 
   // Check difference for derivatives of both
-  GeneralMatrix bder(const_cast<const GeneralMatrix &>(sfder), ypart.nstat, 0, ypart.nboth, ypart.nys());
+  GeneralMatrix bder(const_cast<const GeneralMatrix&>(sfder), ypart.nstat, 0, ypart.nboth,
+                     ypart.nys());
   GeneralMatrix bder2(preder, ypart.npred, 0, ypart.nboth, ypart.nys());
   bder.add(-1, bder2);
   b_error = bder.getData().getMax();
@@ -237,7 +237,7 @@ FirstOrder::solve(const TwoDMatrix &fd)
      is ‘matA’ in the code. */
   GeneralMatrix matA(ypart.ny(), ypart.ny());
   matA.zeros();
-  ConstGeneralMatrix gss(gy, ypart.nstat+ypart.npred, 0, ypart.nyss(), ypart.nys());
+  ConstGeneralMatrix gss(gy, ypart.nstat + ypart.npred, 0, ypart.nyss(), ypart.nys());
   matA.place(fyplus * gss, 0, ypart.nstat);
   ConstGeneralMatrix fyzero(fd, 0, ypart.nyss(), ypart.ny(), ypart.ny());
   matA.add(1.0, fyzero);
@@ -247,9 +247,7 @@ FirstOrder::solve(const TwoDMatrix &fd)
 
   journalEigs();
 
-  KORD_RAISE_IF_X(!bk_cond,
-                  "The model is not Blanchard-Kahn stable",
-                  KORD_MD_NOT_STABLE);
+  KORD_RAISE_IF_X(!bk_cond, "The model is not Blanchard-Kahn stable", KORD_MD_NOT_STABLE);
   if (!gy.isFinite() || !gu.isFinite())
     throw KordException(__FILE__, __LINE__,
                         "NaN or Inf asserted in first order derivatives in FirstOrder::solve()");
@@ -283,9 +281,9 @@ FirstOrder::journalEigs()
             jr << endrec;
           }
         JournalRecord jr(journal);
-        double mod = std::sqrt(alphar[i]*alphar[i]+alphai[i]*alphai[i]);
-        mod = mod/std::round(100000*std::abs(beta[i]))*100000;
-        jr << i << "\t(" << alphar[i] << "," << alphai[i] << ") / " << beta[i]
-           << "  \t" << mod << endrec;
+        double mod = std::sqrt(alphar[i] * alphar[i] + alphai[i] * alphai[i]);
+        mod = mod / std::round(100000 * std::abs(beta[i])) * 100000;
+        jr << i << "\t(" << alphar[i] << "," << alphai[i] << ") / " << beta[i] << "  \t" << mod
+           << endrec;
       }
 }

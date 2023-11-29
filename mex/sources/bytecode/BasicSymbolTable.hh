@@ -20,10 +20,10 @@
 #ifndef _BASIC_SYMBOL_TABLE_HH
 #define _BASIC_SYMBOL_TABLE_HH
 
-#include <string>
-#include <vector>
 #include <map>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "dynmex.h"
 
@@ -34,10 +34,11 @@ using namespace std;
 class BasicSymbolTable
 {
 public:
-  BasicSymbolTable(const mxArray *M_);
+  BasicSymbolTable(const mxArray* M_);
   string getName(SymbolType type, int tsid) const;
-  pair<SymbolType, int> getIDAndType(const string &name) const;
+  pair<SymbolType, int> getIDAndType(const string& name) const;
   size_t maxEndoNameLength() const;
+
 private:
   vector<string> endo_names, param_names, exo_names, exo_det_names;
   map<string, pair<SymbolType, int>> name_to_id_and_type;

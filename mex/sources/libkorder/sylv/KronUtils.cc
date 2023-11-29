@@ -22,8 +22,7 @@
 #include "int_power.hh"
 
 void
-KronUtils::multAtLevel(int level, const QuasiTriangular &t,
-                       KronVector &x)
+KronUtils::multAtLevel(int level, const QuasiTriangular& t, KronVector& x)
 {
   if (0 < level && level < x.getDepth())
     for (int i = 0; i < x.getM(); i++)
@@ -38,7 +37,7 @@ KronUtils::multAtLevel(int level, const QuasiTriangular &t,
     }
   else if (0 == level && 0 == x.getDepth())
     {
-      Vector b(const_cast<const KronVector &>(x));
+      Vector b(const_cast<const KronVector&>(x));
       t.multVec(x, b);
     }
   else // 0 < level == depth
@@ -46,8 +45,7 @@ KronUtils::multAtLevel(int level, const QuasiTriangular &t,
 }
 
 void
-KronUtils::multAtLevelTrans(int level, const QuasiTriangular &t,
-                            KronVector &x)
+KronUtils::multAtLevelTrans(int level, const QuasiTriangular& t, KronVector& x)
 {
   if (0 < level && level < x.getDepth())
     for (int i = 0; i < x.getM(); i++)
@@ -62,7 +60,7 @@ KronUtils::multAtLevelTrans(int level, const QuasiTriangular &t,
     }
   else if (level == 0 && 0 == x.getDepth())
     {
-      Vector b(const_cast<const KronVector &>(x));
+      Vector b(const_cast<const KronVector&>(x));
       t.multVecTrans(x, b);
     }
   else // 0 < level == depth
@@ -70,8 +68,7 @@ KronUtils::multAtLevelTrans(int level, const QuasiTriangular &t,
 }
 
 void
-KronUtils::multKron(const QuasiTriangular &f, const QuasiTriangular &k,
-                    KronVector &x)
+KronUtils::multKron(const QuasiTriangular& f, const QuasiTriangular& k, KronVector& x)
 {
   multAtLevel(0, k, x);
   if (x.getDepth() > 0)

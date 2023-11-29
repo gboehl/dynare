@@ -24,10 +24,9 @@
 #include "pyramid_prod.hh"
 
 // UGSContainer conversion from FGSContainer
-UGSContainer::UGSContainer(const FGSContainer &c)
-  : TensorContainer<UGSTensor>(c.num())
+UGSContainer::UGSContainer(const FGSContainer& c) : TensorContainer<UGSTensor>(c.num())
 {
-  for (const auto &it : c)
+  for (const auto& it : c)
     insert(std::make_unique<UGSTensor>(*(it.second)));
 }
 
@@ -43,16 +42,16 @@ UGSContainer::UGSContainer(const FGSContainer &c)
    data to ‘out’. This is done by UPSTensor method addTo(). */
 
 void
-UGSContainer::multAndAdd(const UGSTensor &t, UGSTensor &out) const
+UGSContainer::multAndAdd(const UGSTensor& t, UGSTensor& out) const
 {
   int l = t.dimen();
   int k = out.dimen();
-  const EquivalenceSet &eset = TLStatic::getEquiv(k);
+  const EquivalenceSet& eset = TLStatic::getEquiv(k);
 
-  for (const auto &it : eset)
+  for (const auto& it : eset)
     if (it.numClasses() == l)
       {
-        std::vector<const UGSTensor *> ts = fetchTensors(out.getSym(), it);
+        std::vector<const UGSTensor*> ts = fetchTensors(out.getSym(), it);
         KronProdAllOptim kp(l);
         for (int i = 0; i < l; i++)
           kp.setMat(i, *(ts[i]));
@@ -63,10 +62,9 @@ UGSContainer::multAndAdd(const UGSTensor &t, UGSTensor &out) const
 }
 
 // FGSContainer conversion from UGSContainer
-FGSContainer::FGSContainer(const UGSContainer &c)
-  : TensorContainer<FGSTensor>(c.num())
+FGSContainer::FGSContainer(const UGSContainer& c) : TensorContainer<FGSTensor>(c.num())
 {
-  for (const auto &it : c)
+  for (const auto& it : c)
     insert(std::make_unique<FGSTensor>(*(it.second)));
 }
 
@@ -74,7 +72,7 @@ FGSContainer::FGSContainer(const UGSContainer &c)
 /* Here we perform one step of the Faà Di Bruno operation. We call the
    multAndAdd() for unfolded tensor. */
 void
-FGSContainer::multAndAdd(const FGSTensor &t, FGSTensor &out) const
+FGSContainer::multAndAdd(const FGSTensor& t, FGSTensor& out) const
 {
   UGSTensor ut(t);
   multAndAdd(ut, out);
@@ -84,17 +82,16 @@ FGSContainer::multAndAdd(const FGSTensor &t, FGSTensor &out) const
 /* This is the same as UGSContainer::multAndAdd() but we do not construct
    UPSTensor from the Kronecker product, but FPSTensor. */
 void
-FGSContainer::multAndAdd(const UGSTensor &t, FGSTensor &out) const
+FGSContainer::multAndAdd(const UGSTensor& t, FGSTensor& out) const
 {
   int l = t.dimen();
   int k = out.dimen();
-  const EquivalenceSet &eset = TLStatic::getEquiv(k);
+  const EquivalenceSet& eset = TLStatic::getEquiv(k);
 
-  for (const auto &it : eset)
+  for (const auto& it : eset)
     if (it.numClasses() == l)
       {
-        std::vector<const FGSTensor *> ts
-          = fetchTensors(out.getSym(), it);
+        std::vector<const FGSTensor*> ts = fetchTensors(out.getSym(), it);
         KronProdAllOptim kp(l);
         for (int i = 0; i < l; i++)
           kp.setMat(i, *(ts[i]));
@@ -108,9 +105,8 @@ FGSContainer::multAndAdd(const UGSTensor &t, FGSTensor &out) const
    ‘num’ indices from interval ‘start’ (including) to ‘end’ (excluding). If
    there are not ‘num’ of such indices, the shorter vector is returned. */
 Tensor::index
-FGSContainer::getIndices(int num, std::vector<IntSequence> &out,
-                         const Tensor::index &start,
-                         const Tensor::index &end)
+FGSContainer::getIndices(int num, std::vector<IntSequence>& out, const Tensor::index& start,
+                         const Tensor::index& end)
 {
   out.clear();
   int i = 0;

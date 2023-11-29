@@ -25,12 +25,12 @@
 /* This method constructs unfolded ‘ut’ of higher dimension, deleting
    the previous. */
 
-const URSingleTensor &
+const URSingleTensor&
 PowerProvider::getNext(dummy<URSingleTensor>)
 {
   if (ut)
     {
-      auto ut_new = std::make_unique<URSingleTensor>(nv, ut->dimen()+1);
+      auto ut_new = std::make_unique<URSingleTensor>(nv, ut->dimen() + 1);
       KronProd::kronMult(ConstVector(origv), ConstVector(ut->getData()), ut_new->getData());
       ut = std::move(ut_new);
     }
@@ -45,7 +45,7 @@ PowerProvider::getNext(dummy<URSingleTensor>)
 // PowerProvider::getNext() folded code
 /* This method just constructs next unfolded ‘ut’ and creates folded ‘ft’. */
 
-const FRSingleTensor &
+const FRSingleTensor&
 PowerProvider::getNext(dummy<FRSingleTensor>)
 {
   getNext<URSingleTensor>();
@@ -53,16 +53,16 @@ PowerProvider::getNext(dummy<FRSingleTensor>)
   return *ft;
 }
 
-UTensorPolynomial::UTensorPolynomial(const FTensorPolynomial &fp)
-  : TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(fp.nrows(), fp.nvars())
+UTensorPolynomial::UTensorPolynomial(const FTensorPolynomial& fp) :
+    TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(fp.nrows(), fp.nvars())
 {
-  for (const auto &it : fp)
+  for (const auto& it : fp)
     insert(std::make_unique<UFSTensor>(*(it.second)));
 }
 
-FTensorPolynomial::FTensorPolynomial(const UTensorPolynomial &up)
-  : TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(up.nrows(), up.nvars())
+FTensorPolynomial::FTensorPolynomial(const UTensorPolynomial& up) :
+    TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(up.nrows(), up.nvars())
 {
-  for (const auto &it : up)
+  for (const auto& it : up)
     insert(std::make_unique<FFSTensor>(*(it.second)));
 }

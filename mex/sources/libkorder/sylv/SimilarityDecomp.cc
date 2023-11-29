@@ -27,9 +27,9 @@
 
 #include <cmath>
 
-SimilarityDecomp::SimilarityDecomp(const ConstVector &d, int d_size, double log10norm)
+SimilarityDecomp::SimilarityDecomp(const ConstVector& d, int d_size, double log10norm)
 {
-  SchurDecomp sd(SqSylvMatrix(Vector{d}, d_size));
+  SchurDecomp sd(SqSylvMatrix(Vector {d}, d_size));
   q = std::make_unique<SqSylvMatrix>(sd.getQ());
   b = std::make_unique<BlockDiagonal>(sd.getT());
   invq = std::make_unique<SqSylvMatrix>(d_size);
@@ -40,8 +40,7 @@ SimilarityDecomp::SimilarityDecomp(const ConstVector &d, int d_size, double log1
 }
 
 void
-SimilarityDecomp::getXDim(diag_iter start, diag_iter end,
-                          int &rows, int &cols) const
+SimilarityDecomp::getXDim(diag_iter start, diag_iter end, int& rows, int& cols) const
 {
   int si = start->getIndex();
   int ei = end->getIndex();
@@ -54,15 +53,14 @@ SimilarityDecomp::getXDim(diag_iter start, diag_iter end,
    norm, X is not changed and flase is returned.
 */
 bool
-SimilarityDecomp::solveX(diag_iter start, diag_iter end,
-                         GeneralMatrix &X, double norm) const
+SimilarityDecomp::solveX(diag_iter start, diag_iter end, GeneralMatrix& X, double norm) const
 {
   int si = start->getIndex();
   int ei = end->getIndex();
 
-  SqSylvMatrix A(const_cast<const BlockDiagonal &>(*b), si, si, X.nrows());
-  SqSylvMatrix B(const_cast<const BlockDiagonal &>(*b), ei, ei, X.ncols());
-  GeneralMatrix C(const_cast<const BlockDiagonal &>(*b), si, ei, X.nrows(), X.ncols());
+  SqSylvMatrix A(const_cast<const BlockDiagonal&>(*b), si, si, X.nrows());
+  SqSylvMatrix B(const_cast<const BlockDiagonal&>(*b), ei, ei, X.ncols());
+  GeneralMatrix C(const_cast<const BlockDiagonal&>(*b), si, ei, X.nrows(), X.ncols());
 
   lapack_int isgn = -1;
   lapack_int m = A.nrows();
@@ -70,8 +68,7 @@ SimilarityDecomp::solveX(diag_iter start, diag_iter end,
   lapack_int lda = A.getLD(), ldb = B.getLD();
   double scale;
   lapack_int info;
-  dtrsyl("N", "N", &isgn, &m, &n, A.base(), &lda, B.base(), &ldb,
-         C.base(), &m, &scale, &info);
+  dtrsyl("N", "N", &isgn, &m, &n, A.base(), &lda, B.base(), &ldb, C.base(), &m, &scale, &info);
   if (info < -1)
     throw SYLV_MES_EXCEPTION("Wrong parameter to LAPACK dtrsyl.");
 
@@ -87,8 +84,7 @@ SimilarityDecomp::solveX(diag_iter start, diag_iter end,
 /*                         ⎛I −X⎞     ⎛I X⎞
   Multiply Q and invQ with ⎝0  I⎠ and ⎝0 I⎠ respectively. This also sets X=−X. */
 void
-SimilarityDecomp::updateTransform(diag_iter start, diag_iter end,
-                                  GeneralMatrix &X)
+SimilarityDecomp::updateTransform(diag_iter start, diag_iter end, GeneralMatrix& X)
 {
   int si = start->getIndex();
   int ei = end->getIndex();
@@ -105,11 +101,11 @@ SimilarityDecomp::updateTransform(diag_iter start, diag_iter end,
 }
 
 void
-SimilarityDecomp::bringGuiltyBlock(diag_iter start, diag_iter &end)
+SimilarityDecomp::bringGuiltyBlock(diag_iter start, diag_iter& end)
 {
   double av = b->getAverageDiagSize(start, end);
   diag_iter guilty = b->findClosestDiagBlock(end, b->diag_end(), av);
-  SchurDecompEig sd(*b); // works on b including diagonal structure
+  SchurDecompEig sd(*b);             // works on b including diagonal structure
   end = sd.bubbleEigen(guilty, end); // iterators are valid
   ++end;
   q->multRight(sd.getQ());
@@ -142,7 +138,7 @@ SimilarityDecomp::diagonalize(double norm)
 }
 
 void
-SimilarityDecomp::check(SylvParams &pars, const GeneralMatrix &m) const
+SimilarityDecomp::check(SylvParams& pars, const GeneralMatrix& m) const
 {
   // M − Q·B·Q⁻¹
   SqSylvMatrix c(getQ() * getB());
@@ -167,7 +163,7 @@ SimilarityDecomp::check(SylvParams &pars, const GeneralMatrix &m) const
 }
 
 void
-SimilarityDecomp::infoToPars(SylvParams &pars) const
+SimilarityDecomp::infoToPars(SylvParams& pars) const
 {
   pars.f_blocks = getB().getNumBlocks();
   pars.f_largest = getB().getLargestBlock();

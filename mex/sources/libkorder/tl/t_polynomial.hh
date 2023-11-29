@@ -51,11 +51,11 @@
    compactification of the polynomial. The class derives from the tensor
    and has a eval method. */
 
-#include "t_container.hh"
 #include "fs_tensor.hh"
-#include "rfs_tensor.hh"
-#include "tl_static.hh"
 #include "pascal_triangle.hh"
+#include "rfs_tensor.hh"
+#include "t_container.hh"
+#include "tl_static.hh"
 
 #include <memory>
 
@@ -80,9 +80,9 @@ class PowerProvider
   std::unique_ptr<URSingleTensor> ut;
   std::unique_ptr<FRSingleTensor> ft;
   int nv;
+
 public:
-  PowerProvider(const ConstVector &v)
-    : origv(v), nv(v.length())
+  PowerProvider(const ConstVector& v) : origv(v), nv(v.length())
   {
   }
 
@@ -98,18 +98,21 @@ public:
     https://stackoverflow.com/questions/3052579/explicit-specialization-in-non-namespace-scope
   */
   template<typename T>
-  struct dummy { using type = T; };
+  struct dummy
+  {
+    using type = T;
+  };
 
   template<class T>
-  const T &
+  const T&
   getNext()
   {
     return getNext(dummy<T>());
   }
 
 private:
-  const URSingleTensor &getNext(dummy<URSingleTensor>);
-  const FRSingleTensor &getNext(dummy<FRSingleTensor>);
+  const URSingleTensor& getNext(dummy<URSingleTensor>);
+  const FRSingleTensor& getNext(dummy<FRSingleTensor>);
 };
 
 /* The tensor polynomial is basically a tensor container which is more
@@ -136,21 +139,18 @@ class TensorPolynomial : public TensorContainer<_Ttype>
   int nv;
   int maxdim;
   using _Tparent = TensorContainer<_Ttype>;
+
 public:
-  TensorPolynomial(int rows, int vars)
-    : TensorContainer<_Ttype>(1),
-      nr(rows), nv(vars), maxdim(0)
+  TensorPolynomial(int rows, int vars) : TensorContainer<_Ttype>(1), nr(rows), nv(vars), maxdim(0)
   {
   }
-  TensorPolynomial(const TensorPolynomial<_Ttype, _TGStype, _Stype> &tp, int k)
-    : TensorContainer<_Ttype>(tp),
-      nr(tp.nr), nv(tp.nv), maxdim(0)
+  TensorPolynomial(const TensorPolynomial<_Ttype, _TGStype, _Stype>& tp, int k) :
+      TensorContainer<_Ttype>(tp), nr(tp.nr), nv(tp.nv), maxdim(0)
   {
     derivative(k);
   }
-  TensorPolynomial(int first_row, int num, TensorPolynomial<_Ttype, _TGStype, _Stype> &tp)
-    : TensorContainer<_Ttype>(first_row, num, tp),
-      nr(num), nv(tp.nv), maxdim(tp.maxdim)
+  TensorPolynomial(int first_row, int num, TensorPolynomial<_Ttype, _TGStype, _Stype>& tp) :
+      TensorContainer<_Ttype>(first_row, num, tp), nr(num), nv(tp.nv), maxdim(tp.maxdim)
   {
   }
 
@@ -175,14 +175,12 @@ public:
      symmetry of the slice to obtain stack coordinates of the slice. Then we do
      the calculations for i=1,…,m and then for i=0. */
 
-  TensorPolynomial(const TensorPolynomial<_Ttype, _TGStype, _Stype> &tp, const Vector &xval)
-    : TensorContainer<_Ttype>(1),
-      nr(tp.nrows()), nv(tp.nvars() - xval.length()), maxdim(0)
+  TensorPolynomial(const TensorPolynomial<_Ttype, _TGStype, _Stype>& tp, const Vector& xval) :
+      TensorContainer<_Ttype>(1), nr(tp.nrows()), nv(tp.nvars() - xval.length()), maxdim(0)
   {
-    TL_RAISE_IF(nvars() < 0,
-                "Length of xval too big in TensorPolynomial contract constructor");
-    IntSequence ss{xval.length(), nvars()};
-    IntSequence pp{0, 1};
+    TL_RAISE_IF(nvars() < 0, "Length of xval too big in TensorPolynomial contract constructor");
+    IntSequence ss {xval.length(), nvars()};
+    IntSequence pp {0, 1};
 
     // do contraction for all i>0
     /* Here we setup the PowerProvider, and cycle through i=1,…,m. Within the
@@ -204,15 +202,15 @@ public:
     PowerProvider pwp(xval);
     for (int i = 1; i <= tp.maxdim; i++)
       {
-        const _Stype &xpow = pwp.getNext<_Stype>();
-        for (int j = 0; j <= tp.maxdim-i; j++)
-          if (tp.check(Symmetry{i+j}))
+        const _Stype& xpow = pwp.getNext<_Stype>();
+        for (int j = 0; j <= tp.maxdim - i; j++)
+          if (tp.check(Symmetry {i + j}))
             {
               // initialize ‘ten’ of dimension ‘j’
               /* The pointer ‘ten’ is either a new tensor or got from ‘this’ container. */
-              _Ttype *ten;
-              if (_Tparent::check(Symmetry{j}))
-                ten = &_Tparent::get(Symmetry{j});
+              _Ttype* ten;
+              if (_Tparent::check(Symmetry {j}))
+                ten = &_Tparent::get(Symmetry {j});
               else
                 {
                   auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
@@ -221,10 +219,10 @@ public:
                   insert(std::move(ten_smart));
                 }
 
-              Symmetry sym{i, j};
+              Symmetry sym {i, j};
               IntSequence coor(pp.unfold(sym));
-              _TGStype slice(tp.get(Symmetry{i+j}), ss, coor, TensorDimens(sym, ss));
-              slice.mult(PascalTriangle::noverk(i+j, j));
+              _TGStype slice(tp.get(Symmetry {i + j}), ss, coor, TensorDimens(sym, ss));
+              slice.mult(PascalTriangle::noverk(i + j, j));
               _TGStype tmp(*ten);
               slice.contractAndAdd(0, tmp, xpow);
             }
@@ -234,14 +232,14 @@ public:
     /* This is easy. The code is equivalent to “do contraction for all i>0” as
        for i=0. The contraction here takes a form of a simple addition. */
     for (int j = 0; j <= tp.maxdim; j++)
-      if (tp.check(Symmetry{j}))
+      if (tp.check(Symmetry {j}))
         {
 
           // initialize ‘ten’ of dimension ‘j’
           /* Same code as above */
-          _Ttype *ten;
-          if (_Tparent::check(Symmetry{j}))
-            ten = &_Tparent::get(Symmetry{j});
+          _Ttype* ten;
+          if (_Tparent::check(Symmetry {j}))
+            ten = &_Tparent::get(Symmetry {j});
           else
             {
               auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
@@ -250,15 +248,15 @@ public:
               insert(std::move(ten_smart));
             }
 
-          Symmetry sym{0, j};
+          Symmetry sym {0, j};
           IntSequence coor(pp.unfold(sym));
-          _TGStype slice(tp.get(Symmetry{j}), ss, coor, TensorDimens(sym, ss));
+          _TGStype slice(tp.get(Symmetry {j}), ss, coor, TensorDimens(sym, ss));
           ten->add(1.0, slice);
         }
   }
 
-  TensorPolynomial(const TensorPolynomial &tp)
-    : TensorContainer<_Ttype>(tp), nr(tp.nr), nv(tp.nv), maxdim(tp.maxdim)
+  TensorPolynomial(const TensorPolynomial& tp) :
+      TensorContainer<_Ttype>(tp), nr(tp.nr), nv(tp.nv), maxdim(tp.maxdim)
   {
   }
   int
@@ -277,21 +275,21 @@ public:
      vector supplied by PowerProvider. */
 
   void
-  evalTrad(Vector &out, const ConstVector &v) const
+  evalTrad(Vector& out, const ConstVector& v) const
   {
-    if (_Tparent::check(Symmetry{0}))
-      out = _Tparent::get(Symmetry{0}).getData();
+    if (_Tparent::check(Symmetry {0}))
+      out = _Tparent::get(Symmetry {0}).getData();
     else
       out.zeros();
 
     PowerProvider pp(v);
     for (int d = 1; d <= maxdim; d++)
       {
-        const _Stype &p = pp.getNext<_Stype>();
-        Symmetry cs{d};
+        const _Stype& p = pp.getNext<_Stype>();
+        Symmetry cs {d};
         if (_Tparent::check(cs))
           {
-            const _Ttype &t = _Tparent::get(cs);
+            const _Ttype& t = _Tparent::get(cs);
             t.multaVec(out, p.getData());
           }
       }
@@ -301,10 +299,10 @@ public:
      cycle. */
 
   void
-  evalHorner(Vector &out, const ConstVector &v) const
+  evalHorner(Vector& out, const ConstVector& v) const
   {
-    if (_Tparent::check(Symmetry{0}))
-      out = _Tparent::get(Symmetry{0}).getData();
+    if (_Tparent::check(Symmetry {0}))
+      out = _Tparent::get(Symmetry {0}).getData();
     else
       out.zeros();
 
@@ -313,15 +311,14 @@ public:
 
     std::unique_ptr<_Ttype> last;
     if (maxdim == 1)
-      last = std::make_unique<_Ttype>(_Tparent::get(Symmetry{1}));
+      last = std::make_unique<_Ttype>(_Tparent::get(Symmetry {1}));
     else
-      last = std::make_unique<_Ttype>(_Tparent::get(Symmetry{maxdim}), v);
-    for (int d = maxdim-1; d >= 1; d--)
+      last = std::make_unique<_Ttype>(_Tparent::get(Symmetry {maxdim}), v);
+    for (int d = maxdim - 1; d >= 1; d--)
       {
-        if (Symmetry cs{d};
-            _Tparent::check(cs))
+        if (Symmetry cs {d}; _Tparent::check(cs))
           {
-            const _Ttype &nt = _Tparent::get(cs);
+            const _Ttype& nt = _Tparent::get(cs);
             last->add(1.0, ConstTwoDMatrix(nt));
           }
         if (d > 1)
@@ -336,10 +333,8 @@ public:
   void
   insert(std::unique_ptr<_Ttype> t) override
   {
-    TL_RAISE_IF(t->nrows() != nr,
-                "Wrong number of rows in TensorPolynomial::insert");
-    TL_RAISE_IF(t->nvar() != nv,
-                "Wrong number of variables in TensorPolynomial::insert");
+    TL_RAISE_IF(t->nrows() != nr, "Wrong number of rows in TensorPolynomial::insert");
+    TL_RAISE_IF(t->nvar() != nv, "Wrong number of variables in TensorPolynomial::insert");
     if (maxdim < t->dimen())
       maxdim = t->dimen();
     TensorContainer<_Ttype>::insert(std::move(t));
@@ -368,10 +363,10 @@ public:
   derivative(int k)
   {
     for (int d = 1; d <= maxdim; d++)
-      if (_Tparent::check(Symmetry{d}))
+      if (_Tparent::check(Symmetry {d}))
         {
-          _Ttype &ten = _Tparent::get(Symmetry{d});
-          ten.mult(static_cast<double>(std::max((d-k), 0)));
+          _Ttype& ten = _Tparent::get(Symmetry {d});
+          ten.mult(static_cast<double>(std::max((d - k), 0)));
         }
   }
 
@@ -392,7 +387,7 @@ public:
      calculates 2! multiple of the second derivative of g at v. */
 
   std::unique_ptr<_Ttype>
-  evalPartially(int s, const ConstVector &v)
+  evalPartially(int s, const ConstVector& v)
   {
     TL_RAISE_IF(v.length() != nvars(),
                 "Wrong length of vector for TensorPolynomial::evalPartially");
@@ -400,13 +395,13 @@ public:
     auto res = std::make_unique<_Ttype>(nrows(), nvars(), s);
     res->zeros();
 
-    if (_Tparent::check(Symmetry{s}))
-      res->add(1.0, _Tparent::get(Symmetry{s}));
+    if (_Tparent::check(Symmetry {s}))
+      res->add(1.0, _Tparent::get(Symmetry {s}));
 
-    for (int d = s+1; d <= maxdim; d++)
-      if (_Tparent::check(Symmetry{d}))
+    for (int d = s + 1; d <= maxdim; d++)
+      if (_Tparent::check(Symmetry {d}))
         {
-          const _Ttype &ltmp = _Tparent::get(Symmetry{d});
+          const _Ttype& ltmp = _Tparent::get(Symmetry {d});
           auto last = std::make_unique<_Ttype>(ltmp);
           for (int j = 0; j < d - s; j++)
             {
@@ -426,21 +421,21 @@ class FTensorPolynomial;
 class UTensorPolynomial : public TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>
 {
 public:
-  UTensorPolynomial(int rows, int vars)
-    : TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(rows, vars)
+  UTensorPolynomial(int rows, int vars) :
+      TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(rows, vars)
   {
   }
-  UTensorPolynomial(const UTensorPolynomial &up, int k)
-    : TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(up, k)
+  UTensorPolynomial(const UTensorPolynomial& up, int k) :
+      TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(up, k)
   {
   }
-  UTensorPolynomial(const FTensorPolynomial &fp);
-  UTensorPolynomial(const UTensorPolynomial &tp, const Vector &xval)
-    : TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(tp, xval)
+  UTensorPolynomial(const FTensorPolynomial& fp);
+  UTensorPolynomial(const UTensorPolynomial& tp, const Vector& xval) :
+      TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(tp, xval)
   {
   }
-  UTensorPolynomial(int first_row, int num, UTensorPolynomial &tp)
-    : TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(first_row, num, tp)
+  UTensorPolynomial(int first_row, int num, UTensorPolynomial& tp) :
+      TensorPolynomial<UFSTensor, UGSTensor, URSingleTensor>(first_row, num, tp)
   {
   }
 };
@@ -450,21 +445,21 @@ public:
 class FTensorPolynomial : public TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>
 {
 public:
-  FTensorPolynomial(int rows, int vars)
-    : TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(rows, vars)
+  FTensorPolynomial(int rows, int vars) :
+      TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(rows, vars)
   {
   }
-  FTensorPolynomial(const FTensorPolynomial &fp, int k)
-    : TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(fp, k)
+  FTensorPolynomial(const FTensorPolynomial& fp, int k) :
+      TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(fp, k)
   {
   }
-  FTensorPolynomial(const UTensorPolynomial &up);
-  FTensorPolynomial(const FTensorPolynomial &tp, const Vector &xval)
-    : TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(tp, xval)
+  FTensorPolynomial(const UTensorPolynomial& up);
+  FTensorPolynomial(const FTensorPolynomial& tp, const Vector& xval) :
+      TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(tp, xval)
   {
   }
-  FTensorPolynomial(int first_row, int num, FTensorPolynomial &tp)
-    : TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(first_row, num, tp)
+  FTensorPolynomial(int first_row, int num, FTensorPolynomial& tp) :
+      TensorPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(first_row, num, tp)
   {
   }
 };
@@ -488,24 +483,24 @@ public:
      index. We then copy the matrix, if it exists in the polynomial and
      increase ‘offset’ for the following cycle. */
 
-  CompactPolynomial(const TensorPolynomial<_Ttype, _TGStype, _Stype> &pol)
-    : _Ttype(pol.nrows(), pol.nvars()+1, pol.getMaxDim())
+  CompactPolynomial(const TensorPolynomial<_Ttype, _TGStype, _Stype>& pol) :
+      _Ttype(pol.nrows(), pol.nvars() + 1, pol.getMaxDim())
   {
     _Ttype::zeros();
 
-    IntSequence dumnvs{1, pol.nvars()};
+    IntSequence dumnvs {1, pol.nvars()};
 
     int offset = 0;
     _Ttype dum(0, 2, _Ttype::dimen());
     for (Tensor::index i = dum.begin(); i != dum.end(); ++i)
       {
         int d = i.getCoor().sum();
-        Symmetry symrun{_Ttype::dimen()-d, d};
+        Symmetry symrun {_Ttype::dimen() - d, d};
         _TGStype dumgs(0, TensorDimens(symrun, dumnvs));
-        if (pol.check(Symmetry{d}))
+        if (pol.check(Symmetry {d}))
           {
             TwoDMatrix subt(*this, offset, dumgs.ncols());
-            subt.add(1.0, pol.get(Symmetry{d}));
+            subt.add(1.0, pol.get(Symmetry {d}));
           }
         offset += dumgs.ncols();
       }
@@ -516,14 +511,14 @@ public:
      multiply this matrix with the power. */
 
   void
-  eval(Vector &out, const ConstVector &v) const
+  eval(Vector& out, const ConstVector& v) const
   {
-    TL_RAISE_IF(v.length()+1 != _Ttype::nvar(),
+    TL_RAISE_IF(v.length() + 1 != _Ttype::nvar(),
                 "Wrong input vector length in CompactPolynomial::eval");
     TL_RAISE_IF(out.length() != _Ttype::nrows(),
                 "Wrong output vector length in CompactPolynomial::eval");
 
-    Vector x1(v.length()+1);
+    Vector x1(v.length() + 1);
     Vector x1p(x1, 1, v.length());
     x1p = v;
     x1[0] = 1.0;
@@ -533,7 +528,7 @@ public:
     else
       {
         PowerProvider pp(x1);
-        const _Stype &xpow = pp.getNext<_Stype>();
+        const _Stype& xpow = pp.getNext<_Stype>();
         for (int i = 1; i < _Ttype::dimen(); i++)
           xpow = pp.getNext<_Stype>();
         multVec(0.0, out, 1.0, xpow);
@@ -545,8 +540,8 @@ public:
 class UCompactPolynomial : public CompactPolynomial<UFSTensor, UGSTensor, URSingleTensor>
 {
 public:
-  UCompactPolynomial(const UTensorPolynomial &upol)
-    : CompactPolynomial<UFSTensor, UGSTensor, URSingleTensor>(upol)
+  UCompactPolynomial(const UTensorPolynomial& upol) :
+      CompactPolynomial<UFSTensor, UGSTensor, URSingleTensor>(upol)
   {
   }
 };
@@ -555,8 +550,8 @@ public:
 class FCompactPolynomial : public CompactPolynomial<FFSTensor, FGSTensor, FRSingleTensor>
 {
 public:
-  FCompactPolynomial(const FTensorPolynomial &fpol)
-    : CompactPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(fpol)
+  FCompactPolynomial(const FTensorPolynomial& fpol) :
+      CompactPolynomial<FFSTensor, FGSTensor, FRSingleTensor>(fpol)
   {
   }
 };

@@ -78,13 +78,13 @@
 #ifndef STACK_CONTAINER_H
 #define STACK_CONTAINER_H
 
-#include "int_sequence.hh"
 #include "equivalence.hh"
-#include "tl_static.hh"
-#include "t_container.hh"
+#include "int_sequence.hh"
 #include "kron_prod.hh"
 #include "permutation.hh"
 #include "sthread.hh"
+#include "t_container.hh"
+#include "tl_static.hh"
 
 /* Here is the general interface to stack container. The subclasses
    maintain IntSequence of stack sizes, i.e. size of G, g, y, and
@@ -112,30 +112,35 @@ class StackContainerInterface
 {
 public:
   using _Ctype = TensorContainer<_Ttype>;
-  enum class itype { matrix, unit, zero };
+  enum class itype
+  {
+    matrix,
+    unit,
+    zero
+  };
+
 public:
   StackContainerInterface() = default;
   virtual ~StackContainerInterface() = default;
-  virtual const IntSequence &getStackSizes() const = 0;
-  virtual IntSequence &getStackSizes() = 0;
-  virtual const IntSequence &getStackOffsets() const = 0;
-  virtual IntSequence &getStackOffsets() = 0;
+  virtual const IntSequence& getStackSizes() const = 0;
+  virtual IntSequence& getStackSizes() = 0;
+  virtual const IntSequence& getStackOffsets() const = 0;
+  virtual IntSequence& getStackOffsets() = 0;
   virtual int numConts() const = 0;
-  virtual const _Ctype &getCont(int i) const = 0;
-  virtual itype getType(int i, const Symmetry &s) const = 0;
+  virtual const _Ctype& getCont(int i) const = 0;
+  virtual itype getType(int i, const Symmetry& s) const = 0;
   virtual int numStacks() const = 0;
-  virtual bool isZero(int i, const Symmetry &s) const = 0;
-  virtual const _Ttype &getMatrix(int i, const Symmetry &s) const = 0;
-  virtual int getLengthOfMatrixStacks(const Symmetry &s) const = 0;
-  virtual int getUnitPos(const Symmetry &s) const = 0;
-  virtual std::unique_ptr<Vector> createPackedColumn(const Symmetry &s,
-                                                     const IntSequence &coor,
-                                                     int &iu) const = 0;
+  virtual bool isZero(int i, const Symmetry& s) const = 0;
+  virtual const _Ttype& getMatrix(int i, const Symmetry& s) const = 0;
+  virtual int getLengthOfMatrixStacks(const Symmetry& s) const = 0;
+  virtual int getUnitPos(const Symmetry& s) const = 0;
+  virtual std::unique_ptr<Vector> createPackedColumn(const Symmetry& s, const IntSequence& coor,
+                                                     int& iu) const
+      = 0;
   int
   getAllSize() const
   {
-    return getStackOffsets()[numStacks()-1]
-      + getStackSizes()[numStacks()-1];
+    return getStackOffsets()[numStacks() - 1] + getStackSizes()[numStacks() - 1];
   }
 };
 
@@ -152,33 +157,33 @@ public:
   using _Stype = StackContainerInterface<_Ttype>;
   using _Ctype = typename StackContainerInterface<_Ttype>::_Ctype;
   using itype = typename StackContainerInterface<_Ttype>::itype;
+
 protected:
   int num_conts;
   IntSequence stack_sizes;
   IntSequence stack_offsets;
-  std::vector<const _Ctype *> conts;
+  std::vector<const _Ctype*> conts;
+
 public:
-  StackContainer(int ns, int nc)
-    : stack_sizes(ns, 0), stack_offsets(ns, 0),
-      conts(nc)
+  StackContainer(int ns, int nc) : stack_sizes(ns, 0), stack_offsets(ns, 0), conts(nc)
   {
   }
-  const IntSequence &
+  const IntSequence&
   getStackSizes() const override
   {
     return stack_sizes;
   }
-  IntSequence &
+  IntSequence&
   getStackSizes() override
   {
     return stack_sizes;
   }
-  const IntSequence &
+  const IntSequence&
   getStackOffsets() const override
   {
     return stack_offsets;
   }
-  IntSequence &
+  IntSequence&
   getStackOffsets() override
   {
     return stack_offsets;
@@ -188,28 +193,27 @@ public:
   {
     return conts.size();
   }
-  const _Ctype &
+  const _Ctype&
   getCont(int i) const override
   {
     return *(conts[i]);
   }
-  itype getType(int i, const Symmetry &s) const override = 0;
+  itype getType(int i, const Symmetry& s) const override = 0;
   int
   numStacks() const override
   {
     return stack_sizes.size();
   }
   bool
-  isZero(int i, const Symmetry &s) const override
+  isZero(int i, const Symmetry& s) const override
   {
-    TL_RAISE_IF(i < 0 || i >= numStacks(),
-                "Wrong index to stack in StackContainer::isZero.");
+    TL_RAISE_IF(i < 0 || i >= numStacks(), "Wrong index to stack in StackContainer::isZero.");
     return (getType(i, s) == itype::zero
             || (getType(i, s) == itype::matrix && !conts[i]->check(s)));
   }
 
-  const _Ttype &
-  getMatrix(int i, const Symmetry &s) const override
+  const _Ttype&
+  getMatrix(int i, const Symmetry& s) const override
   {
     TL_RAISE_IF(isZero(i, s) || getType(i, s) == itype::unit,
                 "Matrix is not returned in StackContainer::getMatrix");
@@ -217,7 +221,7 @@ public:
   }
 
   int
-  getLengthOfMatrixStacks(const Symmetry &s) const override
+  getLengthOfMatrixStacks(const Symmetry& s) const override
   {
     int res = 0;
     int i = 0;
@@ -227,19 +231,18 @@ public:
   }
 
   int
-  getUnitPos(const Symmetry &s) const override
+  getUnitPos(const Symmetry& s) const override
   {
     if (s.dimen() != 1)
       return -1;
-    int i = numStacks()-1;
+    int i = numStacks() - 1;
     while (i >= 0 && getType(i, s) != itype::unit)
       i--;
     return i;
   }
 
   std::unique_ptr<Vector>
-  createPackedColumn(const Symmetry &s,
-                     const IntSequence &coor, int &iu) const override
+  createPackedColumn(const Symmetry& s, const IntSequence& coor, int& iu) const override
   {
     TL_RAISE_IF(s.dimen() != coor.size(),
                 "Incompatible coordinates for symmetry in StackContainer::createPackedColumn");
@@ -257,14 +260,14 @@ public:
     i = 0;
     while (i < numStacks() && getType(i, s) == itype::matrix)
       {
-        const _Ttype &t = getMatrix(i, s);
+        const _Ttype& t = getMatrix(i, s);
         Tensor::index ind(t, coor);
         Vector subres(*res, stack_offsets[i], stack_sizes[i]);
         subres = ConstGeneralMatrix(t).getCol(*ind);
         i++;
       }
     if (iu != -1)
-      (*res)[len-1] = 1;
+      (*res)[len - 1] = 1;
 
     return res;
   }
@@ -275,7 +278,7 @@ protected:
   {
     stack_offsets[0] = 0;
     for (int i = 1; i < stack_offsets.size(); i++)
-      stack_offsets[i] = stack_offsets[i-1] + stack_sizes[i-1];
+      stack_offsets[i] = stack_offsets[i - 1] + stack_sizes[i - 1];
   }
 };
 
@@ -289,26 +292,27 @@ class FoldedStackContainer : virtual public StackContainerInterface<FGSTensor>
   friend class WorkerFoldMAASparse1;
   friend class WorkerFoldMAASparse2;
   friend class WorkerFoldMAASparse4;
+
 public:
   static constexpr double fill_threshold = 0.00005;
   void
-  multAndAdd(int dim, const TensorContainer<FSSparseTensor> &c,
-             FGSTensor &out) const
+  multAndAdd(int dim, const TensorContainer<FSSparseTensor>& c, FGSTensor& out) const
   {
-    if (c.check(Symmetry{dim}))
-      multAndAdd(c.get(Symmetry{dim}), out);
+    if (c.check(Symmetry {dim}))
+      multAndAdd(c.get(Symmetry {dim}), out);
   }
-  void multAndAdd(const FSSparseTensor &t, FGSTensor &out) const;
-  void multAndAdd(int dim, const FGSContainer &c, FGSTensor &out) const;
+  void multAndAdd(const FSSparseTensor& t, FGSTensor& out) const;
+  void multAndAdd(int dim, const FGSContainer& c, FGSTensor& out) const;
+
 protected:
-  void multAndAddSparse1(const FSSparseTensor &t, FGSTensor &out) const;
-  void multAndAddSparse2(const FSSparseTensor &t, FGSTensor &out) const;
-  void multAndAddSparse3(const FSSparseTensor &t, FGSTensor &out) const;
-  void multAndAddSparse4(const FSSparseTensor &t, FGSTensor &out) const;
-  void multAndAddStacks(const IntSequence &fi, const FGSTensor &g,
-                        FGSTensor &out, std::mutex &mut) const;
-  void multAndAddStacks(const IntSequence &fi, const GSSparseTensor &g,
-                        FGSTensor &out, std::mutex &mut) const;
+  void multAndAddSparse1(const FSSparseTensor& t, FGSTensor& out) const;
+  void multAndAddSparse2(const FSSparseTensor& t, FGSTensor& out) const;
+  void multAndAddSparse3(const FSSparseTensor& t, FGSTensor& out) const;
+  void multAndAddSparse4(const FSSparseTensor& t, FGSTensor& out) const;
+  void multAndAddStacks(const IntSequence& fi, const FGSTensor& g, FGSTensor& out,
+                        std::mutex& mut) const;
+  void multAndAddStacks(const IntSequence& fi, const GSSparseTensor& g, FGSTensor& out,
+                        std::mutex& mut) const;
 };
 
 class WorkerUnfoldMAADense;
@@ -319,28 +323,31 @@ class UnfoldedStackContainer : virtual public StackContainerInterface<UGSTensor>
   friend class WorkerUnfoldMAADense;
   friend class WorkerUnfoldMAASparse1;
   friend class WorkerUnfoldMAASparse2;
+
 public:
   static constexpr double fill_threshold = 0.00005;
   void
-  multAndAdd(int dim, const TensorContainer<FSSparseTensor> &c,
-             UGSTensor &out) const
+  multAndAdd(int dim, const TensorContainer<FSSparseTensor>& c, UGSTensor& out) const
   {
-    if (c.check(Symmetry{dim}))
-      multAndAdd(c.get(Symmetry{dim}), out);
+    if (c.check(Symmetry {dim}))
+      multAndAdd(c.get(Symmetry {dim}), out);
   }
-  void multAndAdd(const FSSparseTensor &t, UGSTensor &out) const;
-  void multAndAdd(int dim, const UGSContainer &c, UGSTensor &out) const;
+  void multAndAdd(const FSSparseTensor& t, UGSTensor& out) const;
+  void multAndAdd(int dim, const UGSContainer& c, UGSTensor& out) const;
+
 protected:
-  void multAndAddSparse1(const FSSparseTensor &t, UGSTensor &out) const;
-  void multAndAddSparse2(const FSSparseTensor &t, UGSTensor &out) const;
-  void multAndAddStacks(const IntSequence &fi, const UGSTensor &g,
-                        UGSTensor &out, std::mutex &mut) const;
+  void multAndAddSparse1(const FSSparseTensor& t, UGSTensor& out) const;
+  void multAndAddSparse2(const FSSparseTensor& t, UGSTensor& out) const;
+  void multAndAddStacks(const IntSequence& fi, const UGSTensor& g, UGSTensor& out,
+                        std::mutex& mut) const;
 };
 
 /* Here is the specialization of the StackContainer. We implement
-   here the x needed in DSGE context for welfare assessment. We implement getType() and define a constructor feeding the data and sizes.
+   here the x needed in DSGE context for welfare assessment. We implement getType() and define a
+   constructor feeding the data and sizes.
 
-   It depends on four variables U(y,u,u',σ), the variable u' being introduced to enable additions with 4-variable tensors*/
+   It depends on four variables U(y,u,u',σ), the variable u' being introduced to enable additions
+   with 4-variable tensors*/
 
 template<class _Ttype>
 class XContainer : public StackContainer<_Ttype>
@@ -350,10 +357,9 @@ public:
   using _Stype = StackContainerInterface<_Ttype>;
   using _Ctype = typename _Tparent::_Ctype;
   using itype = typename _Tparent::itype;
-  XContainer(const _Ctype *g, int ng)
-    : _Tparent(1, 1)
+  XContainer(const _Ctype* g, int ng) : _Tparent(1, 1)
   {
-    _Tparent::stack_sizes = { ng };
+    _Tparent::stack_sizes = {ng};
     _Tparent::conts[0] = g;
     _Tparent::calculateOffsets();
   }
@@ -362,9 +368,9 @@ public:
      file, how z looks, and code is clear. */
 
   itype
-  getType(int i, const Symmetry &s) const override
+  getType(int i, const Symmetry& s) const override
   {
-    if (i==0)
+    if (i == 0)
       {
         if (s[2] > 0)
           return itype::zero;
@@ -374,27 +380,22 @@ public:
 
     TL_RAISE("Wrong stack index in XContainer::getType");
   }
-
 };
 
-class FoldedXContainer : public XContainer<FGSTensor>,
-                         public FoldedStackContainer
+class FoldedXContainer : public XContainer<FGSTensor>, public FoldedStackContainer
 {
 public:
   using _Ctype = TensorContainer<FGSTensor>;
-  FoldedXContainer(const _Ctype *g, int ng)
-    : XContainer<FGSTensor>(g, ng)
+  FoldedXContainer(const _Ctype* g, int ng) : XContainer<FGSTensor>(g, ng)
   {
   }
 };
 
-class UnfoldedXContainer : public XContainer<UGSTensor>,
-                           public UnfoldedStackContainer
+class UnfoldedXContainer : public XContainer<UGSTensor>, public UnfoldedStackContainer
 {
 public:
   using _Ctype = TensorContainer<UGSTensor>;
-  UnfoldedXContainer(const _Ctype *g, int ng)
-    : XContainer<UGSTensor>(g, ng)
+  UnfoldedXContainer(const _Ctype* g, int ng) : XContainer<UGSTensor>(g, ng)
   {
   }
 };
@@ -416,11 +417,9 @@ public:
   using _Stype = StackContainerInterface<_Ttype>;
   using _Ctype = typename _Tparent::_Ctype;
   using itype = typename _Tparent::itype;
-  ZContainer(const _Ctype *gss, int ngss, const _Ctype *g, int ng,
-             int ny, int nu)
-    : _Tparent(4, 2)
+  ZContainer(const _Ctype* gss, int ngss, const _Ctype* g, int ng, int ny, int nu) : _Tparent(4, 2)
   {
-    _Tparent::stack_sizes = { ngss, ng, ny, nu };
+    _Tparent::stack_sizes = {ngss, ng, ny, nu};
     _Tparent::conts[0] = gss;
     _Tparent::conts[1] = g;
     _Tparent::calculateOffsets();
@@ -430,7 +429,7 @@ public:
      file, how z looks, and code is clear. */
 
   itype
-  getType(int i, const Symmetry &s) const override
+  getType(int i, const Symmetry& s) const override
   {
     if (i == 0)
       return itype::matrix;
@@ -443,14 +442,14 @@ public:
       }
     if (i == 2)
       {
-        if (s == Symmetry{1, 0, 0, 0})
+        if (s == Symmetry {1, 0, 0, 0})
           return itype::unit;
         else
           return itype::zero;
       }
     if (i == 3)
       {
-        if (s == Symmetry{0, 1, 0, 0})
+        if (s == Symmetry {0, 1, 0, 0})
           return itype::unit;
         else
           return itype::zero;
@@ -458,29 +457,24 @@ public:
 
     TL_RAISE("Wrong stack index in ZContainer::getType");
   }
-
 };
 
-class FoldedZContainer : public ZContainer<FGSTensor>,
-                         public FoldedStackContainer
+class FoldedZContainer : public ZContainer<FGSTensor>, public FoldedStackContainer
 {
 public:
   using _Ctype = TensorContainer<FGSTensor>;
-  FoldedZContainer(const _Ctype *gss, int ngss, const _Ctype *g, int ng,
-                   int ny, int nu)
-    : ZContainer<FGSTensor>(gss, ngss, g, ng, ny, nu)
+  FoldedZContainer(const _Ctype* gss, int ngss, const _Ctype* g, int ng, int ny, int nu) :
+      ZContainer<FGSTensor>(gss, ngss, g, ng, ny, nu)
   {
   }
 };
 
-class UnfoldedZContainer : public ZContainer<UGSTensor>,
-                           public UnfoldedStackContainer
+class UnfoldedZContainer : public ZContainer<UGSTensor>, public UnfoldedStackContainer
 {
 public:
   using _Ctype = TensorContainer<UGSTensor>;
-  UnfoldedZContainer(const _Ctype *gss, int ngss, const _Ctype *g, int ng,
-                     int ny, int nu)
-    : ZContainer<UGSTensor>(gss, ngss, g, ng, ny, nu)
+  UnfoldedZContainer(const _Ctype* gss, int ngss, const _Ctype* g, int ng, int ny, int nu) :
+      ZContainer<UGSTensor>(gss, ngss, g, ng, ny, nu)
   {
   }
 };
@@ -504,10 +498,9 @@ public:
   using _Stype = StackContainerInterface<_Ttype>;
   using _Ctype = typename StackContainer<_Ttype>::_Ctype;
   using itype = typename StackContainer<_Ttype>::itype;
-  GContainer(const _Ctype *gs, int ngs, int nu)
-    : StackContainer<_Ttype>(4, 1)
+  GContainer(const _Ctype* gs, int ngs, int nu) : StackContainer<_Ttype>(4, 1)
   {
-    _Tparent::stack_sizes = { ngs, nu, nu, 1 };
+    _Tparent::stack_sizes = {ngs, nu, nu, 1};
     _Tparent::conts[0] = gs;
     _Tparent::calculateOffsets();
   }
@@ -517,18 +510,18 @@ public:
      information. */
 
   itype
-  getType(int i, const Symmetry &s) const override
+  getType(int i, const Symmetry& s) const override
   {
     if (i == 0)
       {
-        if (s[2] > 0 || s == Symmetry{0, 0, 0, 1})
+        if (s[2] > 0 || s == Symmetry {0, 0, 0, 1})
           return itype::zero;
         else
           return itype::matrix;
       }
     if (i == 1)
       {
-        if (s == Symmetry{0, 0, 1, 0})
+        if (s == Symmetry {0, 0, 1, 0})
           return itype::unit;
         else
           return itype::zero;
@@ -537,7 +530,7 @@ public:
       return itype::zero;
     if (i == 3)
       {
-        if (s == Symmetry{0, 0, 0, 1})
+        if (s == Symmetry {0, 0, 0, 1})
           return itype::unit;
         else
           return itype::zero;
@@ -545,27 +538,22 @@ public:
 
     TL_RAISE("Wrong stack index in GContainer::getType");
   }
-
 };
 
-class FoldedGContainer : public GContainer<FGSTensor>,
-                         public FoldedStackContainer
+class FoldedGContainer : public GContainer<FGSTensor>, public FoldedStackContainer
 {
 public:
   using _Ctype = TensorContainer<FGSTensor>;
-  FoldedGContainer(const _Ctype *gs, int ngs, int nu)
-    : GContainer<FGSTensor>(gs, ngs, nu)
+  FoldedGContainer(const _Ctype* gs, int ngs, int nu) : GContainer<FGSTensor>(gs, ngs, nu)
   {
   }
 };
 
-class UnfoldedGContainer : public GContainer<UGSTensor>,
-                           public UnfoldedStackContainer
+class UnfoldedGContainer : public GContainer<UGSTensor>, public UnfoldedStackContainer
 {
 public:
   using _Ctype = TensorContainer<UGSTensor>;
-  UnfoldedGContainer(const _Ctype *gs, int ngs, int nu)
-    : GContainer<UGSTensor>(gs, ngs, nu)
+  UnfoldedGContainer(const _Ctype* gs, int ngs, int nu) : GContainer<UGSTensor>(gs, ngs, nu)
   {
   }
 };
@@ -583,19 +571,19 @@ public:
   using _Stype = StackContainerInterface<_Ttype>;
   using _Ctype = typename _Stype::_Ctype;
   using itype = typename _Stype::itype;
+
 protected:
-  const _Stype &stack_cont;
+  const _Stype& stack_cont;
   InducedSymmetries syms;
   Permutation per;
+
 public:
-  StackProduct(const _Stype &sc, const Equivalence &e,
-               const Symmetry &os)
-    : stack_cont(sc), syms(e, os), per(e)
+  StackProduct(const _Stype& sc, const Equivalence& e, const Symmetry& os) :
+      stack_cont(sc), syms(e, os), per(e)
   {
   }
-  StackProduct(const _Stype &sc, const Equivalence &e,
-               const Permutation &p, const Symmetry &os)
-    : stack_cont(sc), syms(e, p, os), per(e, p)
+  StackProduct(const _Stype& sc, const Equivalence& e, const Permutation& p, const Symmetry& os) :
+      stack_cont(sc), syms(e, p, os), per(e, p)
   {
   }
   int
@@ -608,16 +596,15 @@ public:
   {
     return stack_cont.getAllSize();
   }
-  const Symmetry &
+  const Symmetry&
   getProdSym(int ip) const
   {
     return syms[ip];
   }
   bool
-  isZero(const IntSequence &istacks) const
+  isZero(const IntSequence& istacks) const
   {
-    TL_RAISE_IF(istacks.size() != dimen(),
-                "Wrong istacks coordinates for StackProduct::isZero");
+    TL_RAISE_IF(istacks.size() != dimen(), "Wrong istacks coordinates for StackProduct::isZero");
 
     bool res = false;
     int i = 0;
@@ -631,19 +618,18 @@ public:
   {
     TL_RAISE_IF(is < 0 || is >= stack_cont.numStacks(),
                 "Wrong index to stack in StackProduct::getType");
-    TL_RAISE_IF(ip < 0 || ip >= dimen(),
-                "Wrong index to stack container in StackProduct::getType");
+    TL_RAISE_IF(ip < 0 || ip >= dimen(), "Wrong index to stack container in StackProduct::getType");
     return stack_cont.getType(is, syms[ip]);
   }
 
-  const _Ttype &
+  const _Ttype&
   getMatrix(int is, int ip) const
   {
     return stack_cont.getMatrix(is, syms[ip]);
   }
 
   std::vector<std::unique_ptr<Vector>>
-  createPackedColumns(const IntSequence &coor, IntSequence &iu) const
+  createPackedColumns(const IntSequence& coor, IntSequence& iu) const
   {
     TL_RAISE_IF(iu.size() != dimen(),
                 "Wrong storage length for unit flags in StackProduct::createPackedColumns");
@@ -669,7 +655,7 @@ public:
   }
 
   int
-  numMatrices(const IntSequence &istacks) const
+  numMatrices(const IntSequence& istacks) const
   {
     TL_RAISE_IF(istacks.size() != dimen(),
                 "Wrong size of stack coordinates in StackContainer::numMatrices");
@@ -702,8 +688,7 @@ public:
      the KronProdStack behaves like KronProdAll (i.e. no optimization
      is done). */
 
-  KronProdStack(const _Ptype &sp, const IntSequence &istack)
-    : KronProdAllOptim(sp.dimen())
+  KronProdStack(const _Ptype& sp, const IntSequence& istack) : KronProdAllOptim(sp.dimen())
   {
     TL_RAISE_IF(sp.dimen() != istack.size(),
                 "Wrong stack product dimension for KronProdStack constructor");
@@ -716,7 +701,7 @@ public:
           setUnit(i, sp.getSize(istack[i]));
         if (sp.getType(istack[i], i) == _Stype::itype::matrix)
           {
-            const TwoDMatrix &m = sp.getMatrix(istack[i], i);
+            const TwoDMatrix& m = sp.getMatrix(istack[i], i);
             TL_RAISE_IF(m.nrows() != sp.getSize(istack[i]),
                         "Wrong size of returned matrix in KronProdStack constructor");
             setMat(i, m);
@@ -727,95 +712,93 @@ public:
 
 class WorkerFoldMAADense : public sthread::detach_thread
 {
-  const FoldedStackContainer &cont;
+  const FoldedStackContainer& cont;
   Symmetry sym;
-  const FGSContainer &dense_cont;
-  FGSTensor &out;
+  const FGSContainer& dense_cont;
+  FGSTensor& out;
+
 public:
-  WorkerFoldMAADense(const FoldedStackContainer &container,
-                     Symmetry s,
-                     const FGSContainer &dcontainer,
-                     FGSTensor &outten);
-  void operator()(std::mutex &mut) override;
+  WorkerFoldMAADense(const FoldedStackContainer& container, Symmetry s,
+                     const FGSContainer& dcontainer, FGSTensor& outten);
+  void operator()(std::mutex& mut) override;
 };
 
 class WorkerFoldMAASparse1 : public sthread::detach_thread
 {
-  const FoldedStackContainer &cont;
-  const FSSparseTensor &t;
-  FGSTensor &out;
+  const FoldedStackContainer& cont;
+  const FSSparseTensor& t;
+  FGSTensor& out;
   IntSequence coor;
+
 public:
-  WorkerFoldMAASparse1(const FoldedStackContainer &container,
-                       const FSSparseTensor &ten,
-                       FGSTensor &outten, IntSequence c);
-  void operator()(std::mutex &mut) override;
+  WorkerFoldMAASparse1(const FoldedStackContainer& container, const FSSparseTensor& ten,
+                       FGSTensor& outten, IntSequence c);
+  void operator()(std::mutex& mut) override;
 };
 
 class WorkerFoldMAASparse2 : public sthread::detach_thread
 {
-  const FoldedStackContainer &cont;
-  const FSSparseTensor &t;
-  FGSTensor &out;
+  const FoldedStackContainer& cont;
+  const FSSparseTensor& t;
+  FGSTensor& out;
   IntSequence coor;
+
 public:
-  WorkerFoldMAASparse2(const FoldedStackContainer &container,
-                       const FSSparseTensor &ten,
-                       FGSTensor &outten, IntSequence c);
-  void operator()(std::mutex &mut) override;
+  WorkerFoldMAASparse2(const FoldedStackContainer& container, const FSSparseTensor& ten,
+                       FGSTensor& outten, IntSequence c);
+  void operator()(std::mutex& mut) override;
 };
 
 class WorkerFoldMAASparse4 : public sthread::detach_thread
 {
-  const FoldedStackContainer &cont;
-  const FSSparseTensor &t;
-  FGSTensor &out;
+  const FoldedStackContainer& cont;
+  const FSSparseTensor& t;
+  FGSTensor& out;
   IntSequence coor;
+
 public:
-  WorkerFoldMAASparse4(const FoldedStackContainer &container,
-                       const FSSparseTensor &ten,
-                       FGSTensor &outten, IntSequence c);
-  void operator()(std::mutex &mut) override;
+  WorkerFoldMAASparse4(const FoldedStackContainer& container, const FSSparseTensor& ten,
+                       FGSTensor& outten, IntSequence c);
+  void operator()(std::mutex& mut) override;
 };
 
 class WorkerUnfoldMAADense : public sthread::detach_thread
 {
-  const UnfoldedStackContainer &cont;
+  const UnfoldedStackContainer& cont;
   Symmetry sym;
-  const UGSContainer &dense_cont;
-  UGSTensor &out;
+  const UGSContainer& dense_cont;
+  UGSTensor& out;
+
 public:
-  WorkerUnfoldMAADense(const UnfoldedStackContainer &container,
-                       Symmetry s,
-                       const UGSContainer &dcontainer,
-                       UGSTensor &outten);
-  void operator()(std::mutex &mut) override;
+  WorkerUnfoldMAADense(const UnfoldedStackContainer& container, Symmetry s,
+                       const UGSContainer& dcontainer, UGSTensor& outten);
+  void operator()(std::mutex& mut) override;
 };
 
 class WorkerUnfoldMAASparse1 : public sthread::detach_thread
 {
-  const UnfoldedStackContainer &cont;
-  const FSSparseTensor &t;
-  UGSTensor &out;
+  const UnfoldedStackContainer& cont;
+  const FSSparseTensor& t;
+  UGSTensor& out;
   IntSequence coor;
+
 public:
-  WorkerUnfoldMAASparse1(const UnfoldedStackContainer &container,
-                         const FSSparseTensor &ten,
-                         UGSTensor &outten, IntSequence c);
-  void operator()(std::mutex &mut) override;
+  WorkerUnfoldMAASparse1(const UnfoldedStackContainer& container, const FSSparseTensor& ten,
+                         UGSTensor& outten, IntSequence c);
+  void operator()(std::mutex& mut) override;
 };
 
 class WorkerUnfoldMAASparse2 : public sthread::detach_thread
 {
-  const UnfoldedStackContainer &cont;
-  const FSSparseTensor &t;
-  UGSTensor &out;
+  const UnfoldedStackContainer& cont;
+  const FSSparseTensor& t;
+  UGSTensor& out;
   IntSequence coor;
+
 public:
-  WorkerUnfoldMAASparse2(const UnfoldedStackContainer &container,
-                         const FSSparseTensor &ten,
-                         UGSTensor &outten, IntSequence c);
-  void operator()(std::mutex &mut) override;
+  WorkerUnfoldMAASparse2(const UnfoldedStackContainer& container, const FSSparseTensor& ten,
+                         UGSTensor& outten, IntSequence c);
+  void operator()(std::mutex& mut) override;
 };
 
 #endif

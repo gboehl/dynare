@@ -55,9 +55,9 @@
 
 #include "int_sequence.hh"
 
-#include <vector>
 #include <list>
 #include <string>
+#include <vector>
 
 /* Here is the abstraction for an equivalence class. We implement it as
    vector<int>. We have a constructor for empty class, copy
@@ -69,14 +69,15 @@
 class OrdSequence
 {
   std::vector<int> data;
+
 public:
   OrdSequence() : data()
   {
   }
-  bool operator==(const OrdSequence &s) const;
+  bool operator==(const OrdSequence& s) const;
   int operator[](int i) const;
-  bool operator<(const OrdSequence &s) const;
-  const std::vector<int> &
+  bool operator<(const OrdSequence& s) const;
+  const std::vector<int>&
   getData() const
   {
     return data;
@@ -87,9 +88,10 @@ public:
     return data.size();
   }
   void add(int i);
-  void add(const OrdSequence &s);
+  void add(const OrdSequence& s);
   bool has(int i) const;
-  void print(const std::string &prefix) const;
+  void print(const std::string& prefix) const;
+
 private:
   double average() const;
 };
@@ -106,6 +108,7 @@ class Equivalence
 private:
   int n;
   std::list<OrdSequence> classes;
+
 public:
   using const_seqit = std::list<OrdSequence>::const_iterator;
   using seqit = std::list<OrdSequence>::iterator;
@@ -113,13 +116,13 @@ public:
   // Constructs { {0}, {1}, …, {n-1} }
   explicit Equivalence(int num);
   // Constructs { {0,1,…,n-1 } }
-  Equivalence(int num, const std::string &dummy);
+  Equivalence(int num, const std::string& dummy);
   // Copy constructor plus gluing i1 and i2 in one class
-  Equivalence(const Equivalence &e, int i1, int i2);
+  Equivalence(const Equivalence& e, int i1, int i2);
 
-  bool operator==(const Equivalence &e) const;
+  bool operator==(const Equivalence& e) const;
   bool
-  operator!=(const Equivalence &e) const
+  operator!=(const Equivalence& e) const
   {
     return !operator==(e);
   }
@@ -133,14 +136,14 @@ public:
   {
     return classes.size();
   }
-  void trace(IntSequence &out, int n) const;
+  void trace(IntSequence& out, int n) const;
   void
-  trace(IntSequence &out) const
+  trace(IntSequence& out) const
   {
     trace(out, numClasses());
   }
-  void trace(IntSequence &out, const Permutation &per) const;
-  void print(const std::string &prefix) const;
+  void trace(IntSequence& out, const Permutation& per) const;
+  void print(const std::string& prefix) const;
   seqit
   begin()
   {
@@ -163,6 +166,7 @@ public:
   }
   const_seqit find(int i) const;
   seqit find(int i);
+
 protected:
   /* Here we have find methods. We can find an equivalence class having a
      given number or we can find an equivalence class of a given index within
@@ -172,8 +176,7 @@ protected:
      according to the class ordering. */
   const_seqit findHaving(int i) const;
   seqit findHaving(int i);
-  void insert(const OrdSequence &s);
-
+  void insert(const OrdSequence& s);
 };
 
 /* The EquivalenceSet is a list of equivalences. The unique
@@ -187,9 +190,10 @@ class EquivalenceSet
 {
   int n;
   std::list<Equivalence> equis;
+
 public:
   explicit EquivalenceSet(int num);
-  void print(const std::string &prefix) const;
+  void print(const std::string& prefix) const;
   auto
   begin() const
   {
@@ -200,9 +204,10 @@ public:
   {
     return equis.end();
   }
+
 private:
-  bool has(const Equivalence &e) const;
-  void addParents(const Equivalence &e, std::list<Equivalence> &added);
+  bool has(const Equivalence& e) const;
+  void addParents(const Equivalence& e, std::list<Equivalence>& added);
 };
 
 /* The equivalence bundle class only encapsulates EquivalenceSet·s
@@ -215,9 +220,10 @@ private:
 class EquivalenceBundle
 {
   std::vector<EquivalenceSet> bundle;
+
 public:
   explicit EquivalenceBundle(int nmax);
-  const EquivalenceSet &get(int n) const;
+  const EquivalenceSet& get(int n) const;
   void generateUpTo(int nmax);
 };
 

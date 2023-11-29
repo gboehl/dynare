@@ -19,11 +19,11 @@
 
 #include "dynamic_dll.hh"
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
-DynamicModelDLL::DynamicModelDLL(const std::string &modName, int ntt_arg, int order)
-  : DynamicModelAC(ntt_arg)
+DynamicModelDLL::DynamicModelDLL(const std::string& modName, int ntt_arg, int order) :
+    DynamicModelAC(ntt_arg)
 {
   std::string fName;
 #if !defined(__CYGWIN32__) && !defined(_WIN32)
@@ -37,20 +37,24 @@ DynamicModelDLL::DynamicModelDLL(const std::string &modName, int ntt_arg, int or
   dynamicHinstance = dlopen(fName.c_str(), RTLD_NOW);
 #endif
   if (!dynamicHinstance)
-    throw DynareException(__FILE__, __LINE__, "Error when loading " + fName
+    throw DynareException(__FILE__, __LINE__,
+                          "Error when loading " + fName
 #if !defined(__CYGWIN32__) && !defined(_WIN32)
-                          + ": " + dlerror()
+                              + ": " + dlerror()
 #endif
-                          );
+    );
 
-  dynamic_tt.resize(order+1);
+  dynamic_tt.resize(order + 1);
 
-  std::tie(dynamic_resid, dynamic_tt[0]) = getSymbolsFromDLL<dynamic_resid_or_g1_fct>("dynamic_resid", fName);
-  std::tie(dynamic_g1, dynamic_tt[1]) = getSymbolsFromDLL<dynamic_resid_or_g1_fct>("dynamic_g1", fName);
+  std::tie(dynamic_resid, dynamic_tt[0])
+      = getSymbolsFromDLL<dynamic_resid_or_g1_fct>("dynamic_resid", fName);
+  std::tie(dynamic_g1, dynamic_tt[1])
+      = getSymbolsFromDLL<dynamic_resid_or_g1_fct>("dynamic_g1", fName);
 
-  dynamic_higher_deriv.resize(std::max(0, order-1));
+  dynamic_higher_deriv.resize(std::max(0, order - 1));
   for (int i = 2; i <= order; i++)
-    std::tie(dynamic_higher_deriv[i-2], dynamic_tt[i]) = getSymbolsFromDLL<dynamic_higher_deriv_fct>("dynamic_g" + std::to_string(i), fName);
+    std::tie(dynamic_higher_deriv[i - 2], dynamic_tt[i])
+        = getSymbolsFromDLL<dynamic_higher_deriv_fct>("dynamic_g" + std::to_string(i), fName);
 
   tt = std::make_unique<double[]>(ntt);
 }
@@ -70,19 +74,24 @@ DynamicModelDLL::~DynamicModelDLL()
 }
 
 void
-DynamicModelDLL::eval(const Vector &y, const Vector &x, const Vector &modParams, const Vector &ySteady,
-                      Vector &residual, std::vector<TwoDMatrix> &md) noexcept(false)
+DynamicModelDLL::eval(const Vector& y, const Vector& x, const Vector& modParams,
+                      const Vector& ySteady, Vector& residual,
+                      std::vector<TwoDMatrix>& md) noexcept(false)
 {
-  assert(md.size() == dynamic_tt.size()-1);
+  assert(md.size() == dynamic_tt.size() - 1);
 
   for (size_t i = 0; i < dynamic_tt.size(); i++)
     {
       dynamic_tt[i](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
       if (i == 0)
-        dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), residual.base());
+        dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(),
+                      residual.base());
       else if (i == 1)
-        dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), md[0].base());
+        dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(),
+                   md[0].base());
       else
-        dynamic_higher_deriv[i-2](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(), &md[i-1].get(0, 0), &md[i-1].get(0, 1), &md[i-1].get(0, 2));
+        dynamic_higher_deriv[i - 2](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0,
+                                    tt.get(), &md[i - 1].get(0, 0), &md[i - 1].get(0, 1),
+                                    &md[i - 1].get(0, 2));
     }
 }

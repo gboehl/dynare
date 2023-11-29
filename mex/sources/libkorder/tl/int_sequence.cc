@@ -19,16 +19,16 @@
  */
 
 #include "int_sequence.hh"
+#include "pascal_triangle.hh"
 #include "symmetry.hh"
 #include "tl_exception.hh"
-#include "pascal_triangle.hh"
 
 #include <iostream>
 #include <limits>
 #include <numeric>
 
 IntSequence
-IntSequence::unfold(const Symmetry &sy) const
+IntSequence::unfold(const Symmetry& sy) const
 {
   IntSequence r(sy.dimen());
   int k = 0;
@@ -47,7 +47,7 @@ IntSequence::getSymmetry() const
     r[p] = 1;
   for (int i = 1; i < size(); i++)
     {
-      if (operator[](i) != operator[](i-1))
+      if (operator[](i) != operator[](i - 1))
         p++;
       r[p]++;
     }
@@ -57,41 +57,40 @@ IntSequence::getSymmetry() const
 IntSequence
 IntSequence::insert(int i) const
 {
-  IntSequence r(size()+1);
+  IntSequence r(size() + 1);
   int j;
   for (j = 0; j < size() && operator[](j) < i; j++)
     r[j] = operator[](j);
   r[j] = i;
   for (; j < size(); j++)
-    r[j+1] = operator[](j);
+    r[j + 1] = operator[](j);
   return r;
 }
 
 IntSequence
 IntSequence::insert(int i, int pos) const
 {
-  TL_RAISE_IF(pos < 0 || pos > size(),
-              "Wrong position for IntSequence::insert()");
-  IntSequence r(size()+1);
+  TL_RAISE_IF(pos < 0 || pos > size(), "Wrong position for IntSequence::insert()");
+  IntSequence r(size() + 1);
   int j;
   for (j = 0; j < pos; j++)
     r[j] = operator[](j);
   r[j] = i;
   for (; j < size(); j++)
-    r[j+1] = operator[](j);
+    r[j + 1] = operator[](j);
   return r;
 }
 
-IntSequence &
-IntSequence::operator=(const IntSequence &s)
+IntSequence&
+IntSequence::operator=(const IntSequence& s)
 {
   TL_RAISE_IF(length != s.length, "Wrong length for in-place IntSequence::operator=");
   std::copy_n(s.data, length, data);
   return *this;
 }
 
-IntSequence &
-IntSequence::operator=(IntSequence &&s)
+IntSequence&
+IntSequence::operator=(IntSequence&& s)
 {
   TL_RAISE_IF(length != s.length, "Wrong length for in-place IntSequence::operator=");
   std::copy_n(s.data, length, data);
@@ -99,24 +98,21 @@ IntSequence::operator=(IntSequence &&s)
 }
 
 bool
-IntSequence::operator==(const IntSequence &s) const
+IntSequence::operator==(const IntSequence& s) const
 {
-  return std::equal(data, data+length,
-                    s.data, s.data+s.length);
+  return std::equal(data, data + length, s.data, s.data + s.length);
 }
 
 bool
-IntSequence::operator<(const IntSequence &s) const
+IntSequence::operator<(const IntSequence& s) const
 {
-  return std::lexicographical_compare(data, data+length,
-                                      s.data, s.data+s.length);
+  return std::lexicographical_compare(data, data + length, s.data, s.data + s.length);
 }
 
 bool
-IntSequence::lessEq(const IntSequence &s) const
+IntSequence::lessEq(const IntSequence& s) const
 {
-  TL_RAISE_IF(size() != s.size(),
-              "Sequence with different lengths in IntSequence::lessEq");
+  TL_RAISE_IF(size() != s.size(), "Sequence with different lengths in IntSequence::lessEq");
 
   int i = 0;
   while (i < size() && operator[](i) <= s[i])
@@ -125,10 +121,9 @@ IntSequence::lessEq(const IntSequence &s) const
 }
 
 bool
-IntSequence::less(const IntSequence &s) const
+IntSequence::less(const IntSequence& s) const
 {
-  TL_RAISE_IF(size() != s.size(),
-              "Sequence with different lengths in IntSequence::less");
+  TL_RAISE_IF(size() != s.size(), "Sequence with different lengths in IntSequence::less");
 
   int i = 0;
   while (i < size() && operator[](i) < s[i])
@@ -139,26 +134,26 @@ IntSequence::less(const IntSequence &s) const
 void
 IntSequence::sort()
 {
-  std::sort(data, data+length);
+  std::sort(data, data + length);
 }
 
 void
 IntSequence::monotone()
 {
   for (int i = 1; i < length; i++)
-    if (operator[](i-1) > operator[](i))
-      operator[](i) = operator[](i-1);
+    if (operator[](i - 1) > operator[](i))
+      operator[](i) = operator[](i - 1);
 }
 
 void
-IntSequence::pmonotone(const Symmetry &s)
+IntSequence::pmonotone(const Symmetry& s)
 {
   int cum = 0;
   for (int i = 0; i < s.num(); i++)
     {
       for (int j = cum + 1; j < cum + s[i]; j++)
-        if (operator[](j-1) > operator[](j))
-          operator[](j) = operator[](j-1);
+        if (operator[](j - 1) > operator[](j))
+          operator[](j) = operator[](j - 1);
       cum += s[i];
     }
 }
@@ -166,23 +161,22 @@ IntSequence::pmonotone(const Symmetry &s)
 int
 IntSequence::sum() const
 {
-  return std::accumulate(data, data+length, 0);
+  return std::accumulate(data, data + length, 0);
 }
 
 int
 IntSequence::mult(int i1, int i2) const
 {
-  return std::accumulate(data+i1, data+i2,
-                         1, std::multiplies<int>());
+  return std::accumulate(data + i1, data + i2, 1, std::multiplies<int>());
 }
 
 int
 IntSequence::getPrefixLength() const
 {
   int i = 0;
-  while (i+1 < size() && operator[](i+1) == operator[](0))
+  while (i + 1 < size() && operator[](i + 1) == operator[](0))
     i++;
-  return i+1;
+  return i + 1;
 }
 
 int
@@ -192,7 +186,7 @@ IntSequence::getNumDistinct() const
   if (length > 0)
     res++;
   for (int i = 1; i < length; i++)
-    if (operator[](i) != operator[](i-1))
+    if (operator[](i) != operator[](i - 1))
       res++;
   return res;
 }
@@ -202,7 +196,7 @@ IntSequence::getMax() const
 {
   if (length == 0)
     return std::numeric_limits<int>::min();
-  return *std::max_element(data, data+length);
+  return *std::max_element(data, data + length);
 }
 
 void
@@ -213,19 +207,17 @@ IntSequence::add(int i)
 }
 
 void
-IntSequence::add(int f, const IntSequence &s)
+IntSequence::add(int f, const IntSequence& s)
 {
-  TL_RAISE_IF(size() != s.size(),
-              "Wrong sequence length in IntSequence::add");
+  TL_RAISE_IF(size() != s.size(), "Wrong sequence length in IntSequence::add");
   for (int j = 0; j < size(); j++)
-    operator[](j) += f*s[j];
+    operator[](j) += f * s[j];
 }
 
 bool
 IntSequence::isPositive() const
 {
-  return std::all_of(data, data+length,
-                     [](int x) { return x >= 0; });
+  return std::all_of(data, data + length, [](int x) { return x >= 0; });
 }
 
 bool
@@ -233,14 +225,13 @@ IntSequence::isConstant() const
 {
   if (length < 2)
     return true;
-  return std::all_of(data+1, data+length,
-                     [this](int x) { return x == operator[](0); });
+  return std::all_of(data + 1, data + length, [this](int x) { return x == operator[](0); });
 }
 
 bool
 IntSequence::isSorted() const
 {
-  return std::is_sorted(data, data+length);
+  return std::is_sorted(data, data + length);
 }
 
 /* Debug print. */
