@@ -57,7 +57,9 @@ public:
   }
   Vector(const Vector& v);
   Vector(Vector&& v) :
-      len {std::exchange(v.len, 0)}, s {v.s}, data {std::exchange(v.data, nullptr)},
+      len {std::exchange(v.len, 0)},
+      s {v.s},
+      data {std::exchange(v.data, nullptr)},
       destroy {std::exchange(v.destroy, false)}
   {
   }

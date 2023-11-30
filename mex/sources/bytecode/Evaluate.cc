@@ -32,8 +32,7 @@
 
 Evaluate::Evaluate(const filesystem::path& codfile, bool steady_state_arg,
                    const BasicSymbolTable& symbol_table_arg) :
-    symbol_table {symbol_table_arg},
-    steady_state {steady_state_arg}
+    symbol_table {symbol_table_arg}, steady_state {steady_state_arg}
 {
   ifstream CompiledCode {codfile, ios::in | ios::binary | ios::ate};
   if (!CompiledCode.is_open())

@@ -27,8 +27,8 @@ ApproximationWelfare::ApproximationWelfare(KordwDynare& w, double discount_facto
                                            const FGSContainer& rule_ders_arg,
                                            const FGSContainer& rule_ders_s_arg, Journal& j) :
     welfare {w},
-    discount_factor(discount_factor_arg), nvs {welfare.getModel().nys(), welfare.getModel().nexog(),
-                                               welfare.getModel().nexog(), 1},
+    discount_factor(discount_factor_arg),
+    nvs {welfare.getModel().nys(), welfare.getModel().nexog(), welfare.getModel().nexog(), 1},
     journal {j}
 {
   rule_ders = std::make_unique<FGSContainer>(rule_ders_arg);

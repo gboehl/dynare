@@ -586,8 +586,11 @@ protected:
 
 public:
   SVDDecomp(const GeneralMatrix& A) :
-      minmn(std::min<int>(A.nrows(), A.ncols())), sigma(minmn), U(A.nrows(), A.nrows()),
-      VT(A.ncols(), A.ncols()), conv(false)
+      minmn(std::min<int>(A.nrows(), A.ncols())),
+      sigma(minmn),
+      U(A.nrows(), A.nrows()),
+      VT(A.ncols(), A.ncols()),
+      conv(false)
   {
     construct(A);
   }

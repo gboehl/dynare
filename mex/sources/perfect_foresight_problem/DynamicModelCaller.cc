@@ -95,7 +95,9 @@ DynamicModelDllCaller::DynamicModelDllCaller(size_t ntt, mwIndex ny, mwIndex nx,
                                              const int32_T* g1_sparse_colptr_arg, bool linear_arg,
                                              bool compute_jacobian_arg) :
     DynamicModelCaller {linear_arg, compute_jacobian_arg},
-    params {params_arg}, steady_state {steady_state_arg}, g1_sparse_colptr {g1_sparse_colptr_arg}
+    params {params_arg},
+    steady_state {steady_state_arg},
+    g1_sparse_colptr {g1_sparse_colptr_arg}
 {
   tt = std::make_unique<double[]>(ntt);
   y_p = std::make_unique<double[]>(3 * ny);
@@ -134,11 +136,13 @@ DynamicModelMatlabCaller::DynamicModelMatlabCaller(std::string basename_arg, mwI
                                                    const mxArray* g1_sparse_colptr_mx_arg,
                                                    bool linear_arg, bool compute_jacobian_arg) :
     DynamicModelCaller {linear_arg, compute_jacobian_arg},
-    basename {std::move(basename_arg)}, y_mx {mxCreateDoubleMatrix(3 * ny, 1, mxREAL)},
-    x_mx {mxCreateDoubleMatrix(nx, 1, mxREAL)}, jacobian_mx {nullptr}, params_mx {mxDuplicateArray(
-                                                                           params_mx_arg)},
-    steady_state_mx {mxDuplicateArray(steady_state_mx_arg)}, g1_sparse_rowval_mx {mxDuplicateArray(
-                                                                 g1_sparse_rowval_mx_arg)},
+    basename {std::move(basename_arg)},
+    y_mx {mxCreateDoubleMatrix(3 * ny, 1, mxREAL)},
+    x_mx {mxCreateDoubleMatrix(nx, 1, mxREAL)},
+    jacobian_mx {nullptr},
+    params_mx {mxDuplicateArray(params_mx_arg)},
+    steady_state_mx {mxDuplicateArray(steady_state_mx_arg)},
+    g1_sparse_rowval_mx {mxDuplicateArray(g1_sparse_rowval_mx_arg)},
     g1_sparse_colval_mx {mxDuplicateArray(g1_sparse_colval_mx_arg)},
     g1_sparse_colptr_mx {mxDuplicateArray(g1_sparse_colptr_mx_arg)}
 {

@@ -52,10 +52,14 @@ ZAuxContainer::getType(int i, const Symmetry& s) const
 Approximation::Approximation(DynamicModel& m, Journal& j, int ns, bool dr_centr, bool pruned_dr,
                              double qz_crit) :
     model(m),
-    journal(j), ypart(model.nstat(), model.npred(), model.nboth(), model.nforw()),
-    mom(UNormalMoments(model.order(), model.getVcov())), nvs {ypart.nys(), model.nexog(),
-                                                              model.nexog(), 1},
-    steps(ns), dr_centralize(dr_centr), pruning(pruned_dr), qz_criterium(qz_crit),
+    journal(j),
+    ypart(model.nstat(), model.npred(), model.nboth(), model.nforw()),
+    mom(UNormalMoments(model.order(), model.getVcov())),
+    nvs {ypart.nys(), model.nexog(), model.nexog(), 1},
+    steps(ns),
+    dr_centralize(dr_centr),
+    pruning(pruned_dr),
+    qz_criterium(qz_crit),
     ss(ypart.ny(), steps + 1)
 {
   ss.nans();

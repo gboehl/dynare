@@ -87,7 +87,8 @@ public:
   }
   // Move constructor
   IntSequence(IntSequence&& s) noexcept :
-      data {std::exchange(s.data, nullptr)}, length {std::exchange(s.length, 0)},
+      data {std::exchange(s.data, nullptr)},
+      length {std::exchange(s.length, 0)},
       destroy {std::exchange(s.destroy, false)}
   {
   }

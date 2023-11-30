@@ -27,8 +27,12 @@ KordwDynare::KordwDynare(KordpDynare& m, ConstVector& NNZD_arg, Journal& jr, Vec
                          std::unique_ptr<ObjectiveAC> objectiveFile_arg,
                          const std::vector<int>& dr_order) :
     model {m},
-    NNZD {NNZD_arg}, journal {jr}, params {inParams},
-    resid(1), ud {1}, objectiveFile {std::move(objectiveFile_arg)}
+    NNZD {NNZD_arg},
+    journal {jr},
+    params {inParams},
+    resid(1),
+    ud {1},
+    objectiveFile {std::move(objectiveFile_arg)}
 {
   dynppToDyn = dr_order;
   dynToDynpp.resize(model.ny());
@@ -309,11 +313,30 @@ KOrderWelfare::KOrderWelfare(int num_stat, int num_pred, int num_both, int num_f
                              const FGSContainer& g_arg, const FGSContainer& gs_arg,
                              const TwoDMatrix& v, Journal& jr) :
     ypart(num_stat, num_pred, num_both, num_forw),
-    ny(ypart.ny()), nu(nu), maxk(ucont.getMaxDim()),
-    order(ord), discount_factor {discount_factor}, nvs {ypart.nys(), nu, nu, 1}, _uU(4), _fU(4),
-    _uW(4), _fW(4), _uWrond(4), _fWrond(4), _ug(4), _fg(g_arg), _ugs(4), _fgs(gs_arg),
-    _uXstack(&_ug, ny), _fXstack(&_fg, ny), _uGstack(&_ugs, ypart.nys(), nu),
-    _fGstack(&_fgs, ypart.nys(), nu), _um(maxk, v), _fm(_um), u(ucont), journal(jr)
+    ny(ypart.ny()),
+    nu(nu),
+    maxk(ucont.getMaxDim()),
+    order(ord),
+    discount_factor {discount_factor},
+    nvs {ypart.nys(), nu, nu, 1},
+    _uU(4),
+    _fU(4),
+    _uW(4),
+    _fW(4),
+    _uWrond(4),
+    _fWrond(4),
+    _ug(4),
+    _fg(g_arg),
+    _ugs(4),
+    _fgs(gs_arg),
+    _uXstack(&_ug, ny),
+    _fXstack(&_fg, ny),
+    _uGstack(&_ugs, ypart.nys(), nu),
+    _fGstack(&_fgs, ypart.nys(), nu),
+    _um(maxk, v),
+    _fm(_um),
+    u(ucont),
+    journal(jr)
 {
   KORD_RAISE_IF(v.ncols() != nu, "Wrong number of columns of Vcov in KOrderWelfare constructor");
   KORD_RAISE_IF(nu != v.nrows(), "Wrong number of rows of Vcov in KOrderWelfare constructor");

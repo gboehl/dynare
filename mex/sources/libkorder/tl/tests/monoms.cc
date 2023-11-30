@@ -381,8 +381,7 @@ Monom4Vector::print() const
 
 SparseDerivGenerator::SparseDerivGenerator(int nf, int ny, int nu, int nup, int nbigg, int ng,
                                            int mx, double prob, int maxdim) :
-    maxdimen(maxdim),
-    bigg(4), g(4), rcont(4)
+    maxdimen(maxdim), bigg(4), g(4), rcont(4)
 {
   intgen.init(nf, ny, nu, nup, nbigg, mx, prob);
 
@@ -407,8 +406,7 @@ SparseDerivGenerator::SparseDerivGenerator(int nf, int ny, int nu, int nup, int 
 
 DenseDerivGenerator::DenseDerivGenerator(int ng, int nx, int ny, int nu, int mx, double prob,
                                          int maxdim) :
-    maxdimen(maxdim),
-    xcont(0), rcont(0), ts(maxdimen), uxcont(0), uts(maxdimen)
+    maxdimen(maxdim), xcont(0), rcont(0), ts(maxdimen), uxcont(0), uts(maxdimen)
 {
   intgen.init(ng, nx, ny, nu, nu, mx, prob);
   Monom1Vector g(nx, ng);

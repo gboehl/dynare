@@ -117,9 +117,10 @@ public:
      conts. */
 
   FineContainer(const _Stype& sc, int max) :
-      SizeRefinement(sc.getStackSizes(), sc.numConts(), max), StackContainer<_Ttype>(
-                                                                  numRefinements(), getNC()),
-      ref_conts(getNC()), stack_cont(sc)
+      SizeRefinement(sc.getStackSizes(), sc.numConts(), max),
+      StackContainer<_Ttype>(numRefinements(), getNC()),
+      ref_conts(getNC()),
+      stack_cont(sc)
   {
     for (int i = 0; i < numRefinements(); i++)
       _Stype::stack_sizes[i] = getRefSize(i);

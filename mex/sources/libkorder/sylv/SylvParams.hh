@@ -210,7 +210,10 @@ public:
   DoubleParamItem cpu_time;       // time of the job in CPU seconds
 
   SylvParams(bool wc = false) :
-      method(solve_method::recurse), convergence_tol(1.e-30), max_num_iter(15), bs_norm(1.3),
+      method(solve_method::recurse),
+      convergence_tol(1.e-30),
+      max_num_iter(15),
+      bs_norm(1.3),
       want_check(wc)
   {
   }

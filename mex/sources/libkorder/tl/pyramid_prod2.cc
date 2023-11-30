@@ -26,7 +26,9 @@
    ‘end_seq’ according to ‘unit_flag’ and columns lengths. */
 
 IrregTensorHeader::IrregTensorHeader(const StackProduct<FGSTensor>& sp, const IntSequence& c) :
-    nv(sp.getAllSize()), unit_flag(sp.dimen()), cols(sp.createPackedColumns(c, unit_flag)),
+    nv(sp.getAllSize()),
+    unit_flag(sp.dimen()),
+    cols(sp.createPackedColumns(c, unit_flag)),
     end_seq(sp.dimen())
 {
   for (int i = 0; i < sp.dimen(); i++)

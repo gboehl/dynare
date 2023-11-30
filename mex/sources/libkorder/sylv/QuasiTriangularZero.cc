@@ -43,8 +43,7 @@ QuasiTriangularZero::QuasiTriangularZero(double r, const QuasiTriangularZero& t)
 
 QuasiTriangularZero::QuasiTriangularZero(double r, const QuasiTriangularZero& t, double r2,
                                          const QuasiTriangularZero& t2) :
-    QuasiTriangular(r, t, r2, t2),
-    nz(t.nz), ru(t.ru)
+    QuasiTriangular(r, t, r2, t2), nz(t.nz), ru(t.ru)
 {
   ru.mult(r);
   ru.add(r2, t2.ru);
@@ -57,7 +56,8 @@ QuasiTriangularZero::QuasiTriangularZero(const std::string& dummy, const QuasiTr
 }
 
 QuasiTriangularZero::QuasiTriangularZero(const SchurDecompZero& decomp) :
-    QuasiTriangular(decomp.getT().getData(), decomp.getT().nrows()), nz(decomp.getZeroCols()),
+    QuasiTriangular(decomp.getT().getData(), decomp.getT().nrows()),
+    nz(decomp.getZeroCols()),
     ru(decomp.getRU())
 {
 }

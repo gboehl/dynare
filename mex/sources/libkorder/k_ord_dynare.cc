@@ -33,11 +33,28 @@ KordpDynare::KordpDynare(const std::vector<std::string>& endo, const std::vector
                          std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
                          const std::vector<int>& dr_order, const ConstTwoDMatrix& llincidence) :
     nStat {nstat},
-    nBoth {nboth}, nPred {npred}, nForw {nforw}, nExog {nexog}, nPar {npar}, nYs {npred + nboth},
-    nYss {nboth + nforw}, nY {nstat + npred + nboth + nforw}, nJcols {nExog + nY + nYs + nYss},
-    NNZD {nnzd}, nSteps {nsteps}, nOrder {norder}, journal {jr}, ySteady {ysteady},
-    params {inParams}, vCov {vcov}, md {1}, dnl {endo}, denl {exo}, dsnl {*this, dnl, denl},
-    ll_Incidence {llincidence}, dynamicModelFile {std::move(dynamicModelFile_arg)}
+    nBoth {nboth},
+    nPred {npred},
+    nForw {nforw},
+    nExog {nexog},
+    nPar {npar},
+    nYs {npred + nboth},
+    nYss {nboth + nforw},
+    nY {nstat + npred + nboth + nforw},
+    nJcols {nExog + nY + nYs + nYss},
+    NNZD {nnzd},
+    nSteps {nsteps},
+    nOrder {norder},
+    journal {jr},
+    ySteady {ysteady},
+    params {inParams},
+    vCov {vcov},
+    md {1},
+    dnl {endo},
+    denl {exo},
+    dsnl {*this, dnl, denl},
+    ll_Incidence {llincidence},
+    dynamicModelFile {std::move(dynamicModelFile_arg)}
 {
   computeJacobianPermutation(dr_order);
 }

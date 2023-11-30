@@ -76,8 +76,7 @@ WorkerFoldMAADense::operator()(std::mutex& mut)
 
 WorkerFoldMAADense::WorkerFoldMAADense(const FoldedStackContainer& container, Symmetry s,
                                        const FGSContainer& dcontainer, FGSTensor& outten) :
-    cont(container),
-    sym(std::move(s)), dense_cont(dcontainer), out(outten)
+    cont(container), sym(std::move(s)), dense_cont(dcontainer), out(outten)
 {
 }
 
@@ -140,8 +139,7 @@ WorkerFoldMAASparse1::operator()(std::mutex& mut)
 WorkerFoldMAASparse1::WorkerFoldMAASparse1(const FoldedStackContainer& container,
                                            const FSSparseTensor& ten, FGSTensor& outten,
                                            IntSequence c) :
-    cont(container),
-    t(ten), out(outten), coor(std::move(c))
+    cont(container), t(ten), out(outten), coor(std::move(c))
 {
 }
 
@@ -196,8 +194,7 @@ WorkerFoldMAASparse2::operator()(std::mutex& mut)
 WorkerFoldMAASparse2::WorkerFoldMAASparse2(const FoldedStackContainer& container,
                                            const FSSparseTensor& ten, FGSTensor& outten,
                                            IntSequence c) :
-    cont(container),
-    t(ten), out(outten), coor(std::move(c))
+    cont(container), t(ten), out(outten), coor(std::move(c))
 {
 }
 
@@ -270,8 +267,7 @@ WorkerFoldMAASparse4::operator()(std::mutex& mut)
 WorkerFoldMAASparse4::WorkerFoldMAASparse4(const FoldedStackContainer& container,
                                            const FSSparseTensor& ten, FGSTensor& outten,
                                            IntSequence c) :
-    cont(container),
-    t(ten), out(outten), coor(std::move(c))
+    cont(container), t(ten), out(outten), coor(std::move(c))
 {
 }
 
@@ -405,8 +401,7 @@ WorkerUnfoldMAADense::operator()(std::mutex& mut)
 
 WorkerUnfoldMAADense::WorkerUnfoldMAADense(const UnfoldedStackContainer& container, Symmetry s,
                                            const UGSContainer& dcontainer, UGSTensor& outten) :
-    cont(container),
-    sym(std::move(s)), dense_cont(dcontainer), out(outten)
+    cont(container), sym(std::move(s)), dense_cont(dcontainer), out(outten)
 {
 }
 
@@ -496,8 +491,7 @@ WorkerUnfoldMAASparse1::operator()(std::mutex& mut)
 WorkerUnfoldMAASparse1::WorkerUnfoldMAASparse1(const UnfoldedStackContainer& container,
                                                const FSSparseTensor& ten, UGSTensor& outten,
                                                IntSequence c) :
-    cont(container),
-    t(ten), out(outten), coor(std::move(c))
+    cont(container), t(ten), out(outten), coor(std::move(c))
 {
 }
 
@@ -560,8 +554,7 @@ WorkerUnfoldMAASparse2::operator()(std::mutex& mut)
 WorkerUnfoldMAASparse2::WorkerUnfoldMAASparse2(const UnfoldedStackContainer& container,
                                                const FSSparseTensor& ten, UGSTensor& outten,
                                                IntSequence c) :
-    cont(container),
-    t(ten), out(outten), coor(std::move(c))
+    cont(container), t(ten), out(outten), coor(std::move(c))
 {
 }
 

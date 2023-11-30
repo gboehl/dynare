@@ -42,9 +42,14 @@ Interpreter::Interpreter(Evaluate& evaluator_arg, double* params_arg, double* y_
                          const BasicSymbolTable& symbol_table_arg, int verbosity_arg) :
     symbol_table {symbol_table_arg},
     steady_state {steady_state_arg},
-    block_decomposed {block_decomposed_arg}, evaluator {evaluator_arg},
-    minimal_solving_periods {minimal_solving_periods_arg}, y_size {y_size_arg}, y_kmin {y_kmin_arg},
-    y_kmax {y_kmax_arg}, periods {periods_arg}, verbosity {verbosity_arg}
+    block_decomposed {block_decomposed_arg},
+    evaluator {evaluator_arg},
+    minimal_solving_periods {minimal_solving_periods_arg},
+    y_size {y_size_arg},
+    y_kmin {y_kmin_arg},
+    y_kmax {y_kmax_arg},
+    periods {periods_arg},
+    verbosity {verbosity_arg}
 {
   pivotva = nullptr;
   mem_mngr.init_Mem();

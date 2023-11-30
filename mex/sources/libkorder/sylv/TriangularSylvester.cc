@@ -33,15 +33,13 @@ TriangularSylvester::TriangularSylvester(const QuasiTriangular& k, const QuasiTr
 
 TriangularSylvester::TriangularSylvester(const SchurDecompZero& kdecomp,
                                          const SchurDecomp& fdecomp) :
-    SylvesterSolver(kdecomp, fdecomp),
-    matrixKK {matrixK->square()}, matrixFF {matrixF->square()}
+    SylvesterSolver(kdecomp, fdecomp), matrixKK {matrixK->square()}, matrixFF {matrixF->square()}
 {
 }
 
 TriangularSylvester::TriangularSylvester(const SchurDecompZero& kdecomp,
                                          const SimilarityDecomp& fdecomp) :
-    SylvesterSolver(kdecomp, fdecomp),
-    matrixKK {matrixK->square()}, matrixFF {matrixF->square()}
+    SylvesterSolver(kdecomp, fdecomp), matrixKK {matrixK->square()}, matrixFF {matrixF->square()}
 {
 }
 

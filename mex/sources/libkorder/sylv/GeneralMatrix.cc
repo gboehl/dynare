@@ -339,7 +339,9 @@ GeneralMatrix::gemm_partial_right(const std::string& trans, const ConstGeneralMa
 }
 
 ConstGeneralMatrix::ConstGeneralMatrix(const GeneralMatrix& m, int i, int j, int nrows, int ncols) :
-    data(m.getData(), j * m.getLD() + i, (ncols - 1) * m.getLD() + nrows), rows(nrows), cols(ncols),
+    data(m.getData(), j * m.getLD() + i, (ncols - 1) * m.getLD() + nrows),
+    rows(nrows),
+    cols(ncols),
     ld(m.getLD())
 {
   // FIXME: check that the submatrix is fully in the matrix
@@ -348,7 +350,9 @@ ConstGeneralMatrix::ConstGeneralMatrix(const GeneralMatrix& m, int i, int j, int
 ConstGeneralMatrix::ConstGeneralMatrix(const ConstGeneralMatrix& m, int i, int j, int nrows,
                                        int ncols) :
     data(m.getData(), j * m.getLD() + i, (ncols - 1) * m.getLD() + nrows),
-    rows(nrows), cols(ncols), ld(m.getLD())
+    rows(nrows),
+    cols(ncols),
+    ld(m.getLD())
 {
   // FIXME: check that the submatrix is fully in the matrix
 }

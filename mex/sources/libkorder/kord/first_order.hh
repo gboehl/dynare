@@ -61,8 +61,13 @@ public:
   FirstOrder(int num_stat, int num_pred, int num_both, int num_forw, int num_u,
              const FSSparseTensor& f, Journal& jr, double qz_crit) :
       ypart(num_stat, num_pred, num_both, num_forw),
-      nu(num_u), gy(ypart.ny(), ypart.nys()), gu(ypart.ny(), nu), alphar(ypart.ny() + ypart.nboth),
-      alphai(ypart.ny() + ypart.nboth), beta(ypart.ny() + ypart.nboth), qz_criterium(qz_crit),
+      nu(num_u),
+      gy(ypart.ny(), ypart.nys()),
+      gu(ypart.ny(), nu),
+      alphar(ypart.ny() + ypart.nboth),
+      alphai(ypart.ny() + ypart.nboth),
+      beta(ypart.ny() + ypart.nboth),
+      qz_criterium(qz_crit),
       journal(jr)
   {
     solve(FFSTensor(f));

@@ -204,8 +204,7 @@ FSSparseTensor::print() const
 /* This is the same as FGSTensor slicing constructor from FSSparseTensor. */
 GSSparseTensor::GSSparseTensor(const FSSparseTensor& t, const IntSequence& ss,
                                const IntSequence& coor, TensorDimens td) :
-    SparseTensor(td.dimen(), t.nrows(), td.calcFoldMaxOffset()),
-    tdims(std::move(td))
+    SparseTensor(td.dimen(), t.nrows(), td.calcFoldMaxOffset()), tdims(std::move(td))
 {
   // set ‘lb’ and ‘ub’ to lower and upper bounds of slice indices
   /* The same code is present in FGSTensor slicing constructor, see it for

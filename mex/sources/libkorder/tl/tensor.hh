@@ -180,13 +180,17 @@ protected:
 
 public:
   Tensor(indor io, IntSequence last, int r, int c, int d) :
-      TwoDMatrix(r, c), in_beg(*this, d),
-      in_end(*this, std::move(last), (io == indor::along_row) ? r : c), dim(d)
+      TwoDMatrix(r, c),
+      in_beg(*this, d),
+      in_end(*this, std::move(last), (io == indor::along_row) ? r : c),
+      dim(d)
   {
   }
   Tensor(indor io, IntSequence first, IntSequence last, int r, int c, int d) :
-      TwoDMatrix(r, c), in_beg(*this, std::move(first), 0),
-      in_end(*this, std::move(last), (io == indor::along_row) ? r : c), dim(d)
+      TwoDMatrix(r, c),
+      in_beg(*this, std::move(first), 0),
+      in_end(*this, std::move(last), (io == indor::along_row) ? r : c),
+      dim(d)
   {
   }
   Tensor(int first_row, int num, Tensor& t) :
@@ -194,8 +198,10 @@ public:
   {
   }
   Tensor(const Tensor& t) :
-      TwoDMatrix(t), in_beg(*this, t.in_beg.getCoor(), *(t.in_beg)),
-      in_end(*this, t.in_end.getCoor(), *(t.in_end)), dim(t.dim)
+      TwoDMatrix(t),
+      in_beg(*this, t.in_beg.getCoor(), *(t.in_beg)),
+      in_end(*this, t.in_end.getCoor(), *(t.in_end)),
+      dim(t.dim)
   {
   }
   Tensor(Tensor&&) = default;

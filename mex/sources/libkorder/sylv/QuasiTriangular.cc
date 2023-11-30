@@ -395,8 +395,7 @@ QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular& t) :
 
 QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular& t, double r2,
                                  const QuasiTriangular& t2) :
-    SqSylvMatrix(t.nrows()),
-    diagonal(getData().base(), t.diagonal)
+    SqSylvMatrix(t.nrows()), diagonal(getData().base(), t.diagonal)
 {
   setMatrix(r, t);
   addMatrix(r2, t2);
@@ -414,8 +413,7 @@ QuasiTriangular::QuasiTriangular(const ConstVector& d, int d_size) :
 
 QuasiTriangular::QuasiTriangular([[maybe_unused]] const std::string& dummy,
                                  const QuasiTriangular& t) :
-    SqSylvMatrix(t.nrows()),
-    diagonal(getData().base(), t.diagonal)
+    SqSylvMatrix(t.nrows()), diagonal(getData().base(), t.diagonal)
 {
   Vector aux(t.getData());
   blas_int d_size = diagonal.getSize();

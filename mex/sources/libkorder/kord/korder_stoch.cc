@@ -45,10 +45,21 @@ MatrixAA::MatrixAA(const FSSparseTensor& f, const IntSequence& ss, const TwoDMat
 KOrderStoch::KOrderStoch(const PartitionY& yp, int nu, const TensorContainer<FSSparseTensor>& fcont,
                          const FGSContainer& hh, Journal& jr) :
     nvs {yp.nys(), nu, nu, 1},
-    ypart(yp), journal(jr), _ug(4), _fg(4), _ugs(4), _fgs(4), _uG(4), _fG(4), _uh(nullptr),
-    _fh(&hh), _uZstack(&_uG, ypart.nyss(), &_ug, ypart.ny(), ypart.nys(), nu),
+    ypart(yp),
+    journal(jr),
+    _ug(4),
+    _fg(4),
+    _ugs(4),
+    _fgs(4),
+    _uG(4),
+    _fG(4),
+    _uh(nullptr),
+    _fh(&hh),
+    _uZstack(&_uG, ypart.nyss(), &_ug, ypart.ny(), ypart.nys(), nu),
     _fZstack(&_fG, ypart.nyss(), &_fg, ypart.ny(), ypart.nys(), nu),
-    _uGstack(&_ugs, ypart.nys(), nu), _fGstack(&_fgs, ypart.nys(), nu), f(fcont),
+    _uGstack(&_ugs, ypart.nys(), nu),
+    _fGstack(&_fgs, ypart.nys(), nu),
+    f(fcont),
     matA(fcont.get(Symmetry {1}), _uZstack.getStackSizes(), hh.get(Symmetry {1, 0, 0, 0}), ypart)
 {
 }
@@ -57,10 +68,21 @@ KOrderStoch::KOrderStoch(const PartitionY& yp, int nu, const TensorContainer<FSS
 KOrderStoch::KOrderStoch(const PartitionY& yp, int nu, const TensorContainer<FSSparseTensor>& fcont,
                          const UGSContainer& hh, Journal& jr) :
     nvs {yp.nys(), nu, nu, 1},
-    ypart(yp), journal(jr), _ug(4), _fg(4), _ugs(4), _fgs(4), _uG(4), _fG(4), _uh(&hh),
-    _fh(nullptr), _uZstack(&_uG, ypart.nyss(), &_ug, ypart.ny(), ypart.nys(), nu),
+    ypart(yp),
+    journal(jr),
+    _ug(4),
+    _fg(4),
+    _ugs(4),
+    _fgs(4),
+    _uG(4),
+    _fG(4),
+    _uh(&hh),
+    _fh(nullptr),
+    _uZstack(&_uG, ypart.nyss(), &_ug, ypart.ny(), ypart.nys(), nu),
     _fZstack(&_fG, ypart.nyss(), &_fg, ypart.ny(), ypart.nys(), nu),
-    _uGstack(&_ugs, ypart.nys(), nu), _fGstack(&_fgs, ypart.nys(), nu), f(fcont),
+    _uGstack(&_ugs, ypart.nys(), nu),
+    _fGstack(&_fgs, ypart.nys(), nu),
+    f(fcont),
     matA(fcont.get(Symmetry {1}), _uZstack.getStackSizes(), hh.get(Symmetry {1, 0, 0, 0}), ypart)
 {
 }

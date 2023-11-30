@@ -127,15 +127,13 @@ public:
   }
   DecisionRuleImpl(const _Tg& g, const PartitionY& yp, int nuu, const ConstVector& ys,
                    double sigma) :
-      ctraits<t>::Tpol(yp.ny(), yp.nys() + nuu),
-      ysteady(ys), ypart(yp), nu(nuu)
+      ctraits<t>::Tpol(yp.ny(), yp.nys() + nuu), ysteady(ys), ypart(yp), nu(nuu)
   {
     fillTensors(g, sigma);
   }
   DecisionRuleImpl(const _Tg& g, const PartitionY& yp, int nuu, const ConstVector& ys, double sigma,
                    bool pruning) :
-      ctraits<t>::Tpol(yp.ny(), yp.nys() + nuu),
-      ysteady(ys), ypart(yp), nu(nuu)
+      ctraits<t>::Tpol(yp.ny(), yp.nys() + nuu), ysteady(ys), ypart(yp), nu(nuu)
   {
     if (pruning)
       fillTensorsPruning(g);
@@ -149,7 +147,9 @@ public:
     fillTensors(W, nys);
   }
   DecisionRuleImpl(const DecisionRuleImpl<t>& dr, const ConstVector& fixpoint) :
-      ctraits<t>::Tpol(dr.ypart.ny(), dr.ypart.nys() + dr.nu), ysteady(fixpoint), ypart(dr.ypart),
+      ctraits<t>::Tpol(dr.ypart.ny(), dr.ypart.nys() + dr.nu),
+      ysteady(fixpoint),
+      ypart(dr.ypart),
       nu(dr.nu)
   {
     centralize(dr);
