@@ -1,11 +1,17 @@
 function s=gsa_skewness(y)
+% s=gsa_skewness(y)
+% Compute normalized skewness of y
+% Inputs:
+%  - y  [double]  input vector
+% Outputs:
+%  - s  [double]  standardized skewness 
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
 % Copyright © 2012 European Commission
-% Copyright © 2012-2017 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -22,8 +28,6 @@ function s=gsa_skewness(y)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-% y=stand_(y);
-% s=mean(y.^3);
 m2=mean((y-mean(y)).^2);
 m3=mean((y-mean(y)).^3);
 s=m3/m2^1.5;
