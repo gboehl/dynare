@@ -1,10 +1,9 @@
 function check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_)
-% function check_prior_bounds(xparam1,bounds,M_,estim_params_,options_)
+% function check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_)
 % checks the parameter vector of violations of the prior bounds
 % Inputs:
 %   -xparam1        [double]    vector of parameters to be estimated (initial values)
-%   -bounds         [vector]    vector containing the lower and upper
-%   bounds
+%   -bounds         [vector]    vector containing the lower and upper bounds
 %   -M_             [structure] characterizing the model.
 %   -estim_params_  [structure] characterizing parameters to be estimated
 %   -options_       [structure] characterizing the options

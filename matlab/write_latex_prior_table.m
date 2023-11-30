@@ -28,7 +28,7 @@ function write_latex_prior_table
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ options_ bayestopt_ estim_params_
+global M_ options_ estim_params_
 
 if ~isbayes(estim_params_)
     fprintf('\nwrite_latex_prior_table:: No prior distributions detected. Skipping table creation.\n')
@@ -39,13 +39,13 @@ if (size(estim_params_.var_endo,1) || size(estim_params_.corrn,1))
     % Prior over measurement errors are defined...
     if ((isfield(options_,'varobs') && isempty(options_.varobs)) || ~isfield(options_,'varobs'))
         % ... But the list of observed variabled is not yet defined.
-        fprintf(['\nwrite_latex_prior_table:: varobs should be declared before. Skipping table creation.\n'])
+        fprintf('\nwrite_latex_prior_table:: varobs should be declared before. Skipping table creation.\n')
         return
     end
 end
 
 % Fill or update bayestopt_ structure
-[xparam1, estim_params_, BayesOptions, lb, ub, M_] = set_prior(estim_params_, M_, options_);
+[~, estim_params_, BayesOptions, ~, ~, M_] = set_prior(estim_params_, M_, options_);
 
 % Get untruncated bounds
 bounds = prior_bounds(BayesOptions, options_.prior_trunc);
@@ -112,7 +112,7 @@ fprintf(fidTeX,'\\endlastfoot\n');
 % Column 8: the upper bound of the interval containing 90% of the prior mass.
 PriorIntervals = prior_bounds(BayesOptions,(1-options_.prior_interval)/2) ;
 for i=1:size(BayesOptions.name,1)
-    [tmp,TexName] = get_the_name(i, 1, M_, estim_params_, options_.varobs);
+    [~,TexName] = get_the_name(i, 1, M_, estim_params_, options_.varobs);
     PriorShape = PriorNames{ BayesOptions.pshape(i) };
     PriorMean = BayesOptions.p1(i);
     PriorMode = BayesOptions.p5(i);

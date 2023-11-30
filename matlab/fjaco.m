@@ -1,5 +1,5 @@
 function fjac = fjaco(f,x,varargin)
-
+% fjac = fjaco(f,x,varargin)
 % FJACO Computes two-sided finite difference Jacobian
 % USAGE
 %   fjac = fjaco(f,x,P1,P2,...)

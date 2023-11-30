@@ -1,5 +1,5 @@
 function plot_priors(bayestopt_,M_,estim_params_,options_,optional_title)
-% function plot_priors
+% plot_priors(bayestopt_,M_,estim_params_,options_,optional_title)
 % plots prior density
 %
 % INPUTS
@@ -41,7 +41,7 @@ else
     figurename = optional_title;
 end
 npar = length(bayestopt_.p1);
-[nbplt,nr,nc,lr,lc,nstar] = pltorg(npar);
+[nbplt,nr,nc,~,~,nstar] = pltorg(npar);
 
 if TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fidTeX = fopen([latexDirectoryName filesep M_.fname '_Priors.tex'],'w');
@@ -59,7 +59,7 @@ for plt = 1:nbplt
     for index=1:nstar0
         names = [];
         i = (plt-1)*nstar + index;
-        [x,f,abscissa,dens,binf,bsup] = draw_prior_density(i,bayestopt_);
+        [x,f] = draw_prior_density(i,bayestopt_);
         [nam,texnam] = get_the_name(i,TeX,M_,estim_params_,options_.varobs);
         subplot(nr,nc,index)
         hh_plt = plot(x,f,'-k','linewidth',2);
