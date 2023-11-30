@@ -19,6 +19,7 @@ function dcontrib(varargin)
 % --baseline             dseries object (path for the exogenous variables)
 % --range                followed by a dates range
 % --method               followed by cumulate (default) or diff.
+% --log                  returns the variables in logs
 %
 % REMARKS
 % [1] --baseline and --range are not compatible.
@@ -53,6 +54,7 @@ function dcontrib(varargin)
         disp('--range     followed by a dates range')
         disp('--method    followed by keywords cumulate or diff')
         disp('--output    followed by a name for the structure holding the results [mandatory]')
+        disp('--log       to return the contributions in logs')
         skipline()
         return
     end
@@ -100,6 +102,12 @@ function dcontrib(varargin)
         error('dcontrib:: Try reduce lastperiod (<=%s).', char(ds.dates(end)))
     end
 
+    if islog(varargin)
+        transform = @(x) log(x);
+    else
+        transform = @(x) x;
+    end
+
     % Load baseline (if it makes sense)
     if isempty(firstperiod)
         baselinename = getbaselinename(varargin);
@@ -143,12 +151,12 @@ function dcontrib(varargin)
         % Compute marginal contributions
         for j=1:length(variables)
             cumulatedcontribs = S.baseline{variables{j}}(firstperiod:lastperiod).data;
-            contributions.(variables{j}) = dseries(cumulatedcontribs, firstperiod, 'baseline');
+            contributions.(variables{j}) = dseries(transform(cumulatedcontribs), firstperiod, 'baseline');
             for i=1:xvariables.vobs
                 name = xvariables.name{i};
                 ts = S.(name);
                 data = ts{variables{j}}(firstperiod:lastperiod).data;
-                contributions.(variables{j}) = [contributions.(variables{j}), dseries(data-cumulatedcontribs, firstperiod, name)];
+                contributions.(variables{j}) = [contributions.(variables{j}), dseries(transform(data)-transform(cumulatedcontribs), firstperiod, name)];
                 cumulatedcontribs = data;
             end
             contributions.(variables{j}) = contributions.(variables{j})(firstperiod:lastperiod);
@@ -163,12 +171,12 @@ function dcontrib(varargin)
         % Compute marginal contributions (removing baseline)
         for j=1:length(variables)
             cumulatedcontribs = S.baseline{variables{j}}(firstperiod:lastperiod).data;
-            contributions.(variables{j}) = dseries(cumulatedcontribs, firstperiod, 'baseline');
+            contributions.(variables{j}) = dseries(transform(cumulatedcontribs), firstperiod, 'baseline');
             for i=1:xvariables.vobs
                 name = xvariables.name{i};
                 ts = S.(name);
                 data = ts{variables{j}}(firstperiod:lastperiod).data;
-                contributions.(variables{j}) = [contributions.(variables{j}), dseries(data-cumulatedcontribs, firstperiod, name)];
+                contributions.(variables{j}) = [contributions.(variables{j}), dseries(transform(data)-transform(cumulatedcontribs), firstperiod, name)];
             end
             contributions.(variables{j}) = contributions.(variables{j})(firstperiod:lastperiod);
         end
@@ -215,7 +223,7 @@ function eqtags = geteqtags(cellarray)
 % OUTPUTS
 % - eqtags        [char]      1×p cell array of row char arrays.
 
-    [~, vpos, ~, ~, ~, ~, ~, indices] = positions(cellarray);
+    [~, vpos, ~, ~, ~, ~, ~, ~, indices] = positions(cellarray);
 
     lastvalue = indices(find(indices==vpos)+1)-1;
 
@@ -318,8 +326,6 @@ function method = getmethod(cellarray)
 
     [~, ~, ~, ~, ~, ~, kpos] = positions(cellarray);
 
-
-
     if isempty(kpos)
         method = 'cumulate';
     else
@@ -329,25 +335,44 @@ function method = getmethod(cellarray)
 end
 
 
-function [mpos, vpos, dpos, rpos, bpos, opos, kpos, indices] = positions(cellarray)
+function bool = islog(cellarray)
 
-    % Return  positions of the arguments.
-    %
-    % INPUTS
-    % - cellarray     [char]      1×n cell array of row char arrays.
-    %
-    % OUTPUTS
-    % - mpos          [integer]   scalar, index for the --model argument.
-    % - vpos          [integer]   scalar, index for the --tags arguments.
-    % - dpos          [integer]   scalar, index for the --database argument.
-    % - rpos          [integer]   scalar, index for the --range argument.
-    % - bpos          [integer]   scalar. index for the --baseline argument.
-    % - opos          [integer]   scalar, index for the --output argument.
-    % - kpos          [integer]   scalar, index for the --method argument.
+% Returns true if the contributions are required in logs.
+%
+% INPUTS
+% - cellarray     [char]      1×n cell array of row char arrays.
+%
+% OUTPUTS
+% - method        [char]      method: 'cumulate' or 'diff'
+
+    [~, ~, ~, ~, ~, ~, ~, lpos] = positions(cellarray);
+
+   bool = ~isempty(lpos);
+
+end
+
+
+
+function [mpos, vpos, dpos, rpos, bpos, opos, kpos, lpos, indices] = positions(cellarray)
+
+% Return  positions of the arguments.
+%
+% INPUTS
+% - cellarray     [char]      1×n cell array of row char arrays.
+%
+% OUTPUTS
+% - mpos          [integer]   scalar, index for the --model argument.
+% - vpos          [integer]   scalar, index for the --tags arguments.
+% - dpos          [integer]   scalar, index for the --database argument.
+% - rpos          [integer]   scalar, index for the --range argument.
+% - bpos          [integer]   scalar. index for the --baseline argument.
+% - opos          [integer]   scalar, index for the --output argument.
+% - kpos          [integer]   scalar, index for the --method argument.
+% - lpos          [integer]   scalar, index for the --log option.
 
     % Index for --model argument
-    mpos = find(strcmp('--model', cellarray));
-    if isempty(mpos)
+     mpos = find(strcmp('--model', cellarray));
+     if isempty(mpos)
         error('dcontrib::positions: --model argument is mandatory.')
     elseif length(mpos)>1
         error('dplot::positions: Only one --model argument is allowed.')
@@ -399,7 +424,13 @@ function [mpos, vpos, dpos, rpos, bpos, opos, kpos, indices] = positions(cellarr
         error('dplot::positions: Only one --method argument is allowed.')
     end
 
+    % Index for --log option
+     lpos = find(strcmp('--log', cellarray));
+    if length(lpos)>1
+        warning('dplot::positions: There is no point in using --log more than once.')
+    end
+
     % Sorted vector of indices
-    indices = sort([mpos; vpos; dpos; rpos; bpos; opos; kpos]);
+     indices = sort([mpos; vpos; dpos; rpos; bpos; opos; kpos; lpos]);
 
 end
