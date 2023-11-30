@@ -40,7 +40,7 @@ nliv = options_gsa_.morris_nliv;
 pnames = M_.param_names(estim_params_.param_vals(:,1));
 if options_.TeX
     for par_iter=1:size(estim_params_.param_vals(:,1),1)
-        [~,tex_names{par_iter,1}]=get_the_name(estim_params_.param_vals(par_iter,1),options_.TeX, M_, estim_params_, options_);
+        [~,tex_names{par_iter,1}]=get_the_name(estim_params_.param_vals(par_iter,1),options_.TeX, M_, estim_params_, options_.varobs);
     end
 end
 if nargin==0

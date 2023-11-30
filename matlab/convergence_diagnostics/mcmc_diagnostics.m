@@ -71,12 +71,12 @@ param_name_tex = {};
 Ifac=NaN(nblck,npar);
 for jj = 1:npar
     if options_.TeX
-        [par_name_temp, par_name_tex_temp] = get_the_name(jj, options_.TeX, M_,estim_params_, options_);
+        [par_name_temp, par_name_tex_temp] = get_the_name(jj, options_.TeX, M_,estim_params_, options_.varobs);
         param_name = vertcat(param_name, par_name_temp);
         par_name_tex_temp = strrep(par_name_tex_temp,'$','');
         param_name_tex = vertcat(param_name_tex, par_name_tex_temp);
     else
-        par_name_temp = get_the_name(jj, options_.TeX, M_, estim_params_, options_);
+        par_name_temp = get_the_name(jj, options_.TeX, M_, estim_params_, options_.varobs);
         param_name = vertcat(param_name, par_name_temp);
     end
     Draws = GetAllPosteriorDraws(M_.dname, M_.fname, jj, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck);
@@ -130,11 +130,11 @@ if options_.TeX
 end
 for jj=1:npar
     if options_.TeX
-        [param_name_temp, param_name_tex_temp] = get_the_name(jj, options_.TeX, M_, estim_params_, options_);
+        [param_name_temp, param_name_tex_temp] = get_the_name(jj, options_.TeX, M_, estim_params_, options_.varobs);
         param_name_tex = vertcat(param_name_tex, strrep(param_name_tex_temp, '$',''));
         param_name = vertcat(param_name, param_name_temp);
     else
-        param_name_temp = get_the_name(jj, options_.TeX, M_,estim_params_, options_);
+        param_name_temp = get_the_name(jj, options_.TeX, M_,estim_params_, options_.varobs);
         param_name = vertcat(param_name, param_name_temp);
     end
 end
@@ -290,7 +290,7 @@ for i = 1:pages
     boxplot = 1;
     for j = 1:npardisp % Loop over parameters  %npardisp instead of 3
         k = k+1;
-        [nam,namtex] = get_the_name(k,TeX,M_,estim_params_,options_);
+        [nam,namtex] = get_the_name(k,TeX,M_,estim_params_,options_.varobs);
         for crit = 1:3% Loop over criteria
             if crit == 1
                 plt1 = UDIAG(:,1,k);
@@ -346,7 +346,7 @@ if reste
     boxplot = 1;
     for j = 1:reste
         k = k+1;
-        [nam,namtex] = get_the_name(k,TeX,M_,estim_params_,options_);
+        [nam,namtex] = get_the_name(k,TeX,M_,estim_params_,options_.varobs);
         for crit = 1:3
             if crit == 1
                 plt1 = UDIAG(:,1,k);

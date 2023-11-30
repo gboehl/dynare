@@ -112,7 +112,7 @@ fprintf(fidTeX,'\\endlastfoot\n');
 % Column 8: the upper bound of the interval containing 90% of the prior mass.
 PriorIntervals = prior_bounds(BayesOptions,(1-options_.prior_interval)/2) ;
 for i=1:size(BayesOptions.name,1)
-    [tmp,TexName] = get_the_name(i, 1, M_, estim_params_, options_);
+    [tmp,TexName] = get_the_name(i, 1, M_, estim_params_, options_.varobs);
     PriorShape = PriorNames{ BayesOptions.pshape(i) };
     PriorMean = BayesOptions.p1(i);
     PriorMode = BayesOptions.p5(i);

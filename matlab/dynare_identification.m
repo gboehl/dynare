@@ -363,11 +363,11 @@ if prior_exist % use estimated_params block
     name_tex = cell(totparam_nbr,1); %initialize cell for TeX parameter names
     for jj=1:totparam_nbr
         if options_.TeX
-            [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
+            [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_.varobs);
             name_tex{jj,1} =param_name_tex_temp;
             name{jj,1} = param_name_temp; %ordering corresponds to estimated_params
         else
-            param_name_temp = get_the_name(jj,options_.TeX,M_,estim_params_,options_);
+            param_name_temp = get_the_name(jj,options_.TeX,M_,estim_params_,options_.varobs);
             name{jj,1} = param_name_temp; %ordering corresponds to estimated_params
         end
     end

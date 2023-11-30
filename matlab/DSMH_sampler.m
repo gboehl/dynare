@@ -98,7 +98,7 @@ TeX = options_.TeX;
 
 str = sprintf(' Param. \t Lower Bound (95%%) \t Mean \t Upper Bound (95%%)');
 for l=1:npar
-    [name,~] = get_the_name(l,TeX,M_,estim_params_,options_);
+    [name,~] = get_the_name(l,TeX,M_,estim_params_,options_.varobs);
     str = sprintf('%s\n %s \t\t %5.4f \t\t %7.5f \t\t %5.4f', str, name, lb95_xparam(l), mean_xparam(l), ub95_xparam(l));
 end
 disp([str])
@@ -129,7 +129,7 @@ hh_fig = dyn_figure(options_.nodisplay,'Name','Parameters Densities');
 for k=1:npar %min(nstar,npar-(plt-1)*nstar)
     subplot(ceil(sqrt(npar)),floor(sqrt(npar)),k)
     %kk = (plt-1)*nstar+k;
-    [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
+    [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_.varobs);
     optimal_bandwidth = mh_optimal_bandwidth(distrib_param(k,:)',options_.posterior_sampler_options.dsmh.nparticles,bandwidth,kernel_function);
     [density(:,1),density(:,2)] = kernel_density_estimate(distrib_param(k,:)',number_of_grid_points,...
         options_.posterior_sampler_options.dsmh.nparticles,optimal_bandwidth,kernel_function);

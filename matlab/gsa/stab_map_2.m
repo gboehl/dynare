@@ -89,29 +89,29 @@ for j=1:npar
                 j2=j2+1;
                 if ishock
                     if options_.TeX
-                        [param_name_temp1, param_name_tex_temp1]= get_the_name(j,options_.TeX,M_,estim_params_,options_);
-                        [param_name_temp2, param_name_tex_temp2]= get_the_name(i2(jx),options_.TeX,M_,estim_params_,options_);
+                        [param_name_temp1, param_name_tex_temp1]= get_the_name(j,options_.TeX,M_,estim_params_,options_.varobs);
+                        [param_name_temp2, param_name_tex_temp2]= get_the_name(i2(jx),options_.TeX,M_,estim_params_,options_.varobs);
                         tmp_name=(['[',param_name_temp1,',',param_name_temp2,']']);
                         tmp_name_tex=(['[',param_name_tex_temp1,',',param_name_tex_temp2,']']);
                         name{entry_iter,1}=tmp_name;
                         name_tex{entry_iter,1}=tmp_name_tex;
                     else
-                        [param_name_temp1]= get_the_name(j,options_.TeX,M_,estim_params_,options_);
-                        [param_name_temp2]= get_the_name(i2(jx),options_.TeX,M_,estim_params_,options_);
+                        [param_name_temp1]= get_the_name(j,options_.TeX,M_,estim_params_,options_.varobs);
+                        [param_name_temp2]= get_the_name(i2(jx),options_.TeX,M_,estim_params_,options_.varobs);
                         tmp_name=(['[',param_name_temp1,',',param_name_temp2,']']);
                         name{entry_iter,1}=tmp_name;
                     end
                 else
                     if options_.TeX
-                        [param_name_temp1, param_name_tex_temp1]= get_the_name(j+nshock,options_.TeX,M_,estim_params_,options_);
-                        [param_name_temp2, param_name_tex_temp2]= get_the_name(i2(jx)+nshock,options_.TeX,M_,estim_params_,options_);
+                        [param_name_temp1, param_name_tex_temp1]= get_the_name(j+nshock,options_.TeX,M_,estim_params_,options_.varobs);
+                        [param_name_temp2, param_name_tex_temp2]= get_the_name(i2(jx)+nshock,options_.TeX,M_,estim_params_,options_.varobs);
                         tmp_name=(['[',param_name_temp1,',',param_name_temp2,']']);
                         tmp_name_tex=(['[',param_name_tex_temp1,',',param_name_tex_temp2,']']);
                         name{entry_iter,1}=tmp_name;
                         name_tex{entry_iter,1}=tmp_name_tex;
                     else
-                        [param_name_temp1]= get_the_name(j+nshock,options_.TeX,M_,estim_params_,options_);
-                        [param_name_temp2]= get_the_name(i2(jx)+nshock,options_.TeX,M_,estim_params_,options_);
+                        [param_name_temp1]= get_the_name(j+nshock,options_.TeX,M_,estim_params_,options_.varobs);
+                        [param_name_temp2]= get_the_name(i2(jx)+nshock,options_.TeX,M_,estim_params_,options_.varobs);
                         tmp_name=(['[',param_name_temp1,',',param_name_temp2,']']);
                         name{entry_iter,1}=tmp_name;
                     end

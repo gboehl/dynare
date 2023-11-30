@@ -172,7 +172,7 @@ if opt_gsa.morris==1
         set(gca,'position',[0.13 0.2 0.775 0.7])
         for ip=1:npT
             if options_.TeX
-                [~, param_name_tex_temp]= get_the_name(ip,options_.TeX,M_,estim_params_,options_);
+                [~, param_name_tex_temp]= get_the_name(ip,options_.TeX,M_,estim_params_,options_.varobs);
                 text(ip,-2,param_name_tex_temp,'rotation',90,'HorizontalAlignment','right','interpreter','latex')
             else
                 text(ip,-2,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
@@ -209,7 +209,7 @@ if opt_gsa.morris==1
     set(gca,'position',[0.13 0.2 0.775 0.7])
     for ip=1:npT
         if options_.TeX
-            [~, param_name_tex_temp]= get_the_name(ip,options_.TeX,M_,estim_params_,options_);    
+            [~, param_name_tex_temp]= get_the_name(ip,options_.TeX,M_,estim_params_,options_.varobs);
             text(ip,-0.02,param_name_tex_temp,'rotation',90,'HorizontalAlignment','right','interpreter','latex')
         else
             text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
@@ -257,7 +257,7 @@ if opt_gsa.morris==1
     xlabel(' ')
     for ip=1:npT
         if options_.TeX
-            [~, param_name_tex_temp]= get_the_name(ip,options_.TeX,M_,estim_params_,options_);
+            [~, param_name_tex_temp]= get_the_name(ip,options_.TeX,M_,estim_params_,options_.varobs);
             text(ip,-0.02,param_name_tex_temp,'rotation',90,'HorizontalAlignment','right','interpreter','latex')
         else
             text(ip,-0.02,bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')

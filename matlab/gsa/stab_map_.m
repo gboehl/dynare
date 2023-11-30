@@ -119,11 +119,11 @@ name=cell(np,1);
 name_tex=cell(np,1);
 for jj=1:np
     if options_.TeX
-        [param_name_temp, param_name_tex_temp]= get_the_name(nshock+jj,options_.TeX,M_,estim_params_,options_);
+        [param_name_temp, param_name_tex_temp]= get_the_name(nshock+jj,options_.TeX,M_,estim_params_,options_.varobs);
         name_tex{jj,1} = param_name_tex_temp;
         name{jj,1} = param_name_temp;
     else
-        param_name_temp = get_the_name(nshock+jj,options_.TeX,M_,estim_params_,options_);
+        param_name_temp = get_the_name(nshock+jj,options_.TeX,M_,estim_params_,options_.varobs);
         name{jj,1} = param_name_temp;
     end
 end
@@ -535,11 +535,11 @@ if ~isempty(iunstable) || ~isempty(iwrong)
             name_tex=cell(np,1);
             for jj=1:np
                 if options_.TeX
-                    [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_);
+                    [param_name_temp, param_name_tex_temp]= get_the_name(jj,options_.TeX,M_,estim_params_,options_.varobs);
                     name_tex{jj,1} = param_name_tex_temp;
                     name{jj,1} = param_name_temp;
                 else
-                    param_name_temp = get_the_name(jj,options_.TeX,M_,estim_params_,options_);
+                    param_name_temp = get_the_name(jj,options_.TeX,M_,estim_params_,options_.varobs);
                     name{jj,1} = param_name_temp;
                 end
             end

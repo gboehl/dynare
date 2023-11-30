@@ -105,5 +105,5 @@ if ~exist([M_.dname filesep 'graphs'])
     mkdir(M_.dname,'graphs');
 end
 
-plot_name=get_the_name(column,0,M_,estim_params_,options_);
+plot_name=get_the_name(column,0,M_,estim_params_,options_.varobs);
 dyn_saveas(hh_fig,[M_.dname, filesep, 'graphs', filesep, 'MH_Autocorrelation_' plot_name],options_.nodisplay,options_.graph_format)

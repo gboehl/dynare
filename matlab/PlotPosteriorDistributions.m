@@ -65,7 +65,7 @@ for i=1:npar
         figunumber = figunumber+1;
         hh_fig=dyn_figure(options_.nodisplay, 'Name', figurename);
     end
-    [nam,texnam] = get_the_name(i, TeX, M_, estim_params_, options_);
+    [nam,texnam] = get_the_name(i, TeX, M_, estim_params_, options_.varobs);
     [x2, f2, abscissa, dens, binf2, bsup2] = draw_prior_density(i, bayestopt_);
     top2 = max(f2);
     if i <= nvx

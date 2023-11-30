@@ -885,11 +885,11 @@ pnames=cell(np,1);
 pnames_tex=cell(np,1);
 for ii=1:length(bayestopt_.name)
     if options_.TeX
-        [param_name_temp, param_name_tex_temp]= get_the_name(ii,options_.TeX,M_,estim_params_,options_);
+        [param_name_temp, param_name_tex_temp]= get_the_name(ii,options_.TeX,M_,estim_params_,options_.varobs);
         pnames_tex{ii,1} = param_name_tex_temp;
         pnames{ii,1} = param_name_temp;
     else
-        param_name_temp = get_the_name(ii,options_.TeX,M_,estim_params_,options_);
+        param_name_temp = get_the_name(ii,options_.TeX,M_,estim_params_,options_.varobs);
         pnames{ii,1} = param_name_temp;
     end
 end

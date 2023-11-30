@@ -30,7 +30,7 @@ function check_prior_bounds(xparam1,bounds,M_,estim_params_,options_,bayestopt_)
 outside_bound_pars=find(xparam1 < bounds.lb | xparam1 > bounds.ub);
 if ~isempty(outside_bound_pars)
     for ii=1:length(outside_bound_pars)
-        outside_bound_par_names{ii,1}=get_the_name(outside_bound_pars(ii),0,M_,estim_params_,options_);
+        outside_bound_par_names{ii,1}=get_the_name(outside_bound_pars(ii),0,M_,estim_params_,options_.varobs);
     end
     disp_string=[outside_bound_par_names{1,:}];
     for ii=2:size(outside_bound_par_names,1)
@@ -41,7 +41,7 @@ end
 inadmissible_inverse_gamma_values=find(bayestopt_.pshape==4 & xparam1 == 0);
 if ~isempty(inadmissible_inverse_gamma_values)
     for ii=1:length(inadmissible_inverse_gamma_values)
-        inadmissible_inverse_gamma_par_names{ii,1}=get_the_name(inadmissible_inverse_gamma_values(ii),0,M_,estim_params_,options_);
+        inadmissible_inverse_gamma_par_names{ii,1}=get_the_name(inadmissible_inverse_gamma_values(ii),0,M_,estim_params_,options_.varobs);
     end
     disp_string=[inadmissible_inverse_gamma_par_names{1,:}];
     for ii=2:size(inadmissible_inverse_gamma_par_names,1)

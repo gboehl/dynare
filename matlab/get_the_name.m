@@ -1,46 +1,26 @@
-function [nam, texnam] = get_the_name(k, TeX, M_, estim_params_, options_)
+function [nam, texnam] = get_the_name(k, TeX, M_, estim_params_, varobs)
+% [nam, texnam] = get_the_name(k, TeX, M_, estim_params_, varobs)
+% Returns name of estimated parameter number k, following the internal ordering of 
+% the estimated parameters.
+% Inputs:
+%   - k             [integer]   parameter number.
+%   - TeX           [bool]      if false, texnam is not returned (empty matrix)
+%   - M_            [structure] model
+%   - estim_params_ [structure] describing the estimated parameters
+%   - varobs        [cell]      name of observed variables
+%
+% Outputs
+%   - nam       [char]      internal name of the variable
+%   - texnam    [char]      TeX name of the same variable (if defined in the mod file)
+%
+% This function is called by:
+% get_prior_info, mcmc_diagnostics, mode_check, PlotPosteriorDistributions, plot_priors
+%
+% This function calls:
+% None.
+% 
 
-%@info:
-%! @deftypefn {Function File} {[@var{nam},@var{texnam}] =} get_the_name (@var{k},@var{TeX},@var{M_},@var{estim_params_},@var{options_})
-%! @anchor{get_the_name}
-%! @sp 1
-%! Returns the name of the estimated parameter number @var{k}, following the internal ordering of the estimated parameters.
-%! @sp 2
-%! @strong{Inputs}
-%! @sp 1
-%! @table @ @var
-%! @item k
-%! Integer scalar, parameter number.
-%! @item TeX
-%! Integer scalar, if @var{TeX}==0 then @var{texnam} is not returned (empty matrix).
-%! @item M_
-%! Matlab's structure describing the model (initialized by @code{dynare}).
-%! @item estim_params_
-%! Matlab's structure describing the estimated parameters (initialized by @code{dynare}).
-%! @item options_
-%! Matlab's structure describing the options (initialized by @code{dynare}).
-%! @end table
-%! @sp 2
-%! @strong{Outputs}
-%! @sp 1
-%! @table @ @var
-%! @item nam
-%! String, internal name of the variable
-%! @item texnam
-%! String, TeX name of the same variable (if defined in the mod file).
-%! @end table
-%! @sp 2
-%! @strong{This function is called by:}
-%! @sp 1
-%! @ref{get_prior_info}, @ref{mcmc_diagnostics}, @ref{mode_check}, @ref{PlotPosteriorDistributions}, @ref{plot_priors}
-%! @sp 2
-%! @strong{This function calls:}
-%! @sp 1
-%! None.
-%! @end deftypefn
-%@eod:
-
-% Copyright © 2004-2018 Dynare Team
+% Copyright © 2004-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -57,7 +37,6 @@ function [nam, texnam] = get_the_name(k, TeX, M_, estim_params_, options_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-nam = [];
 texnam = [];
 
 nvx = estim_params_.nvx;
@@ -73,7 +52,7 @@ if k <= nvx
         texnam = sprintf('$ \\sigma_{%s} $', tname);
     end
 elseif  k <= (nvx+nvn)
-    vname = options_.varobs{estim_params_.nvn_observable_correspondence(k-estim_params_.nvx,1)};
+    vname = varobs{estim_params_.nvn_observable_correspondence(k-estim_params_.nvx,1)};
     nam = sprintf('SE_EOBS_%s', vname);
     if TeX
         tname  = M_.endo_names_tex{estim_params_.var_endo(k-estim_params_.nvx,1)};

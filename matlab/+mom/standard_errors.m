@@ -62,7 +62,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standa
     idx_nan = find(any(isnan(D)));
     if any(idx_nan)
         for i = idx_nan            
-             fprintf('No standard errors available for parameter %s\n',get_the_name(i,options_mom_.TeX, M_, estim_params_, options_mom_))
+             fprintf('No standard errors available for parameter %s\n',get_the_name(i,options_mom_.TeX, M_, estim_params_, options_mom_.varobs))
         end        
         warning('There are NaN in the analytical Jacobian of Moments. Check your bounds and/or priors, or use a different optimizer.')
         Asympt_Var = NaN(length(xparam),length(xparam));
@@ -86,7 +86,7 @@ else
         if nnz(info_p)==0 && nnz(info_m)==0
             D(:,i) = (oo__p.mom.model_moments - oo__m.mom.model_moments)/(2*eps_value);
         else
-            problpar = get_the_name(i,options_mom_.TeX, M_, estim_params_, options_mom_);
+            problpar = get_the_name(i,options_mom_.TeX, M_, estim_params_, options_mom_.varobs);
             if info_p(1)==42
                 warning('method_of_moments:info','Cannot compute the Jacobian using finite differences for parameter %s due to hitting the upper bound - no standard errors available.\n',problpar)
             else

@@ -95,7 +95,7 @@ for plt = 1:nbplt
     for k = 1:min(nstar,length(xparam)-(plt-1)*nstar)
         subplot(nr,nc,k)
         kk = (plt-1)*nstar+k;
-        [name,texname] = get_the_name(kk,options_.TeX,M_,estim_params_,options_);
+        [name,texname] = get_the_name(kk,options_.TeX,M_,estim_params_,options_.varobs);
         xx = xparam;
         if xparam(kk)~=0 && ~isinf(bounds.lb(kk)) && ~isinf(bounds.ub(kk))
             l1 = max(bounds.lb(kk),(1-sign(xparam(kk))*ll)*xparam(kk)); m1 = 0; % lower bound
