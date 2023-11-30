@@ -96,7 +96,9 @@ identification(tex);
 identification(tex,advanced=1,max_dim_cova_group=3,prior_mc=250,no_identification_spectrum, no_identification_minimal);
 
 collect_latex_files;
-if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])
+[status, cmdout]=system(['pdflatex -halt-on-error -interaction=nonstopmode ' M_.fname '_TeX_binder.tex']);
+if status
+    cmdout
     error('TeX-File did not compile.')
 end
 close all;

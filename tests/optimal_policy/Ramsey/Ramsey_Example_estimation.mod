@@ -245,6 +245,8 @@ write_latex_original_model(write_equation_tags);
 write_latex_steady_state_model;
 
 collect_latex_files;
-if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])
+[status, cmdout]=system(['pdflatex -halt-on-error -interaction=nonstopmode ' M_.fname '_TeX_binder.tex']);
+if status
+    cmdout
     error('TeX-File did not compile.')
 end

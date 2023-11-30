@@ -179,6 +179,8 @@ alpha2_rmse=0, // no correlation analysis
 rmse=1,ppost=1,Nsam=512);
 
 collect_latex_files;
-if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])
+[status, cmdout]=system(['pdflatex -halt-on-error -interaction=nonstopmode ' M_.fname '_TeX_binder.tex']);
+if status
+    cmdout
     error('TeX-File did not compile.')
 end
