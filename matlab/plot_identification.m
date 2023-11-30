@@ -411,13 +411,25 @@ else
         end
         hh_fig = dyn_figure(options_.nodisplay,'Name','MC Condition Number');
         subplot(221)
-        hist(log10(idemodel.cond))
+        if isoctave
+            hist(log10(idemodel.cond))
+        else
+            histogram(log10(idemodel.cond))
+        end
         title('log10 of Condition number in the model')
         subplot(222)
-        hist(log10(idemoments.cond))
+        if isoctave
+            hist(log10(idemoments.cond))
+        else
+            histogram(log10(idemoments.cond))
+        end
         title('log10 of Condition number in the moments')
         subplot(223)
-        hist(log10(idelre.cond))
+        if isoctave
+            hist(log10(idelre.cond))
+        else
+            histogram(log10(idelre.cond))
+        end
         title('log10 of Condition number in the LRE model')
         dyn_saveas(hh_fig,[IdentifDirectoryName '/' fname '_ident_COND' ],options_.nodisplay,options_.graph_format);
         options_mcf.pvalue_ks = 0.1;

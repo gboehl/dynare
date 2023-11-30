@@ -38,7 +38,11 @@ if ~(max(y0)<0 | min(y0)>0)
         isig=-1;
         y0=-y0;
     end
-    n=hist(y0,10);
+    if isoctave
+        n=hist(y0,10);
+    else
+        n=histcounts(y0,10);
+    end
     if n(1)>20*n(end)
         try
             lam=fzero(f,[-min(y0)+10*eps -min(y0)+abs(median(y0))],[],y0);

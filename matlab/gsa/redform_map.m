@@ -521,9 +521,17 @@ if iload==0
         hh_fig=dyn_figure(options_.nodisplay,'name',options_map.figtitle);
         subplot(221)
         if ilog
-            hist(y1,30)
+            if isoctave
+                hist(y1,30)
+            else
+                histogram(y1,30)
+            end
         else
-            hist(y0,30)
+            if isoctave
+                hist(y0,30)
+            else
+                histogram(y0,30)
+            end
         end
         title(options_map.title,'interpreter','none')
         subplot(222)
