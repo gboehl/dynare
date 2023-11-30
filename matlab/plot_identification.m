@@ -1,5 +1,5 @@
 function plot_identification(M_, params, idemoments, idehess, idemodel, idelre, advanced, tittxt, name, IdentifDirectoryName, fname, options_, estim_params_, bayestopt_, tit_TeX, name_tex)
-% function plot_identification(params,idemoments,idehess,idemodel, idelre, advanced, tittxt, name, IdentifDirectoryName, fname, options_, estim_params_, bayestopt_, tit_TeX, name_tex)
+% plot_identification(M_, params,idemoments,idehess,idemodel, idelre, advanced, tittxt, name, IdentifDirectoryName, fname, options_, estim_params_, bayestopt_, tit_TeX, name_tex)
 %
 % INPUTS
 %    o M_                   [structure] model
@@ -10,10 +10,15 @@ function plot_identification(M_, params, idemoments, idehess, idemodel, idelre, 
 %    o idelre               [structure] identification results for the LRE model
 %    o advanced             [integer] flag for advanced identification checks
 %    o tittxt               [char] name of the results to plot
-%    o name                 [char] list of names
+%    o name                 [char] list of parameter names
 %    o IdentifDirectoryName [char] directory name
+%    o fname                [char] file name
+%    o options_             [structure] structure describing the current options
+%    o estim_params_        [structure] characterizing parameters to be estimated
+%    o bayestopt_           [structure] describing the priors
 %    o tittxt               [char] TeX-name of the results to plot
 %    o name_tex             [char] TeX-names of the parameters
+%
 % OUTPUTS
 %    None
 %
@@ -53,20 +58,19 @@ si_dLREnorm = idelre.si_dDYNAMICnorm;
 tittxt1=regexprep(tittxt, ' ', '_');
 tittxt1=strrep(tittxt1, '.', '');
 if SampleSize == 1
-    si_dMOMENTS = idemoments.si_dMOMENTS;
     hh_fig = dyn_figure(options_.nodisplay,'Name',[tittxt, ' - Identification using info from observables']);
     subplot(211)
     mmm = (idehess.ide_strength_dMOMENTS);
-    [ss, is] = sort(mmm);
+    [~, is] = sort(mmm);
     if ~all(isnan(idehess.ide_strength_dMOMENTS_prior)) ...
        && ~(nparam == 1 && ~isoctave && matlab_ver_less_than('9.7')) % MATLAB < R2019b does not accept bar(1, [2 3])
         bar(1:nparam,log([idehess.ide_strength_dMOMENTS(:,is)' idehess.ide_strength_dMOMENTS_prior(:,is)']))
     else
-        bar(1:nparam,log([idehess.ide_strength_dMOMENTS(:,is)' ]))
+        bar(1:nparam,log(idehess.ide_strength_dMOMENTS(:,is)'))
     end
     hold on
-    plot((1:length(idehess.ide_strength_dMOMENTS(:,is)))-0.15,log([idehess.ide_strength_dMOMENTS(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
-    plot((1:length(idehess.ide_strength_dMOMENTS_prior(:,is)))+0.15,log([idehess.ide_strength_dMOMENTS_prior(:,is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
+    plot((1:length(idehess.ide_strength_dMOMENTS(:,is)))-0.15,log(idehess.ide_strength_dMOMENTS(:,is)'),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
+    plot((1:length(idehess.ide_strength_dMOMENTS_prior(:,is)))+0.15,log(idehess.ide_strength_dMOMENTS_prior(:,is)'),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
     if any(isinf(log(idehess.ide_strength_dMOMENTS(idehess.identified_parameter_indices))))
         %-Inf, i.e. 0 strength
         inf_indices=find(isinf(log(idehess.ide_strength_dMOMENTS(idehess.identified_parameter_indices))) & log(idehess.ide_strength_dMOMENTS(idehess.identified_parameter_indices))<0);
@@ -94,8 +98,8 @@ if SampleSize == 1
         if options_.TeX
             text(ip,dy(1),name_tex{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
         else
-        text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
-    end
+            text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        end
     end
     if ~all(isnan(idehess.ide_strength_dMOMENTS_prior))
         legend('relative to param value','relative to prior std','Location','Best')
@@ -116,8 +120,8 @@ if SampleSize == 1
         bar(1:nparam, log([idehess.deltaM(is)]))
     end
     hold on
-    plot((1:length(idehess.deltaM(is)))-0.15,log([idehess.deltaM(is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
-    plot((1:length(idehess.deltaM_prior(is)))+0.15,log([idehess.deltaM_prior(is)']),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
+    plot((1:length(idehess.deltaM(is)))-0.15,log(idehess.deltaM(is)'),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
+    plot((1:length(idehess.deltaM_prior(is)))+0.15,log(idehess.deltaM_prior(is)'),'o','MarkerSize',7,'MarkerFaceColor',[0 0 0],'MarkerEdgeColor','none')
     inf_pos=find(isinf(log(idehess.deltaM)));
     if ~isempty(inf_pos)
         inf_indices=~ismember(inf_pos,idehess.sensitivity_zero_pos);
@@ -137,8 +141,8 @@ if SampleSize == 1
         if options_.TeX
             text(ip,dy(1),name_tex{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
         else
-        text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
-    end
+            text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        end
     end
     if ~all(isnan(idehess.deltaM_prior))
         legend('relative to param value','relative to prior std','Location','Best')
@@ -191,8 +195,8 @@ if SampleSize == 1
                 if options_.TeX
                     text(ip,dy(1),name_tex{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
                 else
-                text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
-            end
+                    text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                end
             end
             legend('Moments','Model','LRE model','Location','Best')
             title('Sensitivity bars using derivatives (log-scale)')
@@ -214,9 +218,6 @@ if SampleSize == 1
         % identificaton patterns
         for  j=1:size(idemoments.cosndMOMENTS,2)
             pax=NaN(nparam,nparam);
-            %             fprintf('\n')
-            %             disp(['Collinearity patterns with ', int2str(j) ,' parameter(s)'])
-            %             fprintf('%-15s [%-*s] %10s\n','Parameter',(15+1)*j,' Expl. params ','cosn')
             for i=1:nparam
                 namx='';
                 for in=1:j
@@ -227,12 +228,11 @@ if SampleSize == 1
                         if options_.TeX
                             namx=[namx ' ' sprintf('%-15s',name_tex{dumpindx})];
                         else
-                        namx=[namx ' ' sprintf('%-15s',name{dumpindx})];
+                            namx=[namx ' ' sprintf('%-15s',name{dumpindx})];
                         end
                         pax(i,dumpindx)=idemoments.cosndMOMENTS(i,j);
                     end
                 end
-                %                 fprintf('%-15s [%s] %10.3f\n',name{i},namx,idemoments.cosndMOMENTS(i,j))
             end
             hh_fig = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Collinearity patterns with ', int2str(j) ,' parameter(s)']);
             imagesc(pax,[0 1]);
@@ -243,9 +243,9 @@ if SampleSize == 1
                     text(ip,(0.5),name_tex{ip},'rotation',90,'HorizontalAlignment','left','interpreter','latex')
                     text(0.5,ip,name_tex{ip},'rotation',0,'HorizontalAlignment','right','interpreter','latex')
                 else
-                text(ip,(0.5),name{ip},'rotation',90,'HorizontalAlignment','left','interpreter','none')
-                text(0.5,ip,name{ip},'rotation',0,'HorizontalAlignment','right','interpreter','none')
-            end
+                    text(ip,(0.5),name{ip},'rotation',90,'HorizontalAlignment','left','interpreter','none')
+                    text(0.5,ip,name{ip},'rotation',0,'HorizontalAlignment','right','interpreter','none')
+                end
             end
             colorbar;
             colormap('jet');
@@ -275,7 +275,7 @@ if SampleSize == 1
             end
         end
         skipline()
-        [U,S,V]=svd(idehess.AHess,0);
+        [~,S,V]=svd(idehess.AHess,0);
         S=diag(S);
         if idehess.flag_score
             if nparam<5
@@ -288,8 +288,6 @@ if SampleSize == 1
                 tex_tit_2=[tittxt,' - Identification patterns (Information matrix): HIGHEST SV'];
             end
         else
-            %             S = idemoments.S;
-            %             V = idemoments.V;
             if nparam<5
                 f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - Identification patterns (moments Information matrix)']);
                 tex_tit_1=[tittxt,' - Identification patterns (moments Information matrix)'];
@@ -322,9 +320,9 @@ if SampleSize == 1
                     if options_.TeX
                         text(ip,-0.02,name_tex{ip},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
                     else
-                    text(ip,-0.02,name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                        text(ip,-0.02,name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    end
                 end
-            end
             end
             title(['Singular value ',num2str(Stit)])
         end
@@ -361,10 +359,10 @@ if SampleSize == 1
     end
 
 else
-    hh_fig = dyn_figure(options_.nodisplay,'Name',['MC sensitivities']);
+    hh_fig = dyn_figure(options_.nodisplay,'Name','MC sensitivities');
     subplot(211)
     mmm = (idehess.ide_strength_dMOMENTS);
-    [ss, is] = sort(mmm);
+    [~, is] = sort(mmm);
     mmm = mean(si_dMOMENTSnorm)';
     mmm = mmm./max(mmm);
     if advanced
@@ -384,8 +382,8 @@ else
         if options_.TeX
             text(ip,dy(1),name_tex{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
         else
-        text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
-    end
+            text(ip,dy(1),name{is(ip)},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+        end
     end
     if advanced
         legend('Moments','Model','LRE model','Location','Best')
@@ -407,11 +405,10 @@ else
     end
 
     if advanced
-        if ~options_.nodisplay,
+        if ~options_.nodisplay
             skipline()
             disp('Displaying advanced diagnostics')
         end
-        %         options_.nograph=1;
         hh_fig = dyn_figure(options_.nodisplay,'Name','MC Condition Number');
         subplot(221)
         hist(log10(idemodel.cond))
@@ -448,16 +445,6 @@ else
         options_mcf.title = 'MC Highest Condition Number Model Moments';
         [~,is]=sort(idemoments.cond);
         mcf_analysis(params, is(1:ncut), is(ncut+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
-        %         [proba, dproba] = stab_map_1(idemoments.Mco', is(1:ncut), is(ncut+1:end), 'HighestCondNumberMoments_vs_Mco', 1, [], IdentifDirectoryName);
-        %         for j=1:nparam,
-        % %             ibeh=find(idemoments.Mco(j,:)<0.9);
-        % %             inonbeh=find(idemoments.Mco(j,:)>=0.9);
-        % %             if ~isempty(ibeh) && ~isempty(inonbeh)
-        % %                 [proba, dproba] = stab_map_1(params, ibeh, inonbeh, ['HighestMultiCollinearity_',name{j}], 1, [], IdentifDirectoryName);
-        % %             end
-        %             [~,is]=sort(idemoments.Mco(:,j));
-        %             [proba, dproba] = stab_map_1(params, is(1:ncut), is(ncut+1:end), ['MC_HighestMultiCollinearity_',name{j}], 1, [], IdentifDirectoryName, 0.15);
-        %         end
 
         if nparam<5
             f1 = dyn_figure(options_.nodisplay,'Name',[tittxt,' - MC Identification patterns (moments): HIGHEST SV']);
@@ -487,8 +474,10 @@ else
                 SSS = idemoments.S(:,jj);
             end
             subplot(nsubplo,1,jj)
+            post_median=NaN(1,nparam);
+            hpd_interval=NaN(nparam,2);
             for i=1:nparam
-                [post_mean, post_median(:,i), post_var, hpd_interval(i,:), post_deciles] = posterior_moments(VVV(:,i),0,0.9);
+                [~, post_median(:,i), ~, hpd_interval(i,:)] = posterior_moments(VVV(:,i),0,0.9);
             end
             bar(post_median)
             hold on, plot(hpd_interval,'--*r'),
@@ -500,9 +489,9 @@ else
                     if options_.TeX
                         text(ip,-0.02,name_tex{ip},'rotation',90,'HorizontalAlignment','right','interpreter','latex')
                     else
-                    text(ip,-0.02,name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                        text(ip,-0.02,name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                    end
                 end
-            end
             end
             title(['MEAN Singular value ',num2str(Stit)])
         end

@@ -1,5 +1,5 @@
 function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = dynare_identification(M_,oo_,options_,bayestopt_,estim_params_,options_ident, pdraws0)
-%function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = dynare_identification(options_ident, pdraws0)
+% [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = dynare_identification(options_ident, pdraws0)
 % -------------------------------------------------------------------------
 % This function is called, when the user specifies identification(...); in the mod file. It prepares all identification analysis:
 % (1) set options, local and persistent variables for a new identification
@@ -11,6 +11,11 @@ function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, ST
 %         to put identification in your mod file, otherwise the preprocessor won't provide all necessary objects
 % =========================================================================
 % INPUTS
+%    * M_               [structure] Matlab's structure describing the model
+%    * oo_              [structure] Matlab's structure describing the results
+%    * options_         [structure] Matlab's structure describing the current options
+%    * bayestopt_       [structure] describing the priors
+%    * estim_params_    [structure] characterizing parameters to be estimated
 %    * options_ident    [structure] identification options
 %    * pdraws0          [SampleSize by totparam_nbr] optional: matrix of MC sample of model parameters
 % -------------------------------------------------------------------------
@@ -781,6 +786,19 @@ if iload <=0
             else
                 maxrun_dMINIMAL = 0;
             end
+            si_dDYNAMICnorm=NaN(max([maxrun_dDYNAMIC, maxrun_dREDUCEDFORM, maxrun_dMOMENTS, maxrun_dSPECTRUM, maxrun_dMINIMAL]),size(STO_si_dDYNAMIC,2));
+            if ~options_MC.no_identification_reducedform 
+                si_dREDUCEDFORMnorm=NaN(max([maxrun_dDYNAMIC, maxrun_dREDUCEDFORM, maxrun_dMOMENTS, maxrun_dSPECTRUM, maxrun_dMINIMAL]),size(STO_si_dREDUCEDFORM,2));
+            end
+            if ~options_MC.no_identification_moments
+                si_dMOMENTSnorm=NaN(max([maxrun_dDYNAMIC, maxrun_dREDUCEDFORM, maxrun_dMOMENTS, maxrun_dSPECTRUM, maxrun_dMINIMAL]),size(STO_si_dMOMENTS,2));
+            end
+            if ~options_MC.no_identification_spectrum
+                dSPECTRUMnorm=NaN(max([maxrun_dDYNAMIC, maxrun_dREDUCEDFORM, maxrun_dMOMENTS, maxrun_dSPECTRUM, maxrun_dMINIMAL]),size(STO_dSPECTRUM,2));
+            end
+            if ~options_MC.no_identification_minimal
+                dMINIMALnorm=NaN(max([maxrun_dDYNAMIC, maxrun_dREDUCEDFORM, maxrun_dMOMENTS, maxrun_dSPECTRUM, maxrun_dMINIMAL]),size(STO_dMINIMAL,2));
+            end            
             for irun=1:max([maxrun_dDYNAMIC, maxrun_dREDUCEDFORM, maxrun_dMOMENTS, maxrun_dSPECTRUM, maxrun_dMINIMAL])
                 iter=iter+1;
                 % note that this is not the same si_dDYNAMICnorm as computed in identification_analysis
@@ -912,7 +930,7 @@ if SampleSize > 1
                 fprintf('Testing %s.\n',tittxt);
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
-                    [ide_moments_min, ide_spectrum_min, ide_minimal_min, ide_hess_min, ide_reducedform_min, ide_dynamic_min, derivatives_info_min, info_min, error_indicator_min] = ...
+                    [ide_moments_min, ide_spectrum_min, ide_minimal_min, ide_hess_min, ide_reducedform_min, ide_dynamic_min, ~, ~, error_indicator_min] = ...
                         identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,pdraws(jmin,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes persistent variables
                     save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_min', 'ide_moments_min','ide_spectrum_min','ide_minimal_min','ide_reducedform_min', 'ide_dynamic_min', 'jmin', '-append');
                 end
