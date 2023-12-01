@@ -251,6 +251,10 @@ if ~isempty(indx_irf)
         options_mcf.amcf_title = atitle;
         options_mcf.beha_title = 'IRF restriction';
         options_mcf.nobeha_title = 'NO IRF restriction';
+        if options_.TeX
+            options_mcf.beha_title_latex = 'IRF restriction';
+            options_mcf.nobeha_title_latex = 'NO IRF restriction';
+        end
         options_mcf.title = atitle0;
         if ~isempty(indx1) && ~isempty(indx2)
             mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
@@ -303,6 +307,11 @@ if ~isempty(indx_irf)
                 options_mcf.amcf_title = atitle;
                 options_mcf.beha_title = 'IRF restriction';
                 options_mcf.nobeha_title = 'NO IRF restriction';
+                if options_.TeX
+                    options_mcf.beha_title_latex = 'IRF restriction';
+                    options_mcf.nobeha_title_latex = 'NO IRF restriction';
+                end
+
                 options_mcf.title = atitle0;
                 if ~isempty(indx1) && ~isempty(indx2)
                     mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
@@ -446,6 +455,10 @@ if ~isempty(indx_moment)
         options_mcf.amcf_title = atitle;
         options_mcf.beha_title = 'moment restriction';
         options_mcf.nobeha_title = 'NO moment restriction';
+        if options_.TeX
+            options_mcf.beha_title_latex = 'moment restriction';
+            options_mcf.nobeha_title_latex = 'NO moment restriction';
+        end
         options_mcf.title = atitle0;
         if ~isempty(indx1) && ~isempty(indx2)
             mcf_analysis(xmat, indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
@@ -499,6 +512,10 @@ if ~isempty(indx_moment)
                 options_mcf.amcf_title = atitle;
                 options_mcf.beha_title = 'moment restriction';
                 options_mcf.nobeha_title = 'NO moment restriction';
+                if options_.TeX
+                    options_mcf.beha_title_latex = 'moment restriction';
+                    options_mcf.nobeha_title_latex = 'NO moment restriction';
+                end                
                 options_mcf.title = atitle0;
                 if ~isempty(indx1) && ~isempty(indx2)
                     mcf_analysis(xmat, indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);

@@ -491,6 +491,10 @@ if ~isempty(iunstable) || ~isempty(iwrong)
         options_mcf.amcf_title = atitle;
         options_mcf.beha_title = 'unique Stable Saddle-Path';
         options_mcf.nobeha_title = 'NO unique Stable Saddle-Path';
+        if options_.TeX
+            options_mcf.beha_title_latex = 'unique Stable Saddle-Path';
+            options_mcf.nobeha_title_latex = 'NO unique Stable Saddle-Path';            
+        end
         options_mcf.title = 'unique solution';
         mcf_analysis(lpmat, istable, itmp, options_mcf, M_, options_, bayestopt_, estim_params_);
 
@@ -500,6 +504,10 @@ if ~isempty(iunstable) || ~isempty(iwrong)
             options_mcf.amcf_title = aindtitle;
             options_mcf.beha_title = 'NO indeterminacy';
             options_mcf.nobeha_title = 'indeterminacy';
+            if options_.TeX
+                options_mcf.beha_title_latex = 'NO indeterminacy';
+                options_mcf.nobeha_title_latex = 'indeterminacy';
+            end
             options_mcf.title = 'indeterminacy';
             mcf_analysis(lpmat, itmp, iindeterm, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
@@ -510,6 +518,10 @@ if ~isempty(iunstable) || ~isempty(iwrong)
             options_mcf.amcf_title = aunsttitle;
             options_mcf.beha_title = 'NO explosive solution';
             options_mcf.nobeha_title = 'explosive solution';
+            if options_.TeX
+                options_mcf.beha_title_latex = 'NO explosive solution';
+                options_mcf.nobeha_title_latex = 'explosive solution';
+            end
             options_mcf.title = 'instability';
             mcf_analysis(lpmat, itmp, ixun, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
@@ -522,6 +534,10 @@ if ~isempty(iunstable) || ~isempty(iwrong)
             options_mcf.amcf_title = awrongtitle;
             options_mcf.beha_title = 'NO inability to find a solution';
             options_mcf.nobeha_title = 'inability to find a solution';
+            if options_.TeX
+                options_mcf.beha_title_latex = 'NO inability to find a solution';
+                options_mcf.nobeha_title_latex = 'inability to find a solution';
+            end
             options_mcf.title = 'inability to find a solution';
             mcf_analysis(lpmat, itmp, iwrong, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
@@ -551,6 +567,10 @@ if ~isempty(iunstable) || ~isempty(iwrong)
             options_mcf.amcf_title = acalibtitle;
             options_mcf.beha_title = 'prior IRF/moment calibration';
             options_mcf.nobeha_title = 'NO prior IRF/moment calibration';
+            if options_.TeX
+                options_mcf.beha_title_latex = 'prior IRF/moment calibration';
+                options_mcf.nobeha_title_latex = 'NO prior IRF/moment calibration';
+            end
             options_mcf.title = 'prior restrictions';
             mcf_analysis([lpmat0 lpmat], irestriction, inorestriction, options_mcf, M_, options_, bayestopt_, estim_params_);
             iok = irestriction(1);

@@ -54,6 +54,10 @@ amcf_name = options_mcf.amcf_name;
 amcf_title = options_mcf.amcf_title;
 beha_title = options_mcf.beha_title;
 nobeha_title = options_mcf.nobeha_title;
+if options_.TeX
+    beha_title_latex = options_mcf.beha_title_latex;
+    nobeha_title_latex = options_mcf.nobeha_title_latex;
+end
 title = options_mcf.title;
 fname_ = options_mcf.fname_;
 xparam1=[];
@@ -82,8 +86,13 @@ if ~isempty(indmcf)
 end
 
 if length(ibeha)>10 && length(inobeha)>10
-    indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, beha_title);
-    indcorr2 = stab_map_2(lpmat(inobeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, nobeha_title);
+    if options_.TeX
+        indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, beha_title, beha_title_latex);
+        indcorr2 = stab_map_2(lpmat(inobeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, nobeha_title, nobeha_title_latex);
+    else
+        indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, beha_title);
+        indcorr2 = stab_map_2(lpmat(inobeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, nobeha_title);
+    end    
     indcorr = union(indcorr1(:), indcorr2(:));
     indcorr = indcorr(~ismember(indcorr(:),indmcf));
     indmcf = [indmcf(:); indcorr(:)];
@@ -94,7 +103,13 @@ if ~isempty(indmcf) && ~options_.nograph
     if ~ isempty(xparam1)
         xx=xparam1(indmcf); 
     end
-    scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names_tex(indmcf), ...
-                '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, options_, ...
-                beha_title, nobeha_title)
+    if options_.TeX
+        scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names_tex(indmcf), ...
+            '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, options_, ...
+            beha_title, nobeha_title, beha_title_latex, nobeha_title_latex)
+    else
+        scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names_tex(indmcf), ...
+            '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, options_, ...
+            beha_title, nobeha_title)
+    end
 end

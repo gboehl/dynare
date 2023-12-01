@@ -1,5 +1,5 @@
-function  scatter_mcf(X,Y,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, options_, beha_name, non_beha_name)
-% scatter_mcf(X,Y,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, options_, beha_name, non_beha_name)
+function  scatter_mcf(X,Y,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, options_, beha_name, non_beha_name, beha_name_latex, non_beha_name_latex)
+% scatter_mcf(X,Y,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, options_, beha_name, non_beha_name, beha_name_latex, non_beha_name_latex)
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -168,8 +168,8 @@ for i = 1:p
 end
 if ~isoctave
     if options_.TeX
-        annotation('textbox', [0.1,0,0.35,0.05],'String', beha_name,'Color','Blue','horizontalalignment','center','interpreter','latex');
-        annotation('textbox', [0.55,0,0.35,0.05],'String', non_beha_name,'Color','Red','horizontalalignment','center','interpreter','latex');
+        annotation('textbox', [0.1,0,0.35,0.05],'String', beha_name_latex,'Color','Blue','horizontalalignment','center','interpreter','latex');
+        annotation('textbox', [0.55,0,0.35,0.05],'String', non_beha_name_latex,'Color','Red','horizontalalignment','center','interpreter','latex');
     else
         annotation('textbox', [0.1,0,0.35,0.05],'String', beha_name,'Color','Blue','horizontalalignment','center','interpreter','none');
         annotation('textbox', [0.55,0,0.35,0.05],'String', non_beha_name,'Color','Red','horizontalalignment','center','interpreter','none');

@@ -201,6 +201,10 @@ for j = 1:length(anamendo)
                         options_mcf.amcf_title = atitle;
                         options_mcf.beha_title = 'inside threshold';
                         options_mcf.nobeha_title = 'outside threshold';
+                        if options_.TeX
+                            options_mcf.beha_title_latex = 'inside threshold';
+                            options_mcf.nobeha_title_latex = 'outside threshold';
+                        end
                         options_mcf.title = atitle0;
                         options_mcf.OutputDirectoryName = xdir;
                         if ~isempty(iy) && ~isempty(iyc)
@@ -351,6 +355,11 @@ for j = 1:length(anamendo)
                         options_mcf.amcf_title = atitle;
                         options_mcf.beha_title = 'inside threshold';
                         options_mcf.nobeha_title = 'outside threshold';
+                        if options_.TeX
+                            options_mcf.beha_title_latex = 'inside threshold';
+                            options_mcf.nobeha_title_latex = 'outside threshold';
+                        end
+
                         options_mcf.title = atitle0;
                         options_mcf.OutputDirectoryName = xdir;
                         if ~isempty(iy) && ~isempty(iyc)

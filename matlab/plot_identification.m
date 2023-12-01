@@ -441,6 +441,10 @@ else
         options_mcf.OutputDirectoryName = IdentifDirectoryName;
         options_mcf.beha_title = 'LOW condition nbr';
         options_mcf.nobeha_title = 'HIGH condition nbr';
+        if options_.TeX
+            options_mcf.beha_title_latex = 'LOW condition nbr';
+            options_mcf.nobeha_title_latex = 'HIGH condition nbr';
+        end
         options_mcf.amcf_name = 'MC_HighestCondNumberLRE';
         options_mcf.amcf_title = 'MC Highest Condition Number LRE Model';
         options_mcf.title = 'MC Highest Condition Number LRE Model';

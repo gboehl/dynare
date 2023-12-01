@@ -310,6 +310,11 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
     options_mcf.title = atitle;
     options_mcf.beha_title = 'better posterior kernel';
     options_mcf.nobeha_title = 'worse posterior kernel';
+    if options_.TeX
+        options_mcf.beha_title_latex = 'better posterior kernel';
+        options_mcf.nobeha_title_latex = 'worse posterior kernel';
+    end
+
     mcf_analysis(x, ipost(1:nfilt), ipost(nfilt+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
     if options_.opt_gsa.pprior
         anam = 'rmse_prior_lik';
@@ -323,6 +328,11 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
     options_mcf.title = atitle;
     options_mcf.beha_title = 'better likelihood';
     options_mcf.nobeha_title = 'worse likelihood';
+    if options_.TeX
+        options_mcf.beha_title_latex = 'better likelihood';
+        options_mcf.nobeha_title_latex = 'worse likelihood';
+    end
+
     mcf_analysis(x, ilik(1:nfilt), ilik(nfilt+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
 
 else
@@ -733,12 +743,11 @@ else
         for iy = 1:length(vvarvecm)
             options_mcf.amcf_name = [asname '_' vvarvecm{iy} '_map' ];
             options_mcf.amcf_title = [atitle ' ' vvarvecm{iy}];
+            options_mcf.beha_title = ['better fit of ' vvarvecm{iy}];
+            options_mcf.nobeha_title = ['worse fit of ' vvarvecm{iy}];
             if options_.TeX
-                options_mcf.beha_title = ['better fit of ' vvarvecm_tex{iy}];
-                options_mcf.nobeha_title = ['worse fit of ' vvarvecm_tex{iy}];
-            else
-                options_mcf.beha_title = ['better fit of ' vvarvecm{iy}];
-                options_mcf.nobeha_title = ['worse fit of ' vvarvecm{iy}];
+                options_mcf.beha_title_latex = ['better fit of ' vvarvecm_tex{iy}];
+                options_mcf.nobeha_title_latex = ['worse fit of ' vvarvecm_tex{iy}];
             end
             options_mcf.title = ['the fit of ' vvarvecm{iy}];
             mcf_analysis(x, ixx(1:nfilt0(iy),iy), ixx(nfilt0(iy)+1:end,iy), options_mcf, M_, options_, bayestopt_, estim_params_);
@@ -784,18 +793,18 @@ else
                 if options_.opt_gsa.ppost
                     dyn_saveas(hh_fig,[ OutDir filesep fname_ '_rmse_post_' vvarvecm{iy} '_' int2str(ix)],options_.nodisplay,options_.graph_format);
                     if options_.TeX
-                        create_TeX_loader(options_,[ OutDir filesep fname_ '_rmse_post_' vvarvecm{iy} '_' int2str(ix)],ix,[temp_name,' observed variable $',vvarvecm_tex{iy} '$'],['rmse_post_' vvarvecm{iy}],1)
+                        create_TeX_loader(options_,[ OutDir filesep fname_ '_rmse_post_' vvarvecm{iy} '_' int2str(ix)],ix,[temp_name,' observed variable ',vvarvecm_tex{iy} ],['rmse_post_' vvarvecm{iy}],1)
                     end
                 else
                     if options_.opt_gsa.pprior
                         dyn_saveas(hh_fig,[OutDir filesep fname_ '_rmse_prior_' vvarvecm{iy} '_' int2str(ix) ],options_.nodisplay,options_.graph_format);
                         if options_.TeX
-                            create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_prior_' vvarvecm{iy} '_' int2str(ix) ],ix,[temp_name,' observed variable $',vvarvecm_tex{iy} '$'],['rmse_prior_' vvarvecm{iy}],1)
+                            create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_prior_' vvarvecm{iy} '_' int2str(ix) ],ix,[temp_name,' observed variable ',vvarvecm_tex{iy}],['rmse_prior_' vvarvecm{iy}],1)
                         end
                     else
                         dyn_saveas(hh_fig,[OutDir filesep fname_ '_rmse_mc_' vvarvecm{iy} '_' int2str(ix)],options_.nodisplay,options_.graph_format);
                         if options_.TeX
-                            create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_mc_' vvarvecm{iy} '_' int2str(ix)],ix,[temp_name,' observed variable $',vvarvecm_tex{iy} '$'],['rmse_mc_' vvarvecm{iy}],1)
+                            create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_mc_' vvarvecm{iy} '_' int2str(ix)],ix,[temp_name,' observed variable ',vvarvecm_tex{iy}],['rmse_mc_' vvarvecm{iy}],1)
                         end
                     end
                 end
