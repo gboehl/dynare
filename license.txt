@@ -171,16 +171,13 @@ Comment: Written by Jessica Cariboni and Francesca Campolongo
 
 Files: matlab/gsa/cumplot.m
        matlab/gsa/filt_mc_.m
-       matlab/gsa/gsa_plotmatrix.m
        matlab/gsa/gsa_skewness.m
        matlab/gsa/log_trans_.m
        matlab/gsa/map_calibration.m
        matlab/gsa/map_ident_.m
        matlab/gsa/mcf_analysis.m
        matlab/gsa/myboxplot.m
-       matlab/gsa/myprctilecol.m
        matlab/gsa/prior_draw_gsa.m
-       matlab/gsa/read_data.m
        matlab/gsa/redform_map.m
        matlab/gsa/redform_screen.m
        matlab/gsa/scatter_mcf.m
@@ -191,9 +188,8 @@ Files: matlab/gsa/cumplot.m
        matlab/gsa/stand_.m
        matlab/gsa/tcrit.m
        matlab/gsa/teff.m
-       matlab/gsa/trank.m
 Copyright: 2011-2018 European Commission
-           2011-2018 Dynare Team
+           2011-2023 Dynare Team
 License: GPL-3+
 
 Files: matlab/gsa/pick.m

@@ -365,3 +365,13 @@ if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fprintf(fidTeX,'%% End Of TeX file. \n');
     fclose(fidTeX);
 end
+
+
+function yr = trank(y)
+% yr is the rank transformation of y
+yr=NaN(size(y));
+[nr, nc] = size(y);
+for j=1:nc
+    [~, is]=sort(y(:,j));
+    yr(is,j)=[1:nr]'./nr;
+end
