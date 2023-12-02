@@ -51,7 +51,9 @@ for j=1:nsam
         dum(:,(i-1)*nobs+1:i*nobs)=autocorr{i};
     end
     ac(:,:,j)=dum;
-    dyn_waitbar(j/nsam,h)
+    if mod(j,3)==0
+        dyn_waitbar(j/nsam,h)
+    end
 end
 dyn_waitbar_close(h)
 skipline()

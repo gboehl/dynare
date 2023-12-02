@@ -130,7 +130,9 @@ if init
         else
             irestrictions(j)=0;
         end
-        dyn_waitbar(j/Nsam,h,['MC iteration ',int2str(j),'/',int2str(Nsam)])
+        if mod(j,3)==0
+            dyn_waitbar(j/Nsam,h,['MC iteration ',int2str(j),'/',int2str(Nsam)])
+        end
     end
     dyn_waitbar_close(h);
 

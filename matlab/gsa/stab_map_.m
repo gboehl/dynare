@@ -328,7 +328,9 @@ if fload==0 %run new MC
         end
         ys_=real(dr_.ys);
         yys(:,j) = ys_;
-        dyn_waitbar(j/Nsam,h,['MC iteration ',int2str(j),'/',int2str(Nsam)])
+        if mod(j,3)
+            dyn_waitbar(j/Nsam,h,['MC iteration ',int2str(j),'/',int2str(Nsam)])
+        end
     end
     dyn_waitbar_close(h);
     if prepSA && jstab
@@ -401,7 +403,9 @@ else %load old run
             T(:,:,j) = [dr_.ghx dr_.ghu];
             ys_=real(dr_.ys);
             yys(:,j) = ys_;
-            dyn_waitbar(j/ntrans,h,['MC iteration ',int2str(j),'/',int2str(ntrans)])
+            if mod(j,3)
+                dyn_waitbar(j/ntrans,h,['MC iteration ',int2str(j),'/',int2str(ntrans)])
+            end
         end
         dyn_waitbar_close(h);
         save(filetoload,'T','-append')
