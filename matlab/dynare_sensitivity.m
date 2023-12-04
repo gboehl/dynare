@@ -1,4 +1,5 @@
 function x0=dynare_sensitivity(M_,oo_,options_,bayestopt_,estim_params_,options_gsa)
+% x0=dynare_sensitivity(M_,oo_,options_,bayestopt_,estim_params_,options_gsa)
 % Frontend to the Sensitivity Analysis Toolbox for DYNARE
 % Inputs:
 %  - M_                     [structure]     Matlab's structure describing the model
@@ -9,7 +10,8 @@ function x0=dynare_sensitivity(M_,oo_,options_,bayestopt_,estim_params_,options_
 %  - options_gsa            [structure]     Matlab's structure describing the GSA options
 %
 % Reference:
-% M. Ratto, Global Sensitivity Analysis for Macroeconomic models, MIMEO, 2006.
+% M. Ratto (2008), Analysing DSGE Models with Global Sensitivity Analysis, 
+% Computational Economics (2008), 31, pp. 115–139
 
 % Copyright © 2008-2023 Dynare Team
 %
