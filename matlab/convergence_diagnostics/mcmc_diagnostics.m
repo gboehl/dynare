@@ -201,7 +201,7 @@ for block_iter=1:nblck
         my_title=sprintf('Raftery/Lewis (1992) Convergence Diagnostics, based on quantile q=%4.3f with precision r=%4.3f with probability s=%4.3f for chain %u.',Raftery_Lewis_q,Raftery_Lewis_r,Raftery_Lewis_s,block_iter);
         headers = {'Variables'; 'M (burn-in)'; 'N (req. draws)'; 'N+M (total draws)'; 'k (thinning)'};
         raftery_data_mat=[oo_.convergence.raftery_lewis(block_iter).M_burn,oo_.convergence.raftery_lewis(block_iter).N_prec,oo_.convergence.raftery_lewis(block_iter).N_total,oo_.convergence.raftery_lewis(block_iter).k_thin];
-        raftery_data_mat=[raftery_data_mat;max(raftery_data_mat)];
+        raftery_data_mat=[raftery_data_mat; max(raftery_data_mat,[],1)];
         labels_Raftery_Lewis = vertcat(param_name, 'Maximum');
         lh = cellofchararraymaxlength(labels_Raftery_Lewis)+2;
         dyntable(options_, my_title, headers, labels_Raftery_Lewis, raftery_data_mat, lh, 10, 0);
