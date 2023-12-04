@@ -1205,9 +1205,8 @@ Interpreter::Read_SparseMatrix(const string& file_name, bool two_boundaries)
               IM_i[{eq, var, lag}] = val;
             }
         }
-      else if ((((stack_solve_algo >= 0 && stack_solve_algo <= 4) || stack_solve_algo == 6)
-                && !steady_state)
-               || ((solve_algo >= 6 || solve_algo <= 8) && steady_state))
+      else if (steady_state
+               || ((stack_solve_algo >= 0 && stack_solve_algo <= 4) || stack_solve_algo == 6))
         {
           for (int i = 0; i < u_count_init; i++)
             {
