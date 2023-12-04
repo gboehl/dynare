@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2022 Dynare Team
+ * Copyright © 2021-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -309,9 +309,8 @@ KOrderWelfare::m<Storage::fold>() const
 
 KOrderWelfare::KOrderWelfare(int num_stat, int num_pred, int num_both, int num_forw, int nu,
                              int ord, double discount_factor,
-                             const TensorContainer<FSSparseTensor>& ucont,
-                             const FGSContainer& g_arg, const FGSContainer& gs_arg,
-                             const TwoDMatrix& v, Journal& jr) :
+                             const TensorContainer<FSSparseTensor>& ucont, FGSContainer g_arg,
+                             FGSContainer gs_arg, const TwoDMatrix& v, Journal& jr) :
     ypart(num_stat, num_pred, num_both, num_forw),
     ny(ypart.ny()),
     nu(nu),
@@ -326,9 +325,9 @@ KOrderWelfare::KOrderWelfare(int num_stat, int num_pred, int num_both, int num_f
     _uWrond(4),
     _fWrond(4),
     _ug(4),
-    _fg(g_arg),
+    _fg(std::move(g_arg)),
     _ugs(4),
-    _fgs(gs_arg),
+    _fgs(std::move(gs_arg)),
     _uXstack(&_ug, ny),
     _fXstack(&_fg, ny),
     _uGstack(&_ugs, ypart.nys(), nu),

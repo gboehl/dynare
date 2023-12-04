@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2022 Dynare Team
+ * Copyright © 2021-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -144,7 +144,7 @@ public:
 public:
   KOrderWelfare(int num_stat, int num_pred, int num_both, int num_forw, int nu, int ord,
                 double discount_factor, const TensorContainer<FSSparseTensor>& ucont,
-                const FGSContainer& g, const FGSContainer& gs, const TwoDMatrix& v, Journal& jr);
+                FGSContainer g, FGSContainer gs, const TwoDMatrix& v, Journal& jr);
 
   /* Performs k-order step provided that k=2 or the k−1-th step has been
      run, this is the core method */
