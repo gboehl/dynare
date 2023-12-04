@@ -15,6 +15,10 @@ function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info,M_,
 %  - rmse_MC             [double]       RMSE by nvar matrix of the RMSEs
 %  - ixx                 [double]       RMSE by nvar matrix of sorting
 %                                       indices (descending order of RMSEs)
+%
+% Notes: the R^2 definition is 1-var(ymodel-ydata)/var(ydata). It ranges
+% bewteen (-inf, 1], with negative values indicating that themodel is a worse 
+% predictor than the sample mean of the data
 
 % inputs (from opt_gsa structure)
 % vvarvecm = options_gsa_.var_rmse;
