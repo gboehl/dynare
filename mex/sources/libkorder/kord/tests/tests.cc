@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -259,8 +259,8 @@ public:
   {
   }
   virtual ~TestRunnable() = default;
-  bool test() const;
-  virtual bool run() const = 0;
+  [[nodiscard]] bool test() const;
+  [[nodiscard]] virtual bool run() const = 0;
 
 protected:
   static double korder_unfold_fold(int maxdim, int unfold_dim, int nstat, int npred, int nboth,
@@ -360,7 +360,7 @@ public:
   {
   }
 
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     TwoDMatrix gy {make_matrix(8, 4, gy_data)};
@@ -381,7 +381,7 @@ public:
   {
   }
 
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     TwoDMatrix gy {make_matrix(30, 20, gy_data2)};
@@ -403,7 +403,7 @@ public:
   {
   }
 
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     TwoDMatrix gy {make_matrix(30, 20, gy_data2)};

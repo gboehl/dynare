@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -51,8 +51,8 @@ public:
   {
   }
   virtual ~TestRunnable() = default;
-  bool test() const;
-  virtual bool run() const = 0;
+  [[nodiscard]] bool test() const;
+  [[nodiscard]] virtual bool run() const = 0;
 
 protected:
   // declaration of auxiliary static methods
@@ -516,7 +516,7 @@ public:
   PureTriangTest() : TestRunnable("pure triangular solve (5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class PureTriangTransTest : public TestRunnable
@@ -525,7 +525,7 @@ public:
   PureTriangTransTest() : TestRunnable("pure triangular solve trans (5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class PureTrLargeTest : public TestRunnable
@@ -534,7 +534,7 @@ public:
   PureTrLargeTest() : TestRunnable("pure triangular large solve (300)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class PureTrLargeTransTest : public TestRunnable
@@ -543,7 +543,7 @@ public:
   PureTrLargeTransTest() : TestRunnable("pure triangular large solve trans (300)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class QuasiTriangTest : public TestRunnable
@@ -552,7 +552,7 @@ public:
   QuasiTriangTest() : TestRunnable("quasi triangular solve (7)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class QuasiTriangTransTest : public TestRunnable
@@ -561,7 +561,7 @@ public:
   QuasiTriangTransTest() : TestRunnable("quasi triangular solve trans (7)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class QuasiTrLargeTest : public TestRunnable
@@ -570,7 +570,7 @@ public:
   QuasiTrLargeTest() : TestRunnable("quasi triangular solve large (250)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class QuasiTrLargeTransTest : public TestRunnable
@@ -579,7 +579,7 @@ public:
   QuasiTrLargeTransTest() : TestRunnable("quasi triangular solve large trans (250)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class QuasiZeroSmallTest : public TestRunnable
@@ -588,7 +588,7 @@ public:
   QuasiZeroSmallTest() : TestRunnable("quasi tr. zero small test (2×1)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class MultKronSmallTest : public TestRunnable
@@ -597,7 +597,7 @@ public:
   MultKronSmallTest() : TestRunnable("kronecker small mult (2=2×1)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class MultKronTest : public TestRunnable
@@ -606,7 +606,7 @@ public:
   MultKronTest() : TestRunnable("kronecker mult (245=7×7×5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class MultKronSmallTransTest : public TestRunnable
@@ -615,7 +615,7 @@ public:
   MultKronSmallTransTest() : TestRunnable("kronecker small trans mult (2=2×1)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class MultKronTransTest : public TestRunnable
@@ -624,7 +624,7 @@ public:
   MultKronTransTest() : TestRunnable("kronecker trans mult (245=7×7×5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class LevelKronTest : public TestRunnable
@@ -633,7 +633,7 @@ public:
   LevelKronTest() : TestRunnable("kronecker level mult (1715=7×[7]×7×5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class LevelKronTransTest : public TestRunnable
@@ -642,7 +642,7 @@ public:
   LevelKronTransTest() : TestRunnable("kronecker level trans mult (1715=7×[7]×7×5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class LevelZeroKronTest : public TestRunnable
@@ -651,7 +651,7 @@ public:
   LevelZeroKronTest() : TestRunnable("kronecker level mult (1715=7×7×7×[5])")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class LevelZeroKronTransTest : public TestRunnable
@@ -660,7 +660,7 @@ public:
   LevelZeroKronTransTest() : TestRunnable("kronecker level trans mult (1715=7×7×7×[5])")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class KronPowerTest : public TestRunnable
@@ -669,7 +669,7 @@ public:
   KronPowerTest() : TestRunnable("kronecker power mult (1715=7×7×7×5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class SmallLinEvalTest : public TestRunnable
@@ -678,7 +678,7 @@ public:
   SmallLinEvalTest() : TestRunnable("lin eval (24=2 × 2×2×3)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class LinEvalTest : public TestRunnable
@@ -687,7 +687,7 @@ public:
   LinEvalTest() : TestRunnable("lin eval (490=2 × 7×7×5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class SmallQuaEvalTest : public TestRunnable
@@ -696,7 +696,7 @@ public:
   SmallQuaEvalTest() : TestRunnable("qua eval (24=2 × 2×2×3)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class QuaEvalTest : public TestRunnable
@@ -705,7 +705,7 @@ public:
   QuaEvalTest() : TestRunnable("qua eval (490=2 × 7×7×5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class TriSylvSmallRealTest : public TestRunnable
@@ -714,7 +714,7 @@ public:
   TriSylvSmallRealTest() : TestRunnable("triangular sylvester small real solve (12=2×2×3)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class TriSylvSmallComplexTest : public TestRunnable
@@ -723,7 +723,7 @@ public:
   TriSylvSmallComplexTest() : TestRunnable("triangular sylvester small complx solve (12=2×2×3)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class TriSylvTest : public TestRunnable
@@ -732,7 +732,7 @@ public:
   TriSylvTest() : TestRunnable("triangular sylvester solve (245=7×7×5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class TriSylvBigTest : public TestRunnable
@@ -741,7 +741,7 @@ public:
   TriSylvBigTest() : TestRunnable("triangular sylvester big solve (48000=40×40×30)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class TriSylvLargeTest : public TestRunnable
@@ -750,7 +750,7 @@ public:
   TriSylvLargeTest() : TestRunnable("triangular sylvester large solve (1920000=40×40×40×30)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class IterSylvTest : public TestRunnable
@@ -759,7 +759,7 @@ public:
   IterSylvTest() : TestRunnable("iterative sylvester solve (245=7×7×5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class IterSylvLargeTest : public TestRunnable
@@ -768,7 +768,7 @@ public:
   IterSylvLargeTest() : TestRunnable("iterative sylvester large solve (1920000=40×40×40×30)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class GenSylvSmallTest : public TestRunnable
@@ -777,7 +777,7 @@ public:
   GenSylvSmallTest() : TestRunnable("general sylvester small solve (18=3×3×2)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class GenSylvTest : public TestRunnable
@@ -786,7 +786,7 @@ public:
   GenSylvTest() : TestRunnable("general sylvester solve (12000=20×20×30)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class GenSylvSingTest : public TestRunnable
@@ -795,7 +795,7 @@ public:
   GenSylvSingTest() : TestRunnable("general sylvester solve for sing. C (2500000=50×50×50×20)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class GenSylvLargeTest : public TestRunnable
@@ -804,7 +804,7 @@ public:
   GenSylvLargeTest() : TestRunnable("general sylvester solve (2500000=50×50×50×20)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class EigBubFrankTest : public TestRunnable
@@ -813,7 +813,7 @@ public:
   EigBubFrankTest() : TestRunnable("eig. bubble frank test (12×12)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class EigBubSplitTest : public TestRunnable
@@ -823,7 +823,7 @@ public:
   EigBubSplitTest() : TestRunnable("eig. bubble complex split test (3×3)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class EigBubSameTest : public TestRunnable
@@ -833,7 +833,7 @@ public:
   EigBubSameTest() : TestRunnable("eig. bubble same test (5×5)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class BlockDiagSmallTest : public TestRunnable
@@ -842,7 +842,7 @@ public:
   BlockDiagSmallTest() : TestRunnable("block diagonalization small test (7×7)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class BlockDiagFrankTest : public TestRunnable
@@ -851,7 +851,7 @@ public:
   BlockDiagFrankTest() : TestRunnable("block diagonalization of frank (12×12)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class BlockDiagIllCondTest : public TestRunnable
@@ -860,7 +860,7 @@ public:
   BlockDiagIllCondTest() : TestRunnable("block diagonalization of ill conditioned (15×15)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 class BlockDiagBigTest : public TestRunnable
@@ -869,7 +869,7 @@ public:
   BlockDiagBigTest() : TestRunnable("block diagonalization big test (50×50)")
   {
   }
-  bool run() const override;
+  [[nodiscard]] bool run() const override;
 };
 
 /**********************************************************/

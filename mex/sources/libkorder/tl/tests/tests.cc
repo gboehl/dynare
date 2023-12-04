@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -49,8 +49,8 @@ public:
   {
   }
   virtual ~TestRunnable() = default;
-  bool test() const;
-  virtual bool run() const = 0;
+  [[nodiscard]] bool test() const;
+  [[nodiscard]] virtual bool run() const = 0;
 
 protected:
   template<class _Ttype>
@@ -554,7 +554,7 @@ public:
   SmallIndexForwardFold() : TestRunnable("small index forward for fold (44)(222)", 5, 4)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 3};
@@ -569,7 +569,7 @@ public:
   SmallIndexForwardUnfold() : TestRunnable("small index forward for unfold (44)(222)", 5, 4)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 3};
@@ -584,7 +584,7 @@ public:
   IndexForwardFold() : TestRunnable("index forward for fold (55)(222)(22)", 7, 5)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 3, 2};
@@ -599,7 +599,7 @@ public:
   IndexForwardUnfold() : TestRunnable("index forward for unfold (55)(222)(22)", 7, 5)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 3, 2};
@@ -614,7 +614,7 @@ public:
   SmallIndexBackwardFold() : TestRunnable("small index backward for fold (3)(3)(222)", 5, 3)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {1, 1, 3};
@@ -629,7 +629,7 @@ public:
   IndexBackwardFold() : TestRunnable("index backward for fold (44)(222)(44)", 7, 4)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 3, 2};
@@ -644,7 +644,7 @@ public:
   SmallIndexBackwardUnfold() : TestRunnable("small index backward for unfold (3)(3)(222)", 5, 3)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {1, 1, 3};
@@ -659,7 +659,7 @@ public:
   IndexBackwardUnfold() : TestRunnable("index backward for unfold (44)(222)(44)", 7, 4)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 3, 2};
@@ -674,7 +674,7 @@ public:
   SmallIndexOffsetFold() : TestRunnable("small index offset for fold (44)(222)", 5, 4)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 3};
@@ -689,7 +689,7 @@ public:
   SmallIndexOffsetUnfold() : TestRunnable("small index offset for unfold (44)(222)", 5, 4)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 3};
@@ -704,7 +704,7 @@ public:
   IndexOffsetFold() : TestRunnable("index offset for fold (55)(222)(22)", 5, 5)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 3, 2};
@@ -719,7 +719,7 @@ public:
   IndexOffsetUnfold() : TestRunnable("index offset for unfold (55)(222)(22)", 7, 5)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 3, 2};
@@ -734,7 +734,7 @@ public:
   SmallFoldUnfoldFS() : TestRunnable("small fold-unfold for full symmetry (444)", 3, 4)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return fs_fold_unfold(5, 4, 3);
@@ -747,7 +747,7 @@ public:
   SmallFoldUnfoldGS() : TestRunnable("small fold-unfold for gen symmetry (3)(33)(22)", 5, 3)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {1, 2, 2};
@@ -762,7 +762,7 @@ public:
   FoldUnfoldFS() : TestRunnable("fold-unfold for full symmetry (9999)", 4, 9)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return fs_fold_unfold(5, 9, 4);
@@ -775,7 +775,7 @@ public:
   FoldUnfoldGS() : TestRunnable("fold-unfold for gen symmetry (66)(2)(66)", 5, 6)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     Symmetry s {2, 1, 2};
@@ -790,7 +790,7 @@ public:
   SmallFoldUnfoldR() : TestRunnable("small fold-unfold for row full symmetry (333)", 3, 3)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return r_fold_unfold(5, 3, 3);
@@ -803,7 +803,7 @@ public:
   FoldUnfoldR() : TestRunnable("fold-unfold for row full symmetry (66666)", 5, 6)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return r_fold_unfold(5, 6, 5);
@@ -816,7 +816,7 @@ public:
   SmallDenseProd() : TestRunnable("small dense prod bsym=1-2,nvs=3-2,h=2-3,r=2", 3, 3)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     IntSequence bnvs {3, 2};
@@ -830,7 +830,7 @@ public:
   DenseProd() : TestRunnable("dense prod bsym=2-3,nvs=10-7,h=3-15,r=10", 5, 15)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     IntSequence bnvs {10, 7};
@@ -844,7 +844,7 @@ public:
   BigDenseProd() : TestRunnable("dense prod bsym=3-2,nvs=13-11,h=3-20,r=20", 6, 20)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     IntSequence bnvs {13, 11};
@@ -858,7 +858,7 @@ public:
   SmallFoldedMonomial() : TestRunnable("folded vrs. monoms (g,x,y,u)=(10,4,5,3), dim=4", 4, 8)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return folded_monomial(10, 4, 5, 3, 4);
@@ -871,7 +871,7 @@ public:
   FoldedMonomial() : TestRunnable("folded vrs. monoms (g,x,y,u)=(20,12,10,5), dim=4", 4, 15)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return folded_monomial(20, 12, 10, 5, 4);
@@ -884,7 +884,7 @@ public:
   SmallUnfoldedMonomial() : TestRunnable("unfolded vrs. monoms (g,x,y,u)=(10,4,5,3), dim=4", 4, 8)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return unfolded_monomial(10, 4, 5, 3, 4);
@@ -897,7 +897,7 @@ public:
   UnfoldedMonomial() : TestRunnable("unfolded vrs. monoms (g,x,y,u)=(20,12,10,5), dim=4", 4, 15)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return unfolded_monomial(20, 12, 10, 5, 4);
@@ -910,7 +910,7 @@ public:
   FoldedContractionSmall() : TestRunnable("folded contraction small (r=5, nv=4, dim=3)", 3, 4)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return folded_contraction(5, 4, 3);
@@ -923,7 +923,7 @@ public:
   FoldedContractionBig() : TestRunnable("folded contraction big (r=20, nv=12, dim=5)", 5, 12)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return folded_contraction(20, 12, 5);
@@ -936,7 +936,7 @@ public:
   UnfoldedContractionSmall() : TestRunnable("unfolded contraction small (r=5, nv=4, dim=3)", 3, 4)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return unfolded_contraction(5, 4, 3);
@@ -949,7 +949,7 @@ public:
   UnfoldedContractionBig() : TestRunnable("unfolded contraction big (r=20, nv=12, dim=5)", 5, 12)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return unfolded_contraction(20, 12, 5);
@@ -962,7 +962,7 @@ public:
   PolyEvalSmall() : TestRunnable("polynomial evaluation small (r=4, nv=5, maxdim=4)", 4, 5)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return poly_eval(4, 5, 4);
@@ -975,7 +975,7 @@ public:
   PolyEvalBig() : TestRunnable("polynomial evaluation big (r=244, nv=97, maxdim=2)", 2, 97)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return poly_eval(244, 97, 2);
@@ -988,7 +988,7 @@ public:
   FoldZContSmall() : TestRunnable("folded Z container (r=3,ny=2,nu=2,nup=1,G=2,g=2,dim=3)", 3, 8)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return fold_zcont(3, 2, 2, 1, 2, 2, 3);
@@ -1001,7 +1001,7 @@ public:
   FoldZCont() : TestRunnable("folded Z container (r=13,ny=5,nu=7,nup=4,G=6,g=7,dim=4)", 4, 25)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return fold_zcont(13, 5, 7, 4, 6, 7, 4);
@@ -1015,7 +1015,7 @@ public:
       TestRunnable("unfolded Z container (r=3,ny=2,nu=2,nup=1,G=2,g=2,dim=3)", 3, 8)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return unfold_zcont(3, 2, 2, 1, 2, 2, 3);
@@ -1028,7 +1028,7 @@ public:
   UnfoldZCont() : TestRunnable("unfolded Z container (r=13,ny=5,nu=7,nup=4,G=6,g=7,dim=4", 4, 25)
   {
   }
-  bool
+  [[nodiscard]] bool
   run() const override
   {
     return unfold_zcont(13, 5, 7, 4, 6, 7, 4);
