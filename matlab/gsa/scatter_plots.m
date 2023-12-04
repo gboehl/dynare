@@ -102,27 +102,6 @@ for i = 1:p
             plot(X(:,i),X(:,j),[plotsymbol,'b'])
             set(h,'Tag','scatter')
 
-            %%
-            if ~isoctave
-                % Define a context menu; it is not attached to anything
-                hcmenu = uicontextmenu('Callback','pick','Tag','Run viewer');
-                % Define callbacks for context menu
-                % items that change linestyle
-                hcb1 = 'scatter_callback';
-                % hcb2 = ['set(gco,''LineStyle'','':'')'];
-                % hcb3 = ['set(gco,''LineStyle'',''-'')'];
-                % % Define the context menu items and install their callbacks
-                item1 = uimenu(hcmenu,'Label','save','Callback',hcb1,'Tag','save params');
-                item2 = uimenu(hcmenu,'Label','eval','Callback',hcb1,'Tag','eval params');
-                % item3 = uimenu(hcmenu,'Label','solid','Callback',hcb3);
-                % Locate line objects
-                hlines = findall(h,'Type','line');
-                % Attach the context menu to each line
-                for line = 1:length(hlines)
-                    set(hlines(line),'uicontextmenu',hcmenu)
-                end
-            end
-            %%
             if ~isempty(xparam1)
                 hold on, plot(xparam1(i),xparam1(j),'s','MarkerFaceColor',[0 0.75 0],'MarkerEdgeColor',[0 0.75 0])
             end
