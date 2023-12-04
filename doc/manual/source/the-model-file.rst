@@ -14371,16 +14371,16 @@ operators.
 
 The following operators can be used on booleans:
 
-    * Comparison operators: ``==, !=``
-    * Logical operators: ``&&, ||, !``
+    * Comparison operators: ``==``, ``!=``
+    * Logical operators: ``&&``, ``||``, ``!``
 
 .. rubric:: Real
 
 The following operators can be used on reals:
 
-    * Arithmetic operators: ``+, -, *, /, ^``
-    * Comparison operators: ``<, >, <=, >=, ==, !=``
-    * Logical operators: ``&&, ||, !``
+    * Arithmetic operators: ``+``, ``-``, ``*``, ``/``, ``^``
+    * Comparison operators: ``<``, ``>``, ``<=``, ``>=``, ``==``, ``!=``
+    * Logical operators: ``&&``, ``||``, ``!``
     * Ranges with an increment of ``1``: ``REAL1:REAL2`` (for example, ``1:4``
       is equivalent to real array ``[1, 2, 3, 4]``).
 
@@ -14389,9 +14389,11 @@ The following operators can be used on reals:
          will create an array containing an array (i.e. ``[ [1, 2, 3, 4] ]``).
     * Ranges with user-defined increment: ``REAL1:REAL2:REAL3`` (for example,
       ``6:-2.1:-1`` is equivalent to real array ``[6, 3.9, 1.8, -0.3]``).
-    * Functions: ``max, min, mod, exp, log, log10, sin, cos, tan, asin, acos,
-      atan, sqrt, cbrt, sign, floor, ceil, trunc, erf, erfc, gamma, lgamma,
-      round, normpdf, normcdf``. NB ``ln`` can be used instead of ``log``
+    * Functions: ``max``, ``min``, ``mod``, ``exp``, ``log``, ``log10``,
+      ``sin``, ``cos``, ``tan``, ``asin``, ``acos``, ``atan``, ``sqrt``,
+      ``cbrt``, ``sign``, ``floor``, ``ceil``, ``trunc``, ``erf``, ``erfc``,
+      ``gamma``, ``lgamma``, ``round``, ``normpdf``, ``normcdf``. NB ``ln`` can
+      be used instead of ``log``
 
 .. rubric:: String
 
@@ -14399,7 +14401,7 @@ String literals have to be enclosed by **double** quotes (like ``"name"``).
 
 The following operators can be used on strings:
 
-    * Comparison operators: ``<, >, <=, >=, ==, !=``
+    * Comparison operators: ``<``, ``>``, ``<=``, ``>=``, ``==``, ``!=``
     * Concatenation of two strings: ``+``
     * Extraction of substrings: if ``s`` is a string, then ``s[3]`` is
       a string containing only the third character of ``s``, and
@@ -14413,8 +14415,8 @@ Tuples are enclosed by parentheses and elements are separated by commas (like
 
 The following operators can be used on tuples:
 
-    * Comparison operators: ``==, !=``
-    * Functions: ``empty, length``
+    * Comparison operators: ``==``, ``!=``
+    * Functions: ``empty``, ``length``
 
 
 .. rubric:: Array
@@ -14424,7 +14426,7 @@ by commas (like ``[1,[2,3],4]`` or ``["US", "FR"]``).
 
 The following operators can be used on arrays:
 
-    * Comparison operators: ``==, !=``
+    * Comparison operators: ``==``, ``!=``
     * Dereferencing: if ``v`` is an array, then ``v[2]`` is its 2nd element
     * Concatenation of two arrays: ``+``
     * Set union of two arrays: ``|``
@@ -14436,7 +14438,7 @@ The following operators can be used on arrays:
     * Extraction of sub-arrays: e.g. ``v[4:6]``
     * Testing membership of an array: ``in`` operator (for example:
       ``"b"`` in ``["a", "b", "c"]`` returns ``1``)
-    * Functions: ``empty, sum, length``
+    * Functions: ``empty``, ``sum``, ``length``
 
 .. rubric:: Comprehension
 
