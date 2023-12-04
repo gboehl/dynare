@@ -17,8 +17,6 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <dynmex.h>
-
 #include "DynamicModelCaller.hh"
 
 #include <algorithm>

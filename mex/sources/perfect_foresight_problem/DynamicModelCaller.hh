@@ -23,6 +23,8 @@
 #include <string>
 #include <type_traits>
 
+#include <dynmex.h>
+
 #if defined(_WIN32) || defined(__CYGWIN32__)
 # ifndef NOMINMAX
 #  define NOMINMAX // Do not define "min" and "max" macros
