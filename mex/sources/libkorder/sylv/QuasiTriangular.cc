@@ -314,7 +314,7 @@ QuasiTriangular::col_begin(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return const_col_iter(&getData()[jbar * d_size], d_size, b.isReal(), 0);
+  return {&getData()[jbar * d_size], d_size, b.isReal(), 0};
 }
 
 QuasiTriangular::col_iter
@@ -322,7 +322,7 @@ QuasiTriangular::col_begin(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return col_iter(&getData()[jbar * d_size], d_size, b.isReal(), 0);
+  return {&getData()[jbar * d_size], d_size, b.isReal(), 0};
 }
 
 QuasiTriangular::const_row_iter
@@ -337,7 +337,7 @@ QuasiTriangular::row_begin(const DiagonalBlock& b) const
       off = off + d_size;
       col++;
     }
-  return const_row_iter(&getData()[off], d_size, b.isReal(), col);
+  return {&getData()[off], d_size, b.isReal(), col};
 }
 
 QuasiTriangular::row_iter
@@ -352,7 +352,7 @@ QuasiTriangular::row_begin(const DiagonalBlock& b)
       off = off + d_size;
       col++;
     }
-  return row_iter(&getData()[off], d_size, b.isReal(), col);
+  return {&getData()[off], d_size, b.isReal(), col};
 }
 
 QuasiTriangular::const_col_iter
@@ -360,7 +360,7 @@ QuasiTriangular::col_end(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return const_col_iter(getData().base() + jbar * d_size + jbar, d_size, b.isReal(), jbar);
+  return {getData().base() + jbar * d_size + jbar, d_size, b.isReal(), jbar};
 }
 
 QuasiTriangular::col_iter
@@ -368,7 +368,7 @@ QuasiTriangular::col_end(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return col_iter(&getData()[jbar * d_size + jbar], d_size, b.isReal(), jbar);
+  return {&getData()[jbar * d_size + jbar], d_size, b.isReal(), jbar};
 }
 
 QuasiTriangular::const_row_iter
@@ -376,7 +376,7 @@ QuasiTriangular::row_end(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return const_row_iter(&getData()[d_size * d_size + jbar], d_size, b.isReal(), d_size);
+  return {&getData()[d_size * d_size + jbar], d_size, b.isReal(), d_size};
 }
 
 QuasiTriangular::row_iter
@@ -384,7 +384,7 @@ QuasiTriangular::row_end(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return row_iter(&getData()[d_size * d_size + jbar], d_size, b.isReal(), d_size);
+  return {&getData()[d_size * d_size + jbar], d_size, b.isReal(), d_size};
 }
 
 QuasiTriangular::QuasiTriangular(double r, const QuasiTriangular& t) :

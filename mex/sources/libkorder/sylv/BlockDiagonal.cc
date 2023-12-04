@@ -91,8 +91,7 @@ BlockDiagonal::col_begin(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return const_col_iter(&getData()[jbar * d_size + col_len[jbar]], d_size, b.isReal(),
-                        col_len[jbar]);
+  return {&getData()[jbar * d_size + col_len[jbar]], d_size, b.isReal(), col_len[jbar]};
 }
 
 BlockDiagonal::col_iter
@@ -100,7 +99,7 @@ BlockDiagonal::col_begin(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return col_iter(&getData()[jbar * d_size + col_len[jbar]], d_size, b.isReal(), col_len[jbar]);
+  return {&getData()[jbar * d_size + col_len[jbar]], d_size, b.isReal(), col_len[jbar]};
 }
 
 BlockDiagonal::const_row_iter
@@ -108,8 +107,7 @@ BlockDiagonal::row_end(const DiagonalBlock& b) const
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return const_row_iter(&getData()[d_size * row_len[jbar] + jbar], d_size, b.isReal(),
-                        row_len[jbar]);
+  return {&getData()[d_size * row_len[jbar] + jbar], d_size, b.isReal(), row_len[jbar]};
 }
 
 BlockDiagonal::row_iter
@@ -117,7 +115,7 @@ BlockDiagonal::row_end(const DiagonalBlock& b)
 {
   int jbar = b.getIndex();
   int d_size = diagonal.getSize();
-  return row_iter(&getData()[d_size * row_len[jbar] + jbar], d_size, b.isReal(), row_len[jbar]);
+  return {&getData()[d_size * row_len[jbar] + jbar], d_size, b.isReal(), row_len[jbar]};
 }
 
 int
