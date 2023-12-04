@@ -41,7 +41,7 @@ assert(size(data, 1) == length(rows), 'must have the same number of rows')
 assert(size(data, 2) == length(cols), 'must have the same number of columns')
 assert(isint(indent), 'indent must be an integer')
 
-skipline(3)
+skipline(2)
 
 %% Print Output
 rowstrlens = cellfun(@length, rows);
