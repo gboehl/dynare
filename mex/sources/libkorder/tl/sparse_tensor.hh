@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -80,6 +80,7 @@ public:
       dim(d), nr(nnr), nc(nnc), first_nz_row(nr), last_nz_row(-1)
   {
   }
+  virtual ~SparseTensor() = default;
   void insert(IntSequence s, int r, double c);
   const Map&
   getMap() const
