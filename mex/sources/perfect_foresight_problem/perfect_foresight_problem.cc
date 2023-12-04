@@ -52,12 +52,12 @@ mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
   const mxArray* endo_nbr_mx = mxGetField(M_mx, 0, "endo_nbr");
   if (!(endo_nbr_mx && mxIsScalar(endo_nbr_mx) && mxIsNumeric(endo_nbr_mx)))
     mexErrMsgTxt("M_.endo_nbr should be a numeric scalar");
-  mwIndex ny = static_cast<mwIndex>(mxGetScalar(endo_nbr_mx));
+  auto ny = static_cast<mwIndex>(mxGetScalar(endo_nbr_mx));
 
   const mxArray* maximum_lag_mx = mxGetField(M_mx, 0, "maximum_lag");
   if (!(maximum_lag_mx && mxIsScalar(maximum_lag_mx) && mxIsNumeric(maximum_lag_mx)))
     mexErrMsgTxt("M_.maximum_lag should be a numeric scalar");
-  mwIndex maximum_lag = static_cast<mwIndex>(mxGetScalar(maximum_lag_mx));
+  auto maximum_lag = static_cast<mwIndex>(mxGetScalar(maximum_lag_mx));
 
   const mxArray* dynamic_tmp_nbr_mx = mxGetField(M_mx, 0, "dynamic_tmp_nbr");
   if (!(dynamic_tmp_nbr_mx && mxIsDouble(dynamic_tmp_nbr_mx)
@@ -94,7 +94,7 @@ mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
   // Check other input and map it to local variables
   if (!(mxIsScalar(periods_mx) && mxIsNumeric(periods_mx)))
     mexErrMsgTxt("periods should be a numeric scalar");
-  mwIndex periods = static_cast<mwIndex>(mxGetScalar(periods_mx));
+  auto periods = static_cast<mwIndex>(mxGetScalar(periods_mx));
 
   if (!(mxIsDouble(y_mx) && mxGetM(y_mx) == static_cast<size_t>(ny * periods) && mxGetN(y_mx) == 1))
     mexErrMsgTxt("y should be a double precision column-vector of M_.endo_nbr*periods elements");
@@ -112,7 +112,7 @@ mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
         && mxGetM(exo_path_mx) >= static_cast<size_t>(periods + maximum_lag)))
     mexErrMsgTxt(
         "exo_path should be a double precision matrix with at least periods+M_.maximum_lag rows");
-  mwIndex nx = static_cast<mwIndex>(mxGetN(exo_path_mx));
+  auto nx = static_cast<mwIndex>(mxGetN(exo_path_mx));
   size_t nb_row_x = mxGetM(exo_path_mx);
   const double* exo_path = mxGetPr(exo_path_mx);
 

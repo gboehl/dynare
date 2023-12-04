@@ -406,8 +406,8 @@ TestRunnable::eig_bubble(const std::string& aname, int from, int to)
   int n = mma.row();
   QuasiTriangular orig(mma.getData(), n);
   SchurDecompEig dec(const_cast<const QuasiTriangular&>(orig));
-  QuasiTriangular::diag_iter itf = dec.getT().diag_begin();
-  QuasiTriangular::diag_iter itt = dec.getT().diag_begin();
+  auto itf = dec.getT().diag_begin();
+  auto itt = dec.getT().diag_begin();
   for (int i = 0; i < from; i++)
     ++itf;
   for (int i = 0; i < to; i++)

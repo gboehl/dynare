@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -104,7 +104,7 @@ void
 SimilarityDecomp::bringGuiltyBlock(diag_iter start, diag_iter& end)
 {
   double av = b->getAverageDiagSize(start, end);
-  diag_iter guilty = b->findClosestDiagBlock(end, b->diag_end(), av);
+  auto guilty = b->findClosestDiagBlock(end, b->diag_end(), av);
   SchurDecompEig sd(*b);             // works on b including diagonal structure
   end = sd.bubbleEigen(guilty, end); // iterators are valid
   ++end;
@@ -115,8 +115,8 @@ SimilarityDecomp::bringGuiltyBlock(diag_iter start, diag_iter& end)
 void
 SimilarityDecomp::diagonalize(double norm)
 {
-  diag_iter start = b->diag_begin();
-  diag_iter end = start;
+  auto start = b->diag_begin();
+  auto end = start;
   ++end;
 
   while (end != b->diag_end())

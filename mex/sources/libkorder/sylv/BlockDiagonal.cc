@@ -70,14 +70,14 @@ BlockDiagonal::setZeroBlockEdge(diag_iter edge)
   setZerosToRU(edge);
 
   int iedge = edge->getIndex();
-  for (diag_iter run = diag_begin(); run != edge; ++run)
+  for (auto run = diag_begin(); run != edge; ++run)
     if (int ind {run->getIndex()}; row_len[ind] > iedge)
       {
         row_len[ind] = iedge;
         if (!run->isReal())
           row_len[ind + 1] = iedge;
       }
-  for (diag_iter run = edge; run != diag_end(); ++run)
+  for (auto run = edge; run != diag_end(); ++run)
     if (int ind {run->getIndex()}; col_len[ind] < iedge)
       {
         col_len[ind] = iedge;
@@ -145,8 +145,8 @@ int
 BlockDiagonal::getLargestBlock() const
 {
   int largest = 0;
-  const_diag_iter start = diag_begin();
-  const_diag_iter end = findBlockStart(start);
+  auto start = diag_begin();
+  auto end = findBlockStart(start);
   while (start != diag_end())
     {
       int si = start->getIndex();
@@ -181,7 +181,7 @@ BlockDiagonal::multKronBlock(const_diag_iter start, const_diag_iter end, KronVec
     ei = end->getIndex();
   savePartOfX(si, ei, x, work);
 
-  for (const_diag_iter di = start; di != end; ++di)
+  for (auto di = start; di != end; ++di)
     if (int jbar {di->getIndex()}; di->isReal())
       {
         KronVector xi(x, jbar);
@@ -227,7 +227,7 @@ BlockDiagonal::multKronBlockTrans(const_diag_iter start, const_diag_iter end, Kr
     ei = end->getIndex();
   savePartOfX(si, ei, x, work);
 
-  for (const_diag_iter di = start; di != end; ++di)
+  for (auto di = start; di != end; ++di)
     if (int jbar {di->getIndex()}; di->isReal())
       {
         KronVector xi(x, jbar);
@@ -268,8 +268,8 @@ BlockDiagonal::multKron(KronVector& x) const
 {
   int largest = getLargestBlock();
   Vector work(largest * x.getN() * power(x.getM(), x.getDepth() - 1));
-  const_diag_iter start = diag_begin();
-  const_diag_iter end = findBlockStart(start);
+  auto start = diag_begin();
+  auto end = findBlockStart(start);
   while (start != diag_end())
     {
       multKronBlock(start, end, x, work);
@@ -283,8 +283,8 @@ BlockDiagonal::multKronTrans(KronVector& x) const
 {
   int largest = getLargestBlock();
   Vector work(largest * x.getN() * power(x.getM(), x.getDepth() - 1));
-  const_diag_iter start = diag_begin();
-  const_diag_iter end = findBlockStart(start);
+  auto start = diag_begin();
+  auto end = findBlockStart(start);
   while (start != diag_end())
     {
       multKronBlockTrans(start, end, x, work);
@@ -298,8 +298,8 @@ BlockDiagonal::printInfo() const
 {
   std::cout << "Block sizes:";
   int num_blocks = 0;
-  const_diag_iter start = diag_begin();
-  const_diag_iter end = findBlockStart(start);
+  auto start = diag_begin();
+  auto end = findBlockStart(start);
   while (start != diag_end())
     {
       int si = start->getIndex();
@@ -321,8 +321,8 @@ int
 BlockDiagonal::getNumBlocks() const
 {
   int num_blocks = 0;
-  const_diag_iter start = diag_begin();
-  const_diag_iter end = findBlockStart(start);
+  auto start = diag_begin();
+  auto end = findBlockStart(start);
   while (start != diag_end())
     {
       num_blocks++;

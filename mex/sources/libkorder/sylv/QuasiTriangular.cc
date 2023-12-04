@@ -198,7 +198,7 @@ Diagonal::getEigenValues(Vector& eig) const
 void
 Diagonal::swapLogically(diag_iter it)
 {
-  diag_iter itp = it;
+  auto itp = it;
   ++itp;
 
   if (it->isReal() && !itp->isReal())
@@ -250,7 +250,7 @@ Diagonal::getAverageSize(diag_iter start, diag_iter end)
 {
   double res = 0;
   int num = 0;
-  for (diag_iter run = start; run != end; ++run)
+  for (auto run = start; run != end; ++run)
     {
       num++;
       res += run->getSize();
@@ -263,9 +263,9 @@ Diagonal::getAverageSize(diag_iter start, diag_iter end)
 Diagonal::diag_iter
 Diagonal::findClosestBlock(diag_iter start, diag_iter end, double a)
 {
-  diag_iter closest = start;
+  auto closest = start;
   double minim {std::numeric_limits<double>::infinity()};
-  for (diag_iter run = start; run != end; ++run)
+  for (auto run = start; run != end; ++run)
     if (double dist = std::abs(a - run->getSize()); dist < minim)
       {
         minim = dist;
@@ -277,9 +277,9 @@ Diagonal::findClosestBlock(diag_iter start, diag_iter end, double a)
 Diagonal::diag_iter
 Diagonal::findNextLargerBlock(diag_iter start, diag_iter end, double a)
 {
-  diag_iter closest = start;
+  auto closest = start;
   double minim {std::numeric_limits<double>::infinity()};
-  for (diag_iter run = start; run != end; ++run)
+  for (auto run = start; run != end; ++run)
     if (double dist = run->getSize() - a; 0 <= dist && dist < minim)
       {
         minim = dist;
@@ -467,7 +467,7 @@ QuasiTriangular::addMatrix(double r, const QuasiTriangular& t)
 void
 QuasiTriangular::addUnit()
 {
-  for (diag_iter di = diag_begin(); di != diag_end(); ++di)
+  for (auto di = diag_begin(); di != diag_end(); ++di)
     di->getAlpha() = *(di->getAlpha()) + 1.0;
 }
 
@@ -489,7 +489,7 @@ void
 QuasiTriangular::solvePre(Vector& x, double& eig_min)
 {
   addUnit();
-  for (diag_iter di = diag_begin(); di != diag_end(); ++di)
+  for (auto di = diag_begin(); di != diag_end(); ++di)
     {
       double eig_size;
       if (!di->isReal())
@@ -512,7 +512,7 @@ void
 QuasiTriangular::solvePreTrans(Vector& x, double& eig_min)
 {
   addUnit();
-  for (diag_iter di = diag_begin(); di != diag_end(); ++di)
+  for (auto di = diag_begin(); di != diag_end(); ++di)
     {
       double eig_size;
       if (!di->isReal())
@@ -541,7 +541,7 @@ QuasiTriangular::multVec(Vector& x, const ConstVector& b) const
   blas_int lda = ld;
   blas_int incx = x.skip();
   dtrmv("U", "N", "N", &nn, getData().base(), &lda, x.base(), &incx);
-  for (const_diag_iter di = diag_begin(); di != diag_end(); ++di)
+  for (auto di = diag_begin(); di != diag_end(); ++di)
     if (!di->isReal())
       {
         int jbar = di->getIndex();
@@ -557,7 +557,7 @@ QuasiTriangular::multVecTrans(Vector& x, const ConstVector& b) const
   blas_int lda = ld;
   blas_int incx = x.skip();
   dtrmv("U", "T", "N", &nn, getData().base(), &lda, x.base(), &incx);
-  for (const_diag_iter di = diag_begin(); di != diag_end(); ++di)
+  for (auto di = diag_begin(); di != diag_end(); ++di)
     if (!di->isReal())
       {
         int jbar = di->getIndex();

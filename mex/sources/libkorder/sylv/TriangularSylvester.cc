@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -70,7 +70,7 @@ TriangularSylvester::solvi(double r, KronVector& d, double& eig_min) const
     }
   else
     {
-      for (const_diag_iter di = matrixF->diag_begin(); di != matrixF->diag_end(); ++di)
+      for (auto di = matrixF->diag_begin(); di != matrixF->diag_end(); ++di)
         if (di->isReal())
           solviRealAndEliminate(r, di, d, eig_min);
         else
@@ -108,8 +108,8 @@ TriangularSylvester::solviip(double alpha, double betas, KronVector& d, double& 
     }
   else
     {
-      const_diag_iter di = matrixF->diag_begin();
-      const_diag_iter dsi = matrixFF->diag_begin();
+      auto di = matrixF->diag_begin();
+      auto dsi = matrixFF->diag_begin();
       for (; di != matrixF->diag_end(); ++di, ++dsi)
         if (di->isReal())
           solviipRealAndEliminate(alpha, betas, di, dsi, d, eig_min);

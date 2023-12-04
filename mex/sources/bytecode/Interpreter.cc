@@ -1403,7 +1403,7 @@ Interpreter::Init_Matlab_Sparse_One_Boundary(const mxArray* A_m, const mxArray* 
 tuple<bool, SuiteSparse_long*, SuiteSparse_long*, double*, double*>
 Interpreter::Init_UMFPACK_Sparse_One_Boundary(const mxArray* x0_m) const
 {
-  double* b = static_cast<double*>(mxMalloc(size * sizeof(double)));
+  auto* b = static_cast<double*>(mxMalloc(size * sizeof(double)));
   test_mxMalloc(b, __LINE__, __FILE__, __func__, size * sizeof(double));
   if (!b)
     throw FatalException {"In Init_UMFPACK_Sparse_One_Boundary, can't retrieve b vector"};
@@ -1421,7 +1421,7 @@ Interpreter::Init_UMFPACK_Sparse_One_Boundary(const mxArray* x0_m) const
   test_mxMalloc(Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
   if (!Ai)
     throw FatalException {"In Init_UMFPACK_Sparse_One_Boundary, can't allocate Ai index vector"};
-  double* Ax = static_cast<double*>(mxMalloc(prior_nz * sizeof(double)));
+  auto* Ax = static_cast<double*>(mxMalloc(prior_nz * sizeof(double)));
   test_mxMalloc(Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
   if (!Ax)
     throw FatalException {"In Init_UMFPACK_Sparse_One_Boundary, can't retrieve Ax matrix"};
@@ -1511,7 +1511,7 @@ Interpreter::Init_UMFPACK_Sparse_Two_Boundaries(
     const vector_table_conditional_local_type& vector_table_conditional_local) const
 {
   int n = periods * size;
-  double* b = static_cast<double*>(mxMalloc(n * sizeof(double)));
+  auto* b = static_cast<double*>(mxMalloc(n * sizeof(double)));
   if (!b)
     throw FatalException {"In Init_UMFPACK_Sparse_Two_Boundaries, can't retrieve b vector"};
   double* x0 = mxGetPr(x0_m);
@@ -1528,7 +1528,7 @@ Interpreter::Init_UMFPACK_Sparse_Two_Boundaries(
   test_mxMalloc(Ai, __LINE__, __FILE__, __func__, prior_nz * sizeof(SuiteSparse_long));
   if (!Ai)
     throw FatalException {"In Init_UMFPACK_Sparse_Two_Boundaries, can't allocate Ai index vector"};
-  double* Ax = static_cast<double*>(mxMalloc(prior_nz * sizeof(double)));
+  auto* Ax = static_cast<double*>(mxMalloc(prior_nz * sizeof(double)));
   test_mxMalloc(Ax, __LINE__, __FILE__, __func__, prior_nz * sizeof(double));
   if (!Ax)
     throw FatalException {"In Init_UMFPACK_Sparse_Two_Boundaries, can't retrieve Ax matrix"};
@@ -2033,9 +2033,9 @@ Interpreter::compare(int* save_op, int* save_opa, int* save_opaa, int beg_t, lon
   long j = 0, i = 0;
   while (i < nop4 && OK)
     {
-      t_save_op_s* save_op_s = reinterpret_cast<t_save_op_s*>(&save_op[i]);
-      t_save_op_s* save_opa_s = reinterpret_cast<t_save_op_s*>(&save_opa[i]);
-      t_save_op_s* save_opaa_s = reinterpret_cast<t_save_op_s*>(&save_opaa[i]);
+      auto* save_op_s = reinterpret_cast<t_save_op_s*>(&save_op[i]);
+      auto* save_opa_s = reinterpret_cast<t_save_op_s*>(&save_opa[i]);
+      auto* save_opaa_s = reinterpret_cast<t_save_op_s*>(&save_opaa[i]);
       diff1[j] = save_op_s->first - save_opa_s->first;
       max_save_ops_first = max(max_save_ops_first, save_op_s->first + diff1[j] * (periods - beg_t));
       switch (save_op_s->operat)
@@ -3394,9 +3394,9 @@ bool
 Interpreter::Solve_ByteCode_Sparse_GaussianElimination()
 {
   int pivj = 0, pivk = 0;
-  NonZeroElem** bc = static_cast<NonZeroElem**>(mxMalloc(size * sizeof(*bc)));
+  auto** bc = static_cast<NonZeroElem**>(mxMalloc(size * sizeof(NonZeroElem*)));
   test_mxMalloc(bc, __LINE__, __FILE__, __func__, size * sizeof(*bc));
-  double* piv_v = static_cast<double*>(mxMalloc(size * sizeof(double)));
+  auto* piv_v = static_cast<double*>(mxMalloc(size * sizeof(double)));
   test_mxMalloc(piv_v, __LINE__, __FILE__, __func__, size * sizeof(double));
   int* pivj_v = static_cast<int*>(mxMalloc(size * sizeof(int)));
   test_mxMalloc(pivj_v, __LINE__, __FILE__, __func__, size * sizeof(int));
@@ -3659,7 +3659,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
   int pivj = 0, pivk = 0;
   int tbreak = 0, last_period = periods;
 
-  double* piv_v = static_cast<double*>(mxMalloc(size * sizeof(double)));
+  auto* piv_v = static_cast<double*>(mxMalloc(size * sizeof(double)));
   test_mxMalloc(piv_v, __LINE__, __FILE__, __func__, size * sizeof(double));
   int* pivj_v = static_cast<int*>(mxMalloc(size * sizeof(int)));
   test_mxMalloc(pivj_v, __LINE__, __FILE__, __func__, size * sizeof(int));
@@ -3667,7 +3667,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
   test_mxMalloc(pivk_v, __LINE__, __FILE__, __func__, size * sizeof(int));
   int* NR = static_cast<int*>(mxMalloc(size * sizeof(int)));
   test_mxMalloc(NR, __LINE__, __FILE__, __func__, size * sizeof(int));
-  NonZeroElem** bc = static_cast<NonZeroElem**>(mxMalloc(size * sizeof(NonZeroElem*)));
+  auto** bc = static_cast<NonZeroElem**>(mxMalloc(size * sizeof(NonZeroElem*)));
   test_mxMalloc(bc, __LINE__, __FILE__, __func__, size * sizeof(NonZeroElem*));
 
   for (int t = 0; t < periods; t++)
@@ -3821,7 +3821,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
                   nopa = static_cast<long>(mem_increasing_factor * static_cast<double>(nopa));
                   save_op = static_cast<int*>(mxRealloc(save_op, nopa * sizeof(int)));
                 }
-              t_save_op_s* save_op_s = reinterpret_cast<t_save_op_s*>(&save_op[nop]);
+              auto* save_op_s = reinterpret_cast<t_save_op_s*>(&save_op[nop]);
               save_op_s->operat = IFLD;
               save_op_s->first = pivk;
               save_op_s->lag = 0;

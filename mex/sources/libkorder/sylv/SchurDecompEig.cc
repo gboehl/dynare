@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -34,10 +34,10 @@
 SchurDecompEig::diag_iter
 SchurDecompEig::bubbleEigen(diag_iter from, diag_iter to)
 {
-  diag_iter run = from;
+  auto run = from;
   while (run != to)
     {
-      diag_iter runm = run;
+      auto runm = run;
       if (!tryToSwap(run, runm) && runm == to)
         ++to;
       else
@@ -98,13 +98,13 @@ SchurDecompEig::tryToSwap(diag_iter& it, diag_iter& itadd)
 void
 SchurDecompEig::orderEigen()
 {
-  diag_iter run = getT().diag_begin();
-  diag_iter runp = run;
+  auto run = getT().diag_begin();
+  auto runp = run;
   ++runp;
   double last_size = 0.0;
   while (runp != getT().diag_end())
     {
-      diag_iter least = getT().findNextLargerBlock(run, getT().diag_end(), last_size);
+      auto least = getT().findNextLargerBlock(run, getT().diag_end(), last_size);
       last_size = least->getSize();
       if (run == least)
         ++run;
