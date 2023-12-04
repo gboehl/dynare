@@ -35,6 +35,10 @@ function redform_screen(dirname, options_gsa_, estim_params_, M_, dr, options_, 
 anamendo = options_gsa_.namendo;
 anamlagendo = options_gsa_.namlagendo;
 anamexo = options_gsa_.namexo;
+anamendo_tex = options_gsa_.namendo_tex;
+anamlagendo_tex = options_gsa_.namlagendo_tex;
+anamexo_tex = options_gsa_.namexo_tex;
+
 nliv = options_gsa_.morris_nliv;
 
 pnames = M_.param_names(estim_params_.param_vals(:,1));
@@ -59,11 +63,13 @@ nsok = length(find(M_.lead_lag_incidence(M_.maximum_lag,:)));
 js=0;
 for j=1:size(anamendo,1)
     namendo = anamendo{j,:};
+    namendo_tex = anamendo_tex{j,:};
     iendo = strmatch(namendo, M_.endo_names(dr.order_var), 'exact');
     iplo=0;
     ifig=0;
     for jx=1:size(anamexo,1)
         namexo = anamexo{jx};
+        namexo_tex = anamexo_tex{jx};
         iexo = strmatch(namexo, M_.exo_names, 'exact');
         if ~isempty(iexo)
             y0=teff(T(iendo,iexo+nspred,:), kn, istable);
@@ -90,7 +96,11 @@ for j=1:size(anamendo,1)
                         text(ip,-0.02,pnames(iso(ip)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
                     end
                 end
-                title([namendo,' vs. ',namexo],'interpreter','none')
+                if options_.TeX
+                    title([namendo_tex,' vs. ',namexo_tex],'interpreter','latex')
+                else
+                    title([namendo,' vs. ',namexo],'interpreter','none')
+                end
                 if iplo==9
                     dyn_saveas(hh_fig,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],options_.nodisplay,options_.graph_format);
                     create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_shock_',num2str(ifig)],ifig,[namendo,' vs. shocks ',int2str(ifig)],[namendo,'_vs_shock'],1)
@@ -108,6 +118,7 @@ for j=1:size(anamendo,1)
     ifig=0;
     for je=1:size(anamlagendo,1)
         namlagendo=anamlagendo{je};
+        namlagendo_tex=anamlagendo_tex{je};
         ilagendo=strmatch(namlagendo, M_.endo_names(dr.order_var(M_.nstatic+1:M_.nstatic+nsok)), 'exact');
 
         if ~isempty(ilagendo)
@@ -136,7 +147,11 @@ for j=1:size(anamendo,1)
                     end
                 end
 
-                title([namendo,' vs. ',namlagendo,'(-1)'],'interpreter','none')
+                if options_.TeX
+                    title([namendo_tex,' vs. ',namlagendo_tex,'(-1)'],'interpreter','latex')
+                else
+                    title([namendo,' vs. ',namlagendo,'(-1)'],'interpreter','none')
+                end
                 if iplo==9
                     dyn_saveas(hh_fig,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],options_.nodisplay,options_.graph_format);
                     create_TeX_loader(options_,[dirname,'/',M_.fname,'_', namendo,'_vs_lags_',num2str(ifig)],ifig,[namendo,' vs. lagged endogenous ',int2str(ifig)],[namendo,'_vs_lags'],1)

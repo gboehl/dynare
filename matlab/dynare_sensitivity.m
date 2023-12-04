@@ -200,8 +200,29 @@ options_gsa = set_default_option(options_gsa,'threshold_redform',[]);
 options_gsa = set_default_option(options_gsa,'ksstat_redform',0.001);
 options_gsa = set_default_option(options_gsa,'alpha2_redform',1.e-5);
 options_gsa = set_default_option(options_gsa,'namendo',{});
-options_gsa = set_default_option(options_gsa,'namlagendo',[]);
+options_gsa = set_default_option(options_gsa,'namlagendo',{});
 options_gsa = set_default_option(options_gsa,'namexo',{});
+options_gsa = set_default_option(options_gsa,'namendo_tex',{});
+options_gsa = set_default_option(options_gsa,'namlagendo_tex',{});
+options_gsa = set_default_option(options_gsa,'namexo_tex',{});
+if strmatch(':',options_gsa.namendo,'exact')
+    options_gsa.namendo = M_.endo_names(1:M_.orig_endo_nbr);
+end
+if strmatch(':',options_gsa.namexo,'exact')
+    options_gsa.namexo = M_.exo_names;
+end
+if strmatch(':',options_gsa.namlagendo,'exact')
+    options_gsa.namlagendo = M_.endo_names(1:M_.orig_endo_nbr);
+end
+
+if options_.TeX
+    [~,Locb]=ismember(options_gsa.namendo,M_.endo_names);
+    options_gsa.namendo_tex=cellfun(@(x) horzcat('$', x, '$'), M_.endo_names_tex(Locb), 'UniformOutput', false);
+    [~,Locb]=ismember(options_gsa.namlagendo,M_.endo_names);
+    options_gsa.namlagendo_tex=cellfun(@(x) horzcat('$', x, '$'), M_.endo_names_tex(Locb), 'UniformOutput', false);
+    [~,Locb]=ismember(options_gsa.namexo,M_.exo_names);
+    options_gsa.namexo_tex=cellfun(@(x) horzcat('$', x, '$'), M_.exo_names_tex(Locb), 'UniformOutput', false);
+end
 % RMSE mapping
 options_gsa = set_default_option(options_gsa,'load_rmse',0);
 options_gsa = set_default_option(options_gsa,'lik_only',0);
@@ -324,15 +345,6 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
         options_gsa.load_stab=1;
 
         x0 = stab_map_(OutputDirectoryName,options_gsa,M_,oo_,options_,bayestopt_,estim_params_);
-    end
-    if strmatch(':',options_gsa.namendo,'exact')
-        options_gsa.namendo = M_.endo_names(1:M_.orig_endo_nbr);
-    end
-    if strmatch(':',options_gsa.namexo,'exact')
-        options_gsa.namexo = M_.exo_names;
-    end
-    if strmatch(':',options_gsa.namlagendo,'exact')
-        options_gsa.namlagendo = M_.endo_names(1:M_.orig_endo_nbr);
     end
     if options_gsa.morris==1
         redform_screen(OutputDirectoryName,options_gsa, estim_params_, M_, oo_.dr, options_, bayestopt_);

@@ -61,7 +61,7 @@ istart   = max(2,options_gsa_.istart_rmse);
 
 fname_ = M_.fname;
 
-skipline(2)
+skipline(1)
 disp('Starting sensitivity analysis')
 disp('for the fit of EACH observed series ...')
 skipline()
@@ -99,6 +99,8 @@ if ~options_.nograph
     disp('done !')
 end
 
+[param_names,param_names_tex]=get_LaTeX_parameter_names(M_,options_,estim_params_,bayestopt_);
+
 nshock=estim_params_.nvx + estim_params_.nvn + estim_params_.ncx + estim_params_.ncn;
 npar=estim_params_.np;
 if ~isempty(options_.mode_file)
@@ -107,10 +109,12 @@ end
 if options_.opt_gsa.ppost
     c=load([M_.dname filesep 'Output' filesep fname_,'_mean.mat'],'xparam1');
     xparam1_mean=c.xparam1;
+    xparam1=c.xparam1;
     clear c
 elseif ~isempty(options_.mode_file) && exist([M_.dname filesep 'Output' filesep fname_,'_mean.mat'],'file')==2
     c=load([M_.dname filesep 'Output' filesep fname_,'_mean.mat'],'xparam1');
     xparam1_mean=c.xparam1;
+    xparam1=c.xparam1;
     clear c
 end
 
@@ -149,7 +153,7 @@ if ~loadSA
     sto_ys=[];
     for j=1:length(filparam)
         if isempty(strmatch([M_.fname '_param_irf'],filparam(j).name))
-            temp=load([DirectoryName filesep filparam(j).name]);
+            temp=load([DirectoryName filesep filparam(j).name]); % from prior_posterior_statistics_core
             x=[x; temp.stock];
             logpo2=[logpo2; temp.stock_logpo];
             sto_ys=[sto_ys; temp.stock_ys];
@@ -178,7 +182,7 @@ if ~loadSA
             r2_mode = 1-sum((yobs(istart:end,:)-y0(istart:end,:)).^2)./sum(yobs(istart:end,:).^2);
         end
         
-        y0=-yss;
+        y0=-yss; %demean everything using the theoretical mean, i.e. steady state
         nbb=0;
         for j=1:length(filfilt)
             temp=load([DirectoryName filesep M_.fname '_filter_step_ahead',num2str(j),'.mat']);
@@ -259,17 +263,17 @@ end
 
 % visual scatter analysis!
 if options_.opt_gsa.ppost
-    tmp_title='R2 Posterior:';
-    atitle='R2 Posterior:';
+    tmp_title='R2 Scatter plot: Posterior';
+    atitle='R2 Scatter plot: Posterior';
     asname='r2_post';
 else
     if options_.opt_gsa.pprior
-        tmp_title='R2 Prior:';
-        atitle='R2 Prior:';
+        tmp_title='R2 Scatter plot: Prior';
+        atitle='R2 Scatter plot: Prior';
         asname='r2_prior';
     else
-        tmp_title='R2 MC:';
-        atitle='R2 MC:';
+        tmp_title='R2 Scatter plot: MC';
+        atitle='R2 Scatter plot: MC';
         asname='r2_mc';
     end
 end
@@ -294,13 +298,10 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
     options_mcf.pvalue_ks = alpha;
     options_mcf.pvalue_corr = pvalue;
     options_mcf.alpha2 = alpha2;
+    options_mcf.param_names = param_names;
     if options_.TeX
-        [pnames,pnames_tex]=get_LaTeX_parameter_names(M_,options_,estim_params_,bayestopt_);
-        options_mcf.param_names = pnames;
-        options_mcf.param_names_tex = pnames_tex;
+        options_mcf.param_names_tex = param_names_tex;
     else
-        [pnames]=get_LaTeX_parameter_names(M_,options_,estim_params_,bayestopt_);
-        options_mcf.param_names = pnames;
         options_mcf.param_names_tex = {};
     end
     options_mcf.fname_ = fname_;
@@ -408,7 +409,11 @@ else
             set(h,'color','k','linewidth',1)
             h=cumplot(lnprior(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
-            title(vvarvecm{i},'interpreter','none')
+            if options_.TeX
+                title(vvarvecm_tex{i},'interpreter','latex')
+            else
+                title(vvarvecm{i},'interpreter','none')
+            end
             if mod(i,9)==0 || i==length(vvarvecm)
                 if ~isoctave
                     annotation('textbox', [0.1,0,0.35,0.05],'String', 'Log-prior for BETTER R2','Color','Blue','horizontalalignment','center');
@@ -456,7 +461,11 @@ else
             set(h,'color','k','linewidth',1)
             h=cumplot(likelihood(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
-            title(vvarvecm{i},'interpreter','none')
+            if options_.TeX
+                title(vvarvecm_tex{i},'interpreter','latex')
+            else
+                title(vvarvecm{i},'interpreter','none')
+            end
             if options_.opt_gsa.ppost==0
                 set(gca,'xlim',[min( likelihood(ixx(1:nfilt0(i),i)) ) max( likelihood(ixx(1:nfilt0(i),i)) )])
             end
@@ -507,7 +516,11 @@ else
             set(h,'color','k','linewidth',1)
             h=cumplot(logpo2(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
-            title(vvarvecm{i},'interpreter','none')
+            if options_.TeX
+                title(vvarvecm_tex{i},'interpreter','latex')
+            else
+                title(vvarvecm{i},'interpreter','none')
+            end
             if options_.opt_gsa.ppost==0
                 set(gca,'xlim',[min( logpo2(ixx(1:nfilt0(i),i)) ) max( logpo2(ixx(1:nfilt0(i),i)) )])
             end
@@ -537,15 +550,6 @@ else
             end
         end
     end
-    if options_.TeX
-        [pnames,pnames_tex]=get_LaTeX_parameter_names(M_,options_,estim_params_,bayestopt_);
-        param_names = pnames;
-        param_names_tex = pnames_tex;
-    else
-        [pnames]=get_LaTeX_parameter_names(M_,options_,estim_params_,bayestopt_);
-        param_names = pnames;
-        param_names_tex = {};
-    end
     skipline()
     title_string='RMSE over the MC sample:';
     data_mat=[min(rmse_MC)' max(rmse_MC)'];
@@ -557,7 +561,7 @@ else
     end
     invar = find( std(rmse_MC)./mean(rmse_MC)<=0.0001 );
     if ~isempty(invar)
-        skipline(2)
+        skipline(1)
         disp('RMSE is not varying significantly over the MC sample for the following variables:')
         disp(vvarvecm{invar})
         disp('These variables are excluded from SA')
@@ -569,8 +573,7 @@ else
     rmse_MC = rmse_MC(:,ivar);
     skipline()
     disp(['Sample filtered the ',num2str(pfilt*100),'% best RMSE''s for each observed series ...' ])
-    skipline(2)
-    disp('RMSE ranges after filtering:')
+    skipline(1)
     title_string='RMSE ranges after filtering:';
     if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
         headers = {'Variable'; 'min'; 'max'; 'min'; 'max'; 'posterior mode'};
@@ -704,7 +707,7 @@ else
     snam1=param_names(nsp==1);
     snam2=param_names(nsp>1);
     nsnam=(find(nsp>1));
-    skipline(2)
+    skipline(1)
     disp('These parameters do not affect significantly the fit of ANY observed series:')
     disp(char(snam0))
     skipline()
@@ -713,7 +716,6 @@ else
     skipline()
     disp('These parameters affect MORE THAN ONE observed series: trade off exists!')
     disp(char(snam2))
-    pnam=bayestopt_.name;
     % plot trade-offs
     if ~options_.nograph
         a00=jet(length(vvarvecm));
@@ -782,13 +784,21 @@ else
                         set(h1,'color',[0.85 0.85 0.85],'linewidth',2)
                     end
                     xlabel('')
-                    title([pnam{ipar(j)}],'interpreter','none')
+                    if options_.TeX
+                        title([param_names_tex{ipar(j)}],'interpreter','latex')
+                    else
+                        title([param_names{ipar(j)}],'interpreter','none')
+                    end
                 end
                 if isoctave
                     legend(vertcat('base',vvarvecm),'location','eastoutside');
                 else
-                    h0=legend(vertcat('base',vvarvecm));
-                    set(h0,'fontsize',6,'position',[0.7 0.1 0.2 0.3],'interpreter','none');
+                    if options_.TeX
+                        h0=legend(vertcat('base',vvarvecm_tex),'interpreter','latex');
+                    else
+                        h0=legend(vertcat('base',vvarvecm),'interpreter','none');
+                    end
+                    set(h0,'fontsize',6,'position',[0.7 0.1 0.2 0.3]);
                 end
                 if options_.opt_gsa.ppost
                     dyn_saveas(hh_fig,[ OutDir filesep fname_ '_rmse_post_' vvarvecm{iy} '_' int2str(ix)],options_.nodisplay,options_.graph_format);
@@ -839,14 +849,22 @@ else
                     set(h1,'color',[0.85 0.85 0.85],'linewidth',2)
                 end
                 xlabel('')
-                title([pnam{nsnam(j)}],'interpreter','none')
+                if options_.TeX
+                    title([param_names_tex{nsnam(j)}],'interpreter','latex')
+                else
+                    title([param_names{nsnam(j)}],'interpreter','none')
+                end
             end
             %subplot(3,2,6)
             if isoctave
                 legend(vertcat('base',vvarvecm),'location','eastoutside');
             else
-                h0=legend(vertcat('base',vvarvecm));
-                set(h0,'fontsize',6,'position',[0.7 0.1 0.2 0.3],'interpreter','none');
+                if options_.TeX
+                    h0=legend(vertcat('base',vvarvecm_tex),'interpreter','latex');
+                else
+                    h0=legend(vertcat('base',vvarvecm),'interpreter','none');
+                end
+                set(h0,'fontsize',6,'position',[0.7 0.1 0.2 0.3]);
             end
             if options_.opt_gsa.ppost
                 dyn_saveas(hh_fig,[ OutDir filesep fname_ '_rmse_post_params_' int2str(ix)],options_.nodisplay,options_.graph_format);

@@ -34,6 +34,9 @@ function redform_map(dirname,options_gsa_,M_,estim_params_,options_,bayestopt_,o
 anamendo = options_gsa_.namendo;
 anamlagendo = options_gsa_.namlagendo;
 anamexo = options_gsa_.namexo;
+anamendo_tex = options_gsa_.namendo_tex;
+anamlagendo_tex = options_gsa_.namlagendo_tex;
+anamexo_tex = options_gsa_.namexo_tex;
 iload = options_gsa_.load_redform;
 pprior = options_gsa_.pprior;
 ilog = options_gsa_.logtrans_redform;
@@ -134,11 +137,13 @@ lpmat0=[];
 js=0;
 for j = 1:length(anamendo)
     namendo = anamendo{j};
+    namendo_tex = anamendo_tex{j};
     iendo = strmatch(namendo, M_.endo_names(oo_.dr.order_var), 'exact');
     ifig = 0;
     iplo = 0;
     for jx = 1:length(anamexo)
         namexo = anamexo{jx};
+        namexo_tex = anamexo_tex{jx};
         iexo=strmatch(namexo, M_.exo_names, 'exact');
         skipline()
         disp(['[', namendo,' vs ',namexo,']'])
@@ -187,9 +192,13 @@ for j = 1:length(anamendo)
                             hc = cumplot(y0);
                             set(hc,'color','k','linewidth',2)
                             hold off,
-                            title([namendo,' vs ', namexo ' - threshold [' num2str(threshold(1)) ' ' num2str(threshold(2)) ']'],'interpreter','none')
+                            if options_.TeX
+                                title([namendo_tex,' vs ', namexo_tex ' - threshold [' num2str(threshold(1)) ' ' num2str(threshold(2)) ']'],'interpreter','latex')
+                            else
+                                title([namendo,' vs ', namexo ' - threshold [' num2str(threshold(1)) ' ' num2str(threshold(2)) ']'],'interpreter','none')
+                            end
                             dyn_saveas(hf,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namexo],options_.nodisplay,options_.graph_format);
-                            create_TeX_loader(options_,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namexo],['Reduced Form Mapping (Monte Carlo Filtering): ',strrep(namendo,'_','\_'),' vs ', strrep(namexo,'_','\_')],[type '_' namendo,'_vs_', namexo])
+                            create_TeX_loader(options_,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namexo],['Reduced Form Mapping (Monte Carlo Filtering): ',namendo_tex,' vs ', namexo_tex],[type '_' namendo,'_vs_', namexo])
                         end
                         si(:,js) = NaN(np,1);
                         delete([xdir, '/*threshold*.*'])
@@ -271,12 +280,20 @@ for j = 1:length(anamendo)
                     set(gca,'xticklabel',' ','fontsize',10)
                     set(gca,'xlim',[0.5 10.5])
                     for ip=1:min(np,10)
-                        text(ip,-0.02,deblank(pnames(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                        if options_.TeX
+                            text(ip,-0.02,deblank(pnames_tex(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+                        else
+                            text(ip,-0.02,deblank(pnames(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                        end
                     end
-                    title([logflag,' ',namendo,' vs ',namexo],'interpreter','none')
+                    if options_.TeX
+                        title([logflag,' ',namendo_tex,' vs ',namexo_tex],'interpreter','none')
+                    else
+                        title([logflag,' ',namendo,' vs ',namexo],'interpreter','none')
+                    end
                     if iplo==9
                         dyn_saveas(hh_fig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
-                        create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namexo,'_','\_')],['redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],1)
+                        create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],[logflag,' ',namendo_tex,' vs ',namexo_tex],['redform_', namendo,'_vs_shocks_',logflag,num2str(ifig)],1)
                     end
                 end
 
@@ -293,6 +310,7 @@ for j = 1:length(anamendo)
     iplo=0;
     for je=1:length(anamlagendo)
         namlagendo = anamlagendo{je};
+        namlagendo_tex = anamlagendo_tex{je};        
         ilagendo=strmatch(namlagendo, M_.endo_names(oo_.dr.order_var(M_.nstatic+1:M_.nstatic+nsok)), 'exact');
         skipline()
         disp(['[', namendo,' vs lagged ',namlagendo,']'])
@@ -313,9 +331,9 @@ for j = 1:length(anamendo)
                         if isempty(dir(xdir0))
                             mkdir(xdir0)
                         end
-                        atitle0=['Reduced Form Mapping (ANOVA) for ',namendo,' vs ', namlagendo];
-                        aname=[type '_' namendo '_vs_' namlagendo];
-                        atitle=[type ' Reduced Form Mapping (ANOVA): Parameter(s) driving ',namendo,' vs ',namlagendo];
+                        atitle0=['Reduced Form Mapping (ANOVA) for ',namendo,' vs lagged', namlagendo];
+                        aname=[type '_' namendo '_vs_lag_' namlagendo];
+                        atitle=[type ' Reduced Form Mapping (ANOVA): Parameter(s) driving ',namendo,' vs lagged',namlagendo];
                         options_map.amap_name = aname;
                         options_map.amap_title = atitle;
                         options_map.figtitle = atitle0;
@@ -340,10 +358,14 @@ for j = 1:length(anamendo)
                             hold all,
                             hc = cumplot(y0);
                             set(hc,'color','k','linewidth',2)
-                            hold off,
-                            title([namendo,' vs lagged ', namlagendo ' - threshold [' num2str(threshold(1)) ' ' num2str(threshold(2)) ']'],'interpreter','none')
+                            hold off
+                            if options_.TeX
+                                title([namendo_tex,' vs lagged ', namlagendo_tex ' - threshold [' num2str(threshold(1)) ' ' num2str(threshold(2)) ']'],'interpreter','latex')
+                            else
+                                title([namendo,' vs lagged ', namlagendo ' - threshold [' num2str(threshold(1)) ' ' num2str(threshold(2)) ']'],'interpreter','none')
+                            end
                             dyn_saveas(hf,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namlagendo],options_.nodisplay,options_.graph_format);
-                            create_TeX_loader(options_,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namlagendo],['Reduced Form Mapping (Monte Carlo Filtering): ',strrep(namendo,'_','\_'),' vs lagged ', strrep(namlagendo,'_','\_')],[type '_' namendo,'_vs_', namlagendo],1)
+                            create_TeX_loader(options_,[xdir,filesep, fname_ '_' type '_' namendo,'_vs_', namlagendo],['Reduced Form Mapping (Monte Carlo Filtering): ',namendo_tex,' vs lagged ', namlagendo_tex],[type '_' namendo,'_vs_', namlagendo],1)
                         end
 
                         delete([xdir, '/*threshold*.*'])
@@ -427,12 +449,16 @@ for j = 1:length(anamendo)
                     set(gca,'xticklabel',' ','fontsize',10)
                     set(gca,'xlim',[0.5 10.5])
                     for ip=1:min(np,10)
-                        text(ip,-0.02,deblank(pnames(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                        if options_.TeX
+                            text(ip,-0.02,deblank(pnames_tex(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','latex')
+                        else                           
+                            text(ip,-0.02,deblank(pnames(iso(ip),:)),'rotation',90,'HorizontalAlignment','right','interpreter','none')
+                        end
                     end
                     title([logflag,' ',namendo,' vs ',namlagendo,'(-1)'],'interpreter','none')
                     if iplo==9
                         dyn_saveas(hh_fig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
-                        create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namlagendo,'_','\_'),'(-1)'],['redform_', namendo,'_vs_lags_',logflag,':',num2str(ifig)],1)
+                        create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],[logflag,' ',namendo_tex,' vs ',namlagendo_tex,'(-1)'],['redform_', namendo,'_vs_lags_',logflag,':',num2str(ifig)],1)
                     end
                 end
 
@@ -443,7 +469,7 @@ for j = 1:length(anamendo)
     end
     if iplo<9 && iplo>0 && ifig && ~options_.nograph
         dyn_saveas(hh_fig,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],options_.nodisplay,options_.graph_format);
-        create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],[logflag,' ',strrep(namendo,'_','\_'),' vs ',strrep(namlagendo,'_','\_'),'(-1)'],['redform_', namendo,'_vs_lags_',logflag,':',num2str(ifig)],options_.figures.textwidth*min(iplo/3,1));
+        create_TeX_loader(options_,[dirname,filesep,M_.fname,'_redform_', namendo,'_vs_lags_',logflag,num2str(ifig)],[logflag,' ',namendo_tex,' vs ',namlagendo_tex,'(-1)'],['redform_', namendo,'_vs_lags_',logflag,':',num2str(ifig)],options_.figures.textwidth*min(iplo/3,1));
     end
 end
 
@@ -725,7 +751,11 @@ for jx=1:nbr_par
         set(h,'color', cmap(jt,:), 'linewidth', 2)
         hold all
     end
-    title(options_mcf.param_names(indmcf(jx),:),'interpreter','none')
+    if options_.TeX
+        title(options_mcf.param_names_tex(indmcf(jx),:),'interpreter','latex')
+    else
+        title(options_mcf.param_names(indmcf(jx),:),'interpreter','none')
+    end
 end
 hleg = legend(leg);
 aa=get(hleg,'Position');
