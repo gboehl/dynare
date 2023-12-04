@@ -375,7 +375,7 @@ UGSTensor::UGSTensor(const FSSparseTensor& t, const IntSequence& ss, const IntSe
   if (ncols() == 0)
     return;
 
-  FGSTensor ft(t, ss, coor, td);
+  FGSTensor ft(t, ss, coor, tdims);
   for (index fi = ft.begin(); fi != ft.end(); ++fi)
     {
       index ui(*this, fi.getCoor());
@@ -392,7 +392,7 @@ UGSTensor::UGSTensor(const UFSTensor& t, const IntSequence& ss, const IntSequenc
     tdims(std::move(td))
 {
   FFSTensor folded(t);
-  FGSTensor ft(folded, ss, coor, td);
+  FGSTensor ft(folded, ss, coor, tdims);
   for (index fi = ft.begin(); fi != ft.end(); ++fi)
     {
       index ui(*this, fi.getCoor());
