@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -101,41 +101,41 @@ public:
   ConstGeneralMatrix& operator=(const ConstGeneralMatrix& v) = delete;
   ConstGeneralMatrix& operator=(ConstGeneralMatrix&& v) = delete;
 
-  const double&
+  [[nodiscard]] const double&
   get(int i, int j) const
   {
     return data[j * ld + i];
   }
-  int
+  [[nodiscard]] int
   nrows() const
   {
     return rows;
   }
-  int
+  [[nodiscard]] int
   ncols() const
   {
     return cols;
   }
-  int
+  [[nodiscard]] int
   getLD() const
   {
     return ld;
   }
-  const double*
+  [[nodiscard]] const double*
   base() const
   {
     return data.base();
   }
-  const ConstVector&
+  [[nodiscard]] const ConstVector&
   getData() const
   {
     return data;
   }
-  ConstVector getRow(int row) const;
-  ConstVector getCol(int col) const;
+  [[nodiscard]] ConstVector getRow(int row) const;
+  [[nodiscard]] ConstVector getCol(int col) const;
 
-  double getNormInf() const;
-  double getNorm1() const;
+  [[nodiscard]] double getNormInf() const;
+  [[nodiscard]] double getNorm1() const;
   /* x = scalar(a)*x + scalar(b)*this*d */
   void multVec(double a, Vector& x, double b, const ConstVector& d) const;
   /* x = scalar(a)*x + scalar(b)*this'*d */
@@ -173,9 +173,9 @@ public:
   /* d = inv(this')*d */
   void multInvLeftTrans(Vector& d) const;
 
-  bool isFinite() const;
+  [[nodiscard]] bool isFinite() const;
   /** Returns true of the matrix is exactly zero. */
-  bool isZero() const;
+  [[nodiscard]] bool isZero() const;
 
   virtual void print() const;
 
@@ -246,7 +246,7 @@ public:
   GeneralMatrix& operator=(GeneralMatrix&& m) = default;
   GeneralMatrix& operator=(const ConstGeneralMatrix& m);
 
-  const double&
+  [[nodiscard]] const double&
   get(int i, int j) const
   {
     return data[j * ld + i];
@@ -256,17 +256,17 @@ public:
   {
     return data[j * ld + i];
   }
-  int
+  [[nodiscard]] int
   nrows() const
   {
     return rows;
   }
-  int
+  [[nodiscard]] int
   ncols() const
   {
     return cols;
   }
-  int
+  [[nodiscard]] int
   getLD() const
   {
     return ld;
@@ -276,7 +276,7 @@ public:
   {
     return data.base();
   }
-  const double*
+  [[nodiscard]] const double*
   base() const
   {
     return data.base();
@@ -286,22 +286,22 @@ public:
   {
     return data;
   }
-  ConstVector
+  [[nodiscard]] ConstVector
   getData() const
   {
     return data;
   }
   Vector getRow(int row);
   Vector getCol(int col);
-  ConstVector getRow(int row) const;
-  ConstVector getCol(int col) const;
+  [[nodiscard]] ConstVector getRow(int row) const;
+  [[nodiscard]] ConstVector getCol(int col) const;
 
-  double
+  [[nodiscard]] double
   getNormInf() const
   {
     return ConstGeneralMatrix(*this).getNormInf();
   }
-  double
+  [[nodiscard]] double
   getNorm1() const
   {
     return ConstGeneralMatrix(*this).getNorm1();
@@ -474,13 +474,13 @@ public:
     add(a, ConstGeneralMatrix(m), dum);
   }
 
-  bool
+  [[nodiscard]] bool
   isFinite() const
   {
     return (ConstGeneralMatrix(*this)).isFinite();
   }
 
-  bool
+  [[nodiscard]] bool
   isZero() const
   {
     return (ConstGeneralMatrix(*this)).isZero();
@@ -594,12 +594,12 @@ public:
   {
     construct(A);
   }
-  const GeneralMatrix&
+  [[nodiscard]] const GeneralMatrix&
   getU() const
   {
     return U;
   }
-  const GeneralMatrix&
+  [[nodiscard]] const GeneralMatrix&
   getVT() const
   {
     return VT;

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -60,22 +60,22 @@ public:
   void multKronTrans(KronVector& x) const override;
   void multLeftOther(GeneralMatrix& a) const override;
 
-  std::unique_ptr<QuasiTriangular>
+  [[nodiscard]] std::unique_ptr<QuasiTriangular>
   clone() const override
   {
     return std::make_unique<QuasiTriangularZero>(*this);
   }
-  std::unique_ptr<QuasiTriangular>
+  [[nodiscard]] std::unique_ptr<QuasiTriangular>
   square() const override
   {
     return std::make_unique<QuasiTriangularZero>("square", *this);
   }
-  std::unique_ptr<QuasiTriangular>
+  [[nodiscard]] std::unique_ptr<QuasiTriangular>
   scale(double r) const override
   {
     return std::make_unique<QuasiTriangularZero>(r, *this);
   }
-  std::unique_ptr<QuasiTriangular>
+  [[nodiscard]] std::unique_ptr<QuasiTriangular>
   linearlyCombine(double r, double r2, const QuasiTriangular& t2) const override
   {
     return std::make_unique<QuasiTriangularZero>(r, *this, r2,

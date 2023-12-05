@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2021 Dynare Team
+ * Copyright © 2008-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -42,12 +42,12 @@ class DynareNameList : public NameList
 
 public:
   DynareNameList(std::vector<std::string> names_arg);
-  int
+  [[nodiscard]] int
   getNum() const override
   {
     return static_cast<int>(names.size());
   }
-  const std::string&
+  [[nodiscard]] const std::string&
   getName(int i) const override
   {
     return names[i];
@@ -61,12 +61,12 @@ class DynareStateNameList : public NameList
 public:
   DynareStateNameList(const KordpDynare& dynare, const DynareNameList& dnl,
                       const DynareNameList& denl);
-  int
+  [[nodiscard]] int
   getNum() const override
   {
     return static_cast<int>(names.size());
   }
-  const std::string&
+  [[nodiscard]] const std::string&
   getName(int i) const override
   {
     return names[i];
@@ -114,83 +114,83 @@ public:
               int ord, Journal& jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
               const std::vector<int>& varOrder, const ConstTwoDMatrix& ll_Incidence);
 
-  int
+  [[nodiscard]] int
   nstat() const override
   {
     return nStat;
   }
-  int
+  [[nodiscard]] int
   nboth() const override
   {
     return nBoth;
   }
-  int
+  [[nodiscard]] int
   npred() const override
   {
     return nPred;
   }
-  int
+  [[nodiscard]] int
   nforw() const override
   {
     return nForw;
   }
-  int
+  [[nodiscard]] int
   nexog() const override
   {
     return nExog;
   }
-  int
+  [[nodiscard]] int
   ny() const
   {
     return nStat + nBoth + nPred + nForw;
   }
-  int
+  [[nodiscard]] int
   nys() const
   {
     return nBoth + nPred;
   }
-  int
+  [[nodiscard]] int
   order() const override
   {
     return nOrder;
   }
-  const std::vector<int>&
+  [[nodiscard]] const std::vector<int>&
   getDynppToDyn() const
   {
     return dynppToDyn;
   }
-  const std::vector<int>&
+  [[nodiscard]] const std::vector<int>&
   getDynToDynpp() const
   {
     return dynToDynpp;
   }
-  const NameList&
+  [[nodiscard]] const NameList&
   getAllEndoNames() const override
   {
     return dnl;
   }
-  const NameList&
+  [[nodiscard]] const NameList&
   getStateNames() const override
   {
     return dsnl;
   }
-  const NameList&
+  [[nodiscard]] const NameList&
   getExogNames() const override
   {
     return denl;
   }
-  const TwoDMatrix&
+  [[nodiscard]] const TwoDMatrix&
   getVcov() const override
   {
     return vCov;
   }
 
-  const TensorContainer<FSSparseTensor>&
+  [[nodiscard]] const TensorContainer<FSSparseTensor>&
   getModelDerivatives() const override
   {
     return md;
   }
-  const Vector&
+  [[nodiscard]] const Vector&
   getSteady() const override
   {
     return ySteady;
@@ -206,7 +206,7 @@ public:
   void evaluateSystem(Vector& out, const ConstVector& yym, const ConstVector& yy,
                       const ConstVector& yyp, const Vector& xx) override;
   void calcDerivativesAtSteady() override;
-  std::unique_ptr<DynamicModel>
+  [[nodiscard]] std::unique_ptr<DynamicModel>
   clone() const override
   {
     std::cerr << "KordpDynare::clone() not implemented" << std::endl;

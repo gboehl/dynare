@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -54,7 +54,7 @@ public:
     print(std::cout);
   }
 
-  std::string
+  [[nodiscard]] std::string
   message() const
   {
     return mes;

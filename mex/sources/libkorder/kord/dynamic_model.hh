@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -45,8 +45,8 @@ class NameList
 {
 public:
   virtual ~NameList() = default;
-  virtual int getNum() const = 0;
-  virtual const std::string& getName(int i) const = 0;
+  [[nodiscard]] virtual int getNum() const = 0;
+  [[nodiscard]] virtual const std::string& getName(int i) const = 0;
   void print() const;
 };
 
@@ -109,27 +109,27 @@ public:
 class DynamicModel
 {
 public:
-  virtual std::unique_ptr<DynamicModel> clone() const = 0;
+  [[nodiscard]] virtual std::unique_ptr<DynamicModel> clone() const = 0;
   virtual ~DynamicModel() = default;
 
-  virtual int nstat() const = 0;
-  virtual int nboth() const = 0;
-  virtual int npred() const = 0;
-  virtual int nforw() const = 0;
-  virtual int nexog() const = 0;
-  virtual int order() const = 0;
-  int
+  [[nodiscard]] virtual int nstat() const = 0;
+  [[nodiscard]] virtual int nboth() const = 0;
+  [[nodiscard]] virtual int npred() const = 0;
+  [[nodiscard]] virtual int nforw() const = 0;
+  [[nodiscard]] virtual int nexog() const = 0;
+  [[nodiscard]] virtual int order() const = 0;
+  [[nodiscard]] int
   numeq() const
   {
     return nstat() + nboth() + npred() + nforw();
   }
 
-  virtual const NameList& getAllEndoNames() const = 0;
-  virtual const NameList& getStateNames() const = 0;
-  virtual const NameList& getExogNames() const = 0;
-  virtual const TwoDMatrix& getVcov() const = 0;
-  virtual const TensorContainer<FSSparseTensor>& getModelDerivatives() const = 0;
-  virtual const Vector& getSteady() const = 0;
+  [[nodiscard]] virtual const NameList& getAllEndoNames() const = 0;
+  [[nodiscard]] virtual const NameList& getStateNames() const = 0;
+  [[nodiscard]] virtual const NameList& getExogNames() const = 0;
+  [[nodiscard]] virtual const TwoDMatrix& getVcov() const = 0;
+  [[nodiscard]] virtual const TensorContainer<FSSparseTensor>& getModelDerivatives() const = 0;
+  [[nodiscard]] virtual const Vector& getSteady() const = 0;
   virtual Vector& getSteady() = 0;
 
   virtual void solveDeterministicSteady() = 0;

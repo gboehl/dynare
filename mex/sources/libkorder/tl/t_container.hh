@@ -143,7 +143,7 @@ public:
   }
   TensorContainer<_Ttype>& operator=(TensorContainer<_Ttype>&&) = default;
 
-  const _Ttype&
+  [[nodiscard]] const _Ttype&
   get(const Symmetry& s) const
   {
     TL_RAISE_IF(s.num() != num(), "Incompatible symmetry lookup in TensorContainer::get");
@@ -161,7 +161,7 @@ public:
     return *(it->second);
   }
 
-  bool
+  [[nodiscard]] bool
   check(const Symmetry& s) const
   {
     TL_RAISE_IF(s.num() != num(), "Incompatible symmetry lookup in TensorContainer::check");
@@ -192,7 +192,7 @@ public:
     m.clear();
   }
 
-  int
+  [[nodiscard]] int
   getMaxDim() const
   {
     int res = -1;
@@ -233,7 +233,7 @@ public:
      through all equivalence classes, calculate implied symmetry, and
      fetch its tensor storing it in the same order to the vector. */
 
-  std::vector<const _Ttype*>
+  [[nodiscard]] std::vector<const _Ttype*>
   fetchTensors(const Symmetry& rsym, const Equivalence& e) const
   {
     std::vector<const _Ttype*> res(e.numClasses());
@@ -248,18 +248,18 @@ public:
 
   virtual ~TensorContainer() = default;
 
-  int
+  [[nodiscard]] int
   num() const
   {
     return n;
   }
 
-  auto
+  [[nodiscard]] auto
   begin() const
   {
     return m.begin();
   }
-  auto
+  [[nodiscard]] auto
   end() const
   {
     return m.end();

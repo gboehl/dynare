@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -80,15 +80,15 @@ public:
 
   void increment(IntSequence& v) const override;
   void decrement(IntSequence& v) const override;
-  std::unique_ptr<FTensor> fold() const override;
+  [[nodiscard]] std::unique_ptr<FTensor> fold() const override;
 
-  int getOffset(const IntSequence& v) const override;
-  int
+  [[nodiscard]] int getOffset(const IntSequence& v) const override;
+  [[nodiscard]] int
   nvar() const
   {
     return nv;
   }
-  Symmetry
+  [[nodiscard]] Symmetry
   getSym() const
   {
     return Symmetry {dimen()};
@@ -115,19 +115,19 @@ public:
 
   void increment(IntSequence& v) const override;
   void decrement(IntSequence& v) const override;
-  std::unique_ptr<UTensor> unfold() const override;
+  [[nodiscard]] std::unique_ptr<UTensor> unfold() const override;
 
-  int
+  [[nodiscard]] int
   nvar() const
   {
     return nv;
   }
-  int
+  [[nodiscard]] int
   getOffset(const IntSequence& v) const override
   {
     return FTensor::getOffset(v, nv);
   }
-  Symmetry
+  [[nodiscard]] Symmetry
   getSym() const
   {
     return Symmetry {dimen()};
@@ -151,7 +151,7 @@ public:
   URSingleTensor(const URSingleTensor&) = default;
   URSingleTensor(URSingleTensor&&) = default;
   ~URSingleTensor() override = default;
-  std::unique_ptr<FTensor> fold() const override;
+  [[nodiscard]] std::unique_ptr<FTensor> fold() const override;
 };
 
 /* This class represents one column row-oriented tensor. The only way to

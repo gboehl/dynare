@@ -68,18 +68,19 @@ private:
   int EQN_equation, EQN_dvar1;
   int EQN_lag1, EQN_lag2, EQN_lag3;
 
-  string error_location(it_code_type expr_begin, it_code_type faulty_op, int it_) const;
+  [[nodiscard]] string error_location(it_code_type expr_begin, it_code_type faulty_op,
+                                      int it_) const;
 
   /* Prints a bytecode expression in human readable form.
      If faulty_op is not default constructed, it should point to a tag within
      the expression that created a floating point exception, in which case the
      corresponding mathematical operator will be printed within braces.
      The second output argument points to the tag past the expression. */
-  pair<string, it_code_type> print_expression(const it_code_type& expr_begin,
-                                              const optional<it_code_type>& faulty_op
-                                              = nullopt) const;
+  [[nodiscard]] pair<string, it_code_type> print_expression(const it_code_type& expr_begin,
+                                                            const optional<it_code_type>& faulty_op
+                                                            = nullopt) const;
 
-  FBEGINBLOCK_*
+  [[nodiscard]] FBEGINBLOCK_*
   currentBlockTag() const
   {
     return reinterpret_cast<FBEGINBLOCK_*>(instructions_list[begin_block[block_num]]);
@@ -110,60 +111,60 @@ public:
 
   void gotoBlock(int block);
 
-  int getNumberOfTemporaryTerms() const;
+  [[nodiscard]] int getNumberOfTemporaryTerms() const;
 
-  auto
+  [[nodiscard]] auto
   getCurrentBlockSize() const
   {
     return currentBlockTag()->get_size();
   }
-  auto
+  [[nodiscard]] auto
   getCurrentBlockType() const
   {
     return currentBlockTag()->get_type();
   }
-  auto
+  [[nodiscard]] auto
   isCurrentBlockLinear() const
   {
     return currentBlockTag()->get_is_linear();
   }
-  auto
+  [[nodiscard]] auto
   getCurrentBlockEquationsAndVariables() const
   {
     return currentBlockTag()->get_Block_Contain();
   }
-  auto
+  [[nodiscard]] auto
   getCurrentBlockUCount() const
   {
     return currentBlockTag()->get_u_count_int();
   }
-  auto
+  [[nodiscard]] auto
   getCurrentBlockExogenous() const
   {
     return currentBlockTag()->get_exogenous();
   }
-  auto
+  [[nodiscard]] auto
   getCurrentBlockEndogenous() const
   {
     return currentBlockTag()->get_endogenous();
   }
-  auto
+  [[nodiscard]] auto
   getCurrentBlockNbColJacob() const
   {
     return currentBlockTag()->get_nb_col_jacob();
   }
-  auto
+  [[nodiscard]] auto
   getCurrentBlockExoSize() const
   {
     return currentBlockTag()->get_exo_size();
   }
-  auto
+  [[nodiscard]] auto
   getCurrentBlockExoDetSize() const
   {
     return currentBlockTag()->get_det_exo_size();
   }
 
-  int
+  [[nodiscard]] int
   getTotalBlockNumber() const
   {
     return nb_blocks;

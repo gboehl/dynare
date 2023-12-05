@@ -67,11 +67,12 @@ public:
 
   /* returns a new copy of the decision rule, which is centralized about
      provided fix-point */
-  virtual std::unique_ptr<DecisionRule> centralizedClone(const Vector& fixpoint) const = 0;
+  [[nodiscard]] virtual std::unique_ptr<DecisionRule> centralizedClone(const Vector& fixpoint) const
+      = 0;
 
-  virtual const Vector& getSteady() const = 0;
-  virtual int nexog() const = 0;
-  virtual const PartitionY& getYPart() const = 0;
+  [[nodiscard]] virtual const Vector& getSteady() const = 0;
+  [[nodiscard]] virtual int nexog() const = 0;
+  [[nodiscard]] virtual const PartitionY& getYPart() const = 0;
 };
 
 /* The main purpose of this class is to implement DecisionRule interface, which
@@ -154,21 +155,22 @@ public:
   {
     centralize(dr);
   }
-  const Vector&
+  [[nodiscard]] const Vector&
   getSteady() const override
   {
     return ysteady;
   }
   void evaluate(emethod em, Vector& out, const ConstVector& ys,
                 const ConstVector& u) const override;
-  std::unique_ptr<DecisionRule> centralizedClone(const Vector& fixpoint) const override;
+  [[nodiscard]] std::unique_ptr<DecisionRule>
+  centralizedClone(const Vector& fixpoint) const override;
 
-  int
+  [[nodiscard]] int
   nexog() const override
   {
     return nu;
   }
-  const PartitionY&
+  [[nodiscard]] const PartitionY&
   getYPart() const override
   {
     return ypart;
@@ -527,17 +529,17 @@ public:
 
   bool calcFixPoint(Vector& out);
 
-  int
+  [[nodiscard]] int
   getNumIter() const
   {
     return iter;
   }
-  int
+  [[nodiscard]] int
   getNewtonLastIter() const
   {
     return newton_iter_last;
   }
-  int
+  [[nodiscard]] int
   getNewtonTotalIter() const
   {
     return newton_iter_total;

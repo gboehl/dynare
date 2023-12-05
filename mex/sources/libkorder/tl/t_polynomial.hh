@@ -259,12 +259,12 @@ public:
       TensorContainer<_Ttype>(tp), nr(tp.nr), nv(tp.nv), maxdim(tp.maxdim)
   {
   }
-  int
+  [[nodiscard]] int
   nrows() const
   {
     return nr;
   }
-  int
+  [[nodiscard]] int
   nvars() const
   {
     return nv;

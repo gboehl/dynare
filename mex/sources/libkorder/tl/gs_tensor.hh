@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -87,35 +87,35 @@ public:
     return !operator==(td);
   }
 
-  int
+  [[nodiscard]] int
   dimen() const
   {
     return sym.dimen();
   }
-  int
+  [[nodiscard]] int
   getNVX(int i) const
   {
     return nvmax[i];
   }
-  const IntSequence&
+  [[nodiscard]] const IntSequence&
   getNVS() const
   {
     return nvs;
   }
-  const IntSequence&
+  [[nodiscard]] const IntSequence&
   getNVX() const
   {
     return nvmax;
   }
-  const Symmetry&
+  [[nodiscard]] const Symmetry&
   getSym() const
   {
     return sym;
   }
 
-  int calcUnfoldMaxOffset() const;
-  int calcFoldMaxOffset() const;
-  int calcFoldOffset(const IntSequence& v) const;
+  [[nodiscard]] int calcUnfoldMaxOffset() const;
+  [[nodiscard]] int calcFoldMaxOffset() const;
+  [[nodiscard]] int calcFoldOffset(const IntSequence& v) const;
   void decrement(IntSequence& v) const;
 };
 
@@ -165,13 +165,13 @@ public:
   {
     tdims.decrement(v);
   }
-  std::unique_ptr<UTensor> unfold() const override;
-  const TensorDimens&
+  [[nodiscard]] std::unique_ptr<UTensor> unfold() const override;
+  [[nodiscard]] const TensorDimens&
   getDims() const
   {
     return tdims;
   }
-  const Symmetry&
+  [[nodiscard]] const Symmetry&
   getSym() const
   {
     return getDims().getSym();
@@ -184,7 +184,7 @@ public:
   */
   void contractAndAdd(int i, FGSTensor& out, const FRSingleTensor& col) const;
 
-  int
+  [[nodiscard]] int
   getOffset(const IntSequence& v) const override
   {
     return tdims.calcFoldOffset(v);
@@ -233,26 +233,26 @@ public:
 
   void increment(IntSequence& v) const override;
   void decrement(IntSequence& v) const override;
-  std::unique_ptr<FTensor> fold() const override;
-  const TensorDimens&
+  [[nodiscard]] std::unique_ptr<FTensor> fold() const override;
+  [[nodiscard]] const TensorDimens&
   getDims() const
   {
     return tdims;
   }
-  const Symmetry&
+  [[nodiscard]] const Symmetry&
   getSym() const
   {
     return getDims().getSym();
   }
 
   void contractAndAdd(int i, UGSTensor& out, const URSingleTensor& col) const;
-  int getOffset(const IntSequence& v) const override;
+  [[nodiscard]] int getOffset(const IntSequence& v) const override;
 
 private:
   void unfoldData();
 
 public:
-  index getFirstIndexOf(const index& in) const;
+  [[nodiscard]] index getFirstIndexOf(const index& in) const;
 };
 
 #endif

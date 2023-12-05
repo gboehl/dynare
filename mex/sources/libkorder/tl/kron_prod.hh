@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -92,7 +92,7 @@ public:
     return rows == kd.rows && cols == kd.cols;
   }
 
-  int
+  [[nodiscard]] int
   dimen() const
   {
     return rows.size();
@@ -103,32 +103,32 @@ public:
     rows[i] = r;
     cols[i] = c;
   }
-  std::pair<int, int>
+  [[nodiscard]] std::pair<int, int>
   getRC(int i) const
   {
     return {rows[i], cols[i]};
   }
-  std::pair<int, int>
+  [[nodiscard]] std::pair<int, int>
   getRC() const
   {
     return {rows.mult(), cols.mult()};
   }
-  int
+  [[nodiscard]] int
   nrows() const
   {
     return rows.mult();
   }
-  int
+  [[nodiscard]] int
   ncols() const
   {
     return cols.mult();
   }
-  int
+  [[nodiscard]] int
   nrows(int i) const
   {
     return rows[i];
   }
-  int
+  [[nodiscard]] int
   ncols(int i) const
   {
     return cols[i];
@@ -161,7 +161,7 @@ public:
   KronProd(KronProd&& kp) = default;
   virtual ~KronProd() = default;
 
-  int
+  [[nodiscard]] int
   dimen() const
   {
     return kpd.dimen();
@@ -183,22 +183,22 @@ public:
 
   static void kronMult(const ConstVector& v1, const ConstVector& v2, Vector& res);
 
-  int
+  [[nodiscard]] int
   nrows() const
   {
     return kpd.nrows();
   }
-  int
+  [[nodiscard]] int
   ncols() const
   {
     return kpd.ncols();
   }
-  int
+  [[nodiscard]] int
   nrows(int i) const
   {
     return kpd.nrows(i);
   }
-  int
+  [[nodiscard]] int
   ncols(int i) const
   {
     return kpd.ncols(i);
@@ -235,17 +235,17 @@ public:
   ~KronProdAll() override = default;
   void setMat(int i, const TwoDMatrix& m);
   void setUnit(int i, int n);
-  const TwoDMatrix&
+  [[nodiscard]] const TwoDMatrix&
   getMat(int i) const
   {
     return *(matlist[i]);
   }
 
   void mult(const ConstTwoDMatrix& in, TwoDMatrix& out) const override;
-  std::unique_ptr<Vector> multRows(const IntSequence& irows) const;
+  [[nodiscard]] std::unique_ptr<Vector> multRows(const IntSequence& irows) const;
 
 private:
-  bool isUnit() const;
+  [[nodiscard]] bool isUnit() const;
 };
 
 /* The class KronProdAllOptim minimizes memory consumption of the product
@@ -288,7 +288,7 @@ public:
   {
   }
   void optimizeOrder();
-  const Permutation&
+  [[nodiscard]] const Permutation&
   getPer() const
   {
     return oper;

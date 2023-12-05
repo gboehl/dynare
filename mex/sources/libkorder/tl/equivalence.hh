@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -77,23 +77,23 @@ public:
   bool operator==(const OrdSequence& s) const;
   int operator[](int i) const;
   bool operator<(const OrdSequence& s) const;
-  const std::vector<int>&
+  [[nodiscard]] const std::vector<int>&
   getData() const
   {
     return data;
   }
-  int
+  [[nodiscard]] int
   length() const
   {
     return data.size();
   }
   void add(int i);
   void add(const OrdSequence& s);
-  bool has(int i) const;
+  [[nodiscard]] bool has(int i) const;
   void print(const std::string& prefix) const;
 
 private:
-  double average() const;
+  [[nodiscard]] double average() const;
 };
 
 /* Here is the abstraction for the equivalence. It is a list of
@@ -126,12 +126,12 @@ public:
   {
     return !operator==(e);
   }
-  int
+  [[nodiscard]] int
   getN() const
   {
     return n;
   }
-  int
+  [[nodiscard]] int
   numClasses() const
   {
     return classes.size();
@@ -149,7 +149,7 @@ public:
   {
     return classes.begin();
   }
-  const_seqit
+  [[nodiscard]] const_seqit
   begin() const
   {
     return classes.begin();
@@ -159,12 +159,12 @@ public:
   {
     return classes.end();
   }
-  const_seqit
+  [[nodiscard]] const_seqit
   end() const
   {
     return classes.end();
   }
-  const_seqit find(int i) const;
+  [[nodiscard]] const_seqit find(int i) const;
   seqit find(int i);
 
 protected:
@@ -174,7 +174,7 @@ protected:
 
      We have also an insert() method which inserts a given class
      according to the class ordering. */
-  const_seqit findHaving(int i) const;
+  [[nodiscard]] const_seqit findHaving(int i) const;
   seqit findHaving(int i);
   void insert(const OrdSequence& s);
 };
@@ -194,19 +194,19 @@ class EquivalenceSet
 public:
   explicit EquivalenceSet(int num);
   void print(const std::string& prefix) const;
-  auto
+  [[nodiscard]] auto
   begin() const
   {
     return equis.begin();
   }
-  auto
+  [[nodiscard]] auto
   end() const
   {
     return equis.end();
   }
 
 private:
-  bool has(const Equivalence& e) const;
+  [[nodiscard]] bool has(const Equivalence& e) const;
   void addParents(const Equivalence& e, std::list<Equivalence>& added);
 };
 
@@ -223,7 +223,7 @@ class EquivalenceBundle
 
 public:
   explicit EquivalenceBundle(int nmax);
-  const EquivalenceSet& get(int n) const;
+  [[nodiscard]] const EquivalenceSet& get(int n) const;
   void generateUpTo(int nmax);
 };
 

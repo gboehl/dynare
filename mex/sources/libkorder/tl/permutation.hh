@@ -100,7 +100,7 @@ public:
   {
     return permap == p.permap;
   }
-  int
+  [[nodiscard]] int
   size() const
   {
     return permap.size();
@@ -113,8 +113,8 @@ public:
   void apply(const IntSequence& src, IntSequence& tar) const;
   void apply(IntSequence& tar) const;
   void inverse();
-  int tailIdentity() const;
-  const IntSequence&
+  [[nodiscard]] int tailIdentity() const;
+  [[nodiscard]] const IntSequence&
   getMap() const
   {
     return permap;
@@ -148,17 +148,17 @@ class PermutationSet
 public:
   PermutationSet();
   PermutationSet(const PermutationSet& ps, int n);
-  int
+  [[nodiscard]] int
   getNum() const
   {
     return size;
   }
-  const Permutation&
+  [[nodiscard]] const Permutation&
   get(int i) const
   {
     return pers[i];
   }
-  std::vector<Permutation> getPreserving(const IntSequence& s) const;
+  [[nodiscard]] std::vector<Permutation> getPreserving(const IntSequence& s) const;
 };
 
 /* The permutation bundle encapsulates all permutations sets up to some
@@ -170,7 +170,7 @@ class PermutationBundle
 
 public:
   PermutationBundle(int nmax);
-  const PermutationSet& get(int n) const;
+  [[nodiscard]] const PermutationSet& get(int n) const;
   void generateUpTo(int nmax);
 };
 

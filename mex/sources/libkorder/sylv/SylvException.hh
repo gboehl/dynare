@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -33,7 +33,7 @@ public:
   SylvException(std::string f, int l);
   virtual ~SylvException() = default;
   void printMessage() const;
-  virtual std::string getMessage() const;
+  [[nodiscard]] virtual std::string getMessage() const;
 };
 
 class SylvExceptionMessage : public SylvException
@@ -42,7 +42,7 @@ class SylvExceptionMessage : public SylvException
 
 public:
   SylvExceptionMessage(std::string f, int l, std::string mes);
-  std::string getMessage() const override;
+  [[nodiscard]] std::string getMessage() const override;
 };
 
 // define macros:

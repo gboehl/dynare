@@ -82,51 +82,51 @@ public:
   }
   virtual ~SparseTensor() = default;
   void insert(IntSequence s, int r, double c);
-  const Map&
+  [[nodiscard]] const Map&
   getMap() const
   {
     return m;
   }
-  int
+  [[nodiscard]] int
   dimen() const
   {
     return dim;
   }
-  int
+  [[nodiscard]] int
   nrows() const
   {
     return nr;
   }
-  int
+  [[nodiscard]] int
   ncols() const
   {
     return nc;
   }
-  double
+  [[nodiscard]] double
   getFillFactor() const
   {
     return static_cast<double>(m.size()) / nrows() / ncols();
   }
-  double getFoldIndexFillFactor() const;
-  double getUnfoldIndexFillFactor() const;
-  int
+  [[nodiscard]] double getFoldIndexFillFactor() const;
+  [[nodiscard]] double getUnfoldIndexFillFactor() const;
+  [[nodiscard]] int
   getNumNonZero() const
   {
     return m.size();
   }
-  int
+  [[nodiscard]] int
   getFirstNonZeroRow() const
   {
     return first_nz_row;
   }
-  int
+  [[nodiscard]] int
   getLastNonZeroRow() const
   {
     return last_nz_row;
   }
-  virtual const Symmetry& getSym() const = 0;
+  [[nodiscard]] virtual const Symmetry& getSym() const = 0;
   void print() const;
-  bool isFinite() const;
+  [[nodiscard]] bool isFinite() const;
 };
 
 /* This is a full symmetry sparse tensor. It implements multColumnAndAdd() and,
@@ -143,12 +143,12 @@ public:
   FSSparseTensor(int d, int nvar, int r);
   void insert(IntSequence s, int r, double c);
   void multColumnAndAdd(const Tensor& t, Vector& v) const;
-  const Symmetry&
+  [[nodiscard]] const Symmetry&
   getSym() const override
   {
     return sym;
   }
-  int
+  [[nodiscard]] int
   nvar() const
   {
     return nv;
@@ -170,12 +170,12 @@ public:
   GSSparseTensor(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor,
                  TensorDimens td);
   void insert(IntSequence s, int r, double c);
-  const Symmetry&
+  [[nodiscard]] const Symmetry&
   getSym() const override
   {
     return tdims.getSym();
   }
-  const TensorDimens&
+  [[nodiscard]] const TensorDimens&
   getDims() const
   {
     return tdims;

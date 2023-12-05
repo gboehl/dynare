@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -87,18 +87,18 @@ public:
   {
   }
 
-  int
+  [[nodiscard]] int
   num() const
   {
     return size();
   }
-  int
+  [[nodiscard]] int
   dimen() const
   {
     return sum();
   }
-  int findClass(int i) const;
-  bool isFull() const;
+  [[nodiscard]] int findClass(int i) const;
+  [[nodiscard]] bool isFull() const;
 };
 
 /* This is an iterator that iterates over all symmetries of given length and
@@ -159,14 +159,14 @@ public:
   SymmetrySet(int dim_arg, int len_arg) : len(len_arg), dim(dim_arg)
   {
   }
-  symiterator
+  [[nodiscard]] symiterator
   begin() const
   {
     Symmetry run(len);
     run[len - 1] = dim;
     return {dim, run};
   }
-  symiterator
+  [[nodiscard]] symiterator
   end() const
   {
     Symmetry run(len);

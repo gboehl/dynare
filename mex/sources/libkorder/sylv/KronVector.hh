@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -47,17 +47,17 @@ public:
   KronVector& operator=(KronVector&& v) = default;
   KronVector& operator=(const ConstKronVector& v);
   KronVector& operator=(const Vector& v);
-  int
+  [[nodiscard]] int
   getM() const
   {
     return m;
   }
-  int
+  [[nodiscard]] int
   getN() const
   {
     return n;
   }
-  int
+  [[nodiscard]] int
   getDepth() const
   {
     return depth;
@@ -84,17 +84,17 @@ public:
   ConstKronVector(const ConstKronVector& v, int i);
   ConstKronVector& operator=(const ConstKronVector& v) = delete;
   ConstKronVector& operator=(ConstKronVector&& v) = delete;
-  int
+  [[nodiscard]] int
   getM() const
   {
     return m;
   }
-  int
+  [[nodiscard]] int
   getN() const
   {
     return n;
   }
-  int
+  [[nodiscard]] int
   getDepth() const
   {
     return depth;

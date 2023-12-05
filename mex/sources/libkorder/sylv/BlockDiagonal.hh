@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -43,19 +43,19 @@ public:
   BlockDiagonal& operator=(const BlockDiagonal& b) = default;
   ~BlockDiagonal() override = default;
   void setZeroBlockEdge(diag_iter edge);
-  int getNumZeros() const;
-  int getNumBlocks() const;
-  int getLargestBlock() const;
+  [[nodiscard]] int getNumZeros() const;
+  [[nodiscard]] int getNumBlocks() const;
+  [[nodiscard]] int getLargestBlock() const;
   void printInfo() const;
 
   void multKron(KronVector& x) const override;
   void multKronTrans(KronVector& x) const override;
 
-  const_col_iter col_begin(const DiagonalBlock& b) const override;
+  [[nodiscard]] const_col_iter col_begin(const DiagonalBlock& b) const override;
   col_iter col_begin(const DiagonalBlock& b) override;
-  const_row_iter row_end(const DiagonalBlock& b) const override;
+  [[nodiscard]] const_row_iter row_end(const DiagonalBlock& b) const override;
   row_iter row_end(const DiagonalBlock& b) override;
-  std::unique_ptr<QuasiTriangular>
+  [[nodiscard]] std::unique_ptr<QuasiTriangular>
   clone() const override
   {
     return std::make_unique<BlockDiagonal>(*this);
@@ -63,7 +63,7 @@ public:
 
 private:
   void setZerosToRU(diag_iter edge);
-  const_diag_iter findBlockStart(const_diag_iter from) const;
+  [[nodiscard]] const_diag_iter findBlockStart(const_diag_iter from) const;
   static void savePartOfX(int si, int ei, const KronVector& x, Vector& work);
   void multKronBlock(const_diag_iter start, const_diag_iter end, KronVector& x, Vector& work) const;
   void multKronBlockTrans(const_diag_iter start, const_diag_iter end, KronVector& x,

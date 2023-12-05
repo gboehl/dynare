@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -35,12 +35,12 @@ public:
   SymSchurDecomp(const ConstGeneralMatrix& a);
   SymSchurDecomp(const SymSchurDecomp& ssd) = default;
   virtual ~SymSchurDecomp() = default;
-  const Vector&
+  [[nodiscard]] const Vector&
   getLambda() const
   {
     return lambda;
   }
-  const SqSylvMatrix&
+  [[nodiscard]] const SqSylvMatrix&
   getQ() const
   {
     return q;
@@ -49,7 +49,7 @@ public:
      positive semidefinite, F must be square. */
   void getFactor(GeneralMatrix& f) const;
   // Returns true if A is positive semidefinite.
-  bool isPositiveSemidefinite() const;
+  [[nodiscard]] bool isPositiveSemidefinite() const;
   /* Correct definitness. This sets all eigenvalues between minus
      tolerance and zero to zero. */
   void correctDefinitness(double tol);

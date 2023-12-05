@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -37,17 +37,17 @@ class SimilarityDecomp
 public:
   SimilarityDecomp(const ConstVector& d, int d_size, double log10norm = 3.0);
   virtual ~SimilarityDecomp() = default;
-  const SqSylvMatrix&
+  [[nodiscard]] const SqSylvMatrix&
   getQ() const
   {
     return *q;
   }
-  const SqSylvMatrix&
+  [[nodiscard]] const SqSylvMatrix&
   getInvQ() const
   {
     return *invq;
   }
-  const BlockDiagonal&
+  [[nodiscard]] const BlockDiagonal&
   getB() const
   {
     return *b;

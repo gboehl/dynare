@@ -1,6 +1,6 @@
 /*
  * Copyright © 2006 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -42,7 +42,7 @@ public:
       mes {"Parse error in provided string at offset " + std::to_string(offset) + ": " + m}
   {
   }
-  const std::string&
+  [[nodiscard]] const std::string&
   message() const
   {
     return mes;

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -91,7 +91,7 @@ public:
   {
     return data[s * i];
   }
-  const double*
+  [[nodiscard]] const double*
   base() const
   {
     return data;
@@ -101,12 +101,12 @@ public:
   {
     return data;
   }
-  int
+  [[nodiscard]] int
   length() const
   {
     return len;
   }
-  int
+  [[nodiscard]] int
   skip() const
   {
     return s;
@@ -139,11 +139,11 @@ public:
   // Computes this = this + z·v (where this and v are intepreted as complex vectors)
   void addComplex(const std::complex<double>& z, const ConstVector& v);
   void mult(double r);
-  double getNorm() const;
-  double getMax() const;
-  double getNorm1() const;
-  double dot(const Vector& y) const;
-  bool isFinite() const;
+  [[nodiscard]] double getNorm() const;
+  [[nodiscard]] double getMax() const;
+  [[nodiscard]] double getNorm1() const;
+  [[nodiscard]] double dot(const Vector& y) const;
+  [[nodiscard]] bool isFinite() const;
   void print() const;
 
   /* Computes:
@@ -209,17 +209,17 @@ public:
   {
     return data[s * i];
   }
-  const double*
+  [[nodiscard]] const double*
   base() const
   {
     return data;
   }
-  int
+  [[nodiscard]] int
   length() const
   {
     return len;
   }
-  int
+  [[nodiscard]] int
   skip() const
   {
     return s;
@@ -249,11 +249,11 @@ public:
     return !operator<(y);
   }
 
-  double getNorm() const;
-  double getMax() const;
-  double getNorm1() const;
-  double dot(const ConstVector& y) const;
-  bool isFinite() const;
+  [[nodiscard]] double getNorm() const;
+  [[nodiscard]] double getMax() const;
+  [[nodiscard]] double getNorm1() const;
+  [[nodiscard]] double dot(const ConstVector& y) const;
+  [[nodiscard]] bool isFinite() const;
   void print() const;
 };
 

@@ -49,8 +49,8 @@ public:
   {
   }
   virtual ~DynamicModelCaller() = default;
-  virtual double* y() const = 0;
-  virtual double* x() const = 0;
+  [[nodiscard]] virtual double* y() const = 0;
+  [[nodiscard]] virtual double* x() const = 0;
   /* Copy a column of the Jacobian to dest.
      Only copies non-zero elements, according to g1_sparse_{rowval,colval,colptr}. */
   virtual void copy_jacobian_column(mwIndex col, double* dest) const = 0;
@@ -80,12 +80,12 @@ public:
                         const double* steady_state_arg, const int32_T* g1_sparse_colptr_arg,
                         bool linear_arg, bool compute_jacobian_arg);
   virtual ~DynamicModelDllCaller() = default;
-  double*
+  [[nodiscard]] double*
   y() const override
   {
     return y_p.get();
   }
-  double*
+  [[nodiscard]] double*
   x() const override
   {
     return x_p.get();
@@ -119,12 +119,12 @@ public:
                            const mxArray* g1_sparse_colptr_mx_arg, bool linear_arg,
                            bool compute_jacobian_arg);
   ~DynamicModelMatlabCaller() override;
-  double*
+  [[nodiscard]] double*
   y() const override
   {
     return mxGetPr(y_mx);
   }
-  double*
+  [[nodiscard]] double*
   x() const override
   {
     return mxGetPr(x_mx);

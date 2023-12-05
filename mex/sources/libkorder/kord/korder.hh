@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -130,17 +130,17 @@ struct PartitionY
       nstat(num_stat), npred(num_pred), nboth(num_both), nforw(num_forw)
   {
   }
-  int
+  [[nodiscard]] int
   ny() const
   {
     return nstat + npred + nboth + nforw;
   }
-  int
+  [[nodiscard]] int
   nys() const
   {
     return npred + nboth;
   }
-  int
+  [[nodiscard]] int
   nyss() const
   {
     return nboth + nforw;
@@ -311,27 +311,27 @@ public:
   /* Calculates residuals of all solved equations for k-order and reports their
      sizes, it is runnable after k-order performStep() has been run */
   template<Storage t>
-  double check(int dim) const;
+  [[nodiscard]] double check(int dim) const;
 
   template<Storage t>
-  Vector calcStochShift(int order, double sigma) const;
+  [[nodiscard]] Vector calcStochShift(int order, double sigma) const;
   void switchToFolded();
-  const PartitionY&
+  [[nodiscard]] const PartitionY&
   getPartY() const
   {
     return ypart;
   }
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   getFoldDers() const
   {
     return _fg;
   }
-  const UGSContainer&
+  [[nodiscard]] const UGSContainer&
   getUnfoldDers() const
   {
     return _ug;
   }
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   getFoldDersS() const
   {
     return _fgs;

@@ -160,7 +160,7 @@ public:
     {
       return offset != n.offset;
     }
-    const IntSequence&
+    [[nodiscard]] const IntSequence&
     getCoor() const
     {
       return coor;
@@ -212,19 +212,19 @@ public:
 
   virtual void increment(IntSequence& v) const = 0;
   virtual void decrement(IntSequence& v) const = 0;
-  virtual int getOffset(const IntSequence& v) const = 0;
-  int
+  [[nodiscard]] virtual int getOffset(const IntSequence& v) const = 0;
+  [[nodiscard]] int
   dimen() const
   {
     return dim;
   }
 
-  const index&
+  [[nodiscard]] const index&
   begin() const
   {
     return in_beg;
   }
-  const index&
+  [[nodiscard]] const index&
   end() const
   {
     return in_end;
@@ -249,7 +249,7 @@ public:
   {
   }
   ~UTensor() override = default;
-  virtual std::unique_ptr<FTensor> fold() const = 0;
+  [[nodiscard]] virtual std::unique_ptr<FTensor> fold() const = 0;
 
   UTensor& operator=(const UTensor&) = delete;
   UTensor& operator=(UTensor&&) = delete;
@@ -288,7 +288,7 @@ public:
   {
   }
   ~FTensor() override = default;
-  virtual std::unique_ptr<UTensor> unfold() const = 0;
+  [[nodiscard]] virtual std::unique_ptr<UTensor> unfold() const = 0;
 
   FTensor& operator=(const FTensor&) = delete;
   FTensor& operator=(FTensor&&) = delete;

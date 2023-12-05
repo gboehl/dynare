@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019-2021 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -88,7 +88,7 @@ public:
   using _Ctype = StackContainer<FGSTensor>::_Ctype;
   using itype = StackContainer<FGSTensor>::itype;
   ZAuxContainer(const _Ctype* gss, int ngss, int ng, int ny, int nu);
-  itype getType(int i, const Symmetry& s) const override;
+  [[nodiscard]] itype getType(int i, const Symmetry& s) const override;
 };
 
 /* This class provides an interface to approximation algorithms. The core
@@ -140,33 +140,33 @@ class Approximation
 public:
   Approximation(DynamicModel& m, Journal& j, int ns, bool dr_centr, bool pruning, double qz_crit);
 
-  const FoldDecisionRule& getFoldDecisionRule() const;
-  const UnfoldDecisionRule& getUnfoldDecisionRulePruning() const;
-  const UnfoldDecisionRule& getUnfoldDecisionRule() const;
-  const TwoDMatrix&
+  [[nodiscard]] const FoldDecisionRule& getFoldDecisionRule() const;
+  [[nodiscard]] const UnfoldDecisionRule& getUnfoldDecisionRulePruning() const;
+  [[nodiscard]] const UnfoldDecisionRule& getUnfoldDecisionRule() const;
+  [[nodiscard]] const TwoDMatrix&
   getSS() const
   {
     return ss;
   }
-  const DynamicModel&
+  [[nodiscard]] const DynamicModel&
   getModel() const
   {
     return model;
   }
 
   void walkStochSteady();
-  TwoDMatrix calcYCov() const;
-  const FGSContainer&
+  [[nodiscard]] TwoDMatrix calcYCov() const;
+  [[nodiscard]] const FGSContainer&
   get_rule_ders() const
   {
     return *rule_ders;
   }
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   get_rule_ders_s() const
   {
     return *rule_ders_s;
   }
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   get_rule_ders_ss() const
   {
     return *rule_ders_ss;

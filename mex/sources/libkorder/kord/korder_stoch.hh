@@ -452,17 +452,17 @@ public:
               const UGSContainer& hh, Journal& jr);
   template<Storage t>
   void performStep(int order);
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   getFoldDers() const
   {
     return _fg;
   }
-  const UGSContainer&
+  [[nodiscard]] const UGSContainer&
   getUnfoldDers() const
   {
     return _ug;
   }
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   getFoldDersS() const
   {
     return _fgs;

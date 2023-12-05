@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -51,7 +51,7 @@ class Monom : public IntSequence
 public:
   Monom(int len);           // generate a random monom
   Monom(int len, int item); // generate monom whose items are the given item
-  double deriv(const IntSequence& vars) const;
+  [[nodiscard]] double deriv(const IntSequence& vars) const;
   // this = this·mᵉˣ (in monomial sense)
   void multiplyWith(int ex, const Monom& m);
   void print() const;
@@ -69,7 +69,7 @@ public:
   Monom1Vector(int nxx, int l);
   ~Monom1Vector() = default;
   void deriv(const IntSequence& c, Vector& out) const;
-  std::unique_ptr<FGSTensor> deriv(int dim) const;
+  [[nodiscard]] std::unique_ptr<FGSTensor> deriv(int dim) const;
   void print() const;
 };
 
@@ -86,8 +86,8 @@ public:
   Monom2Vector(const Monom1Vector& g, const Monom2Vector& xmon);
   ~Monom2Vector() = default;
   void deriv(const Symmetry& s, const IntSequence& c, Vector& out) const;
-  std::unique_ptr<FGSTensor> deriv(const Symmetry& s) const;
-  FGSContainer deriv(int maxdim) const;
+  [[nodiscard]] std::unique_ptr<FGSTensor> deriv(const Symmetry& s) const;
+  [[nodiscard]] FGSContainer deriv(int maxdim) const;
   void print() const;
 };
 
@@ -107,8 +107,8 @@ public:
   /* Substitution f(G(y,u,u′,σ),g(y,u,σ),y,u) */
   Monom4Vector(const Monom4Vector& f, const Monom4Vector& bigg, const Monom4Vector& g);
   ~Monom4Vector() = default;
-  FSSparseTensor deriv(int dim) const;
-  std::unique_ptr<FGSTensor> deriv(const Symmetry& s) const;
+  [[nodiscard]] FSSparseTensor deriv(int dim) const;
+  [[nodiscard]] std::unique_ptr<FGSTensor> deriv(const Symmetry& s) const;
   void deriv(const Symmetry& s, const IntSequence& coor, Vector& out) const;
   void print() const;
 

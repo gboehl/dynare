@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -38,12 +38,12 @@ public:
   SchurDecomp(const SqSylvMatrix& m);
   SchurDecomp(const QuasiTriangular& tr);
   SchurDecomp(QuasiTriangular& tr);
-  const SqSylvMatrix&
+  [[nodiscard]] const SqSylvMatrix&
   getQ() const
   {
     return q;
   }
-  const QuasiTriangular&
+  [[nodiscard]] const QuasiTriangular&
   getT() const
   {
     return *t;
@@ -58,7 +58,7 @@ public:
   {
     return *t;
   }
-  virtual int getDim() const;
+  [[nodiscard]] virtual int getDim() const;
   virtual ~SchurDecomp() = default;
 };
 
@@ -67,13 +67,13 @@ class SchurDecompZero : public SchurDecomp
   GeneralMatrix ru; // right upper matrix
 public:
   SchurDecompZero(const GeneralMatrix& m);
-  ConstGeneralMatrix
+  [[nodiscard]] ConstGeneralMatrix
   getRU() const
   {
     return ru;
   }
-  int getDim() const override;
-  int
+  [[nodiscard]] int getDim() const override;
+  [[nodiscard]] int
   getZeroCols() const
   {
     return ru.nrows();

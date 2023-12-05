@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -94,16 +94,16 @@ public:
 
   void increment(IntSequence& v) const override;
   void decrement(IntSequence& v) const override;
-  std::unique_ptr<UTensor> unfold() const override;
-  Symmetry
+  [[nodiscard]] std::unique_ptr<UTensor> unfold() const override;
+  [[nodiscard]] Symmetry
   getSym() const
   {
     return Symmetry {dimen()};
   }
 
-  int getOffset(const IntSequence& v) const override;
+  [[nodiscard]] int getOffset(const IntSequence& v) const override;
   void addSubTensor(const FGSTensor& t);
-  int
+  [[nodiscard]] int
   nvar() const
   {
     return nv;
@@ -136,16 +136,16 @@ public:
 
   void increment(IntSequence& v) const override;
   void decrement(IntSequence& v) const override;
-  std::unique_ptr<FTensor> fold() const override;
-  Symmetry
+  [[nodiscard]] std::unique_ptr<FTensor> fold() const override;
+  [[nodiscard]] Symmetry
   getSym() const
   {
     return Symmetry {dimen()};
   }
 
-  int getOffset(const IntSequence& v) const override;
+  [[nodiscard]] int getOffset(const IntSequence& v) const override;
   void addSubTensor(const UGSTensor& t);
-  int
+  [[nodiscard]] int
   nvar() const
   {
     return nv;

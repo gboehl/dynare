@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -35,7 +35,7 @@ public:
   MMException(std::string mes) : message(std::move(mes))
   {
   }
-  std::string
+  [[nodiscard]] std::string
   getMessage() const
   {
     return message;
@@ -56,17 +56,17 @@ public:
   {
     return Vector {data.data(), size()};
   }
-  int
+  [[nodiscard]] int
   size() const
   {
     return rows * cols;
   }
-  int
+  [[nodiscard]] int
   row() const
   {
     return rows;
   }
-  int
+  [[nodiscard]] int
   col() const
   {
     return cols;

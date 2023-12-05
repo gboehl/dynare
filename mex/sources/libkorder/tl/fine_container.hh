@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -64,22 +64,22 @@ class SizeRefinement
 
 public:
   SizeRefinement(const IntSequence& s, int nc, int max);
-  int
+  [[nodiscard]] int
   getRefSize(int i) const
   {
     return rsizes[i];
   }
-  int
+  [[nodiscard]] int
   numRefinements() const
   {
     return rsizes.size();
   }
-  int
+  [[nodiscard]] int
   getOldIndex(int i) const
   {
     return ind_map[i];
   }
-  int
+  [[nodiscard]] int
   getNC() const
   {
     return new_nc;
@@ -142,7 +142,7 @@ public:
       }
   }
 
-  itype
+  [[nodiscard]] itype
   getType(int i, const Symmetry& s) const override
   {
     return stack_cont.getType(getOldIndex(i), s);

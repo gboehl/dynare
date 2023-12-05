@@ -45,17 +45,17 @@ public:
               std::unique_ptr<ObjectiveAC> objectiveFile_arg, const std::vector<int>& varOrder);
   void calcDerivativesAtSteady();
   void populateDerivativesContainer(const std::vector<TwoDMatrix>& dyn_ud, int ord);
-  const TensorContainer<FSSparseTensor>&
+  [[nodiscard]] const TensorContainer<FSSparseTensor>&
   getPlannerObjDerivatives() const
   {
     return ud;
   }
-  const KordpDynare&
+  [[nodiscard]] const KordpDynare&
   getModel() const
   {
     return model;
   }
-  const Vector&
+  [[nodiscard]] const Vector&
   getResid() const
   {
     return resid;
@@ -153,24 +153,24 @@ public:
   /* Calculates residuals of all solved equations for k-order and reports their
      sizes, it is runnable after k-order performStep() has been run */
   template<Storage t>
-  double check(int dim) const;
+  [[nodiscard]] double check(int dim) const;
 
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   getFoldU() const
   {
     return _fU;
   }
-  const UGSContainer&
+  [[nodiscard]] const UGSContainer&
   getUnfoldU() const
   {
     return _uU;
   }
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   getFoldW() const
   {
     return _fW;
   }
-  const UGSContainer&
+  [[nodiscard]] const UGSContainer&
   getUnfoldW() const
   {
     return _uW;

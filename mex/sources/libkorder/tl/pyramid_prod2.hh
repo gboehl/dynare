@@ -106,13 +106,13 @@ class IrregTensorHeader
 
 public:
   IrregTensorHeader(const StackProduct<FGSTensor>& sp, const IntSequence& c);
-  int
+  [[nodiscard]] int
   dimen() const
   {
     return unit_flag.size();
   }
   void increment(IntSequence& v) const;
-  int calcMaxOffset() const;
+  [[nodiscard]] int calcMaxOffset() const;
 };
 
 /* Here we declare the irregular tensor. There is no special logic here. We
@@ -147,7 +147,7 @@ public:
   {
     TL_RAISE("Not implemented error in IrregTensor::decrement");
   }
-  int
+  [[nodiscard]] int
   getOffset([[maybe_unused]] const IntSequence& v) const override
   {
     TL_RAISE("Not implemented error in IrregTensor::getOffset");

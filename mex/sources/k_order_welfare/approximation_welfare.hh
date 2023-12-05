@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Dynare Team
+ * Copyright © 2021-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -40,27 +40,27 @@ public:
   ApproximationWelfare(KordwDynare& w, double discount_factor, const FGSContainer& rule_ders,
                        const FGSContainer& rule_ders_s, Journal& j);
 
-  const KordwDynare&
+  [[nodiscard]] const KordwDynare&
   getWelfare() const
   {
     return welfare;
   }
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   get_rule_ders() const
   {
     return *rule_ders;
   }
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   get_rule_ders_s() const
   {
     return *rule_ders_s;
   }
-  const FGSContainer&
+  [[nodiscard]] const FGSContainer&
   get_cond_ders() const
   {
     return *cond_ders;
   }
-  const FoldDecisionRule& getFoldCondWel() const;
+  [[nodiscard]] const FoldDecisionRule& getFoldCondWel() const;
 
   void approxAtSteady();
 

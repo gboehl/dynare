@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -67,7 +67,7 @@ public:
   {
     return value;
   }
-  status
+  [[nodiscard]] status
   getStatus() const
   {
     return s;
@@ -111,7 +111,7 @@ protected:
       return *this;
     }
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-    mxArray* createMatlabArray() const;
+    [[nodiscard]] mxArray* createMatlabArray() const;
 #endif
   };
 
@@ -132,7 +132,7 @@ protected:
       return *this;
     }
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-    mxArray* createMatlabArray() const;
+    [[nodiscard]] mxArray* createMatlabArray() const;
 #endif
   };
 
@@ -153,7 +153,7 @@ protected:
       return *this;
     }
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-    mxArray* createMatlabArray() const;
+    [[nodiscard]] mxArray* createMatlabArray() const;
 #endif
   };
 
@@ -174,7 +174,7 @@ protected:
       return *this;
     }
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-    mxArray* createMatlabArray() const;
+    [[nodiscard]] mxArray* createMatlabArray() const;
 #endif
   };
 
@@ -224,7 +224,7 @@ public:
   void print(std::ostream& fdesc, const std::string& prefix) const;
   void setArrayNames(int& num, const char** names) const;
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-  mxArray* createStructArray() const;
+  [[nodiscard]] mxArray* createStructArray() const;
 #endif
 private:
   void copy(const SylvParams& p);

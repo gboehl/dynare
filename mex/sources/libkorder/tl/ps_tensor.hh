@@ -120,12 +120,12 @@ public:
   {
     return TensorDimens::operator==(td) && per == td.per;
   }
-  int
+  [[nodiscard]] int
   tailIdentity() const
   {
     return per.tailIdentity();
   }
-  const Permutation&
+  [[nodiscard]] const Permutation&
   getPer() const
   {
     return per;
@@ -217,9 +217,9 @@ public:
 
   void increment(IntSequence& v) const override;
   void decrement(IntSequence& v) const override;
-  std::unique_ptr<FTensor> fold() const override;
+  [[nodiscard]] std::unique_ptr<FTensor> fold() const override;
 
-  int getOffset(const IntSequence& v) const override;
+  [[nodiscard]] int getOffset(const IntSequence& v) const override;
   void addTo(FGSTensor& out) const;
   void addTo(UGSTensor& out) const;
 
@@ -231,7 +231,7 @@ public:
   static fill_method decideFillMethod(const FSSparseTensor& t);
 
 private:
-  int tailIdentitySize() const;
+  [[nodiscard]] int tailIdentitySize() const;
   void fillFromSparseOne(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor);
   void fillFromSparseTwo(const FSSparseTensor& t, const IntSequence& ss, const IntSequence& coor);
 };
@@ -266,22 +266,22 @@ public:
   {
     setDimensionSizes();
   }
-  int
+  [[nodiscard]] int
   numSyms() const
   {
     return static_cast<int>(syms.size());
   }
-  const Symmetry&
+  [[nodiscard]] const Symmetry&
   getSym(int i) const
   {
     return syms[i];
   }
-  int
+  [[nodiscard]] int
   calcMaxOffset() const
   {
     return ds.mult();
   }
-  int calcOffset(const IntSequence& coor) const;
+  [[nodiscard]] int calcOffset(const IntSequence& coor) const;
   void print() const;
 
 protected:
@@ -378,9 +378,9 @@ public:
 
   void increment(IntSequence& v) const override;
   void decrement(IntSequence& v) const override;
-  std::unique_ptr<UTensor> unfold() const override;
+  [[nodiscard]] std::unique_ptr<UTensor> unfold() const override;
 
-  int getOffset(const IntSequence& v) const override;
+  [[nodiscard]] int getOffset(const IntSequence& v) const override;
   void addTo(FGSTensor& out) const;
 };
 

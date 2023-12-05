@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -79,7 +79,7 @@ public:
 private:
   /* Returns square of size of minimal eigenvalue of the system solved,
      now obsolete */
-  double getEigSep(int depth) const;
+  [[nodiscard]] double getEigSep(int depth) const;
   // Recursively calculates kronecker product of complex vectors (used in getEigSep)
   static void multEigVector(KronVector& eig, const Vector& feig, const Vector& keig);
 

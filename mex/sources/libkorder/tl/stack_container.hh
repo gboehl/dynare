@@ -122,22 +122,22 @@ public:
 public:
   StackContainerInterface() = default;
   virtual ~StackContainerInterface() = default;
-  virtual const IntSequence& getStackSizes() const = 0;
+  [[nodiscard]] virtual const IntSequence& getStackSizes() const = 0;
   virtual IntSequence& getStackSizes() = 0;
-  virtual const IntSequence& getStackOffsets() const = 0;
+  [[nodiscard]] virtual const IntSequence& getStackOffsets() const = 0;
   virtual IntSequence& getStackOffsets() = 0;
-  virtual int numConts() const = 0;
-  virtual const _Ctype& getCont(int i) const = 0;
-  virtual itype getType(int i, const Symmetry& s) const = 0;
-  virtual int numStacks() const = 0;
-  virtual bool isZero(int i, const Symmetry& s) const = 0;
-  virtual const _Ttype& getMatrix(int i, const Symmetry& s) const = 0;
-  virtual int getLengthOfMatrixStacks(const Symmetry& s) const = 0;
-  virtual int getUnitPos(const Symmetry& s) const = 0;
+  [[nodiscard]] virtual int numConts() const = 0;
+  [[nodiscard]] virtual const _Ctype& getCont(int i) const = 0;
+  [[nodiscard]] virtual itype getType(int i, const Symmetry& s) const = 0;
+  [[nodiscard]] virtual int numStacks() const = 0;
+  [[nodiscard]] virtual bool isZero(int i, const Symmetry& s) const = 0;
+  [[nodiscard]] virtual const _Ttype& getMatrix(int i, const Symmetry& s) const = 0;
+  [[nodiscard]] virtual int getLengthOfMatrixStacks(const Symmetry& s) const = 0;
+  [[nodiscard]] virtual int getUnitPos(const Symmetry& s) const = 0;
   virtual std::unique_ptr<Vector> createPackedColumn(const Symmetry& s, const IntSequence& coor,
                                                      int& iu) const
       = 0;
-  int
+  [[nodiscard]] int
   getAllSize() const
   {
     return getStackOffsets()[numStacks() - 1] + getStackSizes()[numStacks() - 1];
@@ -168,7 +168,7 @@ public:
   StackContainer(int ns, int nc) : stack_sizes(ns, 0), stack_offsets(ns, 0), conts(nc)
   {
   }
-  const IntSequence&
+  [[nodiscard]] const IntSequence&
   getStackSizes() const override
   {
     return stack_sizes;
@@ -178,7 +178,7 @@ public:
   {
     return stack_sizes;
   }
-  const IntSequence&
+  [[nodiscard]] const IntSequence&
   getStackOffsets() const override
   {
     return stack_offsets;
@@ -188,23 +188,23 @@ public:
   {
     return stack_offsets;
   }
-  int
+  [[nodiscard]] int
   numConts() const override
   {
     return conts.size();
   }
-  const _Ctype&
+  [[nodiscard]] const _Ctype&
   getCont(int i) const override
   {
     return *(conts[i]);
   }
-  itype getType(int i, const Symmetry& s) const override = 0;
-  int
+  [[nodiscard]] itype getType(int i, const Symmetry& s) const override = 0;
+  [[nodiscard]] int
   numStacks() const override
   {
     return stack_sizes.size();
   }
-  bool
+  [[nodiscard]] bool
   isZero(int i, const Symmetry& s) const override
   {
     TL_RAISE_IF(i < 0 || i >= numStacks(), "Wrong index to stack in StackContainer::isZero.");
@@ -212,7 +212,7 @@ public:
             || (getType(i, s) == itype::matrix && !conts[i]->check(s)));
   }
 
-  const _Ttype&
+  [[nodiscard]] const _Ttype&
   getMatrix(int i, const Symmetry& s) const override
   {
     TL_RAISE_IF(isZero(i, s) || getType(i, s) == itype::unit,
@@ -220,7 +220,7 @@ public:
     return conts[i]->get(s);
   }
 
-  int
+  [[nodiscard]] int
   getLengthOfMatrixStacks(const Symmetry& s) const override
   {
     int res = 0;
@@ -230,7 +230,7 @@ public:
     return res;
   }
 
-  int
+  [[nodiscard]] int
   getUnitPos(const Symmetry& s) const override
   {
     if (s.dimen() != 1)
@@ -367,7 +367,7 @@ public:
   /* Here we say, what happens if we derive z. recall the top of the
      file, how z looks, and code is clear. */
 
-  itype
+  [[nodiscard]] itype
   getType(int i, const Symmetry& s) const override
   {
     if (i == 0)
@@ -428,7 +428,7 @@ public:
   /* Here we say, what happens if we derive z. recall the top of the
      file, how z looks, and code is clear. */
 
-  itype
+  [[nodiscard]] itype
   getType(int i, const Symmetry& s) const override
   {
     if (i == 0)
@@ -509,7 +509,7 @@ public:
      first derivative of g* w.r.t. σ is always zero, so we also add this
      information. */
 
-  itype
+  [[nodiscard]] itype
   getType(int i, const Symmetry& s) const override
   {
     if (i == 0)
@@ -586,22 +586,22 @@ public:
       stack_cont(sc), syms(e, p, os), per(e, p)
   {
   }
-  int
+  [[nodiscard]] int
   dimen() const
   {
     return syms.size();
   }
-  int
+  [[nodiscard]] int
   getAllSize() const
   {
     return stack_cont.getAllSize();
   }
-  const Symmetry&
+  [[nodiscard]] const Symmetry&
   getProdSym(int ip) const
   {
     return syms[ip];
   }
-  bool
+  [[nodiscard]] bool
   isZero(const IntSequence& istacks) const
   {
     TL_RAISE_IF(istacks.size() != dimen(), "Wrong istacks coordinates for StackProduct::isZero");
@@ -648,13 +648,13 @@ public:
     return vs;
   }
 
-  int
+  [[nodiscard]] int
   getSize(int is) const
   {
     return stack_cont.getStackSizes()[is];
   }
 
-  int
+  [[nodiscard]] int
   numMatrices(const IntSequence& istacks) const
   {
     TL_RAISE_IF(istacks.size() != dimen(),

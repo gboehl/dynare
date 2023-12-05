@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -55,22 +55,22 @@ public:
   GeneralSylvester(int ord, int n, int m, int zero_cols, const ConstVector& da,
                    const ConstVector& db, const ConstVector& dc, Vector& dd, const SylvParams& ps);
   virtual ~GeneralSylvester() = default;
-  int
+  [[nodiscard]] int
   getM() const
   {
     return c.nrows();
   }
-  int
+  [[nodiscard]] int
   getN() const
   {
     return a.nrows();
   }
-  const double*
+  [[nodiscard]] const double*
   getResult() const
   {
     return d.base();
   }
-  const SylvParams&
+  [[nodiscard]] const SylvParams&
   getParams() const
   {
     return pars;

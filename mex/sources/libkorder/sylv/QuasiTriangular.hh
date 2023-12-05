@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -94,17 +94,17 @@ public:
   }
   DiagonalBlock(const DiagonalBlock& b) = default;
   DiagonalBlock& operator=(const DiagonalBlock& b) = default;
-  int
+  [[nodiscard]] int
   getIndex() const
   {
     return jbar;
   }
-  bool
+  [[nodiscard]] bool
   isReal() const
   {
     return real;
   }
-  const DiagPair&
+  [[nodiscard]] const DiagPair&
   getAlpha() const
   {
     return alpha;
@@ -114,22 +114,22 @@ public:
   {
     return alpha;
   }
-  double&
+  [[nodiscard]] double&
   getBeta1() const
   {
     return *beta1;
   }
-  double&
+  [[nodiscard]] double&
   getBeta2() const
   {
     return *beta2;
   }
   // Returns determinant of this block (assuming it is 2×2)
-  double getDeterminant() const;
+  [[nodiscard]] double getDeterminant() const;
   // Returns −β₁β₂
-  double getSBeta() const;
+  [[nodiscard]] double getSBeta() const;
   // Returns the modulus of the eigenvalue(s) contained in this block
-  double getSize() const;
+  [[nodiscard]] double getSize() const;
   // Transforms this block into a real one
   void setReal();
   // Verifies that the block information is consistent with the matrix d (for debugging)
@@ -160,25 +160,25 @@ public:
   virtual ~Diagonal() = default;
 
   // Returns number of 2×2 blocks on the diagonal
-  int
+  [[nodiscard]] int
   getNumComplex() const
   {
     return num_all - num_real;
   }
   // Returns number of 1×1 blocks on the diagonal
-  int
+  [[nodiscard]] int
   getNumReal() const
   {
     return num_real;
   }
   // Returns number of scalar elements on the diagonal
-  int
+  [[nodiscard]] int
   getSize() const
   {
     return getNumReal() + 2 * getNumComplex();
   }
   // Returns total number of blocks on the diagonal
-  int
+  [[nodiscard]] int
   getNumBlocks() const
   {
     return num_all;
@@ -196,7 +196,7 @@ public:
   {
     return blocks.begin();
   }
-  const_diag_iter
+  [[nodiscard]] const_diag_iter
   begin() const
   {
     return blocks.begin();
@@ -206,7 +206,7 @@ public:
   {
     return blocks.end();
   }
-  const_diag_iter
+  [[nodiscard]] const_diag_iter
   end() const
   {
     return blocks.end();
@@ -288,7 +288,7 @@ public:
     else
       return *(_Tparent::ptr + _Tparent::d_size);
   }
-  int
+  [[nodiscard]] int
   getRow() const
   {
     return row;
@@ -320,7 +320,7 @@ public:
     else
       return *(_Tparent::ptr + 1);
   }
-  int
+  [[nodiscard]] int
   getCol() const
   {
     return col;
@@ -362,12 +362,12 @@ public:
   QuasiTriangular(const QuasiTriangular& t);
 
   ~QuasiTriangular() override = default;
-  const Diagonal&
+  [[nodiscard]] const Diagonal&
   getDiagonal() const
   {
     return diagonal;
   }
-  int getNumOffdiagonal() const;
+  [[nodiscard]] int getNumOffdiagonal() const;
   void swapDiagLogically(diag_iter it);
   void checkDiagConsistency(diag_iter it);
   double getAverageDiagSize(diag_iter start, diag_iter end);
@@ -399,7 +399,7 @@ public:
   /* A = thisᵀ·A */
   virtual void multLeftOtherTrans(GeneralMatrix& a) const;
 
-  const_diag_iter
+  [[nodiscard]] const_diag_iter
   diag_begin() const
   {
     return diagonal.begin();
@@ -409,7 +409,7 @@ public:
   {
     return diagonal.begin();
   }
-  const_diag_iter
+  [[nodiscard]] const_diag_iter
   diag_end() const
   {
     return diagonal.end();
@@ -421,34 +421,34 @@ public:
   }
 
   /* iterators for off diagonal elements */
-  virtual const_col_iter col_begin(const DiagonalBlock& b) const;
+  [[nodiscard]] virtual const_col_iter col_begin(const DiagonalBlock& b) const;
   virtual col_iter col_begin(const DiagonalBlock& b);
-  virtual const_row_iter row_begin(const DiagonalBlock& b) const;
+  [[nodiscard]] virtual const_row_iter row_begin(const DiagonalBlock& b) const;
   virtual row_iter row_begin(const DiagonalBlock& b);
-  virtual const_col_iter col_end(const DiagonalBlock& b) const;
+  [[nodiscard]] virtual const_col_iter col_end(const DiagonalBlock& b) const;
   virtual col_iter col_end(const DiagonalBlock& b);
-  virtual const_row_iter row_end(const DiagonalBlock& b) const;
+  [[nodiscard]] virtual const_row_iter row_end(const DiagonalBlock& b) const;
   virtual row_iter row_end(const DiagonalBlock& b);
 
-  virtual std::unique_ptr<QuasiTriangular>
+  [[nodiscard]] virtual std::unique_ptr<QuasiTriangular>
   clone() const
   {
     return std::make_unique<QuasiTriangular>(*this);
   }
   // Returns this²
-  virtual std::unique_ptr<QuasiTriangular>
+  [[nodiscard]] virtual std::unique_ptr<QuasiTriangular>
   square() const
   {
     return std::make_unique<QuasiTriangular>("square", *this);
   }
   // Returns r·this
-  virtual std::unique_ptr<QuasiTriangular>
+  [[nodiscard]] virtual std::unique_ptr<QuasiTriangular>
   scale(double r) const
   {
     return std::make_unique<QuasiTriangular>(r, *this);
   }
   // Returns r·this + r₂·t₂
-  virtual std::unique_ptr<QuasiTriangular>
+  [[nodiscard]] virtual std::unique_ptr<QuasiTriangular>
   linearlyCombine(double r, double r2, const QuasiTriangular& t2) const
   {
     return std::make_unique<QuasiTriangular>(r, *this, r2, t2);

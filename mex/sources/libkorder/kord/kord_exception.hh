@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -59,12 +59,12 @@ public:
   {
     std::cout << "At " << fname << ':' << lnum << ":(" << cd << "):" << message << '\n';
   }
-  virtual int
+  [[nodiscard]] virtual int
   code() const
   {
     return cd;
   }
-  const std::string&
+  [[nodiscard]] const std::string&
   get_message() const
   {
     return message;

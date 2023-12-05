@@ -35,9 +35,9 @@ class BasicSymbolTable
 {
 public:
   BasicSymbolTable(const mxArray* M_);
-  string getName(SymbolType type, int tsid) const;
-  pair<SymbolType, int> getIDAndType(const string& name) const;
-  size_t maxEndoNameLength() const;
+  [[nodiscard]] string getName(SymbolType type, int tsid) const;
+  [[nodiscard]] pair<SymbolType, int> getIDAndType(const string& name) const;
+  [[nodiscard]] size_t maxEndoNameLength() const;
 
 private:
   vector<string> endo_names, param_names, exo_names, exo_det_names;

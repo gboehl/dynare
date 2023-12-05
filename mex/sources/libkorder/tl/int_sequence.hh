@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -105,12 +105,12 @@ public:
   /* Unfolds a given integer sequence with respect to a given symmetry. If for
      example the sequence is (a,b) and the symmetry is (2,3), then the
      result is (a,a,b,b,b). */
-  IntSequence unfold(const Symmetry& sy) const;
+  [[nodiscard]] IntSequence unfold(const Symmetry& sy) const;
 
   /* Constructs a symmetry from the integer sequence (supposed to be ordered) as
      a symmetry counting successively equal items. For instance the sequence
      (a,a,a,b,c,c,d,d,d,d) produces symmetry (3,1,2,4). */
-  Symmetry getSymmetry() const;
+  [[nodiscard]] Symmetry getSymmetry() const;
 
   IntSequence& operator=(const IntSequence& s);
   IntSequence& operator=(IntSequence&& s);
@@ -135,7 +135,7 @@ public:
   {
     return data[i];
   }
-  int
+  [[nodiscard]] int
   size() const
   {
     return length;
@@ -150,14 +150,14 @@ public:
   {
     return (operator==(s) || operator<(s));
   }
-  bool lessEq(const IntSequence& s) const;
-  bool less(const IntSequence& s) const;
+  [[nodiscard]] bool lessEq(const IntSequence& s) const;
+  [[nodiscard]] bool less(const IntSequence& s) const;
 
   // Inserts an element into an ordered sequence
-  IntSequence insert(int i) const;
+  [[nodiscard]] IntSequence insert(int i) const;
   // Inserts an element at a given position
   /* For appending at the end, use pos = size() */
-  IntSequence insert(int i, int pos) const;
+  [[nodiscard]] IntSequence insert(int i, int pos) const;
 
   // In-place sort the sequence in increasing order
   void sort();
@@ -173,14 +173,14 @@ public:
   void pmonotone(const Symmetry& s);
 
   // Returns the sum of all elements. Useful for symmetries
-  int sum() const;
+  [[nodiscard]] int sum() const;
 
   /* This returns product of elements between indices i1 (included) and i2
    (excluded). Useful for Kronecker product dimensions. */
-  int mult(int i1, int i2) const;
+  [[nodiscard]] int mult(int i1, int i2) const;
 
   // Returns the product of all elements
-  int
+  [[nodiscard]] int
   mult() const
   {
     return mult(0, length);
@@ -189,19 +189,19 @@ public:
   void add(int f, const IntSequence& s);
 
   /* Return the number of identical elements at the beginning of the sequence. */
-  int getPrefixLength() const;
+  [[nodiscard]] int getPrefixLength() const;
 
   /* This returns a number of distinct items in the sequence. It supposes that
      the sequence is ordered. Returns zero on the empty sequence. */
-  int getNumDistinct() const;
+  [[nodiscard]] int getNumDistinct() const;
 
   /* This returns a maximum of the sequence. If the sequence is empty, it
      returns the least possible int value. */
-  int getMax() const;
+  [[nodiscard]] int getMax() const;
 
-  bool isPositive() const;
-  bool isConstant() const;
-  bool isSorted() const;
+  [[nodiscard]] bool isPositive() const;
+  [[nodiscard]] bool isConstant() const;
+  [[nodiscard]] bool isSorted() const;
 
   void print() const;
   /*                                   ⎛sum(this)⎞
