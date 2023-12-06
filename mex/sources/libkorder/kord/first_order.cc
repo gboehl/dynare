@@ -144,7 +144,6 @@ FirstOrder::solve(const TwoDMatrix& fd)
   ConstTwoDMatrix fymins(fd, off, ypart.nys());
   off += ypart.nys();
   ConstTwoDMatrix fuzero(fd, off, nu);
-  off += nu;
 
   // Form matrix D
   lapack_int n = ypart.ny() + ypart.nboth;

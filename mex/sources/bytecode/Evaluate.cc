@@ -1488,8 +1488,6 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
             {
             case ExpressionType::FirstEndoDerivative:
               eq = static_cast<FSTPG3_*>(*it_code)->get_row();
-              var = static_cast<FSTPG3_*>(*it_code)->get_col();
-              lag = static_cast<FSTPG3_*>(*it_code)->get_lag();
               pos_col = static_cast<FSTPG3_*>(*it_code)->get_col_pos();
 #ifdef DEBUG
               mexPrintf("Endo eq=%d, pos_col=%d, size=%d, jacob=%x\n", eq, pos_col, size, jacob);
@@ -1500,8 +1498,6 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
             case ExpressionType::FirstExoDerivative:
               // eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
               eq = EQN_equation;
-              var = static_cast<FSTPG3_*>(*it_code)->get_col();
-              lag = static_cast<FSTPG3_*>(*it_code)->get_lag();
               pos_col = static_cast<FSTPG3_*>(*it_code)->get_col_pos();
 #ifdef DEBUG
               mexPrintf("Exo eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
@@ -1512,8 +1508,6 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
             case ExpressionType::FirstExodetDerivative:
               // eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
               eq = EQN_equation;
-              var = static_cast<FSTPG3_*>(*it_code)->get_col();
-              lag = static_cast<FSTPG3_*>(*it_code)->get_lag();
               pos_col = static_cast<FSTPG3_*>(*it_code)->get_col_pos();
 #ifdef DEBUG
               mexPrintf("Exo det eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);

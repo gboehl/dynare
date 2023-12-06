@@ -89,6 +89,8 @@ mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
   const mxArray* num_threads_mx = mxGetField(threads_mx, 0, "perfect_foresight_problem");
   if (!(num_threads_mx && mxIsScalar(num_threads_mx) && mxIsNumeric(num_threads_mx)))
     mexErrMsgTxt("options_.threads.perfect_foresight_problem should be a numeric scalar");
+  // False positive: num_threads is used in OpemMP pragma
+  // NOLINTNEXTLINE(clang-analyzer-deadcode.DeadStores)
   int num_threads = static_cast<int>(mxGetScalar(num_threads_mx));
 
   // Check other input and map it to local variables

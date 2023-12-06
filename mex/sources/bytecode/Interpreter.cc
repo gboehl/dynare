@@ -30,8 +30,6 @@
 
 #include "Interpreter.hh"
 
-constexpr double BIG = 1.0e+8, SMALL = 1.0e-5;
-
 Interpreter::Interpreter(Evaluate& evaluator_arg, double* params_arg, double* y_arg, double* ya_arg,
                          double* x_arg, double* steady_y_arg, double* direction_arg, int y_size_arg,
                          int nb_row_x_arg, int periods_arg, int y_kmin_arg, int y_kmax_arg,
@@ -1894,7 +1892,6 @@ Interpreter::Init_Gaussian_Elimination()
       NbNZRow[i] = 0;
       NbNZCol[i] = 0;
     }
-  int nnz = 0;
   // pragma omp parallel for ordered private(it4, ti_y_kmin, ti_y_kmax, eq, var, lag)
   // schedule(dynamic)
   for (int t = 0; t < periods; t++)
@@ -1909,14 +1906,12 @@ Interpreter::Init_Gaussian_Elimination()
           if (eq != get<0>(key) + size * t)
             tmp_b = 0;
           eq = get<0>(key) + size * t;
-          int lag = get<2>(key);
           if (var < (periods + y_kmax) * size)
             {
-              lag = get<2>(key);
+              int lag {get<2>(key)};
               if (lag <= ti_y_kmax && lag >= ti_y_kmin) /*Build the index for sparse matrix
                                                            containing the jacobian : u*/
                 {
-                  nnz++;
                   var += size * t;
                   NbNZRow[eq]++;
                   NbNZCol[var]++;
@@ -2684,7 +2679,7 @@ Interpreter::compute_complete(bool no_derivatives)
 pair<bool, double>
 Interpreter::compute_complete(double lambda)
 {
-  double res1_ = 0, res2_ = 0, max_res_ = 0;
+  double res2_ = 0, max_res_ = 0;
   int max_res_idx_ = 0;
   if (steady_state)
     {
@@ -2716,7 +2711,6 @@ Interpreter::compute_complete(double lambda)
           if (compute_complete(true))
             {
               res2_ += res2;
-              res1_ += res1;
               if (max_res > max_res_)
                 {
                   max_res = max_res_;
@@ -3477,61 +3471,45 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination()
                     "In Solve_ByteCode_Sparse_GaussianElimination, singular system"};
             }
         }
-      double markovitz = 0, markovitz_max = -9e70;
       if (!one)
-        for (int j = 0; j < l; j++)
-          {
-            if (N_max > 0 && NR[j] > 0)
-              {
-                if (fabs(piv_v[j]) > 0)
-                  {
-                    if (markowitz_c > 0)
-                      markovitz = exp(
-                          log(fabs(piv_v[j]) / piv_abs)
-                          - markowitz_c
-                                * log(static_cast<double>(NR[j]) / static_cast<double>(N_max)));
-                    else
-                      markovitz = fabs(piv_v[j]) / piv_abs;
-                  }
-                else
-                  markovitz = 0;
-              }
-            else
-              markovitz = fabs(piv_v[j]) / piv_abs;
-            if (markovitz > markovitz_max)
-              {
-                piv = piv_v[j];
-                pivj = pivj_v[j]; // Line number
-                pivk = pivk_v[j]; // positi
-                markovitz_max = markovitz;
-              }
-          }
+        {
+          double markovitz = 0, markovitz_max = -9e70;
+          for (int j = 0; j < l; j++)
+            {
+              if (N_max > 0 && NR[j] > 0)
+                {
+                  if (fabs(piv_v[j]) > 0)
+                    {
+                      if (markowitz_c > 0)
+                        markovitz = exp(
+                            log(fabs(piv_v[j]) / piv_abs)
+                            - markowitz_c
+                                  * log(static_cast<double>(NR[j]) / static_cast<double>(N_max)));
+                      else
+                        markovitz = fabs(piv_v[j]) / piv_abs;
+                    }
+                  else
+                    markovitz = 0;
+                }
+              else
+                markovitz = fabs(piv_v[j]) / piv_abs;
+              if (markovitz > markovitz_max)
+                {
+                  piv = piv_v[j];
+                  pivj = pivj_v[j]; // Line number
+                  pivk = pivk_v[j]; // positi
+                  markovitz_max = markovitz;
+                }
+            }
+        }
       else
         for (int j = 0; j < l; j++)
           {
-            if (N_max > 0 && NR[j] > 0)
-              {
-                if (fabs(piv_v[j]) > 0)
-                  {
-                    if (markowitz_c > 0)
-                      markovitz = exp(
-                          log(fabs(piv_v[j]) / piv_abs)
-                          - markowitz_c
-                                * log(static_cast<double>(NR[j]) / static_cast<double>(N_max)));
-                    else
-                      markovitz = fabs(piv_v[j]) / piv_abs;
-                  }
-                else
-                  markovitz = 0;
-              }
-            else
-              markovitz = fabs(piv_v[j]) / piv_abs;
             if (NR[j] == 1)
               {
                 piv = piv_v[j];
                 pivj = pivj_v[j]; // Line number
                 pivk = pivk_v[j]; // positi
-                markovitz_max = markovitz;
               }
           }
       pivot[i] = pivj;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2022 Dynare Team
+ * Copyright © 2007-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -106,7 +106,6 @@ sparse_hessian_times_B_kronecker_C(const mwIndex* isparseA, const mwIndex* jspar
       mwIndex k1 = 0;
       mwIndex k2 = 0;
       mwIndex iv = 0;
-      int nz_in_column_ii_of_A = 0;
       /*
       ** Loop over the rows of B⊗C (column jj).
       */
@@ -117,7 +116,6 @@ sparse_hessian_times_B_kronecker_C(const mwIndex* isparseA, const mwIndex* jspar
           if (k1 < k2) // otherwise column ii of A does not have non zero elements (and there is
                        // nothing to compute).
             {
-              ++nz_in_column_ii_of_A;
               mwIndex iC = ii % mC;
               mwIndex iB = ii / mC;
               double cb = C[jC * mC + iC] * B[jB * mB + iB];
