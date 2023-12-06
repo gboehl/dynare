@@ -202,7 +202,7 @@ public:
     PowerProvider pwp(xval);
     for (int i = 1; i <= tp.maxdim; i++)
       {
-        const _Stype& xpow = pwp.getNext<_Stype>();
+        const auto& xpow = pwp.getNext<_Stype>();
         for (int j = 0; j <= tp.maxdim - i; j++)
           if (tp.check(Symmetry {i + j}))
             {
