@@ -73,11 +73,10 @@ protected:
   int nr;
   int nc;
   int first_nz_row;
-  int last_nz_row;
+  int last_nz_row {-1};
 
 public:
-  SparseTensor(int d, int nnr, int nnc) :
-      dim(d), nr(nnr), nc(nnc), first_nz_row(nr), last_nz_row(-1)
+  SparseTensor(int d, int nnr, int nnc) : dim(d), nr(nnr), nc(nnc), first_nz_row(nr)
   {
   }
   virtual ~SparseTensor() = default;

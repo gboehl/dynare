@@ -582,15 +582,14 @@ protected:
   // Orthogonal matrix Vᵀ
   GeneralMatrix VT;
   // Convered flag
-  bool conv;
+  bool conv {false};
 
 public:
   SVDDecomp(const GeneralMatrix& A) :
       minmn(std::min<int>(A.nrows(), A.ncols())),
       sigma(minmn),
       U(A.nrows(), A.nrows()),
-      VT(A.ncols(), A.ncols()),
-      conv(false)
+      VT(A.ncols(), A.ncols())
   {
     construct(A);
   }
