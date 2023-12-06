@@ -54,7 +54,8 @@ mexFunction(int nlhs, [[maybe_unused]] mxArray* plhs[], int nrhs, const mxArray*
   if (!(args[nargs] = static_cast<char*>(mxCalloc(strlen(mainarg) + 1, sizeof(char)))))
     mexErrMsgTxt("Error in MS-SBVAR MEX file: could not allocate memory. (2)");
 
-  strcpy(args[nargs++], mainarg);
+  // Disabling security warning, since by construction the destination is large enough
+  strcpy(args[nargs++], mainarg); // NOLINT(clang-analyzer-security.insecureAPI.strcpy)
 
   if (mxGetString(prhs[0], argument, mxGetN(prhs[0]) + 1))
     mexErrMsgTxt("Error in MS-SBVAR MEX file: error using mxGetString.\n");
