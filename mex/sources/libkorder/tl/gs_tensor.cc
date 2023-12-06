@@ -460,7 +460,7 @@ UGSTensor::getFirstIndexOf(const index& in) const
       vtmp.sort();
       last += tdims.getSym()[i];
     }
-  return index(*this, v);
+  return {*this, v};
 }
 
 /* Here is perfectly same code with the same semantics as in
