@@ -154,7 +154,7 @@ public:
   KronProd(int dim) : kpd(dim)
   {
   }
-  KronProd(const KronProdDimens& kd) : kpd(kd)
+  KronProd(KronProdDimens kd) : kpd {std::move(kd)}
   {
   }
   KronProd(const KronProd& kp) = default;

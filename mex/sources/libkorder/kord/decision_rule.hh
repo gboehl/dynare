@@ -41,6 +41,7 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <utility>
 
 /* This class is an abstract interface to decision rule. Its main purpose is to
    define a common interface for simulation of a decision rule. We need only a
@@ -525,7 +526,7 @@ class DRFixPoint : public ctraits<t>::Tpol
 
 public:
   using emethod = typename DecisionRule::emethod;
-  DRFixPoint(const _Tg& g, const PartitionY& yp, const Vector& ys, double sigma);
+  DRFixPoint(const _Tg& g, const PartitionY& yp, Vector ys, double sigma);
 
   bool calcFixPoint(Vector& out);
 
@@ -561,8 +562,8 @@ private:
    calculated. */
 
 template<Storage t>
-DRFixPoint<t>::DRFixPoint(const _Tg& g, const PartitionY& yp, const Vector& ys, double sigma) :
-    ctraits<t>::Tpol(yp.ny(), yp.nys()), ysteady(ys), ypart(yp)
+DRFixPoint<t>::DRFixPoint(const _Tg& g, const PartitionY& yp, Vector ys, double sigma) :
+    ctraits<t>::Tpol(yp.ny(), yp.nys()), ysteady {std::move(ys)}, ypart(yp)
 {
   fillTensors(g, sigma);
   _Tpol yspol(ypart.nstat, ypart.nys(), *this);
