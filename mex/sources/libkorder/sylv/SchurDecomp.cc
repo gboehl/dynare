@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -21,6 +21,7 @@
 #include "SchurDecomp.hh"
 
 #include <memory>
+#include <vector>
 
 #include <dynlapack.h>
 
@@ -30,13 +31,12 @@ SchurDecomp::SchurDecomp(const SqSylvMatrix& m) : q(m.nrows())
   SqSylvMatrix auxt(m);
   lapack_int lda = auxt.getLD(), ldvs = q.getLD();
   lapack_int sdim;
-  auto wr = std::make_unique<double[]>(rows);
-  auto wi = std::make_unique<double[]>(rows);
+  std::vector<double> wr(rows), wi(rows);
   lapack_int lwork = 6 * rows;
-  auto work = std::make_unique<double[]>(lwork);
+  std::vector<double> work(lwork);
   lapack_int info;
-  dgees("V", "N", nullptr, &rows, auxt.base(), &lda, &sdim, wr.get(), wi.get(), q.base(), &ldvs,
-        work.get(), &lwork, nullptr, &info);
+  dgees("V", "N", nullptr, &rows, auxt.base(), &lda, &sdim, wr.data(), wi.data(), q.base(), &ldvs,
+        work.data(), &lwork, nullptr, &info);
   t_storage = std::make_unique<QuasiTriangular>(auxt.getData(), rows);
   t = t_storage.get();
 }

@@ -23,7 +23,6 @@
 #include <deque>
 #include <filesystem>
 #include <map>
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -41,7 +40,7 @@ private:
   const bool steady_state; // Whether this is a static or dynamic .cod file
 
   // Memory copy of the contents of the .cod file
-  unique_ptr<char[]> raw_bytecode;
+  vector<char> raw_bytecode;
 
   /* Owns read instructions that have their specialized deserializing
      constructors (and are thus not part of the “code” memory block). We use

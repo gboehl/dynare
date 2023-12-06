@@ -29,9 +29,9 @@
 # include <dlfcn.h> // unix/linux DLL (.so) handling routines
 #endif
 
-#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "dynare_exception.hh"
 
@@ -62,7 +62,7 @@ private:
 #else
   void* dynamicHinstance; // and in Linux or Mac
 #endif
-  std::unique_ptr<double[]> tt; // Vector of temporary terms
+  std::vector<double> tt; // Vector of temporary terms
 
   template<typename T>
   std::pair<T, dynamic_tt_fct>

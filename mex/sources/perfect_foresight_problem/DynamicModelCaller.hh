@@ -22,6 +22,7 @@
 #include <memory>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 #include <dynmex.h>
 
@@ -49,8 +50,8 @@ public:
   {
   }
   virtual ~DynamicModelCaller() = default;
-  [[nodiscard]] virtual double* y() const = 0;
-  [[nodiscard]] virtual double* x() const = 0;
+  [[nodiscard]] virtual double* y() = 0;
+  [[nodiscard]] virtual double* x() = 0;
   /* Copy a column of the Jacobian to dest.
      Only copies non-zero elements, according to g1_sparse_{rowval,colval,colptr}. */
   virtual void copy_jacobian_column(mwIndex col, double* dest) const = 0;
@@ -72,7 +73,7 @@ private:
   static dynamic_tt_fct residual_tt_fct, g1_tt_fct;
   static dynamic_fct residual_fct, g1_fct;
   const double *params, *steady_state;
-  std::unique_ptr<double[]> tt, y_p, x_p, jacobian_p;
+  std::vector<double> tt, y_p, x_p, jacobian_p;
   const int32_T* g1_sparse_colptr;
 
 public:
@@ -81,14 +82,14 @@ public:
                         bool linear_arg, bool compute_jacobian_arg);
   virtual ~DynamicModelDllCaller() = default;
   [[nodiscard]] double*
-  y() const override
+  y() override
   {
-    return y_p.get();
+    return y_p.data();
   }
   [[nodiscard]] double*
-  x() const override
+  x() override
   {
-    return x_p.get();
+    return x_p.data();
   }
   void copy_jacobian_column(mwIndex col, double* dest) const override;
   void eval(double* resid) override;
@@ -120,12 +121,12 @@ public:
                            bool compute_jacobian_arg);
   ~DynamicModelMatlabCaller() override;
   [[nodiscard]] double*
-  y() const override
+  y() override
   {
     return mxGetPr(y_mx);
   }
   [[nodiscard]] double*
-  x() const override
+  x() override
   {
     return mxGetPr(x_mx);
   }

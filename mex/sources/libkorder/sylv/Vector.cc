@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -211,6 +211,7 @@ Vector::addComplex(const std::complex<double>& z, const ConstVector& v)
   blas_int n = len / 2;
   blas_int incx = v.s;
   blas_int incy = s;
+  // NOLINTNEXTLINE(modernize-avoid-c-arrays)
   zaxpy(&n, reinterpret_cast<const double(&)[2]>(z), v.data, &incx, data, &incy);
 }
 

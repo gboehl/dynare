@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <type_traits>
 
@@ -90,10 +91,11 @@ ObjectiveMFile::eval(const Vector& y, const Vector& x, const Vector& modParams, 
   {
     // Compute temporary terms (for all orders)
     std::string funcname = ObjectiveMFilename + "_g" + std::to_string(md.size()) + "_tt";
-    mxArray *plhs[1], *prhs[] = {T_m, y_m, x_m, params_m};
+    std::array<mxArray*, 1> plhs;
+    std::array prhs {T_m, y_m, x_m, params_m};
 
-    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>,
-                               prhs, funcname.c_str());
+    int retVal
+        = mexCallMATLAB(plhs.size(), plhs.data(), prhs.size(), prhs.data(), funcname.c_str());
     if (retVal != 0)
       throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
@@ -104,10 +106,11 @@ ObjectiveMFile::eval(const Vector& y, const Vector& x, const Vector& modParams, 
   {
     // Compute residuals
     std::string funcname = ObjectiveMFilename + "_resid";
-    mxArray *plhs[1], *prhs[] = {T_m, y_m, x_m, params_m, T_flag_m};
+    std::array<mxArray*, 1> plhs;
+    std::array prhs {T_m, y_m, x_m, params_m, T_flag_m};
 
-    int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>,
-                               prhs, funcname.c_str());
+    int retVal
+        = mexCallMATLAB(plhs.size(), plhs.data(), prhs.size(), prhs.data(), funcname.c_str());
     if (retVal != 0)
       throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
@@ -119,10 +122,11 @@ ObjectiveMFile::eval(const Vector& y, const Vector& x, const Vector& modParams, 
     {
       // Compute model derivatives
       std::string funcname = ObjectiveMFilename + "_g" + std::to_string(i);
-      mxArray *plhs[1], *prhs[] = {T_m, y_m, x_m, params_m, T_flag_m};
+      std::array<mxArray*, 1> plhs;
+      std::array prhs {T_m, y_m, x_m, params_m, T_flag_m};
 
-      int retVal = mexCallMATLAB(std::extent_v<decltype(plhs)>, plhs, std::extent_v<decltype(prhs)>,
-                                 prhs, funcname.c_str());
+      int retVal
+          = mexCallMATLAB(plhs.size(), plhs.data(), prhs.size(), prhs.data(), funcname.c_str());
       if (retVal != 0)
         throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 

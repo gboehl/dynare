@@ -23,6 +23,7 @@
 
 #include <ostream>
 #include <string>
+#include <vector>
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 # include <dynmex.h>
@@ -222,7 +223,7 @@ public:
   ~SylvParams() = default;
   void print(const std::string& prefix) const;
   void print(std::ostream& fdesc, const std::string& prefix) const;
-  void setArrayNames(int& num, const char** names) const;
+  [[nodiscard]] std::vector<const char*> getArrayNames() const;
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   [[nodiscard]] mxArray* createStructArray() const;
 #endif

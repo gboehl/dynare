@@ -48,6 +48,7 @@ deblank(string x)
   return x;
 }
 
+// NOLINTBEGIN(modernize-avoid-c-arrays)
 void
 Get_Arguments_and_global_variables(int nrhs, const mxArray* prhs[], double* yd[], size_t& row_y,
                                    size_t& col_y, double* xd[], size_t& row_x, size_t& col_x,
@@ -57,6 +58,7 @@ Get_Arguments_and_global_variables(int nrhs, const mxArray* prhs[], double* yd[]
                                    int& block, const mxArray** M_, const mxArray** options_,
                                    bool& print, const mxArray** GlobalTemporaryTerms,
                                    bool* extended_path, mxArray** ep_struct)
+// NOLINTEND(modernize-avoid-c-arrays)
 {
   int count_array_argument {0};
   *extended_path = false;

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -26,7 +26,7 @@
 #include <dynlapack.h>
 
 #include <cmath>
-#include <memory>
+#include <vector>
 
 void
 SylvMatrix::multLeftI(const SqSylvMatrix& m)
@@ -235,26 +235,26 @@ SqSylvMatrix::multInvLeft2(GeneralMatrix& a, GeneralMatrix& b, double& rcond1,
 
   // PLU factorization
   Vector inv(data);
-  auto ipiv = std::make_unique<lapack_int[]>(rows);
+  std::vector<lapack_int> ipiv(rows);
   lapack_int info;
   lapack_int rows2 = rows, lda = ld;
-  dgetrf(&rows2, &rows2, inv.base(), &lda, ipiv.get(), &info);
+  dgetrf(&rows2, &rows2, inv.base(), &lda, ipiv.data(), &info);
   // solve a
   lapack_int acols = a.ncols();
   double* abase = a.base();
-  dgetrs("N", &rows2, &acols, inv.base(), &lda, ipiv.get(), abase, &rows2, &info);
+  dgetrs("N", &rows2, &acols, inv.base(), &lda, ipiv.data(), abase, &rows2, &info);
   // solve b
   lapack_int bcols = b.ncols();
   double* bbase = b.base();
-  dgetrs("N", &rows2, &bcols, inv.base(), &lda, ipiv.get(), bbase, &rows2, &info);
+  dgetrs("N", &rows2, &bcols, inv.base(), &lda, ipiv.data(), bbase, &rows2, &info);
 
   // condition numbers
-  auto work = std::make_unique<double[]>(4 * rows);
-  auto iwork = std::make_unique<lapack_int[]>(rows);
+  std::vector<double> work(4 * rows);
+  std::vector<lapack_int> iwork(rows);
   double norm1 = getNorm1();
-  dgecon("1", &rows2, inv.base(), &lda, &norm1, &rcond1, work.get(), iwork.get(), &info);
+  dgecon("1", &rows2, inv.base(), &lda, &norm1, &rcond1, work.data(), iwork.data(), &info);
   double norminf = getNormInf();
-  dgecon("I", &rows2, inv.base(), &lda, &norminf, &rcondinf, work.get(), iwork.get(), &info);
+  dgecon("I", &rows2, inv.base(), &lda, &norminf, &rcondinf, work.data(), iwork.data(), &info);
 }
 
 void

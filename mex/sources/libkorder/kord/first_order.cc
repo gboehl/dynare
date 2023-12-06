@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+#include <vector>
 
 #include "first_order.hh"
 #include "kord_exception.hh"
@@ -172,7 +174,7 @@ FirstOrder::solve(const TwoDMatrix& fd)
   lapack_int ldvsl = vsl.getLD(), ldvsr = vsr.getLD();
   lapack_int lwork = 100 * n + 16;
   Vector work(lwork);
-  auto bwork = std::make_unique<lapack_int[]>(n);
+  std::vector<lapack_int> bwork(n);
   lapack_int info;
   lapack_int sdim2 = sdim;
   {
@@ -180,7 +182,7 @@ FirstOrder::solve(const TwoDMatrix& fd)
     qz_criterium_global = qz_criterium;
     dgges("N", "V", "S", order_eigs, &n, matE.getData().base(), &lda, matD.getData().base(), &ldb,
           &sdim2, alphar.base(), alphai.base(), beta.base(), vsl.getData().base(), &ldvsl,
-          vsr.getData().base(), &ldvsr, work.base(), &lwork, bwork.get(), &info);
+          vsr.getData().base(), &ldvsr, work.base(), &lwork, bwork.data(), &info);
   }
   if (info)
     throw KordException(__FILE__, __LINE__, "DGGES returns an error in FirstOrder::solve");

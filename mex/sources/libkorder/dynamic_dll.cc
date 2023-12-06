@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2020 Dynare Team
+ * Copyright © 2008-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -56,7 +56,7 @@ DynamicModelDLL::DynamicModelDLL(const std::string& modName, int ntt_arg, int or
     std::tie(dynamic_higher_deriv[i - 2], dynamic_tt[i])
         = getSymbolsFromDLL<dynamic_higher_deriv_fct>("dynamic_g" + std::to_string(i), fName);
 
-  tt = std::make_unique<double[]>(ntt);
+  tt.resize(ntt);
 }
 
 DynamicModelDLL::~DynamicModelDLL()
@@ -82,16 +82,16 @@ DynamicModelDLL::eval(const Vector& y, const Vector& x, const Vector& modParams,
 
   for (size_t i = 0; i < dynamic_tt.size(); i++)
     {
-      dynamic_tt[i](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get());
+      dynamic_tt[i](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.data());
       if (i == 0)
-        dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(),
+        dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.data(),
                       residual.base());
       else if (i == 1)
-        dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.get(),
+        dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.data(),
                    md[0].base());
       else
         dynamic_higher_deriv[i - 2](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0,
-                                    tt.get(), &md[i - 1].get(0, 0), &md[i - 1].get(0, 1),
+                                    tt.data(), &md[i - 1].get(0, 0), &md[i - 1].get(0, 1),
                                     &md[i - 1].get(0, 2));
     }
 }

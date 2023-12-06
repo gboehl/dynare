@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -25,7 +25,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <memory>
+#include <vector>
 
 SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix& mata) :
     lambda(mata.nrows()), q(mata.nrows())
@@ -50,7 +50,7 @@ SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix& mata) :
   double* w = lambda.base();
   double* z = q.base();
   lapack_int ldz = q.getLD();
-  auto isuppz = std::make_unique<lapack_int[]>(2 * std::max(1, static_cast<int>(m)));
+  std::vector<lapack_int> isuppz(2 * std::max(1, static_cast<int>(m)));
   double tmpwork;
   lapack_int lwork = -1;
   lapack_int tmpiwork;
@@ -58,17 +58,17 @@ SymSchurDecomp::SymSchurDecomp(const ConstGeneralMatrix& mata) :
   lapack_int info;
 
   // query for lwork and liwork
-  dsyevr("V", "A", "U", &n, a, &lda, vl, vu, il, iu, &abstol, &m, w, z, &ldz, isuppz.get(),
+  dsyevr("V", "A", "U", &n, a, &lda, vl, vu, il, iu, &abstol, &m, w, z, &ldz, isuppz.data(),
          &tmpwork, &lwork, &tmpiwork, &liwork, &info);
   lwork = static_cast<lapack_int>(tmpwork);
   liwork = tmpiwork;
   // allocate work arrays
-  auto work = std::make_unique<double[]>(lwork);
-  auto iwork = std::make_unique<lapack_int[]>(liwork);
+  std::vector<double> work(lwork);
+  std::vector<lapack_int> iwork(liwork);
 
   // do the calculation
-  dsyevr("V", "A", "U", &n, a, &lda, vl, vu, il, iu, &abstol, &m, w, z, &ldz, isuppz.get(),
-         work.get(), &lwork, iwork.get(), &liwork, &info);
+  dsyevr("V", "A", "U", &n, a, &lda, vl, vu, il, iu, &abstol, &m, w, z, &ldz, isuppz.data(),
+         work.data(), &lwork, iwork.data(), &liwork, &info);
 
   if (info < 0)
     throw SYLV_MES_EXCEPTION("Internal error in SymSchurDecomp constructor");

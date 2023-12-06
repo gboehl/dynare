@@ -20,6 +20,7 @@
 #include "DynamicModelCaller.hh"
 
 #include <algorithm>
+#include <array>
 #include <filesystem>
 
 using namespace std::literals::string_literals;
@@ -97,29 +98,29 @@ DynamicModelDllCaller::DynamicModelDllCaller(size_t ntt, mwIndex ny, mwIndex nx,
     steady_state {steady_state_arg},
     g1_sparse_colptr {g1_sparse_colptr_arg}
 {
-  tt = std::make_unique<double[]>(ntt);
-  y_p = std::make_unique<double[]>(3 * ny);
-  x_p = std::make_unique<double[]>(nx);
+  tt.resize(ntt);
+  y_p.resize(3 * ny);
+  x_p.resize(nx);
   if (compute_jacobian)
-    jacobian_p = std::make_unique<double[]>(g1_sparse_colptr[3 * ny + nx] - 1);
+    jacobian_p.resize(g1_sparse_colptr[3 * ny + nx] - 1);
 }
 
 void
 DynamicModelDllCaller::copy_jacobian_column(mwIndex col, double* dest) const
 {
-  std::copy_n(jacobian_p.get() + g1_sparse_colptr[col] - 1,
+  std::copy_n(jacobian_p.data() + g1_sparse_colptr[col] - 1,
               g1_sparse_colptr[col + 1] - g1_sparse_colptr[col], dest);
 }
 
 void
 DynamicModelDllCaller::eval(double* resid)
 {
-  residual_tt_fct(y_p.get(), x_p.get(), params, steady_state, tt.get());
-  residual_fct(y_p.get(), x_p.get(), params, steady_state, tt.get(), resid);
+  residual_tt_fct(y_p.data(), x_p.data(), params, steady_state, tt.data());
+  residual_fct(y_p.data(), x_p.data(), params, steady_state, tt.data(), resid);
   if (compute_jacobian)
     {
-      g1_tt_fct(y_p.get(), x_p.get(), params, steady_state, tt.get());
-      g1_fct(y_p.get(), x_p.get(), params, steady_state, tt.get(), jacobian_p.get());
+      g1_tt_fct(y_p.data(), x_p.data(), params, steady_state, tt.data());
+      g1_fct(y_p.data(), x_p.data(), params, steady_state, tt.data(), jacobian_p.data());
 
       if (linear)
         compute_jacobian = false; // If model is linear, no need to recompute Jacobian later
@@ -202,10 +203,10 @@ DynamicModelMatlabCaller::eval(double* resid)
   {
     // Compute residuals
     std::string funcname {basename + ".sparse.dynamic_resid"};
-    mxArray *plhs[3], *prhs[] = {y_mx, x_mx, params_mx, steady_state_mx};
+    std::array<mxArray*, 3> plhs;
+    std::array prhs {y_mx, x_mx, params_mx, steady_state_mx};
 
-    mxArray* exception {mexCallMATLABWithTrap(std::extent_v<decltype(plhs)>, plhs,
-                                              std::extent_v<decltype(prhs)>, prhs,
+    mxArray* exception {mexCallMATLABWithTrap(plhs.size(), plhs.data(), prhs.size(), prhs.data(),
                                               funcname.c_str())};
     if (exception)
       {
@@ -233,18 +234,18 @@ DynamicModelMatlabCaller::eval(double* resid)
     {
       // Compute Jacobian
       std::string funcname {basename + ".sparse.dynamic_g1"};
-      mxArray *plhs[1], *prhs[] = {y_mx,
-                                   x_mx,
-                                   params_mx,
-                                   steady_state_mx,
-                                   g1_sparse_rowval_mx,
-                                   g1_sparse_colval_mx,
-                                   g1_sparse_colptr_mx,
-                                   T_order_mx,
-                                   T_mx};
+      std::array<mxArray*, 1> plhs;
+      std::array prhs {y_mx,
+                       x_mx,
+                       params_mx,
+                       steady_state_mx,
+                       g1_sparse_rowval_mx,
+                       g1_sparse_colval_mx,
+                       g1_sparse_colptr_mx,
+                       T_order_mx,
+                       T_mx};
 
-      mxArray* exception {mexCallMATLABWithTrap(std::extent_v<decltype(plhs)>, plhs,
-                                                std::extent_v<decltype(prhs)>, prhs,
+      mxArray* exception {mexCallMATLABWithTrap(plhs.size(), plhs.data(), prhs.size(), prhs.data(),
                                                 funcname.c_str())};
       if (exception)
         {

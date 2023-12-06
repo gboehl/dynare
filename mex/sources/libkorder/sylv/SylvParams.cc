@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019-2022 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -20,6 +20,7 @@
 
 #include "SylvParams.hh"
 
+#include <array>
 #include <iostream>
 
 void
@@ -64,62 +65,64 @@ SylvParams::print(std::ostream& fdesc, const std::string& prefix) const
   cpu_time.print(fdesc, prefix, "time (CPU secs)    ");
 }
 
-void
-SylvParams::setArrayNames(int& num, const char** names) const
+std::vector<const char*>
+SylvParams::getArrayNames() const
 {
-  num = 0;
+  std::vector<const char*> names;
   if (method.getStatus() != status::undef)
-    names[num++] = "method";
+    names.push_back("method");
   if (convergence_tol.getStatus() != status::undef)
-    names[num++] = "convergence_tol";
+    names.push_back("convergence_tol");
   if (max_num_iter.getStatus() != status::undef)
-    names[num++] = "max_num_iter";
+    names.push_back("max_num_iter");
   if (bs_norm.getStatus() != status::undef)
-    names[num++] = "bs_norm";
+    names.push_back("bs_norm");
   if (converged.getStatus() != status::undef)
-    names[num++] = "converged";
+    names.push_back("converged");
   if (iter_last_norm.getStatus() != status::undef)
-    names[num++] = "iter_last_norm";
+    names.push_back("iter_last_norm");
   if (num_iter.getStatus() != status::undef)
-    names[num++] = "num_iter";
+    names.push_back("num_iter");
   if (f_err1.getStatus() != status::undef)
-    names[num++] = "f_err1";
+    names.push_back("f_err1");
   if (f_errI.getStatus() != status::undef)
-    names[num++] = "f_errI";
+    names.push_back("f_errI");
   if (viv_err1.getStatus() != status::undef)
-    names[num++] = "viv_err1";
+    names.push_back("viv_err1");
   if (viv_errI.getStatus() != status::undef)
-    names[num++] = "viv_errI";
+    names.push_back("viv_errI");
   if (ivv_err1.getStatus() != status::undef)
-    names[num++] = "ivv_err1";
+    names.push_back("ivv_err1");
   if (ivv_errI.getStatus() != status::undef)
-    names[num++] = "ivv_errI";
+    names.push_back("ivv_errI");
   if (f_blocks.getStatus() != status::undef)
-    names[num++] = "f_blocks";
+    names.push_back("f_blocks");
   if (f_largest.getStatus() != status::undef)
-    names[num++] = "f_largest";
+    names.push_back("f_largest");
   if (f_zeros.getStatus() != status::undef)
-    names[num++] = "f_zeros";
+    names.push_back("f_zeros");
   if (f_offdiag.getStatus() != status::undef)
-    names[num++] = "f_offdiag";
+    names.push_back("f_offdiag");
   if (rcondA1.getStatus() != status::undef)
-    names[num++] = "rcondA1";
+    names.push_back("rcondA1");
   if (rcondAI.getStatus() != status::undef)
-    names[num++] = "rcondAI";
+    names.push_back("rcondAI");
   if (eig_min.getStatus() != status::undef)
-    names[num++] = "eig_min";
+    names.push_back("eig_min");
   if (mat_err1.getStatus() != status::undef)
-    names[num++] = "mat_err1";
+    names.push_back("mat_err1");
   if (mat_errI.getStatus() != status::undef)
-    names[num++] = "mat_errI";
+    names.push_back("mat_errI");
   if (mat_errF.getStatus() != status::undef)
-    names[num++] = "mat_errF";
+    names.push_back("mat_errF");
   if (vec_err1.getStatus() != status::undef)
-    names[num++] = "vec_err1";
+    names.push_back("vec_err1");
   if (vec_errI.getStatus() != status::undef)
-    names[num++] = "vec_errI";
+    names.push_back("vec_errI");
   if (cpu_time.getStatus() != status::undef)
-    names[num++] = "cpu_time";
+    names.push_back("cpu_time");
+
+  return names;
 }
 
 #if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
@@ -162,11 +165,9 @@ SylvParams::MethodParamItem::createMatlabArray() const
 mxArray*
 SylvParams::createStructArray() const
 {
-  const char* names[50];
-  int num;
-  setArrayNames(num, names);
-  const mwSize dims[] = {1, 1};
-  mxArray* const res = mxCreateStructArray(2, dims, num, names);
+  auto names = getArrayNames();
+  const std::array<mwSize, 2> dims {1, 1};
+  mxArray* const res = mxCreateStructArray(dims.size(), dims.data(), names.size(), names.data());
 
   int i = 0;
   if (method.getStatus() != status::undef)

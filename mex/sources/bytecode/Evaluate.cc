@@ -17,6 +17,7 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <array>
 #include <cfenv>
 #include <cmath>
 #include <limits>
@@ -38,8 +39,8 @@ Evaluate::Evaluate(const filesystem::path& codfile, bool steady_state_arg,
   if (!CompiledCode.is_open())
     throw FatalException {codfile.string() + " cannot be opened"};
   auto Code_Size {CompiledCode.tellg()};
-  raw_bytecode = make_unique<char[]>(Code_Size);
-  auto code {raw_bytecode.get()};
+  raw_bytecode.resize(Code_Size);
+  auto code {raw_bytecode.data()};
   CompiledCode.seekg(0);
   CompiledCode.read(code, Code_Size);
   CompiledCode.close();
@@ -1940,7 +1941,7 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
             mexEvalString("drawnow;");
 #endif
 
-            mxArray* output_arguments[3];
+            array<mxArray*, 3> output_arguments;
             string arg_func_name = fc->get_arg_func_name();
 #ifdef DEBUG
             mexPrintf("arg_func_name.length() = %d\n", arg_func_name.length());
@@ -1974,8 +1975,8 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
                       input_arguments[nb_input_arguments - i - 1] = vv;
                       Stack.pop();
                     }
-                  if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments,
-                                    input_arguments, function_name.c_str()))
+                  if (mexCallMATLAB(nb_output_arguments, output_arguments.data(),
+                                    nb_input_arguments, input_arguments, function_name.c_str()))
                     throw FatalException {"External function: " + function_name + " not found"};
 
                   double* rr = mxGetPr(output_arguments[0]);
@@ -2032,8 +2033,8 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
                   mexEvalString("drawnow;");
 #endif
                   nb_input_arguments = 3;
-                  if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments,
-                                    input_arguments, function_name.c_str()))
+                  if (mexCallMATLAB(nb_output_arguments, output_arguments.data(),
+                                    nb_input_arguments, input_arguments, function_name.c_str()))
                     throw FatalException {"External function: " + function_name + " not found"};
                   double* rr = mxGetPr(output_arguments[0]);
 #ifdef DEBUG
@@ -2054,8 +2055,8 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
                       input_arguments[(nb_input_arguments - 1) - i] = vv;
                       Stack.pop();
                     }
-                  if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments,
-                                    input_arguments, function_name.c_str()))
+                  if (mexCallMATLAB(nb_output_arguments, output_arguments.data(),
+                                    nb_input_arguments, input_arguments, function_name.c_str()))
                     throw FatalException {"External function: " + function_name + " not found"};
                   int indx {fc->get_indx()};
                   double* FD1 = mxGetPr(output_arguments[0]);
@@ -2096,8 +2097,8 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
                   mexEvalString("drawnow;");
 #endif
                   nb_input_arguments = 3;
-                  if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments,
-                                    input_arguments, function_name.c_str()))
+                  if (mexCallMATLAB(nb_output_arguments, output_arguments.data(),
+                                    nb_input_arguments, input_arguments, function_name.c_str()))
                     throw FatalException {"External function: " + function_name + " not found"};
                   double* rr = mxGetPr(output_arguments[0]);
                   Stack.push(*rr);
@@ -2115,8 +2116,8 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
                       input_arguments[i] = vv;
                       Stack.pop();
                     }
-                  if (mexCallMATLAB(nb_output_arguments, output_arguments, nb_input_arguments,
-                                    input_arguments, function_name.c_str()))
+                  if (mexCallMATLAB(nb_output_arguments, output_arguments.data(),
+                                    nb_input_arguments, input_arguments, function_name.c_str()))
                     throw FatalException {"External function: " + function_name + " not found"};
                   int indx {fc->get_indx()};
                   double* FD2 = mxGetPr(output_arguments[2]);

@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cfenv>
 #include <chrono>
@@ -2926,36 +2927,38 @@ Interpreter::Solve_LU_UMFPack_Two_Boundaries(
 {
   int n {size * periods};
   SuiteSparse_long sys = 0;
-  double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[n];
+  std::array<double, UMFPACK_CONTROL> Control;
+  std::array<double, UMFPACK_INFO> Info;
+  std::vector<double> res(n);
 
-  umfpack_dl_defaults(Control);
+  umfpack_dl_defaults(Control.data());
   SuiteSparse_long status = 0;
   if (iter == 0)
     {
       if (Symbolic)
         umfpack_dl_free_symbolic(&Symbolic);
-      status = umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control, Info);
+      status = umfpack_dl_symbolic(n, n, Ap, Ai, Ax, &Symbolic, Control.data(), Info.data());
       if (status != UMFPACK_OK)
         {
-          umfpack_dl_report_info(Control, Info);
-          umfpack_dl_report_status(Control, status);
+          umfpack_dl_report_info(Control.data(), Info.data());
+          umfpack_dl_report_status(Control.data(), status);
           throw FatalException {"umfpack_dl_symbolic failed"};
         }
     }
   if (Numeric)
     umfpack_dl_free_numeric(&Numeric);
-  status = umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info);
+  status = umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control.data(), Info.data());
   if (status != UMFPACK_OK)
     {
-      umfpack_dl_report_info(Control, Info);
-      umfpack_dl_report_status(Control, status);
+      umfpack_dl_report_info(Control.data(), Info.data());
+      umfpack_dl_report_status(Control.data(), status);
       throw FatalException {"umfpack_dl_numeric failed"};
     }
-  status = umfpack_dl_solve(sys, Ap, Ai, Ax, res, b, Numeric, Control, Info);
+  status = umfpack_dl_solve(sys, Ap, Ai, Ax, res.data(), b, Numeric, Control.data(), Info.data());
   if (status != UMFPACK_OK)
     {
-      umfpack_dl_report_info(Control, Info);
-      umfpack_dl_report_status(Control, status);
+      umfpack_dl_report_info(Control.data(), Info.data());
+      umfpack_dl_report_status(Control.data(), status);
       throw FatalException {"umfpack_dl_solve failed"};
     }
 
@@ -3017,36 +3020,38 @@ Interpreter::Solve_LU_UMFPack_One_Boundary(SuiteSparse_long* Ap, SuiteSparse_lon
                                            double* b)
 {
   SuiteSparse_long sys = 0;
-  double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO], res[size];
+  std::array<double, UMFPACK_CONTROL> Control;
+  std::array<double, UMFPACK_INFO> Info;
+  std::vector<double> res(size);
 
-  umfpack_dl_defaults(Control);
+  umfpack_dl_defaults(Control.data());
   SuiteSparse_long status = 0;
   if (iter == 0)
     {
       if (Symbolic)
         umfpack_dl_free_symbolic(&Symbolic);
-      status = umfpack_dl_symbolic(size, size, Ap, Ai, Ax, &Symbolic, Control, Info);
+      status = umfpack_dl_symbolic(size, size, Ap, Ai, Ax, &Symbolic, Control.data(), Info.data());
       if (status != UMFPACK_OK)
         {
-          umfpack_dl_report_info(Control, Info);
-          umfpack_dl_report_status(Control, status);
+          umfpack_dl_report_info(Control.data(), Info.data());
+          umfpack_dl_report_status(Control.data(), status);
           throw FatalException {"umfpack_dl_symbolic failed"};
         }
     }
   if (Numeric)
     umfpack_dl_free_numeric(&Numeric);
-  status = umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info);
+  status = umfpack_dl_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control.data(), Info.data());
   if (status != UMFPACK_OK)
     {
-      umfpack_dl_report_info(Control, Info);
-      umfpack_dl_report_status(Control, status);
+      umfpack_dl_report_info(Control.data(), Info.data());
+      umfpack_dl_report_status(Control.data(), status);
       throw FatalException {"umfpack_dl_numeric failed"};
     }
-  status = umfpack_dl_solve(sys, Ap, Ai, Ax, res, b, Numeric, Control, Info);
+  status = umfpack_dl_solve(sys, Ap, Ai, Ax, res.data(), b, Numeric, Control.data(), Info.data());
   if (status != UMFPACK_OK)
     {
-      umfpack_dl_report_info(Control, Info);
-      umfpack_dl_report_status(Control, status);
+      umfpack_dl_report_info(Control.data(), Info.data());
+      umfpack_dl_report_status(Control.data(), status);
       throw FatalException {"umfpack_dl_solve failed"};
     }
 
@@ -3067,29 +3072,29 @@ void
 Interpreter::Solve_Matlab_GMRES(mxArray* A_m, mxArray* b_m, bool is_two_boundaries, mxArray* x0_m)
 {
   size_t n = mxGetM(A_m);
-  const char* field_names[] = {"droptol", "type"};
-  mwSize dims[1] = {1};
-  mxArray* Setup = mxCreateStructArray(1, dims, std::extent_v<decltype(field_names)>, field_names);
+  std::array field_names {"droptol", "type"};
+  std::array dims {static_cast<mwSize>(1)};
+  mxArray* Setup
+      = mxCreateStructArray(dims.size(), dims.data(), field_names.size(), field_names.data());
   mxSetFieldByNumber(Setup, 0, 0, mxCreateDoubleScalar(lu_inc_tol));
   mxSetFieldByNumber(Setup, 0, 1, mxCreateString("ilutp"));
-  mxArray* lhs0[2];
-  mxArray* rhs0[] = {A_m, Setup};
-  if (mexCallMATLAB(std::extent_v<decltype(lhs0)>, lhs0, std::extent_v<decltype(rhs0)>, rhs0,
-                    "ilu"))
+  std::array<mxArray*, 2> lhs0;
+  std::array rhs0 {A_m, Setup};
+  if (mexCallMATLAB(lhs0.size(), lhs0.data(), rhs0.size(), rhs0.data(), "ilu"))
     throw FatalException("In GMRES, the incomplete LU decomposition (ilu) has failed");
   mxArray* L1 = lhs0[0];
   mxArray* U1 = lhs0[1];
   /*[za,flag1] = gmres(g1a,b,Blck_size,1e-6,Blck_size*periods,L1,U1);*/
-  mxArray* rhs[] = {A_m,
-                    b_m,
-                    mxCreateDoubleScalar(size),
-                    mxCreateDoubleScalar(1e-6),
-                    mxCreateDoubleScalar(static_cast<double>(n)),
-                    L1,
-                    U1,
-                    x0_m};
-  mxArray* lhs[2];
-  mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs, "gmres");
+  std::array rhs {A_m,
+                  b_m,
+                  mxCreateDoubleScalar(size),
+                  mxCreateDoubleScalar(1e-6),
+                  mxCreateDoubleScalar(static_cast<double>(n)),
+                  L1,
+                  U1,
+                  x0_m};
+  std::array<mxArray*, 2> lhs;
+  mexCallMATLAB(lhs.size(), lhs.data(), rhs.size(), rhs.data(), "gmres");
   mxArray* z = lhs[0];
   mxArray* flag = lhs[1];
   double flag1 {mxGetScalar(flag)};
@@ -3154,10 +3159,9 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray* A_m, mxArray* b_m, bool is_two_bound
 
   if (preconditioner == 0)
     {
-      mxArray* lhs0[1];
-      mxArray* rhs0[] = {A_m, mxCreateDoubleScalar(0)};
-      mexCallMATLAB(std::extent_v<decltype(lhs0)>, lhs0, std::extent_v<decltype(rhs0)>, rhs0,
-                    "spdiags");
+      std::array<mxArray*, 1> lhs0;
+      std::array rhs0 {A_m, mxCreateDoubleScalar(0)};
+      mexCallMATLAB(lhs0.size(), lhs0.data(), rhs0.size(), rhs0.data(), "spdiags");
       mxArray* tmp = lhs0[0];
       double* tmp_val = mxGetPr(tmp);
       Diag = mxCreateSparse(n, n, n, mxREAL);
@@ -3175,20 +3179,19 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray* A_m, mxArray* b_m, bool is_two_bound
   else if (preconditioner == 1)
     {
       /*[L1, U1] = ilu(g1a=;*/
-      const char* field_names[] = {"type", "droptol", "milu", "udiag", "thresh"};
+      std::array field_names {"type", "droptol", "milu", "udiag", "thresh"};
       const int type = 0, droptol = 1, milu = 2, udiag = 3, thresh = 4;
-      mwSize dims[1] = {static_cast<mwSize>(1)};
+      std::array dims {static_cast<mwSize>(1)};
       mxArray* Setup
-          = mxCreateStructArray(1, dims, std::extent_v<decltype(field_names)>, field_names);
+          = mxCreateStructArray(dims.size(), dims.data(), field_names.size(), field_names.data());
       mxSetFieldByNumber(Setup, 0, type, mxCreateString("ilutp"));
       mxSetFieldByNumber(Setup, 0, droptol, mxCreateDoubleScalar(lu_inc_tol));
       mxSetFieldByNumber(Setup, 0, milu, mxCreateString("off"));
       mxSetFieldByNumber(Setup, 0, udiag, mxCreateDoubleScalar(0));
       mxSetFieldByNumber(Setup, 0, thresh, mxCreateDoubleScalar(1));
-      mxArray* lhs0[2];
-      mxArray* rhs0[] = {A_m, Setup};
-      if (mexCallMATLAB(std::extent_v<decltype(lhs0)>, lhs0, std::extent_v<decltype(rhs0)>, rhs0,
-                        "ilu"))
+      std::array<mxArray*, 2> lhs0;
+      std::array rhs0 {A_m, Setup};
+      if (mexCallMATLAB(lhs0.size(), lhs0.data(), rhs0.size(), rhs0.data(), "ilu"))
         throw FatalException {"In BiCGStab, the incomplete LU decomposition (ilu) has failed"};
       L1 = lhs0[0];
       U1 = lhs0[1];
@@ -3204,13 +3207,11 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray* A_m, mxArray* b_m, bool is_two_bound
       double* b = mxGetPr(b_m);
       for (int i = 0; i < static_cast<int>(n); i++)
         resid[i] = b[i] - resid[i];
-      mxArray* lhs[1];
-      mxArray* rhs[] = {L1, res};
-      mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs,
-                    "mldivide");
-      mxArray* rhs2[] = {U1, lhs[0]};
-      mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs2)>, rhs2,
-                    "mldivide");
+      std::array<mxArray*, 1> lhs;
+      std::array rhs {L1, res};
+      mexCallMATLAB(lhs.size(), lhs.data(), rhs.size(), rhs.data(), "mldivide");
+      std::array rhs2 {U1, lhs[0]};
+      mexCallMATLAB(lhs.size(), lhs.data(), rhs2.size(), rhs2.data(), "mldivide");
       z = lhs[0];
       double* phat = mxGetPr(z);
       double* x0 = mxGetPr(x0_m);
@@ -3238,11 +3239,10 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray* A_m, mxArray* b_m, bool is_two_bound
       if (preconditioner == 0)
         {
           /*[za,flag1] = bicgstab(g1a,b,1e-6,Blck_size*periods,L1,U1);*/
-          mxArray* rhs[] = {A_m, b_m, mxCreateDoubleScalar(1e-6),
-                            mxCreateDoubleScalar(static_cast<double>(n)), Diag};
-          mxArray* lhs[2];
-          mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs,
-                        "bicgstab");
+          std::array rhs {A_m, b_m, mxCreateDoubleScalar(1e-6),
+                          mxCreateDoubleScalar(static_cast<double>(n)), Diag};
+          std::array<mxArray*, 2> lhs;
+          mexCallMATLAB(lhs.size(), lhs.data(), rhs.size(), rhs.data(), "bicgstab");
           z = lhs[0];
           mxArray* flag = lhs[1];
           flags = mxGetScalar(flag);
@@ -3254,16 +3254,15 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray* A_m, mxArray* b_m, bool is_two_bound
       else if (preconditioner == 1)
         {
           /*[za,flag1] = bicgstab(g1a,b,1e-6,Blck_size*periods,L1,U1);*/
-          mxArray* rhs[] = {A_m,
-                            b_m,
-                            mxCreateDoubleScalar(1e-6),
-                            mxCreateDoubleScalar(static_cast<double>(n)),
-                            L1,
-                            U1,
-                            x0_m};
-          mxArray* lhs[2];
-          mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs,
-                        "bicgstab");
+          std::array rhs {A_m,
+                          b_m,
+                          mxCreateDoubleScalar(1e-6),
+                          mxCreateDoubleScalar(static_cast<double>(n)),
+                          L1,
+                          U1,
+                          x0_m};
+          std::array<mxArray*, 2> lhs;
+          mexCallMATLAB(lhs.size(), lhs.data(), rhs.size(), rhs.data(), "bicgstab");
           z = lhs[0];
           mxArray* flag = lhs[1];
           flags = mxGetScalar(flag);
@@ -3322,7 +3321,7 @@ void
 Interpreter::Singular_display()
 {
   Simple_Init();
-  mxArray* rhs[] = {mxCreateDoubleMatrix(size, size, mxREAL)};
+  std::array rhs {mxCreateDoubleMatrix(size, size, mxREAL)};
   double* pind = mxGetPr(rhs[0]);
   for (int j = 0; j < size * size; j++)
     pind[j] = 0.0;
@@ -3337,8 +3336,8 @@ Interpreter::Singular_display()
           first = first->NZE_C_N;
         }
     }
-  mxArray* lhs[3];
-  mexCallMATLAB(std::extent_v<decltype(lhs)>, lhs, std::extent_v<decltype(rhs)>, rhs, "svd");
+  std::array<mxArray*, 3> lhs;
+  mexCallMATLAB(lhs.size(), lhs.data(), rhs.size(), rhs.data(), "svd");
   mxArray* SVD_u = lhs[0];
   mxArray* SVD_s = lhs[1];
   double* SVD_ps = mxGetPr(SVD_s);

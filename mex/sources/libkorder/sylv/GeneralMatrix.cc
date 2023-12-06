@@ -29,6 +29,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <vector>
 
 GeneralMatrix::GeneralMatrix(const GeneralMatrix& m) :
     data(m.rows * m.cols), rows(m.rows), cols(m.cols), ld(m.rows)
@@ -447,11 +448,11 @@ ConstGeneralMatrix::multInvLeft(const std::string& trans, int mrows, int mcols, 
   if (rows > 0)
     {
       GeneralMatrix inv(*this);
-      auto ipiv = std::make_unique<lapack_int[]>(rows);
+      std::vector<lapack_int> ipiv(rows);
       lapack_int info;
       lapack_int rows2 = rows, mcols2 = mcols, mld2 = mld, lda = inv.ld;
-      dgetrf(&rows2, &rows2, inv.getData().base(), &lda, ipiv.get(), &info);
-      dgetrs(trans.c_str(), &rows2, &mcols2, inv.base(), &lda, ipiv.get(), d, &mld2, &info);
+      dgetrf(&rows2, &rows2, inv.getData().base(), &lda, ipiv.data(), &info);
+      dgetrs(trans.c_str(), &rows2, &mcols2, inv.base(), &lda, ipiv.data(), d, &mld2, &info);
     }
 }
 
@@ -552,13 +553,13 @@ SVDDecomp::construct(const GeneralMatrix& A)
   lapack_int lwork = -1;
   lapack_int info;
 
-  auto iwork = std::make_unique<lapack_int[]>(8 * minmn);
+  std::vector<lapack_int> iwork(8 * minmn);
   // query for optimal lwork
-  dgesdd("A", &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &tmpwork, &lwork, iwork.get(), &info);
+  dgesdd("A", &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, &tmpwork, &lwork, iwork.data(), &info);
   lwork = static_cast<lapack_int>(tmpwork);
   Vector work(lwork);
   // do the decomposition
-  dgesdd("A", &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.base(), &lwork, iwork.get(), &info);
+  dgesdd("A", &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work.base(), &lwork, iwork.data(), &info);
   if (info < 0)
     throw SYLV_MES_EXCEPTION("Internal error in SVDDecomp constructor");
   if (info == 0)

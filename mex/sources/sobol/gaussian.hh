@@ -23,9 +23,11 @@
 */
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <limits>
 #include <numbers>
+#include <vector>
 
 #include <omp.h>
 
@@ -44,14 +46,14 @@ icdf(const T uniform)
 **
 */
 {
-  static T A[6] = {-3.969683028665376e+01, 2.209460984245205e+02,  -2.759285104469687e+02,
-                   1.383577518672690e+02,  -3.066479806614716e+01, 2.506628277459239e+00};
-  static T B[5] = {-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
-                   6.680131188771972e+01, -1.328068155288572e+01};
-  static T C[6] = {-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
-                   -2.549732539343734e+00, 4.374664141464968e+00,  2.938163982698783e+00};
-  static T D[4] = {7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00,
-                   3.754408661907416e+00};
+  const array<T, 6> A {-3.969683028665376e+01, 2.209460984245205e+02,  -2.759285104469687e+02,
+                       1.383577518672690e+02,  -3.066479806614716e+01, 2.506628277459239e+00};
+  const array<T, 5> B {-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+                       6.680131188771972e+01, -1.328068155288572e+01};
+  const array<T, 6> C {-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+                       -2.549732539343734e+00, 4.374664141464968e+00,  2.938163982698783e+00};
+  const array<T, 4> D {7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00,
+                       3.754408661907416e+00};
   T gaussian = static_cast<T>(0.0);
   if (0 < uniform && uniform < lb)
     {
@@ -118,9 +120,9 @@ icdfmSigma(int d, int n, T* U, const double* LowerCholSigma)
   blas_int dd(d);
   blas_int nn(n);
   icdfm(n * d, U);
-  double tmp[n * d];
-  dgemm("N", "N", &dd, &nn, &dd, &one, LowerCholSigma, &dd, U, &dd, &zero, tmp, &dd);
-  copy_n(tmp, d * n, U);
+  vector<double> tmp(n * d);
+  dgemm("N", "N", &dd, &nn, &dd, &one, LowerCholSigma, &dd, U, &dd, &zero, tmp.data(), &dd);
+  copy_n(tmp.begin(), d * n, U);
 }
 
 template<typename T>
