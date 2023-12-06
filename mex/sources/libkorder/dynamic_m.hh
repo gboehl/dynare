@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2022 Dynare Team
+ * Copyright © 2010-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -45,7 +45,6 @@ private:
 
 public:
   explicit DynamicModelMFile(const std::string& modName, int ntt_arg);
-  virtual ~DynamicModelMFile() = default;
   void eval(const Vector& y, const Vector& x, const Vector& params, const Vector& ySteady,
             Vector& residual, std::vector<TwoDMatrix>& md) override;
 };

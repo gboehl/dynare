@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Dynare Team
+ * Copyright © 2021-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -37,7 +37,6 @@ private:
 
 public:
   explicit ObjectiveMFile(const std::string& modName, int ntt_arg);
-  virtual ~ObjectiveMFile() = default;
   void eval(const Vector& y, const Vector& x, const Vector& params, Vector& residual,
             std::vector<TwoDMatrix>& md) override;
 };

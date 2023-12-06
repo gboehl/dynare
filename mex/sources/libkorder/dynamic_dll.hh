@@ -101,7 +101,7 @@ private:
 public:
   // construct and load Dynamic model DLL
   explicit DynamicModelDLL(const std::string& fname, int ntt_arg, int order);
-  virtual ~DynamicModelDLL();
+  ~DynamicModelDLL() override;
 
   void eval(const Vector& y, const Vector& x, const Vector& params, const Vector& ySteady,
             Vector& residual, std::vector<TwoDMatrix>& md) override;

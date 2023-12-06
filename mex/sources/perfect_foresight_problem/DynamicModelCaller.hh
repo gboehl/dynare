@@ -80,7 +80,6 @@ public:
   DynamicModelDllCaller(size_t ntt, mwIndex ny, mwIndex nx, const double* params_arg,
                         const double* steady_state_arg, const int32_T* g1_sparse_colptr_arg,
                         bool linear_arg, bool compute_jacobian_arg);
-  virtual ~DynamicModelDllCaller() = default;
   [[nodiscard]] double*
   y() override
   {
