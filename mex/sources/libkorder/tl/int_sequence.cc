@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -167,7 +167,7 @@ IntSequence::sum() const
 int
 IntSequence::mult(int i1, int i2) const
 {
-  return std::accumulate(data + i1, data + i2, 1, std::multiplies<int>());
+  return std::accumulate(data + i1, data + i2, 1, std::multiplies<>());
 }
 
 int
