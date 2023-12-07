@@ -1,6 +1,19 @@
-function [vdec, cc, ac] = mc_moments(mm, ss, dr)
+function [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_, estim_params_)
+% [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_,estim_params_)
+% Conduct Monte Carlo simulation of second moments for GSA
+% Inputs:
+%  - dr                 [structure]     decision rules
+%  - M_                 [structure]     model structure
+%  - options_           [structure]     Matlab's structure describing the current options
+%  - estim_params_      [structure]     characterizing parameters to be estimated
+%
+% Outputs:
+% - vdec                [double]        variance decomposition matrix
+% - cc                  [double]        vector of unique elements of cross correlation matrix
+% - ac                  [cell]          autocorrelation matrix
 
-% Copyright © 2012-2018 Dynare Team
+
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -17,30 +30,30 @@ function [vdec, cc, ac] = mc_moments(mm, ss, dr)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global options_ M_ estim_params_ oo_
-
-[nr1, nc1, nsam] = size(mm);
+[~, nc1, nsam] = size(mm);
 nobs=length(options_.varobs);
-disp('Computing theoretical moments ...')
+disp('mc_moments: Computing theoretical moments ...')
 h = dyn_waitbar(0,'Theoretical moments ...');
 vdec = zeros(nobs,M_.exo_nbr,nsam);
 cc = zeros(nobs,nobs,nsam);
 ac = zeros(nobs,nobs*options_.ar,nsam);
 
 for j=1:nsam
-    oo_.dr.ghx = mm(:, [1:(nc1-M_.exo_nbr)],j);
-    oo_.dr.ghu = mm(:, [(nc1-M_.exo_nbr+1):end], j);
+    dr.ghx = mm(:, 1:(nc1-M_.exo_nbr),j);
+    dr.ghu = mm(:, (nc1-M_.exo_nbr+1):end, j);
     if ~isempty(ss)
-        set_shocks_param(ss(j,:));
+        M_=set_shocks_param(M_,estim_params_,ss(j,:));
     end
-    [vdec(:,:,j), corr, autocorr, z, zz] = th_moments(oo_.dr,options_.varobs);
+    [vdec(:,:,j), corr, autocorr] = th_moments(dr,options_,M_);
     cc(:,:,j)=triu(corr);
-    dum=[];
+    dum=NaN(nobs,nobs*options_.ar);
     for i=1:options_.ar
-        dum=[dum, autocorr{i}];
+        dum(:,(i-1)*nobs+1:i*nobs)=autocorr{i};
     end
     ac(:,:,j)=dum;
-    dyn_waitbar(j/nsam,h)
+    if mod(j,3)==0
+        dyn_waitbar(j/nsam,h)
+    end
 end
 dyn_waitbar_close(h)
 skipline()

@@ -1,5 +1,5 @@
-function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, error_indicator] = identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
-% [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, error_indicator] = identification_analysis(params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
+function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, error_indicator] = identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
+% [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, derivatives_info, info, error_indicator] = identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, init)
 % -------------------------------------------------------------------------
 % This function wraps all identification analysis, i.e. it
 % (1) wraps functions for the theoretical identification analysis based on moments (Iskrev, 2010),
@@ -12,6 +12,11 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 % moments, spectrum, reduced-form solution and dynamic model derivatives
 % =========================================================================
 % INPUTS
+%    * M_                 [structure] describing the model
+%    * options_           [structure] describing the options
+%    * oo_                [structure] storing the results
+%    * bayestopt_         [structure] describing the priors
+%    * estim_params_      [structure] characterizing parameters to be estimated
 %    * params             [mc_sample_nbr by totparam_nbr]
 %                         parameter values for identification checks
 %    * indpmodel          [modparam_nbr by 1]
@@ -91,7 +96,6 @@ function [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 
-global oo_ M_ options_ bayestopt_ estim_params_
 persistent ind_dMOMENTS ind_dREDUCEDFORM ind_dDYNAMIC
 % persistent indices are necessary, because in a MC loop the numerical threshold
 % used may provide vectors of different length, leading to crashes in MC loops
@@ -138,7 +142,7 @@ error_indicator.identification_spectrum=0;
 
 if info(1) == 0 %no errors in solution
     % Compute parameter Jacobians for identification analysis
-    [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params_, M_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+    [~, ~, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params_, M_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     if isempty(dMINIMAL)
         % Komunjer and Ng is not computed if (1) minimality conditions are not fullfilled or (2) there are more shocks and measurement errors than observables, so we need to reset options
         error_indicator.identification_minimal = 1;
@@ -296,7 +300,7 @@ if info(1) == 0 %no errors in solution
                 derivatives_info.no_DLIK = 1;
                 bounds = prior_bounds(bayestopt_, options_.prior_trunc); %reset bounds as lb and ub must only be operational during mode-finding 
                 %note that for order>1 we do not provide any information on DT,DYss,DOM in derivatives_info, such that dsge_likelihood creates an error. Therefore the computation will be based on simulated_moment_uncertainty for order>1.
-                [fval, info, cost_flag, DLIK, AHess, ys, trend_coeff, M_, options_, bayestopt_, oo_.dr] = dsge_likelihood(params', dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_.dr, oo_.steady_state,oo_.exo_steady_state, oo_.exo_det_steady_state. derivatives_info); %non-used output variables need to be set for octave for some reason
+                [~, info, ~, ~, AHess, ~, ~, M_, options_, ~, oo_.dr] = dsge_likelihood(params', dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_.dr, oo_.steady_state,oo_.exo_steady_state, oo_.exo_det_steady_state. derivatives_info); %non-used output variables need to be set for octave for some reason
                     %note that for the order of parameters in AHess we have: stderr parameters come first, corr parameters second, model parameters third. the order within these blocks corresponds to the order specified in the estimated_params block
                 options_.analytic_derivation = analytic_derivation; %reset option
                 AHess = -AHess; %take negative of hessian
@@ -462,7 +466,7 @@ if info(1) == 0 %no errors in solution
 
         if advanced
             % here we do not normalize (i.e. we set norm_dMOMENTS=1) as the OLS in ident_bruteforce is very sensitive to norm_dMOMENTS
-            [ide_moments.pars, ide_moments.cosndMOMENTS] = ident_bruteforce(dMOMENTS(ind_dMOMENTS,:), max_dim_cova_group, options_.TeX, options_ident.name_tex, options_ident.tittxt, tol_deriv);
+            [ide_moments.pars, ide_moments.cosndMOMENTS] = ident_bruteforce(M_.dname,M_.fname,dMOMENTS(ind_dMOMENTS,:), max_dim_cova_group, options_.TeX, options_ident.name_tex, options_ident.tittxt, tol_deriv);
         end
 
         %here we focus on the unnormalized S and V, which is then used in plot_identification.m and for prior_mc > 1

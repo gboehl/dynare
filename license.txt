@@ -171,17 +171,13 @@ Comment: Written by Jessica Cariboni and Francesca Campolongo
 
 Files: matlab/gsa/cumplot.m
        matlab/gsa/filt_mc_.m
-       matlab/gsa/gsa_plotmatrix.m
        matlab/gsa/gsa_skewness.m
-       matlab/gsa/gsa_speed.m
        matlab/gsa/log_trans_.m
        matlab/gsa/map_calibration.m
        matlab/gsa/map_ident_.m
        matlab/gsa/mcf_analysis.m
        matlab/gsa/myboxplot.m
-       matlab/gsa/myprctilecol.m
        matlab/gsa/prior_draw_gsa.m
-       matlab/gsa/read_data.m
        matlab/gsa/redform_map.m
        matlab/gsa/redform_screen.m
        matlab/gsa/scatter_mcf.m
@@ -192,25 +188,9 @@ Files: matlab/gsa/cumplot.m
        matlab/gsa/stand_.m
        matlab/gsa/tcrit.m
        matlab/gsa/teff.m
-       matlab/gsa/trank.m
 Copyright: 2011-2018 European Commission
-           2011-2018 Dynare Team
+           2011-2023 Dynare Team
 License: GPL-3+
-
-Files: matlab/gsa/pick.m
-Copyright: none
-License: public-domain-jrc
- This software has been developed at the Joint Research Centre of European Commission
- by officers in the course of their official duties. This software is not subject to copyright
- protection and is in the public domain. It is an experimental system. The Joint Research Centre
- of European Commission assumes no responsibility whatsoever for its use by other parties
- and makes no guarantees, expressed or implied, about its quality, reliability, or any other
- characteristic. We would appreciate acknowledgement if the software is used.
-Comment: This file is part of GLUEWIN.
- The program has been developed by M. Ratto, European Commission, Joint Research Centre,
- Institute for the Protection and Security of The Citizen, Technological and Economic Risk Management,
- Applied Statistics, as a deliverable of the IMPACT project
- (EC Fifth Framework Programme, SCA Project, IST-1999-11313, DG-INFSO).
 
 Files: matlab/optimization/simpsa.m matlab/optimization/simpsaget.m matlab/optimization/simpsaset.m
 Copyright: 2005 Henning Schmidt, FCC, henning@fcc.chalmers.se

@@ -1,10 +1,19 @@
-function x0=dynare_sensitivity(options_gsa)
+function x0=dynare_sensitivity(M_,oo_,options_,bayestopt_,estim_params_,options_gsa)
+% x0=dynare_sensitivity(M_,oo_,options_,bayestopt_,estim_params_,options_gsa)
 % Frontend to the Sensitivity Analysis Toolbox for DYNARE
+% Inputs:
+%  - M_                     [structure]     Matlab's structure describing the model
+%  - oo_                    [structure]     Matlab's structure describing the results
+%  - options_               [structure]     Matlab's structure describing the current options
+%  - bayestopt_             [structure]     describing the priors
+%  - estim_params_          [structure]     characterizing parameters to be estimated
+%  - options_gsa            [structure]     Matlab's structure describing the GSA options
 %
 % Reference:
-% M. Ratto, Global Sensitivity Analysis for Macroeconomic models, MIMEO, 2006.
+% M. Ratto (2008), Analysing DSGE Models with Global Sensitivity Analysis, 
+% Computational Economics (2008), 31, pp. 115–139
 
-% Copyright © 2008-2018 Dynare Team
+% Copyright © 2008-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -21,14 +30,11 @@ function x0=dynare_sensitivity(options_gsa)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ options_ oo_ bayestopt_ estim_params_
-
 if options_.dsge_var
     error('Identification does not support DSGE-VARs at the current stage')
 end
 
 fname_ = M_.fname;
-lgy_ = M_.endo_names;
 x0=[];
 
 % check user defined options
@@ -43,7 +49,6 @@ end
 
 if isfield(options_gsa,'morris') && options_gsa.morris==1
     if isfield(options_gsa,'identification') && options_gsa.identification==0
-        %         options_gsa.redform=1;
     end
     if isfield(options_gsa,'ppost') && options_gsa.ppost
         error('sensitivity:: Morris is incompatible with posterior sampling')
@@ -89,9 +94,6 @@ if options_.order~=1
     options_.order = 1;
 end
 
-original_prior_trunc = options_.prior_trunc;
-original_qz_criterium = options_.qz_criterium;
-
 if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse
     if isempty(options_gsa.datafile) && options_gsa.rmse
         disp('The data file and all relevant estimation options ')
@@ -130,7 +132,7 @@ if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse
     options_.mode_compute = 0;
     options_.filtered_vars = 1;
     options_.plot_priors = 0;
-    [dataset_,dataset_info,xparam1,hh, M_, options_, oo_, estim_params_, bayestopt_] = ...
+    [dataset_,dataset_info,~,~, M_, options_, oo_, estim_params_, bayestopt_] = ...
         dynare_estimation_init(M_.endo_names, fname_, 1, M_, options_, oo_, estim_params_, bayestopt_);
     % computes a first linear solution to set up various variables
 else
@@ -146,7 +148,7 @@ if M_.exo_nbr==0
     error('dynare_sensitivity does not support having no varexo in the model. As a workaround you could define a dummy exogenous variable.')
 end
 
-[make,my,day,punk,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+[~,~,~,~,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 
 options_gsa = set_default_option(options_gsa,'identification',0);
 if options_gsa.identification
@@ -166,7 +168,6 @@ if options_gsa.identification
             options_.options_ident.load_ident_files = options_gsa.load_ident_files;
             options_.options_ident.useautocorr = options_gsa.useautocorr;
             options_.options_ident.ar = options_gsa.ar;
-            options_ident=options_.options_ident;
         else
             options_ident=[];
             options_ident = set_default_option(options_ident,'load_ident_files',options_gsa.load_ident_files);
@@ -193,7 +194,6 @@ options_gsa = set_default_option(options_gsa,'load_stab',0);
 options_gsa = set_default_option(options_gsa,'alpha2_stab',0);
 options_gsa = set_default_option(options_gsa,'pvalue_ks',0.001);
 options_gsa = set_default_option(options_gsa,'pvalue_corr',1.e-5);
-%options_gsa = set_default_option(options_gsa,'load_mh',0);
 % REDFORM mapping
 options_gsa = set_default_option(options_gsa,'redform',0);
 options_gsa = set_default_option(options_gsa,'load_redform',0);
@@ -202,8 +202,29 @@ options_gsa = set_default_option(options_gsa,'threshold_redform',[]);
 options_gsa = set_default_option(options_gsa,'ksstat_redform',0.001);
 options_gsa = set_default_option(options_gsa,'alpha2_redform',1.e-5);
 options_gsa = set_default_option(options_gsa,'namendo',{});
-options_gsa = set_default_option(options_gsa,'namlagendo',[]);
+options_gsa = set_default_option(options_gsa,'namlagendo',{});
 options_gsa = set_default_option(options_gsa,'namexo',{});
+options_gsa = set_default_option(options_gsa,'namendo_tex',{});
+options_gsa = set_default_option(options_gsa,'namlagendo_tex',{});
+options_gsa = set_default_option(options_gsa,'namexo_tex',{});
+if strmatch(':',options_gsa.namendo,'exact')
+    options_gsa.namendo = M_.endo_names(1:M_.orig_endo_nbr);
+end
+if strmatch(':',options_gsa.namexo,'exact')
+    options_gsa.namexo = M_.exo_names;
+end
+if strmatch(':',options_gsa.namlagendo,'exact')
+    options_gsa.namlagendo = M_.endo_names(1:M_.orig_endo_nbr);
+end
+
+if options_.TeX
+    [~,Locb]=ismember(options_gsa.namendo,M_.endo_names);
+    options_gsa.namendo_tex=cellfun(@(x) horzcat('$', x, '$'), M_.endo_names_tex(Locb), 'UniformOutput', false);
+    [~,Locb]=ismember(options_gsa.namlagendo,M_.endo_names);
+    options_gsa.namlagendo_tex=cellfun(@(x) horzcat('$', x, '$'), M_.endo_names_tex(Locb), 'UniformOutput', false);
+    [~,Locb]=ismember(options_gsa.namexo,M_.exo_names);
+    options_gsa.namexo_tex=cellfun(@(x) horzcat('$', x, '$'), M_.exo_names_tex(Locb), 'UniformOutput', false);
+end
 % RMSE mapping
 options_gsa = set_default_option(options_gsa,'load_rmse',0);
 options_gsa = set_default_option(options_gsa,'lik_only',0);
@@ -212,8 +233,9 @@ options_gsa = set_default_option(options_gsa,'var_rmse', options_.varobs);
 options_gsa.var_rmse_tex={};
 for ii=1:length(options_gsa.var_rmse)
     temp_name = M_.endo_names_tex{strmatch(options_gsa.var_rmse{ii}, M_.endo_names, 'exact')};
-    options_gsa.var_rmse_tex = vertcat(options_gsa.var_rmse_tex, temp_name);
+    options_gsa.var_rmse_tex = vertcat(options_gsa.var_rmse_tex, ['$' temp_name '$']);
 end
+options_gsa.varobs_tex = cellfun(@(x) horzcat('$', x, '$'), M_.endo_names_tex(options_.varobs_id), 'UniformOutput', false);
 options_gsa = set_default_option(options_gsa,'pfilt_rmse', 0.1);
 options_gsa = set_default_option(options_gsa,'istart_rmse', options_.presample+1);
 options_gsa = set_default_option(options_gsa,'alpha_rmse', 0.001);
@@ -245,31 +267,22 @@ if options_gsa.morris==1
         options_gsa.pprior=1;
     end
     options_gsa.ppost=0;
-    %options_gsa.stab=1;
     options_gsa.glue=0;
     options_gsa.rmse=0;
     options_gsa.load_rmse=0;
     options_gsa.alpha2_stab=1;
     options_gsa.pvalue_ks=0;
     options_gsa.pvalue_corr=0;
-    %     if options_gsa.morris==3,
-    %         options_gsa = set_default_option(options_gsa,'Nsam',256);
-    %         OutputDirectoryName = CheckPath('gsa/identif',M_.dname);
-    %     else
     OutputDirectoryName = CheckPath('gsa/screen',M_.dname);
-    %     end
 else
     OutputDirectoryName = CheckPath('gsa',M_.dname);
 end
-
-% options_.opt_gsa = options_gsa;
 
 if (options_gsa.load_stab || options_gsa.load_rmse || options_gsa.load_redform) && options_gsa.pprior
     filetoload=[OutputDirectoryName '/' fname_ '_prior.mat'];
     if ~exist(filetoload,'file')
         disp([filetoload,' not found!'])
-        disp(['You asked to load a non existent analysis'])
-        %options_gsa.load_stab=0;
+        disp('You asked to load a non existent analysis')
         return
     else
         if isempty(strmatch('bkpprior',who('-file', filetoload),'exact'))
@@ -293,7 +306,7 @@ if (options_gsa.load_stab || options_gsa.load_rmse || options_gsa.load_redform) 
 end
 
 if options_gsa.stab && ~options_gsa.ppost
-    x0 = stab_map_(OutputDirectoryName,options_gsa);
+    x0 = stab_map_(OutputDirectoryName,options_gsa,M_,oo_,options_,bayestopt_,estim_params_);
     if isempty(x0)
         skipline()
         disp('Sensitivity computations stopped: no parameter set provided a unique solution')
@@ -301,16 +314,13 @@ if options_gsa.stab && ~options_gsa.ppost
     end
 end
 
-% reduced form
-% redform_map(namendo, namlagendo, namexo, icomp, pprior, ilog, threshold)
-
 options_.opt_gsa = options_gsa;
 if ~isempty(options_gsa.moment_calibration) || ~isempty(options_gsa.irf_calibration)
     map_calibration(OutputDirectoryName, M_, options_, oo_, estim_params_,bayestopt_);
 end
 
 if options_gsa.identification
-    map_ident_(OutputDirectoryName,options_gsa);
+    map_ident_(OutputDirectoryName,options_gsa,M_,oo_,options_,estim_params_,bayestopt_);
 end
 
 if options_gsa.redform && ~isempty(options_gsa.namendo)
@@ -318,7 +328,7 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
         filnam = dir([M_.dname filesep 'metropolis' filesep '*param_irf*.mat']);
         lpmat=[];
         for j=1:length(filnam)
-            load ([M_.dname filesep 'metropolis' filesep M_.fname '_param_irf' int2str(j) '.mat'])
+            load ([M_.dname filesep 'metropolis' filesep M_.fname '_param_irf' int2str(j) '.mat'],'stock')
             lpmat=[lpmat; stock];
         end
         clear stock
@@ -336,20 +346,10 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
         save([OutputDirectoryName filesep M_.fname '_mc.mat'],'lpmat','lpmat0','istable','iunstable','iwrong','iindeterm')
         options_gsa.load_stab=1;
 
-        x0 = stab_map_(OutputDirectoryName,options_gsa);
+        x0 = stab_map_(OutputDirectoryName,options_gsa,M_,oo_,options_,bayestopt_,estim_params_);
     end
-    if strmatch(':',options_gsa.namendo,'exact')
-        options_gsa.namendo = M_.endo_names(1:M_.orig_endo_nbr);
-    end
-    if strmatch(':',options_gsa.namexo,'exact')
-        options_gsa.namexo = M_.exo_names;
-    end
-    if strmatch(':',options_gsa.namlagendo,'exact')
-        options_gsa.namlagendo = M_.endo_names(1:M_.orig_endo_nbr);
-    end
-    %     options_.opt_gsa = options_gsa;
     if options_gsa.morris==1
-        redform_screen(OutputDirectoryName,options_gsa);
+        redform_screen(OutputDirectoryName,options_gsa, estim_params_, M_, oo_.dr, options_, bayestopt_);
     else
         % check existence of the SS_ANOVA toolbox
         if isempty(options_gsa.threshold_redform) && ~(exist('gsa_sdp','file')==6 || exist('gsa_sdp','file')==2)
@@ -360,11 +360,10 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
             fprintf('After obtaining the files, you need to unpack them and set a Matlab Path to those files.\n')
             error('SS-ANOVA-R Toolbox missing!')
         end
-        redform_map(OutputDirectoryName,options_gsa);
+        redform_map(OutputDirectoryName,options_gsa,M_,estim_params_,options_,bayestopt_,oo_);
     end
 end
 % RMSE mapping
-% function [rmse_MC, ixx] = filt_mc_(vvarvecm, loadSA, pfilt, alpha, alpha2)
 options_.opt_gsa = options_gsa;
 if options_gsa.rmse
     if ~options_gsa.ppost
@@ -391,7 +390,6 @@ if options_gsa.rmse
                 options_.forecast=0;
                 options_.filtered_vars=0;
             end
-            %             dynare_MC([],OutputDirectoryName,data,rawdata,data_info);
             if options_gsa.pprior
                 TmpDirectoryName = ([M_.dname filesep 'gsa' filesep 'prior']);
             else
@@ -408,37 +406,18 @@ if options_gsa.rmse
                         delete([TmpDirectoryName filesep filparam(j).name]);
                     end
                 end
-
             end
             oo_=prior_posterior_statistics('gsa',dataset_, dataset_info,M_,oo_,options_,estim_params_,bayestopt_,'gsa::mcmc');
             if options_.bayesian_irf
                 oo_=PosteriorIRF('gsa',options_,estim_params_,oo_,M_,bayestopt_,dataset_,dataset_info,'gsa::mcmc');
             end
             options_gsa.load_rmse=0;
-            %   else
-            %     if options_gsa.load_rmse==0,
-            %       disp('You already saved a MC filter/smoother analysis ')
-            %       disp('Do you want to overwrite ?')
-            %       pause;
-            %       if options_gsa.pprior
-            %         delete([OutputDirectoryName,'/',fname_,'_prior_*.mat'])
-            %       else
-            %         delete([OutputDirectoryName,'/',fname_,'_mc_*.mat'])
-            %       end
-            %       dynare_MC([],OutputDirectoryName);
-            %       options_gsa.load_rmse=0;
-            %     end
-
         end
     end
     clear a;
-    %     filt_mc_(OutputDirectoryName,data_info);
-    filt_mc_(OutputDirectoryName,options_gsa,dataset_,dataset_info);
+    filt_mc_(OutputDirectoryName,options_gsa,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_);
 end
 options_.opt_gsa = options_gsa;
-options_.prior_trunc=original_prior_trunc;
-options_.qz_criterium=original_qz_criterium ;
-
 
 if options_gsa.glue
     dr_ = oo_.dr;
@@ -453,11 +432,10 @@ if options_gsa.glue
         end
     end
     if ~exist('x','var')
-        disp(['No RMSE analysis is available for current options'])
-        disp(['No GLUE file prepared'])
+        disp('No RMSE analysis is available for current options')
+        disp('No GLUE file prepared')
         return,
     end
-    nruns=size(x,1);
     gend = options_.nobs;
     rawdata = read_variables(options_.datafile,options_.varobs,[],options_.xls_sheet,options_.xls_range);
     rawdata = rawdata(options_.first_obs:options_.first_obs+gend-1,:);
@@ -465,28 +443,20 @@ if options_gsa.glue
         rawdata = log(rawdata);
     end
     if options_.prefilter == 1
-        %data = transpose(rawdata-ones(gend,1)*bayestopt_.mean_varobs);
         data = transpose(rawdata-ones(gend,1)*mean(rawdata,1));
     else
         data = transpose(rawdata);
     end
 
     Obs.data = data;
-    Obs.time = [1:gend];
+    Obs.time = 1:gend;
     Obs.num  = gend;
     for j=1:length(options_.varobs)
         Obs.name{j} = options_.varobs{j};
         vj = options_.varobs{j};
 
-        jxj = strmatch(vj,lgy_(dr_.order_var),'exact');
-        js = strmatch(vj,lgy_,'exact');
+        jxj = strmatch(vj,M_.endo_names(dr_.order_var),'exact');
         if ~options_gsa.ppost
-            %       y0=zeros(gend+1,nruns);
-            %       nb = size(stock_filter,3);
-            %       y0 = squeeze(stock_filter(:,jxj,:)) + ...
-            %         kron(stock_ys(js,:),ones(size(stock_filter,1),1));
-            %       Out(j).data = y0';
-            %       Out(j).time = [1:size(y0,1)];
             Out(j).data = jxj;
             Out(j).time = [pwd,'/',OutputDirectoryName];
         else
@@ -500,17 +470,7 @@ if options_gsa.glue
         Lik(j).isam = 1;
         Lik(j).data = rmse_MC(:,j)';
 
-        if ~options_gsa.ppost
-            %       y0 = squeeze(stock_smooth(:,jxj,:)) + ...
-            %         kron(stock_ys(js,:),ones(size(stock_smooth,1),1));
-            %       Out1(j).name = vj;
-            %       Out1(j).ini  = 'yes';
-            %       Out1(j).time = [1:size(y0,1)];
-            %       Out1(j).data = y0';
-            Out1=Out;
-        else
-            Out1=Out;
-        end
+        Out1=Out;
         ismoo(j)=jxj;
 
     end
@@ -520,10 +480,6 @@ if options_gsa.glue
             jsmoo=jsmoo+1;
             vj = M_.endo_names{dr_.order_var(j)};
             if ~options_gsa.ppost
-                %         y0 = squeeze(stock_smooth(:,j,:)) + ...
-                %           kron(stock_ys(j,:),ones(size(stock_smooth,1),1));
-                %         Out1(jsmoo).time = [1:size(y0,1)];
-                %         Out1(jsmoo).data = y0';
                 Out1(jsmoo).data = j;
                 Out1(jsmoo).time = [pwd,'/',OutputDirectoryName];
             else
@@ -546,36 +502,24 @@ if options_gsa.glue
     end
     Sam.name = bayestopt_.name;
     Sam.dim  = [size(x) 0];
-    Sam.data = [x];
+    Sam.data = x;
 
     Rem.id = 'Original';
-    Rem.ind= [1:size(x,1)];
+    Rem.ind= 1:size(x,1);
 
     Info.dynare=M_.fname;
     Info.order_var=dr_.order_var;
     Out=Out1;
     if options_gsa.ppost
-        %     Info.dynare=M_.fname;
-        %     Info.order_var=dr_.order_var;
-        %     Out=Out1;
         Info.TypeofSample='post';
         save([OutputDirectoryName,'/',fname_,'_glue_post.mat'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem','Info', 'Exo')
-        %save([fname_,'_post_glue_smooth'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem','Info')
-
     else
         if options_gsa.pprior
             Info.TypeofSample='prior';
             save([OutputDirectoryName,'/',fname_,'_glue_prior.mat'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem','Info', 'Exo')
-            %       save([OutputDirectoryName,'/',fname_,'_prior_glue'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem')
-            %       Out=Out1;
-            %       save([OutputDirectoryName,'/',fname_,'_prior_glue_smooth'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem')
         else
             Info.TypeofSample='mc';
             save([OutputDirectoryName,'/',fname_,'_glue_mc.mat'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem','Info', 'Exo')
-            %       save([OutputDirectoryName,'/',fname_,'_mc_glue'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem')
-            %       Out=Out1;
-            %       save([OutputDirectoryName,'/',fname_,'_mc_glue_smooth'], 'Out', 'Sam', 'Lik', 'Obs', 'Rem')
         end
     end
-
 end

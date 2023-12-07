@@ -1,9 +1,21 @@
 function scatter_plots(X,xp,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, options_)
+% scatter_plots(X,xp,vnames,plotsymbol, fnam, dirname, figtitle, xparam1, options_)
+% Pairwise scatter plots of the columns of x and y after Monte Carlo filtering
+% Inputs:
+%  - X              [double]    nxk matrix with columns containing behavioural sample
+%  - xp             [double]    mxk matrix with columns containing non-behavioural sample
+%  - vnames         [char]      vector of variable names (default = numeric labels 1,2,3 etc.)
+%  - plotsymbol     [char]      plt symbol (default = '.' for npts > 100, 'o' for npts < 100
+%  - fnam           [char]      figure name
+%  - dirname        [char]      directory name
+%  - figtitle       [char]      figure title
+%  - xparam1        [double]    parameter vector
+%  - options_       [struct]    option structure
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
-%
+
 
 % Copyright © 2017 European Commission
 % Copyright © 2017-2023 Dynare Team
@@ -23,23 +35,7 @@ function scatter_plots(X,xp,vnames,plotsymbol, fnam, dirname, figtitle, xparam1,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-% PURPOSE: Pairwise scatter plots of the columns of x and y after
-% Monte Carlo filtering
-%---------------------------------------------------
-% USAGE:    scatter_mcf(x,y,vnames,pltsym,diagon)
-%        or scatter_mcf(x,y) which relies on defaults
-% where:
-%        x = an nxk matrix with columns containing behavioural sample
-%        y = an mxk matrix with columns containing non-behavioural sample
-%   vnames = a vector of variable names
-%            (default = numeric labels 1,2,3 etc.)
-%   pltsym = a plt symbol
-%            (default = '.' for npts > 100, 'o' for npts < 100
-
-
 [n,p] = size(X);
-% X = X - ones(n,1)*min(Z);
-% X = X ./ (ones(n,1)*max(Z));
 
 nflag = 0;
 if nargin >=3
@@ -47,8 +43,10 @@ if nargin >=3
 end
 
 if nargin<4 || isempty(plotsymbol)
-    if n*p<100, plotsymbol = 'o';
-    else plotsymbol = '.';
+    if n*p<100
+        plotsymbol = 'o';
+    else 
+        plotsymbol = '.';
     end
 end
 
@@ -71,7 +69,7 @@ end
 
 figtitle_tex=strrep(figtitle,'_','\_');
 
-fig_nam_=[fnam];
+fig_nam_=fnam;
 
 hh_fig=dyn_figure(options_.nodisplay,'name',figtitle);
 set(hh_fig,'userdata',{X,xp})
@@ -90,7 +88,6 @@ for i = 1:p
         if i==j
             h1=cumplot(X(:,j));
             set(h,'Tag','cumplot')
-            %             set(h1,'color',[0 0 1], 'linestyle','--','LineWidth',1.5)
             set(h1,'color',[0 0 1],'LineWidth',1.5)
             if ~isempty(xparam1)
                 hold on, plot(xparam1([j j]),[0 1],'k--')
@@ -102,39 +99,13 @@ for i = 1:p
             end
             set(gca,'YTickLabel',[],'YTick',[]);
         else
-            if j>i
-                plot(X(:,i),X(:,j),[plotsymbol,'b'])
-            else
-                plot(X(:,i),X(:,j),[plotsymbol,'b'])
-            end
+            plot(X(:,i),X(:,j),[plotsymbol,'b'])
             set(h,'Tag','scatter')
 
-            %%
-            if ~isoctave
-                % Define a context menu; it is not attached to anything
-                hcmenu = uicontextmenu('Callback','pick','Tag','Run viewer');
-                % Define callbacks for context menu
-                % items that change linestyle
-                hcb1 = 'scatter_callback';
-                % hcb2 = ['set(gco,''LineStyle'','':'')'];
-                % hcb3 = ['set(gco,''LineStyle'',''-'')'];
-                % % Define the context menu items and install their callbacks
-                item1 = uimenu(hcmenu,'Label','save','Callback',hcb1,'Tag','save params');
-                item2 = uimenu(hcmenu,'Label','eval','Callback',hcb1,'Tag','eval params');
-                % item3 = uimenu(hcmenu,'Label','solid','Callback',hcb3);
-                % Locate line objects
-                hlines = findall(h,'Type','line');
-                % Attach the context menu to each line
-                for line = 1:length(hlines)
-                    set(hlines(line),'uicontextmenu',hcmenu)
-                end
-            end
-            %%
             if ~isempty(xparam1)
                 hold on, plot(xparam1(i),xparam1(j),'s','MarkerFaceColor',[0 0.75 0],'MarkerEdgeColor',[0 0.75 0])
             end
             hold off;
-            %             axis([-0.1 1.1 -0.1 1.1])
             if i<p
                 set(gca,'YTickLabel',[],'YTick',[]);
             else
@@ -149,16 +120,26 @@ for i = 1:p
         end
         if i==1
             if nflag == 1
-                ylabel(vnames(j,:),'Rotation',45,'interpreter','none', ...
-                       'HorizontalAlignment','right','VerticalAlignment','middle');
+                if options_.TeX
+                    ylabel(vnames(j,:),'Rotation',45,'interpreter','latex', ...
+                        'HorizontalAlignment','right','VerticalAlignment','middle');
+                else
+                    ylabel(vnames(j,:),'Rotation',45,'interpreter','none', ...
+                        'HorizontalAlignment','right','VerticalAlignment','middle');
+                end
             else
                 ylabel([num2str(j),' '],'Rotation',90)
             end
         end
         if j==1
             if nflag == 1
-                title(vnames(i,:),'interpreter','none','Rotation',45, ...
-                      'HorizontalAlignment','left','VerticalAlignment','bottom')
+                if options_.TeX
+                    title(vnames(i,:),'interpreter','latex','Rotation',45, ...
+                          'HorizontalAlignment','left','VerticalAlignment','bottom')
+                else
+                    title(vnames(i,:),'interpreter','none','Rotation',45, ...
+                          'HorizontalAlignment','left','VerticalAlignment','bottom')            
+                end
             else
                 title(num2str(i))
             end
@@ -166,10 +147,6 @@ for i = 1:p
         drawnow
     end
 end
-% if ~isoctave
-%     annotation('textbox', [0.1,0,0.35,0.05],'String', beha_name,'Color','Blue','horizontalalignment','center','interpreter','none');
-%     annotation('textbox', [0.55,0,0.35,0.05],'String', non_beha_name,'Color','Red','horizontalalignment','center','interpreter','none');
-% end
 
 if ~nograph
     dyn_saveas(hh_fig,[dirname,filesep,fig_nam_],options_.nodisplay,options_.graph_format);

@@ -1,5 +1,5 @@
 function fjac = fjaco(f,x,varargin)
-
+% fjac = fjaco(f,x,varargin)
 % FJACO Computes two-sided finite difference Jacobian
 % USAGE
 %   fjac = fjaco(f,x,P1,P2,...)
@@ -57,7 +57,7 @@ feval(f,x,varargin{:});
 %Auxiliary functions
 function disp_info_error_identification_perturbation(info,j)
     % there are errors in the solution algorithm
-    probl_par = get_the_name(j,varargin{4}.TeX,varargin{3},varargin{2},varargin{4});
+    probl_par = get_the_name(j,varargin{4}.TeX,varargin{3},varargin{2},varargin{4}.varobs);
     skipline()
     message = get_error_message(info,varargin{4});
     fprintf('Parameter error in numerical two-sided difference method:\n')

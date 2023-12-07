@@ -113,7 +113,7 @@ stoch_simul(order=@{ORDER},k_order_solver,irf=0,drop=0,periods=0,nograph);
 identification(order=@{ORDER},nograph,no_identification_strength);
 
 %make sure everything is computed at prior mean
-xparam_prior = set_prior(estim_params_,M_,options_);
+[xparam_prior, estim_params_]= set_prior(estim_params_,M_,options_);
 M_ = set_all_parameters(xparam_prior,estim_params_,M_);
 [oo_.dr,info,M_.params] = resol(0,M_, options_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 

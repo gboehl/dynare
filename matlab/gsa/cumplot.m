@@ -1,5 +1,10 @@
 function h = cumplot(x)
 %function h =cumplot(x)
+% Inputs:
+%  - x  [double]    data series
+%
+% Outputs:
+%  - h  [handle]    figure handle
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -26,9 +31,5 @@ function h = cumplot(x)
 n=length(x);
 x=[-inf; sort(x); Inf];
 y=[0:n n]./n;
-h0 = stairs(x,y);
-grid on,
-
-if nargout
-    h=h0;
-end
+h = stairs(x,y);
+grid on

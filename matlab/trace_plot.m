@@ -153,7 +153,7 @@ end
 if strcmpi(type,'PosteriorDensity')
     plot_name='Posterior';
 else
-    plot_name=get_the_name(column,0,M_,estim_params_,options_);
+    plot_name=get_the_name(column,0,M_,estim_params_,options_.varobs);
 end
 if n_nblocks_to_plot==1
     plot_name=[plot_name,'_blck_',num2str(blck)];

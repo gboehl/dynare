@@ -1,6 +1,5 @@
 function oo_ = PlotPosteriorDistributions(estim_params_, M_, options_, bayestopt_, oo_)
-
-% function PlotPosteriorDistributions()
+% oo_ = PlotPosteriorDistributions(estim_params_, M_, options_, bayestopt_, oo_)
 % plots posterior distributions
 %
 % INPUTS
@@ -36,7 +35,6 @@ latexDirectoryName = CheckPath('latex',M_.dname);
 graphDirectoryName = CheckPath('graphs',M_.dname);
 
 TeX     = options_.TeX;
-nblck   = options_.mh_nblck;
 nvx     = estim_params_.nvx;
 nvn     = estim_params_.nvn;
 ncx     = estim_params_.ncx;
@@ -65,8 +63,8 @@ for i=1:npar
         figunumber = figunumber+1;
         hh_fig=dyn_figure(options_.nodisplay, 'Name', figurename);
     end
-    [nam,texnam] = get_the_name(i, TeX, M_, estim_params_, options_);
-    [x2, f2, abscissa, dens, binf2, bsup2] = draw_prior_density(i, bayestopt_);
+    [nam,texnam] = get_the_name(i, TeX, M_, estim_params_, options_.varobs);
+    [x2, f2, ~, ~, binf2, bsup2] = draw_prior_density(i, bayestopt_);
     top2 = max(f2);
     if i <= nvx
         name = M_.exo_names{estim_params_.var_exo(i,1)};

@@ -1,4 +1,6 @@
-function indmcf = scatter_analysis(lpmat, xdata, options_scatter, options_)
+function scatter_analysis(lpmat, xdata, options_scatter, options_)
+% scatter_analysis(lpmat, xdata, options_scatter, options_)
+% Plot scatter plot analysis
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -6,7 +8,7 @@ function indmcf = scatter_analysis(lpmat, xdata, options_scatter, options_)
 %
 
 % Copyright © 2017 European Commission
-% Copyright © 2017 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +36,6 @@ if options_.TeX
 end
 amcf_name = options_scatter.amcf_name;
 amcf_title = options_scatter.amcf_title;
-title = options_scatter.title;
 fname_ = options_scatter.fname_;
 xparam1=[];
 if isfield(options_scatter,'xparam1')
@@ -48,5 +49,9 @@ if ~options_.nograph
     if ~isempty(xparam1)
         xx=xparam1;
     end
-    scatter_plots(lpmat, xdata, param_names, '.', [fname_, '_', amcf_name], OutputDirectoryName, amcf_title, xx, options_)
+    if options_.TeX
+        scatter_plots(lpmat, xdata, param_names_tex, '.', [fname_, '_', amcf_name], OutputDirectoryName, amcf_title, xx, options_)
+    else 
+        scatter_plots(lpmat, xdata, param_names, '.', [fname_, '_', amcf_name], OutputDirectoryName, amcf_title, xx, options_)
+    end
 end

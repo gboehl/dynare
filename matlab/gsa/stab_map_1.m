@@ -1,16 +1,20 @@
-function [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, iplot, ipar, dirname, pcrit, atitle)
-%function [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, iplot, ipar, dirname, pcrit)
-%
-% lpmat =  Monte Carlo matrix
-% ibehaviour = index of behavioural runs
-% inonbehaviour = index of non-behavioural runs
-% aname = label of the analysis
-% iplot = 1 plot cumulative distributions (default)
-% iplot = 0 no plots
-% ipar = index array of parameters to plot
-% dirname = (OPTIONAL) path of the directory where to save
-%            (default: current directory)
-% pcrit = (OPTIONAL) critical value of the pvalue below which show the plots
+function [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, fname_, options_, parnames, estim_params_, iplot, ipar, dirname, pcrit, atitle)
+% [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, fname_, options_, parnames, estim_params_, iplot, ipar, dirname, pcrit, atitle)
+% Inputs:
+% - lpmat               [double]        Monte Carlo matrix
+% - ibehaviour          [integer]       index of behavioural runs
+% - inonbehaviour       [integer]       index of non-behavioural runs
+% - aname               [string]        label of the analysis
+% - fname_              [string]        file name
+% - options_            [structure]     options structure
+% - parnames            [char]          parameter name vector
+% - estim_params_       [structure]     characterizing parameters to be estimated
+% - iplot               [boolean]       1 plot cumulative distributions (default)
+%                                       0 no plots
+% - ipar                [integer]       index array of parameters to plot
+% - dirname             [string]        (OPTIONAL) path of the directory where to save
+%                                       (default: current directory)
+% - pcrit               [double]        (OPTIONAL) critical value of the pvalue below which show the plots
 %
 % Plots: dotted lines for BEHAVIOURAL
 %        solid lines for NON BEHAVIOURAL
@@ -38,16 +42,13 @@ function [proba, dproba] = stab_map_1(lpmat, ibehaviour, inonbehaviour, aname, i
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global estim_params_ bayestopt_ M_ options_
-
-if nargin<5
+if nargin<9
     iplot=1;
 end
-fname_ = M_.fname;
-if nargin<7
+if nargin<11
     dirname='';
 end
-if nargin<9,
+if nargin<13
     atitle=aname;
 end
 
@@ -59,27 +60,28 @@ nshock = nshock + estim_params_.ncn;
 npar=size(lpmat,2);
 ishock= npar>estim_params_.np;
 
-if nargin<6
+if nargin<10
     ipar=[];
 end
-if nargin<8 || isempty(pcrit)
+if nargin<12 || isempty(pcrit)
     pcrit=1;
 end
 
-% Smirnov test for Blanchard;
+% Smirnov test for Blanchard
+proba=NaN(npar,1);
+dproba=NaN(npar,1);
 for j=1:npar
-    [H,P,KSSTAT] = smirnov(lpmat(ibehaviour,j),lpmat(inonbehaviour,j));
+    [~,P,KSSTAT] = smirnov(lpmat(ibehaviour,j),lpmat(inonbehaviour,j));
     proba(j)=P;
     dproba(j)=KSSTAT;
 end
 if isempty(ipar)
-    %     ipar=find(dproba>dcrit);
     ipar=find(proba<pcrit);
 end
 nparplot=length(ipar);
 if iplot && ~options_.nograph
     lpmat=lpmat(:,ipar);
-    ftit=bayestopt_.name(ipar+nshock*(1-ishock));
+    ftit=parnames(ipar+nshock*(1-ishock));
 
     for i=1:ceil(nparplot/12)
         hh_fig=dyn_figure(options_.nodisplay,'name',atitle);
@@ -94,7 +96,6 @@ if iplot && ~options_.nograph
                 h=cumplot(lpmat(inonbehaviour,j));
                 set(h,'color',[0 0 0],'LineWidth',1.5)
             end
-            %     title([ftit{j},'. D-stat ', num2str(dproba(ipar(j)),2)],'interpreter','none')
             title([ftit{j},'. p-value ', num2str(proba(ipar(j)),2)],'interpreter','none')
         end
         if nparplot>12

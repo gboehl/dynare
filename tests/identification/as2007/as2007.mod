@@ -19,9 +19,9 @@
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 % =========================================================================
 
-var pie y R g z YGR INFL INT;
-varexo e_R e_g e_z;
-parameters tau kap psi1 psi2 rhoR rhog rhoz rr_steady pi_steady gam_steady std_R std_g std_z;
+var pie $\pi$ y R g z YGR INFL INT;
+varexo e_R $\varepsilon_R$ e_g e_z;
+parameters tau $\tau$ kap $\kappa$ psi1 psi2 rhoR rhog rhoz rr_steady pi_steady gam_steady std_R std_g std_z;
 
 tau        = 2;
 kap        = 0.15;
@@ -96,7 +96,9 @@ identification(tex);
 identification(tex,advanced=1,max_dim_cova_group=3,prior_mc=250,no_identification_spectrum, no_identification_minimal);
 
 collect_latex_files;
-if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])
+[status, cmdout]=system(['pdflatex -halt-on-error -interaction=nonstopmode ' M_.fname '_TeX_binder.tex']);
+if status
+    cmdout
     error('TeX-File did not compile.')
 end
 close all;

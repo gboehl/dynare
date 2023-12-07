@@ -1,6 +1,7 @@
 function [Outmatrix, OutFact] = Sampling_Function_2(p, k, r, UB, LB, GroupMat)
 %[Outmatrix, OutFact] = Sampling_Function_2(p, k, r, UB, LB, GroupMat)
-%       Inputs: k (1,1)                      := number of factors examined or number of groups examined.
+%  Inputs: 
+%           k (1,1)                      := number of factors examined or number of groups examined.
 %                                           In case the groups are chosen the number of factors is stores in NumFact and
 %                                           sizea becomes the number of created groups.
 %           NumFact (1,1)                := number of factors examined in the case when groups are chosen
@@ -13,7 +14,7 @@ function [Outmatrix, OutFact] = Sampling_Function_2(p, k, r, UB, LB, GroupMat)
 %                                           are set to 1 in correspondence of the factors that belong to the fixed group. All
 %                                           the other elements are zero.
 %   Local Variables:
-%               sizeb (1,1)         := sizea+1
+%           sizeb (1,1)         := sizea+1
 %           sizec (1,1)         := 1
 %           randmult (sizea,1)  := vector of random +1 and -1
 %           perm_e(1,sizea)     := vector of sizea random permutated indeces
@@ -34,7 +35,8 @@ function [Outmatrix, OutFact] = Sampling_Function_2(p, k, r, UB, LB, GroupMat)
 %           AuxMat(sizeb,sizea) := Delta*0.5*((2*B - A) * DD0 + A) in Morris, 1991. The AuxMat is used as in Morris design
 %                                  for single factor analysis, while it constitutes an intermediate step for the group analysis.
 %
-%       Output: Outmatrix(sizeb*r, sizea) := for the entire sample size computed In(i,j) matrices
+% Outputs: 
+%           Outmatrix(sizeb*r, sizea) := for the entire sample size computed In(i,j) matrices
 %           OutFact(sizea*r,1)        := for the entire sample size computed Fact(i,1) vectors
 %
 %   Note: B0 is constructed as in Morris design when groups are not considered. When groups are considered the routine
@@ -56,7 +58,7 @@ function [Outmatrix, OutFact] = Sampling_Function_2(p, k, r, UB, LB, GroupMat)
 %
 
 % Copyright © 2005 European Commission
-% Copyright © 2012-2017 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -80,25 +82,23 @@ Delta = p/(2*p-2);
 NumFact = sizea;
 GroupNumber = size(GroupMat,2);
 
-if GroupNumber ~ 0;
+if GroupNumber ~= 0
     sizea = size(GroupMat,2);
 end
 
 sizeb = sizea + 1;
-sizec = 1;
 Outmatrix = [];
 OutFact = [];
 
 % For each i generate a trajectory
 for i=1:r
-
     % Construct DD0 - OLD VERSION - it does not need communication toolbox
     % RAND(N,M) is an NXM matrix with random entries, chosen from a uniform distribution on the interval (0.0,1.0).
     % Note that DD0 tells if the factor have to be increased or ddecreased
     % by Delta.
     randmult = ones(k,1);
     v = rand(k,1);
-    randmult (find(v < 0.5))=-1;
+    randmult (v < 0.5)=-1;
     randmult = repmat(randmult,1,k);
     DD0 = randmult .* eye(k);
 
@@ -133,7 +133,7 @@ for i=1:r
 
     % When groups are present the random permutation is done only on B. The effect is the same since
     % the added part (A0*x0') is completely random.
-    if GroupNumber ~ 0
+    if GroupNumber ~= 0
         B = B * (GroupMat*P0')';
     end
 
@@ -158,9 +158,9 @@ for i=1:r
     % 3) check in which interval the random numbers fall
     % 4) generate the corresponding integer
     v = repmat(rand(NumFact,1),1,size(MyInt,2)+1);     % 1)
-    IntUsed = repmat([0:1/size(MyInt,2):1],NumFact,1); % 2)
+    IntUsed = repmat(0:1/size(MyInt,2):1,NumFact,1); % 2)
     DiffAuxVec = IntUsed - v;                          % 3)
-
+    w=NaN(1,size(DiffAuxVec,1));
     for ii = 1:size(DiffAuxVec,1)
         w(1,ii) = max(find(DiffAuxVec(ii,:)<0));       % 4)
     end
@@ -168,7 +168,7 @@ for i=1:r
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % b --> Compute the matrix B*, here indicated as B0. Each row in B0 is a
     % trajectory for Morris Calculations. The dimension of B0 is (Numfactors+1,Numfactors)
-    if GroupNumber ~ 0
+    if GroupNumber ~= 0
         B0 = (A0*x0' + AuxMat);
     else
         B0 = (A0*x0' + AuxMat)*P0;
@@ -183,6 +183,7 @@ for i=1:r
 
     % Create the Factor vector. Each component of this vector indicate which factor or group of factor
     % has been changed in each step of the trajectory.
+    Fact=NaN(1,sizea);
     for j=1:sizea
         Fact(1,j) = find(P0(j,:));
     end
@@ -190,5 +191,4 @@ for i=1:r
 
     Outmatrix = [Outmatrix; In];
     OutFact = [OutFact; Fact'];
-
 end

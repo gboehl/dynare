@@ -28,6 +28,25 @@ end
 
 OutputDirectoryName = CheckPath('latex',M_.dname);
 
+%delete dollars in label as they will be added automatically below
+begin_dollar = cellfun (@(x)startsWith(x,'$'),labels,'UniformOutput',1);
+end_dollar = cellfun (@(x)endsWith(x,'$'),labels,'UniformOutput',1);
+
+if all(begin_dollar) && all(end_dollar)
+    labels = cellfun(@(x)delete_dollar(x,'begin'),labels,'UniformOutput',0);
+    labels = cellfun(@(x)delete_dollar(x,'end'),labels,'UniformOutput',0);
+end
+
+
+%delete dollars in headers as they will be added automatically below
+begin_dollar = cellfun (@(x)startsWith(x,'$'),headers,'UniformOutput',1);
+end_dollar = cellfun (@(x)endsWith(x,'$'),headers,'UniformOutput',1);
+
+if all(begin_dollar) && all(end_dollar)
+    headers = cellfun(@(x)delete_dollar(x,'begin'),headers,'UniformOutput',0);
+    headers = cellfun(@(x)delete_dollar(x,'end'),headers,'UniformOutput',0);
+end
+
 % Set width of label column
 if isempty(label_width)
     label_width = cellofchararraymaxlength(vertcat(headers{1}, labels))+2;
@@ -103,3 +122,11 @@ fprintf(fidTeX, '\\end{longtable}\n ');
 fprintf(fidTeX, '\\end{center}\n');
 fprintf(fidTeX, '%% End of TeX file.\n');
 fclose(fidTeX);
+
+function x=delete_dollar(x,position_string)
+if strcmp(position_string,'begin')
+    x(1)=[];
+elseif strcmp(position_string,'end')
+    x(end)=[];
+end
+

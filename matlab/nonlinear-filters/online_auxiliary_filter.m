@@ -389,7 +389,7 @@ for plt = 1:nbplt
     hh_fig = dyn_figure(options_.nodisplay,'Name','Parameters Trajectories');
     for k=1:length(pmean)
         subplot(nr,nc,k)
-        [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
+        [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_.varobs);
         % Draw the surface for an interval containing 95% of the particles.
         area(1:sample_size, ub95_xparam(k,:), 'FaceColor', [.9 .9 .9], 'BaseValue', min(lb95_xparam(k,:)));
         hold on
@@ -426,7 +426,7 @@ for plt = 1:nbplt
     hh_fig = dyn_figure(options_.nodisplay,'Name','Parameters Densities');
     for k=1:length(pmean)
         subplot(nr,nc,k)
-        [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_);
+        [name,texname] = get_the_name(k,TeX,M_,estim_params_,options_.varobs);
         optimal_bandwidth = mh_optimal_bandwidth(xparam(k,:)',number_of_particles,bandwidth,kernel_function);
         [density(:,1),density(:,2)] = kernel_density_estimate(xparam(k,:)', number_of_grid_points, ...
                                                           number_of_particles, optimal_bandwidth, kernel_function);

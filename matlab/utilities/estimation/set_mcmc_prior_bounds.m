@@ -37,7 +37,7 @@ bounds = prior_bounds(bayestopt_, options_.prior_trunc);
 outside_bound_pars = find(xparam < bounds.lb | xparam > bounds.ub);
 if ~isempty(outside_bound_pars)
     for ii = 1:length(outside_bound_pars)
-        outside_bound_par_names{ii,1} = get_the_name(ii,0,M_,estim_params_,options_);
+        outside_bound_par_names{ii,1} = get_the_name(ii,0,M_,estim_params_,options_.varobs);
     end
     disp_string = [outside_bound_par_names{1,:}];
     for ii = 2:size(outside_bound_par_names,1)

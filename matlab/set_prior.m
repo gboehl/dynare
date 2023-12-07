@@ -133,7 +133,7 @@ if ncn
     bayestopt_.p4 = [ bayestopt_.p4; estim_params_.corrn(:,10)]; %take generalized distribution into account
     bayestopt_.jscale = [ bayestopt_.jscale; estim_params_.corrn(:,11)];
     baseid = length(bayestopt_.name);
-    bayestopt_.name = [bayestopt_.name; cell(ncn, 1)];;
+    bayestopt_.name = [bayestopt_.name; cell(ncn, 1)];
     for i=1:ncn
         k1 = estim_params_.corrn(i,1);
         k2 = estim_params_.corrn(i,2);
@@ -163,8 +163,8 @@ bayestopt_.p7 = bayestopt_.p6 ;
 
 %% check for point priors and disallow them as they do not work with MCMC
 if any(bayestopt_.p2 ==0)
-    error(sprintf(['Error in prior for %s: you cannot use a point prior in estimation. Either increase the prior standard deviation',...
-                   ' or fix the parameter completely.'], bayestopt_.name{bayestopt_.p2 ==0}))
+    error('Error in prior for %s: you cannot use a point prior in estimation. Either increase the prior standard deviation',...
+                   ' or fix the parameter completely.', bayestopt_.name{bayestopt_.p2 ==0})
 end
 
 % generalized location parameters by default for beta distribution
@@ -285,7 +285,7 @@ end
 CheckPath('prior',M_.dname);
 
 % I save the prior definition if the prior has changed.
-if exist([ M_.dname '/prior/definition.mat'])
+if exist([ M_.dname '/prior/definition.mat'],'file')
     old = load([M_.dname '/prior/definition.mat'],'bayestopt_');
     prior_has_changed = 0;
     if length(bayestopt_.p1)==length(old.bayestopt_.p1)

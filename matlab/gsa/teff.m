@@ -37,15 +37,12 @@ if ndim==3
     [ir, ic]=(find( (tmax-tmin)>1.e-8));
     j0 = length(ir);
     yt=zeros(Nsam, j0);
-
     for j=1:j0
         y0=squeeze(T(ir(j),ic(j),:));
-        %y1=ones(size(lpmat,1),1)*NaN;
         y1=ones(Nsam,1)*NaN;
         y1(istable,1)=y0;
         yt(:,j)=y1;
     end
-
 else
     tmax=max(T,[],2);
     tmin=min(T,[],2);
@@ -53,7 +50,4 @@ else
     j0 = length(ir);
     yt=NaN(Nsam, j0);
     yt(istable,:)=T(ir,:)';
-
-
 end
-%clear y0 y1;

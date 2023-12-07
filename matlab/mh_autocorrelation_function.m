@@ -1,10 +1,9 @@
 function mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,name2)
+% mh_autocorrelation_function(options_,M_,estim_params_,type,blck,name1,name2)
 % This function plots the autocorrelation of the sampled draws in the
 % posterior distribution.
 %
-%
 % INPUTS
-%
 %   options_        [structure]    Dynare structure.
 %   M_              [structure]    Dynare structure (related to model definition).
 %   estim_params_   [structure]    Dynare structure (related to estimation).
@@ -63,7 +62,7 @@ clear record;
 PosteriorDraws = GetAllPosteriorDraws(M_.dname, M_.fname, column, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, nblck, blck);
 
 % Compute the autocorrelation function:
-[autocov,autocor] = sample_autocovariance(PosteriorDraws,options_.mh_autocorrelation_function_size);
+[~,autocor] = sample_autocovariance(PosteriorDraws,options_.mh_autocorrelation_function_size);
 
 % Plot the posterior draws:
 
@@ -101,9 +100,9 @@ axis tight
 if ~exist(M_.dname, 'dir')
     mkdir('.',M_.dname);
 end
-if ~exist([M_.dname filesep 'graphs'])
+if ~exist([M_.dname filesep 'graphs'],'dir')
     mkdir(M_.dname,'graphs');
 end
 
-plot_name=get_the_name(column,0,M_,estim_params_,options_);
+plot_name=get_the_name(column,0,M_,estim_params_,options_.varobs);
 dyn_saveas(hh_fig,[M_.dname, filesep, 'graphs', filesep, 'MH_Autocorrelation_' plot_name],options_.nodisplay,options_.graph_format)

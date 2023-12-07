@@ -48,7 +48,7 @@ catch
     params_at_bound = find(abs(xparam1-bounds.ub)<tol_bounds | abs(xparam1-bounds.lb)<tol_bounds);
     if ~isempty(params_at_bound)
         for ii=1:length(params_at_bound)
-            params_at_bound_name{ii,1}=get_the_name(params_at_bound(ii),0,M_,estim_params_,options_);
+            params_at_bound_name{ii,1}=get_the_name(params_at_bound(ii),0,M_,estim_params_,options_.varobs);
         end
         disp_string=[params_at_bound_name{1,:}];
         for ii=2:size(params_at_bound_name,1)

@@ -165,6 +165,8 @@ realtime_shock_decomposition(fast_realtime=75) y_obs R_obs pie_obs dq de;
 squeeze_shock_decomposition;
 
 collect_latex_files;
-if system(['pdflatex -halt-on-error -interaction=batchmode ' M_.fname '_TeX_binder.tex'])
+[status, cmdout]=system(['pdflatex -halt-on-error -interaction=nonstopmode ' M_.fname '_TeX_binder.tex']);
+if status
+    cmdout
     error('TeX-File did not compile.')
 end

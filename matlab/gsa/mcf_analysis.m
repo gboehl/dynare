@@ -1,5 +1,17 @@
-function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, options_)
-% indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, options_)
+function indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, M_, options_, bayestopt_, estim_params_)
+% indmcf = mcf_analysis(lpmat, ibeha, inobeha, options_mcf, M_, options_, bayestopt_, estim_params_)
+% Inputs:
+% - lpmat               [double]        Monte Carlo matrix
+% - ibeha               [integer]       index of behavioural runs
+% - inobeha             [integer]       index of non-behavioural runs
+% - options_gsa_        [structure]     GSA options_
+% - M_                  [structure]     describing the model
+% - options_            [structure]     describing the options
+% - bayestopt_          [structure]     describing the priors
+% - estim_params_       [structure]     characterizing parameters to be estimated
+%
+% Outputs:
+% - indmcf              [double]        results of matrix
 
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -42,6 +54,10 @@ amcf_name = options_mcf.amcf_name;
 amcf_title = options_mcf.amcf_title;
 beha_title = options_mcf.beha_title;
 nobeha_title = options_mcf.nobeha_title;
+if options_.TeX
+    beha_title_latex = options_mcf.beha_title_latex;
+    nobeha_title_latex = options_mcf.nobeha_title_latex;
+end
 title = options_mcf.title;
 fname_ = options_mcf.fname_;
 xparam1=[];
@@ -50,15 +66,15 @@ if isfield(options_mcf,'xparam1')
 end
 OutputDirectoryName = options_mcf.OutputDirectoryName;
 
-[proba, dproba] = stab_map_1(lpmat, ibeha, inobeha, [],0);
+[proba, dproba] = stab_map_1(lpmat, ibeha, inobeha, [],fname_, options_, bayestopt_.name, estim_params_,0);
 indmcf=find(proba<pvalue_ks);
-[tmp,jtmp] = sort(proba(indmcf),2,'ascend');
+[~,jtmp] = sort(proba(indmcf),1,'ascend');
 indmcf = indmcf(jtmp);
 if ~isempty(indmcf)
     skipline()
     headers = {'Parameter','d-stat','p-value'};
     labels = param_names(indmcf);
-    data_mat=[dproba(indmcf)' proba(indmcf)'];
+    data_mat=[dproba(indmcf) proba(indmcf)];
     options_temp.noprint=0;
     dyntable(options_temp,['Smirnov statistics in driving ', title],headers,labels,data_mat,size(labels,2)+2,16,3);
     if options_.TeX
@@ -69,10 +85,14 @@ if ~isempty(indmcf)
     end
 end
 
-
 if length(ibeha)>10 && length(inobeha)>10
-    indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, beha_title);
-    indcorr2 = stab_map_2(lpmat(inobeha,:),alpha2, pvalue_corr, nobeha_title);
+    if options_.TeX
+        indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, beha_title, beha_title_latex);
+        indcorr2 = stab_map_2(lpmat(inobeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, nobeha_title, nobeha_title_latex);
+    else
+        indcorr1 = stab_map_2(lpmat(ibeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, beha_title);
+        indcorr2 = stab_map_2(lpmat(inobeha,:),alpha2, pvalue_corr, M_, options_, bayestopt_, estim_params_, nobeha_title);
+    end    
     indcorr = union(indcorr1(:), indcorr2(:));
     indcorr = indcorr(~ismember(indcorr(:),indmcf));
     indmcf = [indmcf(:); indcorr(:)];
@@ -80,8 +100,16 @@ end
 if ~isempty(indmcf) && ~options_.nograph
     skipline()
     xx=[];
-    if ~ isempty(xparam1), xx=xparam1(indmcf); end
-    scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names_tex(indmcf), ...
-                '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, options_, ...
-                beha_title, nobeha_title)
+    if ~ isempty(xparam1)
+        xx=xparam1(indmcf); 
+    end
+    if options_.TeX
+        scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names_tex(indmcf), ...
+            '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, options_, ...
+            beha_title, nobeha_title, beha_title_latex, nobeha_title_latex)
+    else
+        scatter_mcf(lpmat(ibeha,indmcf),lpmat(inobeha,indmcf), param_names_tex(indmcf), ...
+            '.', [fname_,'_',amcf_name], OutputDirectoryName, amcf_title,xx, options_, ...
+            beha_title, nobeha_title)
+    end
 end

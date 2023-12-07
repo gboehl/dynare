@@ -1,20 +1,22 @@
 function [y, meany, stdy] = stand_(x)
-% STAND_  Standardise a matrix by columns
+% [y, meany, stdy] = stand_(x)
+% Standardise a matrix by columns
 %
 % [x,my,sy]=stand(y)
 %
-% y: Time series (column matrix)
+% Inputs:
+%  - x: Time series (column matrix)
 %
-% x: standardised equivalent of y
-% my: Vector of mean values for each column of y
-% sy: Vector of standard deviations for each column of y
+%  - y:         standardised equivalent of x
+%  - meany:     Vector of mean values for each column of x
+%  - stdy:      Vector of standard deviations for each column of x
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
 % Copyright © 2012 European Commission
-% Copyright © 2012-2017 Dynare Team%
+% Copyright © 2012-2023 Dynare Team
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -34,9 +36,11 @@ if nargin==0
     return
 end
 
+meany=NaN(size(x,2),1);
+stdy=NaN(size(x,2),1);
+y=NaN(size(x));
 for j=1:size(x,2)
-    meany(j)=mean(x(find(~isnan(x(:,j))),j));
-    stdy(j)=std(x(find(~isnan(x(:,j))),j));
+    meany(j)=mean(x(~isnan(x(:,j)),j));
+    stdy(j)=std(x(~isnan(x(:,j)),j));
     y(:,j)=(x(:,j)-meany(j))./stdy(j);
 end
-% end of m-file

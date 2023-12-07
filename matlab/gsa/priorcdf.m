@@ -1,5 +1,5 @@
 function xcum = priorcdf(para, pshape, p6, p7, p3, p4)
-
+% xcum = priorcdf(para, pshape, p6, p7, p3, p4)
 % This procedure transforms x vectors into cumulative values
 % pshape: 0 is point mass, both para and p2 are ignored
 %         1 is BETA(mean,stdd)
@@ -11,7 +11,7 @@ function xcum = priorcdf(para, pshape, p6, p7, p3, p4)
 %         8 is WEIBULL(s, k)
 % Adapted by M. Ratto from MJ priordens.m
 
-% Copyright © 2012-2015 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,6 +28,7 @@ function xcum = priorcdf(para, pshape, p6, p7, p3, p4)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
+xcum=NaN(size(para));
 for i=1:length(pshape)
     switch pshape(i)
       case 1 % (generalized) BETA Prior

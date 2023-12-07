@@ -1,5 +1,25 @@
-function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info)
-% function [rmse_MC, ixx] = filt_mc_(OutDir)
+function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_)
+% [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_
+% Inputs:
+%  - OutputDirectoryName [string]       name of the output directory
+%  - options_gsa_        [structure]    GSA options
+%  - dataset_            [dseries]      object storing the dataset
+%  - dataset_info        [structure]    storing informations about the sample.
+%  - M_                  [structure]    Matlab's structure describing the model
+%  - oo_                 [structure]    storing the results
+%  - options_            [structure]    Matlab's structure describing the current options
+%  - bayestopt_          [structure]    describing the priors
+%  - estim_params_       [structure]    characterizing parameters to be estimated
+%
+% Outputs:
+%  - rmse_MC             [double]       RMSE by nvar matrix of the RMSEs
+%  - ixx                 [double]       RMSE by nvar matrix of sorting
+%                                       indices (descending order of RMSEs)
+%
+% Notes: the R^2 definition is 1-var(ymodel-ydata)/var(ydata). It ranges
+% bewteen (-inf, 1], with negative values indicating that themodel is a worse 
+% predictor than the sample mean of the data
+
 % inputs (from opt_gsa structure)
 % vvarvecm = options_gsa_.var_rmse;
 % loadSA   = options_gsa_.load_rmse;
@@ -7,7 +27,6 @@ function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info)
 % alpha    = options_gsa_.alpha_rmse;
 % alpha2   = options_gsa_.alpha2_rmse;
 % istart   = options_gsa_.istart_rmse;
-% alphaPC  = 0.5;
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -31,9 +50,6 @@ function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global bayestopt_ estim_params_ M_ options_ oo_
-
-% options_gsa_=options_.opt_gsa;
 vvarvecm = options_gsa_.var_rmse;
 if options_.TeX
     vvarvecm_tex = options_gsa_.var_rmse_tex;
@@ -46,13 +62,10 @@ alpha    = options_gsa_.alpha_rmse;
 alpha2 = 0;
 pvalue   = options_gsa_.alpha2_rmse;
 istart   = max(2,options_gsa_.istart_rmse);
-alphaPC  = 0.5;
 
 fname_ = M_.fname;
-lgy_ = M_.endo_names;
-dr_ = oo_.dr;
 
-skipline(2)
+skipline(1)
 disp('Starting sensitivity analysis')
 disp('for the fit of EACH observed series ...')
 skipline()
@@ -61,12 +74,12 @@ if ~options_.nograph
     a=dir([OutDir,filesep,'*.*']);
     tmp1='0';
     if options_.opt_gsa.ppost
-        tmp=['_rmse_post'];
+        tmp='_rmse_post';
     else
         if options_.opt_gsa.pprior
-            tmp=['_rmse_prior'];
+            tmp='_rmse_prior';
         else
-            tmp=['_rmse_mc'];
+            tmp='_rmse_mc';
         end
         if options_gsa_.lik_only
             tmp1 = [tmp,'_post_SA'];
@@ -75,16 +88,22 @@ if ~options_.nograph
     end
     for j=1:length(a)
         if strmatch([fname_,tmp],a(j).name)
-            disp(a(j).name)
+            if options_.debug
+                disp(a(j).name)
+            end
             delete([OutDir,filesep,a(j).name])
         end
         if strmatch([fname_,tmp1],a(j).name)
-            disp(a(j).name)
+            if options_.debug
+                disp(a(j).name)
+            end
             delete([OutDir,filesep,a(j).name])
         end
     end
     disp('done !')
 end
+
+[param_names,param_names_tex]=get_LaTeX_parameter_names(M_,options_,estim_params_,bayestopt_);
 
 nshock=estim_params_.nvx + estim_params_.nvn + estim_params_.ncx + estim_params_.ncn;
 npar=estim_params_.np;
@@ -94,10 +113,12 @@ end
 if options_.opt_gsa.ppost
     c=load([M_.dname filesep 'Output' filesep fname_,'_mean.mat'],'xparam1');
     xparam1_mean=c.xparam1;
+    xparam1=c.xparam1;
     clear c
-elseif ~isempty(options_.mode_file) && exist([M_.dname filesep 'Output' filesep fname_,'_mean.mat'])==2
+elseif ~isempty(options_.mode_file) && exist([M_.dname filesep 'Output' filesep fname_,'_mean.mat'],'file')==2
     c=load([M_.dname filesep 'Output' filesep fname_,'_mean.mat'],'xparam1');
     xparam1_mean=c.xparam1;
+    xparam1=c.xparam1;
     clear c
 end
 
@@ -124,31 +145,11 @@ if loadSA
     end
 end
 if ~loadSA
-    if exist('xparam1','var')
-        M_ = set_all_parameters(xparam1,estim_params_,M_);
-        ys_mode=evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
-    end
-    if exist('xparam1_mean','var')
-        M_ = set_all_parameters(xparam1_mean,estim_params_,M_);
-        ys_mean=evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
-    end
     Y = transpose(dataset_.data);
     gend = dataset_.nobs;
     data_index = dataset_info.missing.aindex;
     missing_value = dataset_info.missing.state;
-    for jx=1:gend
-        data_indx(jx,data_index{jx})=true;
-    end
-    load([DirectoryName filesep M_.fname '_data.mat']);
     filfilt = dir([DirectoryName filesep M_.fname '_filter_step_ahead*.mat']);
-    temp_smooth_file_list = dir([DirectoryName filesep M_.fname '_smooth*.mat']);
-    jfile=0;
-    for j=1:length(temp_smooth_file_list)
-        if isempty(strfind(temp_smooth_file_list(j).name,'smoothed')),
-            jfile=jfile+1;
-            filsmooth(jfile)=temp_smooth_file_list(j);
-        end
-    end
     filupdate = dir([DirectoryName filesep M_.fname '_update*.mat']);
     filparam = dir([DirectoryName filesep M_.fname '_param*.mat']);
     x=[];
@@ -156,11 +157,11 @@ if ~loadSA
     sto_ys=[];
     for j=1:length(filparam)
         if isempty(strmatch([M_.fname '_param_irf'],filparam(j).name))
-            load([DirectoryName filesep filparam(j).name]);
-            x=[x; stock];
-            logpo2=[logpo2; stock_logpo];
-            sto_ys=[sto_ys; stock_ys];
-            clear stock stock_logpo stock_ys;
+            temp=load([DirectoryName filesep filparam(j).name]); % from prior_posterior_statistics_core
+            x=[x; temp.stock];
+            logpo2=[logpo2; temp.stock_logpo];
+            sto_ys=[sto_ys; temp.stock_ys];
+            clear temp;
         end
     end
     nruns=size(x,1);
@@ -168,38 +169,41 @@ if ~loadSA
     if options_.opt_gsa.ppost || (options_.opt_gsa.ppost==0 && options_.opt_gsa.lik_only==0)
         skipline()
         disp('Computing RMSE''s...')
+        jxj=NaN(length(vvarvecm),1);
+        js=NaN(length(vvarvecm),1);
+        yss=NaN(length(vvarvecm),gend,size(sto_ys,1));
         for i = 1:length(vvarvecm)
             vj = vvarvecm{i};
-            jxj(i) = strmatch(vj, lgy_(dr_.order_var), 'exact');
-            js(i) = strmatch(vj, lgy_, 'exact');
+            jxj(i) = strmatch(vj, M_.endo_names(oo_.dr.order_var), 'exact');
+            js(i) = strmatch(vj, M_.endo_names, 'exact');
             yss(i,:,:)=repmat(sto_ys(:,js(i))',[gend,1]);
         end
         if exist('xparam1','var')
-            [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
-            y0 = reshape( squeeze(aK(1,jxj,1:gend)),[gend length(jxj)]);% + kron(ys_mode(js),ones(1,gend)));
-            yobs = transpose( ahat(jxj,:));% + kron(ys_mode(js),ones(1,gend)));
+            [~,~,~,ahat,~,~,aK] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
+            y0 = reshape( squeeze(aK(1,jxj,1:gend)),[gend length(jxj)]);
+            yobs = transpose( ahat(jxj,:));
             rmse_mode = sqrt(mean((yobs(istart:end,:)-y0(istart:end,:)).^2));
             r2_mode = 1-sum((yobs(istart:end,:)-y0(istart:end,:)).^2)./sum(yobs(istart:end,:).^2);
         end
-        y0=-yss;
+        
+        y0=-yss; %demean everything using the theoretical mean, i.e. steady state
         nbb=0;
         for j=1:length(filfilt)
-            load([DirectoryName filesep M_.fname '_filter_step_ahead',num2str(j),'.mat']);
-            nb = size(stock,4);
-            y0(:,:,nbb+1:nbb+nb)=y0(:,:,nbb+1:nbb+nb)+reshape(stock(1,js,1:gend,:),[length(js) gend nb]);
+            temp=load([DirectoryName filesep M_.fname '_filter_step_ahead',num2str(j),'.mat']);
+            nb = size(temp.stock,4);
+            y0(:,:,nbb+1:nbb+nb)=y0(:,:,nbb+1:nbb+nb)+reshape(temp.stock(1,js,1:gend,:),[length(js) gend nb]);
             nbb=nbb+nb;
-            clear stock;
+            clear temp;
         end
         yobs=-yss;
         nbb=0;
         for j=1:length(filupdate)
-            load([DirectoryName filesep M_.fname '_update',num2str(j),'.mat']);
-            nb = size(stock,3);
-            yobs(:,:,nbb+1:nbb+nb)=yobs(:,:,nbb+1:nbb+nb)+reshape(stock(js,1:gend,:),[length(js) gend nb]);
+            temp=load([DirectoryName filesep M_.fname '_update',num2str(j),'.mat']);
+            nb = size(temp.stock,3);
+            yobs(:,:,nbb+1:nbb+nb)=yobs(:,:,nbb+1:nbb+nb)+reshape(temp.stock(js,1:gend,:),[length(js) gend nb]);
             nbb=nbb+nb;
-            clear stock;
+            clear temp;
         end
-        y0M=mean(y0,2);
         rmse_MC=zeros(nruns,length(js));
         r2_MC=zeros(nruns,length(js));
         for j=1:nruns
@@ -207,14 +211,15 @@ if ~loadSA
             r2_MC(j,:) = 1-mean((yobs(:,istart:end,j)'-y0(:,istart:end,j)').^2)./mean((yobs(:,istart:end,j)').^2);
         end
         if exist('xparam1_mean','var')
-            [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK] = DsgeSmoother(xparam1_mean,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
-            y0 = reshape( squeeze(aK(1,jxj,1:gend)),[gend length(jxj)]);% + kron(ys_mean(js),ones(1,gend)));
-            yobs = transpose( ahat(jxj,:));% + kron(ys_mean(js),ones(1,gend)));
+            [~,~,~,ahat,~,~,aK] = DsgeSmoother(xparam1_mean,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
+            y0 = reshape( squeeze(aK(1,jxj,1:gend)),[gend length(jxj)]);
+            yobs = transpose( ahat(jxj,:));
             rmse_pmean = sqrt(mean((yobs(istart:end,:)-y0(istart:end,:)).^2));
             r2_pmean = 1-mean((yobs(istart:end,:)-y0(istart:end,:)).^2)./mean(yobs(istart:end,:).^2);
         end
         clear stock_filter;
     end
+    lnprior=NaN(nruns,1);
     for j=1:nruns
         lnprior(j,1) = priordens(x(j,:)',bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
     end
@@ -242,7 +247,7 @@ if ~loadSA
             end
         end
     end
-else
+else % loadSA
     if options_.opt_gsa.lik_only && options_.opt_gsa.ppost==0
         load([OutDir,filesep,fnamtmp, '.mat'],'x','logpo2','likelihood');
     else
@@ -252,27 +257,27 @@ else
     nruns=size(x,1);
     nfilt=floor(pfilt*nruns);
 end
-% smirnov tests
+% Smirnov tests
 nfilt0 = nfilt*ones(length(vvarvecm), 1);
 logpo2=logpo2(:);
 if ~options_.opt_gsa.ppost
-    [dum, ipost]=sort(-logpo2);
-    [dum, ilik]=sort(-likelihood);
+    [~, ipost]=sort(-logpo2);
+    [~, ilik]=sort(-likelihood);
 end
 
 % visual scatter analysis!
 if options_.opt_gsa.ppost
-    tmp_title='R2 Posterior:';
-    atitle='R2 Posterior:';
+    tmp_title='R2 Scatter plot: Posterior';
+    atitle='R2 Scatter plot: Posterior';
     asname='r2_post';
 else
     if options_.opt_gsa.pprior
-        tmp_title='R2 Prior:';
-        atitle='R2 Prior:';
+        tmp_title='R2 Scatter plot: Prior';
+        atitle='R2 Scatter plot: Prior';
         asname='r2_prior';
     else
-        tmp_title='R2 MC:';
-        atitle='R2 MC:';
+        tmp_title='R2 Scatter plot: MC';
+        atitle='R2 Scatter plot: MC';
         asname='r2_mc';
     end
 end
@@ -297,13 +302,10 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
     options_mcf.pvalue_ks = alpha;
     options_mcf.pvalue_corr = pvalue;
     options_mcf.alpha2 = alpha2;
+    options_mcf.param_names = param_names;
     if options_.TeX
-        [pnames,pnames_tex]=get_LaTeX_parameter_names(M_,options_,estim_params_,bayestopt_);
-        options_mcf.param_names = pnames;
-        options_mcf.param_names_tex = pnames_tex;
+        options_mcf.param_names_tex = param_names_tex;
     else
-        [pnames]=get_LaTeX_parameter_names(M_,options_,estim_params_,bayestopt_);
-        options_mcf.param_names = pnames;
         options_mcf.param_names_tex = {};
     end
     options_mcf.fname_ = fname_;
@@ -313,7 +315,12 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
     options_mcf.title = atitle;
     options_mcf.beha_title = 'better posterior kernel';
     options_mcf.nobeha_title = 'worse posterior kernel';
-    mcf_analysis(x, ipost(1:nfilt), ipost(nfilt+1:end), options_mcf, options_);
+    if options_.TeX
+        options_mcf.beha_title_latex = 'better posterior kernel';
+        options_mcf.nobeha_title_latex = 'worse posterior kernel';
+    end
+
+    mcf_analysis(x, ipost(1:nfilt), ipost(nfilt+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
     if options_.opt_gsa.pprior
         anam = 'rmse_prior_lik';
         atitle = 'RMSE prior: Log Likelihood Kernel';
@@ -326,15 +333,20 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
     options_mcf.title = atitle;
     options_mcf.beha_title = 'better likelihood';
     options_mcf.nobeha_title = 'worse likelihood';
-    mcf_analysis(x, ilik(1:nfilt), ilik(nfilt+1:end), options_mcf, options_);
+    if options_.TeX
+        options_mcf.beha_title_latex = 'better likelihood';
+        options_mcf.nobeha_title_latex = 'worse likelihood';
+    end
+
+    mcf_analysis(x, ilik(1:nfilt), ilik(nfilt+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
 
 else
     if options_.opt_gsa.ppost
         rmse_txt=rmse_pmean;
         r2_txt=r2_pmean;
     else
-        if options_.opt_gsa.pprior || ~exist('rmse_pmean')
-            if exist('rmse_mode')
+        if options_.opt_gsa.pprior || ~exist('rmse_pmean','var')
+            if exist('rmse_mode','var')
                 rmse_txt=rmse_mode;
                 r2_txt=r2_mode;
             else
@@ -346,18 +358,19 @@ else
             r2_txt=r2_pmean;
         end
     end
+    ixx=NaN(size(rmse_MC,1),length(vvarvecm));
     for i = 1:length(vvarvecm)
-        [dum, ixx(:,i)] = sort(rmse_MC(:,i));
+        [~, ixx(:,i)] = sort(rmse_MC(:,i));
     end
     PP = ones(npar+nshock, length(vvarvecm));
     PPV = ones(length(vvarvecm), length(vvarvecm), npar+nshock);
     SS = zeros(npar+nshock, length(vvarvecm));
     for j = 1:npar+nshock
         for i = 1:length(vvarvecm)
-            [H, P, KSSTAT] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j), alpha);
-            [H1, P1, KSSTAT1] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j),alpha,1);
-            [H2, P2, KSSTAT2] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j),alpha,-1);
-            if H1 & H2==0
+            [~, P] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j), alpha);
+            [H1] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j),alpha,1);
+            [H2] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j),alpha,-1);
+            if H1==0 && H2==0
                 SS(j,i)=1;
             elseif H1==0
                 SS(j,i)=-1;
@@ -369,7 +382,7 @@ else
         for i = 1:length(vvarvecm)
             for l = 1:length(vvarvecm)
                 if l~=i && PP(j,i)<alpha && PP(j,l)<alpha
-                    [H,P,KSSTAT] = smirnov(x(ixx(1:nfilt0(i),i),j),x(ixx(1:nfilt0(l),l),j), alpha);
+                    [~,P] = smirnov(x(ixx(1:nfilt0(i),i),j),x(ixx(1:nfilt0(l),l),j), alpha);
                     PPV(i,l,j) = P;
                 elseif l==i
                     PPV(i,l,j) = PP(j,i);
@@ -400,7 +413,11 @@ else
             set(h,'color','k','linewidth',1)
             h=cumplot(lnprior(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
-            title(vvarvecm{i},'interpreter','none')
+            if options_.TeX
+                title(vvarvecm_tex{i},'interpreter','latex')
+            else
+                title(vvarvecm{i},'interpreter','none')
+            end
             if mod(i,9)==0 || i==length(vvarvecm)
                 if ~isoctave
                     annotation('textbox', [0.1,0,0.35,0.05],'String', 'Log-prior for BETTER R2','Color','Blue','horizontalalignment','center');
@@ -448,7 +465,11 @@ else
             set(h,'color','k','linewidth',1)
             h=cumplot(likelihood(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
-            title(vvarvecm{i},'interpreter','none')
+            if options_.TeX
+                title(vvarvecm_tex{i},'interpreter','latex')
+            else
+                title(vvarvecm{i},'interpreter','none')
+            end
             if options_.opt_gsa.ppost==0
                 set(gca,'xlim',[min( likelihood(ixx(1:nfilt0(i),i)) ) max( likelihood(ixx(1:nfilt0(i),i)) )])
             end
@@ -499,7 +520,11 @@ else
             set(h,'color','k','linewidth',1)
             h=cumplot(logpo2(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
-            title(vvarvecm{i},'interpreter','none')
+            if options_.TeX
+                title(vvarvecm_tex{i},'interpreter','latex')
+            else
+                title(vvarvecm{i},'interpreter','none')
+            end
             if options_.opt_gsa.ppost==0
                 set(gca,'xlim',[min( logpo2(ixx(1:nfilt0(i),i)) ) max( logpo2(ixx(1:nfilt0(i),i)) )])
             end
@@ -529,15 +554,6 @@ else
             end
         end
     end
-    if options_.TeX
-        [pnames,pnames_tex]=get_LaTeX_parameter_names(M_,options_,estim_params_,bayestopt_);
-        param_names = pnames;
-        param_names_tex = pnames_tex;
-    else
-        [pnames]=get_LaTeX_parameter_names(M_,options_,estim_params_,bayestopt_);
-        param_names = pnames;
-        param_names_tex = {};
-    end
     skipline()
     title_string='RMSE over the MC sample:';
     data_mat=[min(rmse_MC)' max(rmse_MC)'];
@@ -549,7 +565,7 @@ else
     end
     invar = find( std(rmse_MC)./mean(rmse_MC)<=0.0001 );
     if ~isempty(invar)
-        skipline(2)
+        skipline(1)
         disp('RMSE is not varying significantly over the MC sample for the following variables:')
         disp(vvarvecm{invar})
         disp('These variables are excluded from SA')
@@ -561,8 +577,7 @@ else
     rmse_MC = rmse_MC(:,ivar);
     skipline()
     disp(['Sample filtered the ',num2str(pfilt*100),'% best RMSE''s for each observed series ...' ])
-    skipline(2)
-    disp('RMSE ranges after filtering:')
+    skipline(1)
     title_string='RMSE ranges after filtering:';
     if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
         headers = {'Variable'; 'min'; 'max'; 'min'; 'max'; 'posterior mode'};
@@ -589,7 +604,7 @@ else
     else
         values_length = max(ceil(max(max(log10(abs(data_mat(isfinite(data_mat))))))),1)+val_precis+1;
     end
-    if any(data_mat) < 0 %add one character for minus sign
+    if any(data_mat < 0) %add one character for minus sign
         values_length = values_length+1;
     end
     headers_length = cellofchararraymaxlength(headers(2:end));
@@ -598,7 +613,6 @@ else
     else
         val_width = max(headers_length, values_length)+2;
     end
-    value_format  = sprintf('%%%d.%df',val_width,val_precis);
     header_string_format  = sprintf('%%%ds',val_width);
     if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
         optional_header=sprintf([label_format_leftbound,header_string_format,header_string_format,header_string_format,header_string_format],'','',['best ',num2str(pfilt*100),'% filtered'],'','remaining 90%');
@@ -610,7 +624,7 @@ else
         if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
             optional_header={[' & \multicolumn{2}{c}{best ',num2str(pfilt*100),' filtered} & \multicolumn{2}{c}{remaining 90\%}\\']};
         else
-            optional_header={[' & \multicolumn{2}{c}{best filtered} & \multicolumn{2}{c}{remaining}\\']};
+            optional_header={' & \multicolumn{2}{c}{best filtered} & \multicolumn{2}{c}{remaining}\\'};
         end
         dyn_latex_table(M_, options_, title_string, 'RMSE_ranges_after_filtering', headers_tex, vvarvecm_tex, data_mat, 0, val_width, val_precis, optional_header);
     end
@@ -657,7 +671,7 @@ else
     else
         values_length = max(ceil(max(max(log10(abs(data_mat(isfinite(data_mat))))))),1)+val_precis+1;
     end
-    if any(data_mat) < 0 %add one character for minus sign
+    if any(data_mat < 0) %add one character for minus sign
         values_length = values_length+1;
     end
     headers_length = cellofchararraymaxlength(headers(2:end));
@@ -666,7 +680,6 @@ else
     else
         val_width = max(headers_length, values_length)+2;
     end
-    value_format  = sprintf('%%%d.%df',val_width,val_precis);
     header_string_format  = sprintf('%%%ds',val_width);
 
     if options_.opt_gsa.ppost==0 && options_.opt_gsa.pprior
@@ -679,7 +692,7 @@ else
         if ~options_.opt_gsa.ppost && options_.opt_gsa.pprior
             optional_header = {[' & \multicolumn{2}{c}{best ',num2str(pfilt*100),' filtered} & \multicolumn{2}{c}{remaining 90\%}\\']};
         else
-            optional_header = {[' & \multicolumn{2}{c}{best filtered} & \multicolumn{2}{c}{remaining}\\']};
+            optional_header = {' & \multicolumn{2}{c}{best filtered} & \multicolumn{2}{c}{remaining}\\'};
         end
         dyn_latex_table(M_, options_, title_string, 'R2_ranges_after_filtering', headers_tex, vvarvecm_tex, data_mat, 0, val_width, val_precis, optional_header);
     end
@@ -690,16 +703,15 @@ else
         SP(ns,j)=ones(size(ns));
         SS(:,j)=SS(:,j).*SP(:,j);
     end
-
-    for j=1:npar+nshock %estim_params_.np,
+    nsp=NaN(npar+nshock,1);
+    for j=1:npar+nshock
         nsp(j)=length(find(SP(j,:)));
     end
-    snam0=param_names(find(nsp==0));
-    snam1=param_names(find(nsp==1));
-    snam2=param_names(find(nsp>1));
-    snam=param_names(find(nsp>0));
+    snam0=param_names(nsp==0);
+    snam1=param_names(nsp==1);
+    snam2=param_names(nsp>1);
     nsnam=(find(nsp>1));
-    skipline(2)
+    skipline(1)
     disp('These parameters do not affect significantly the fit of ANY observed series:')
     disp(char(snam0))
     skipline()
@@ -708,7 +720,6 @@ else
     skipline()
     disp('These parameters affect MORE THAN ONE observed series: trade off exists!')
     disp(char(snam2))
-    pnam=bayestopt_.name;
     % plot trade-offs
     if ~options_.nograph
         a00=jet(length(vvarvecm));
@@ -740,8 +751,12 @@ else
             options_mcf.amcf_title = [atitle ' ' vvarvecm{iy}];
             options_mcf.beha_title = ['better fit of ' vvarvecm{iy}];
             options_mcf.nobeha_title = ['worse fit of ' vvarvecm{iy}];
+            if options_.TeX
+                options_mcf.beha_title_latex = ['better fit of ' vvarvecm_tex{iy}];
+                options_mcf.nobeha_title_latex = ['worse fit of ' vvarvecm_tex{iy}];
+            end
             options_mcf.title = ['the fit of ' vvarvecm{iy}];
-            mcf_analysis(x, ixx(1:nfilt0(iy),iy), ixx(nfilt0(iy)+1:end,iy), options_mcf, options_);
+            mcf_analysis(x, ixx(1:nfilt0(iy),iy), ixx(nfilt0(iy)+1:end,iy), options_mcf, M_, options_, bayestopt_, estim_params_);
         end
         for iy = 1:length(vvarvecm)
             ipar = find(any(squeeze(PPV(iy,:,:))<alpha));
@@ -767,35 +782,43 @@ else
                         set(h0,'color',a00(i,:),'linewidth',2)
                     end
                     ydum=get(gca,'ylim');
-                    if exist('xparam1')
+                    if exist('xparam1','var')
                         xdum=xparam1(ipar(j));
                         h1=plot([xdum xdum],ydum);
                         set(h1,'color',[0.85 0.85 0.85],'linewidth',2)
                     end
                     xlabel('')
-                    title([pnam{ipar(j)}],'interpreter','none')
+                    if options_.TeX
+                        title([param_names_tex{ipar(j)}],'interpreter','latex')
+                    else
+                        title([param_names{ipar(j)}],'interpreter','none')
+                    end
                 end
                 if isoctave
                     legend(vertcat('base',vvarvecm),'location','eastoutside');
                 else
-                    h0=legend(vertcat('base',vvarvecm));
-                    set(h0,'fontsize',6,'position',[0.7 0.1 0.2 0.3],'interpreter','none');
+                    if options_.TeX
+                        h0=legend(vertcat('base',vvarvecm_tex),'interpreter','latex');
+                    else
+                        h0=legend(vertcat('base',vvarvecm),'interpreter','none');
+                    end
+                    set(h0,'fontsize',6,'position',[0.7 0.1 0.2 0.3]);
                 end
                 if options_.opt_gsa.ppost
                     dyn_saveas(hh_fig,[ OutDir filesep fname_ '_rmse_post_' vvarvecm{iy} '_' int2str(ix)],options_.nodisplay,options_.graph_format);
                     if options_.TeX
-                        create_TeX_loader(options_,[ OutDir filesep fname_ '_rmse_post_' vvarvecm{iy} '_' int2str(ix)],ix,[temp_name,' observed variable $',vvarvecm_tex{iy} '$'],['rmse_post_' vvarvecm{iy}],1)
+                        create_TeX_loader(options_,[ OutDir filesep fname_ '_rmse_post_' vvarvecm{iy} '_' int2str(ix)],ix,[temp_name,' observed variable ',vvarvecm_tex{iy} ],['rmse_post_' vvarvecm{iy}],1)
                     end
                 else
                     if options_.opt_gsa.pprior
                         dyn_saveas(hh_fig,[OutDir filesep fname_ '_rmse_prior_' vvarvecm{iy} '_' int2str(ix) ],options_.nodisplay,options_.graph_format);
                         if options_.TeX
-                            create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_prior_' vvarvecm{iy} '_' int2str(ix) ],ix,[temp_name,' observed variable $',vvarvecm_tex{iy} '$'],['rmse_prior_' vvarvecm{iy}],1)
+                            create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_prior_' vvarvecm{iy} '_' int2str(ix) ],ix,[temp_name,' observed variable ',vvarvecm_tex{iy}],['rmse_prior_' vvarvecm{iy}],1)
                         end
                     else
                         dyn_saveas(hh_fig,[OutDir filesep fname_ '_rmse_mc_' vvarvecm{iy} '_' int2str(ix)],options_.nodisplay,options_.graph_format);
                         if options_.TeX
-                            create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_mc_' vvarvecm{iy} '_' int2str(ix)],ix,[temp_name,' observed variable $',vvarvecm_tex{iy} '$'],['rmse_mc_' vvarvecm{iy}],1)
+                            create_TeX_loader(options_,[OutDir filesep fname_ '_rmse_mc_' vvarvecm{iy} '_' int2str(ix)],ix,[temp_name,' observed variable ',vvarvecm_tex{iy}],['rmse_mc_' vvarvecm{iy}],1)
                         end
                     end
                 end
@@ -824,20 +847,28 @@ else
                     set(h0,'color',a00(i,:),'linewidth',2)
                 end
                 ydum=get(gca,'ylim');
-                if exist('xparam1')
+                if exist('xparam1','var')
                     xdum=xparam1(nsnam(j));
                     h1=plot([xdum xdum],ydum);
                     set(h1,'color',[0.85 0.85 0.85],'linewidth',2)
                 end
                 xlabel('')
-                title([pnam{nsnam(j)}],'interpreter','none')
+                if options_.TeX
+                    title([param_names_tex{nsnam(j)}],'interpreter','latex')
+                else
+                    title([param_names{nsnam(j)}],'interpreter','none')
+                end
             end
             %subplot(3,2,6)
             if isoctave
                 legend(vertcat('base',vvarvecm),'location','eastoutside');
             else
-                h0=legend(vertcat('base',vvarvecm));
-                set(h0,'fontsize',6,'position',[0.7 0.1 0.2 0.3],'interpreter','none');
+                if options_.TeX
+                    h0=legend(vertcat('base',vvarvecm_tex),'interpreter','latex');
+                else
+                    h0=legend(vertcat('base',vvarvecm),'interpreter','none');
+                end
+                set(h0,'fontsize',6,'position',[0.7 0.1 0.2 0.3]);
             end
             if options_.opt_gsa.ppost
                 dyn_saveas(hh_fig,[ OutDir filesep fname_ '_rmse_post_params_' int2str(ix)],options_.nodisplay,options_.graph_format);
@@ -885,11 +916,11 @@ pnames=cell(np,1);
 pnames_tex=cell(np,1);
 for ii=1:length(bayestopt_.name)
     if options_.TeX
-        [param_name_temp, param_name_tex_temp]= get_the_name(ii,options_.TeX,M_,estim_params_,options_);
-        pnames_tex{ii,1} = strrep(param_name_tex_temp,'$','');
+        [param_name_temp, param_name_tex_temp]= get_the_name(ii,options_.TeX,M_,estim_params_,options_.varobs);
+        pnames_tex{ii,1} = param_name_tex_temp;
         pnames{ii,1} = param_name_temp;
     else
-        param_name_temp = get_the_name(ii,options_.TeX,M_,estim_params_,options_);
+        param_name_temp = get_the_name(ii,options_.TeX,M_,estim_params_,options_.varobs);
         pnames{ii,1} = param_name_temp;
     end
 end

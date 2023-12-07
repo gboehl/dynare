@@ -52,7 +52,7 @@ options_.prior_trunc = prior_trunc_backup ;
 RESIZE = false;
 
 for i=1:size(bayestopt_.name,1)
-    [Name,tmp] = get_the_name(i,1,M_,estim_params_,options_);
+    [Name,~] = get_the_name(i,1,M_,estim_params_,options_.varobs);
     if length(Name)>size(T1,2)
         resize = true;
     else
