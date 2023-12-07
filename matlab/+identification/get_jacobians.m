@@ -1,5 +1,5 @@
-function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
-% [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_identification_jacobians(estim_params, M_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_jacobians(estim_params, M_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dMOMENTS, dSPECTRUM, dSPECTRUM_NO_MEAN, dMINIMAL, derivatives_info] = get_jacobians(estim_params, M_, options_, options_ident, indpmodel, indpstderr, indpcorr, indvobs, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % previously getJJ.m in Dynare 4.5
 % Sets up the Jacobians needed for identification analysis
 % =========================================================================
@@ -84,7 +84,7 @@ function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dM
 %
 % -------------------------------------------------------------------------
 % This function is called by
-%   * identification_analysis.m
+%   * identification.analysis.m
 % -------------------------------------------------------------------------
 % This function calls
 %   * commutation
@@ -94,7 +94,7 @@ function [MEAN, dMEAN, REDUCEDFORM, dREDUCEDFORM, DYNAMIC, dDYNAMIC, MOMENTS, dM
 %   * fjaco
 %   * get_perturbation_params_derivs (previously getH)
 %   * get_all_parameters
-%   * identification_numerical_objective (previously thet2tau)
+%   * identification.numerical_objective (previously thet2tau)
 %   * pruned_state_space_system
 %   * vec
 % =========================================================================
@@ -258,7 +258,7 @@ if ~no_identification_moments
     
     if kronflag == -1
         %numerical derivative of autocovariogram
-        dMOMENTS = fjaco(str2func('identification_numerical_objective'), xparam1, 1, estim_params, M_, options_, indpmodel, indpstderr, indvobs, useautocorr, nlags, grid_nbr, dr, endo_steady_state, exo_steady_state, exo_det_steady_state); %[outputflag=1]
+        dMOMENTS = fjaco(str2func('identification.numerical_objective'), xparam1, 1, estim_params, M_, options_, indpmodel, indpstderr, indvobs, useautocorr, nlags, grid_nbr, dr, endo_steady_state, exo_steady_state, exo_det_steady_state); %[outputflag=1]
         dMOMENTS = [dMEAN; dMOMENTS]; %add Jacobian of steady state of VAROBS variables
     else
         dMOMENTS = zeros(obs_nbr + obs_nbr*(obs_nbr+1)/2 + nlags*obs_nbr^2 , totparam_nbr);
@@ -315,7 +315,7 @@ if ~no_identification_spectrum
     IA = eye(size(pruned.A,1));
     if kronflag == -1
         %numerical derivative of spectral density
-        dOmega_tmp = fjaco(str2func('identification_numerical_objective'), xparam1, 2, estim_params, M_, options_, indpmodel, indpstderr, indvobs, useautocorr, nlags, grid_nbr, dr, endo_steady_state, exo_steady_state, exo_det_steady_state); %[outputflag=2]
+        dOmega_tmp = fjaco(str2func('identification.numerical_objective'), xparam1, 2, estim_params, M_, options_, indpmodel, indpstderr, indvobs, useautocorr, nlags, grid_nbr, dr, endo_steady_state, exo_steady_state, exo_det_steady_state); %[outputflag=2]
         kk = 0;
         for ig = 1:length(freqs)
             kk = kk+1;

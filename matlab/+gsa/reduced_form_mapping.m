@@ -1,5 +1,5 @@
-function redform_map(dirname,options_gsa_,M_,estim_params_,options_,bayestopt_,oo_)
-% redform_map(dirname,options_gsa_,M_,estim_params_,options_,bayestopt_,oo_)
+function reduced_form_mapping(dirname,options_gsa_,M_,estim_params_,options_,bayestopt_,oo_)
+% reduced_form_mapping(dirname,options_gsa_,M_,estim_params_,options_,bayestopt_,oo_)
 % Inputs:
 % - dirname             [string]    name of the output directory
 % - options_gsa_        [structure] GSA options_
@@ -85,7 +85,7 @@ options_mcf.fname_ = M_.fname;
 options_mcf.OutputDirectoryName = adir;
 
 if ~exist('T','var')
-    stab_map_(dirname,options_gsa_,M_,oo_,options_,bayestopt_,estim_params_);
+    gsa.stability_mapping(dirname,options_gsa_,M_,oo_,options_,bayestopt_,estim_params_);
     if pprior
         load([dirname,filesep,M_.fname,'_prior'],'T');
     else
@@ -182,14 +182,14 @@ for j = 1:length(anamendo)
                         end
                         if ~options_.nograph
                             hf=dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping (Monte Carlo Filtering): ',namendo,' vs ', namexo]);
-                            hc = cumplot(y0);
+                            hc = gsa.cumplot(y0);
                             a=axis; delete(hc);
                             x1val=max(threshold(1),a(1));
                             x2val=min(threshold(2),a(2));
                             hp = patch([x1val x2val x2val x1val],a([3 3 4 4]),'b');
                             set(hp,'FaceColor', [0.7 0.8 1])
                             hold all,
-                            hc = cumplot(y0);
+                            hc = gsa.cumplot(y0);
                             set(hc,'color','k','linewidth',2)
                             hold off,
                             if options_.TeX
@@ -218,7 +218,7 @@ for j = 1:length(anamendo)
                         options_mcf.OutputDirectoryName = xdir;
                         if ~isempty(iy) && ~isempty(iyc)
                             fprintf(['%4.1f%% of the ',type,' support matches ',atitle0,'\n'],length(iy)/length(y0)*100)
-                            icheck = mcf_analysis(x0, iy, iyc, options_mcf, M_, options_, bayestopt_, estim_params_);
+                            icheck = gsa.monte_carlo_filtering_analysis(x0, iy, iyc, options_mcf, M_, options_, bayestopt_, estim_params_);
 
                             lpmat=x0(iy,:);
                             if nshocks
@@ -349,14 +349,14 @@ for j = 1:length(anamendo)
                         end
                         if ~options_.nograph
                             hf=dyn_figure(options_.nodisplay,'name',['Reduced Form Mapping (Monte Carlo Filtering): ',namendo,' vs lagged ', namlagendo]);
-                            hc = cumplot(y0);
+                            hc = gsa.cumplot(y0);
                             a=axis; delete(hc);
                             x1val=max(threshold(1),a(1));
                             x2val=min(threshold(2),a(2));
                             hp = patch([x1val x2val x2val x1val],a([3 3 4 4]),'b');
                             set(hp,'FaceColor', [0.7 0.8 1])
                             hold all,
-                            hc = cumplot(y0);
+                            hc = gsa.cumplot(y0);
                             set(hc,'color','k','linewidth',2)
                             hold off
                             if options_.TeX
@@ -387,7 +387,7 @@ for j = 1:length(anamendo)
                         if ~isempty(iy) && ~isempty(iyc)
 
                             fprintf(['%4.1f%% of the ',type,' support matches ',atitle0,'\n'],length(iy)/length(y0)*100)
-                            icheck = mcf_analysis(x0, iy, iyc, options_mcf, M_, options_, bayestopt_, estim_params_);
+                            icheck = gsa.monte_carlo_filtering_analysis(x0, iy, iyc, options_mcf, M_, options_, bayestopt_, estim_params_);
 
                             lpmat=x0(iy,:);
                             if nshocks
@@ -476,9 +476,9 @@ end
 if isempty(threshold) && ~options_.nograph
     hh_fig=dyn_figure(options_.nodisplay,'name','Reduced Form GSA');
     if ilog==0
-        myboxplot(si',[],'.',[],10)
+        gsa.boxplot(si',[],'.',[],10)
     else
-        myboxplot(silog',[],'.',[],10)
+        gsa.boxplot(silog',[],'.',[],10)
     end
     xlabel(' ')
     set(gca,'xticklabel',' ','fontsize',10,'xtick',1:np)
@@ -513,7 +513,7 @@ if options_map.prior_range
         x0(:,j)=(x0(:,j)-pd(j,3))./(pd(j,4)-pd(j,3));
     end
 else
-    x0=priorcdf(x0,pshape, pd(:,1), pd(:,2), pd(:,3), pd(:,4));
+    x0=gsa.priorcdf(x0,pshape, pd(:,1), pd(:,2), pd(:,3), pd(:,4));
 end
 
 if ilog
@@ -549,7 +549,7 @@ if iload==0
     ipred = setdiff(1:nrun,ifit);
 
     if ilog
-        [~, ~, isig, lam] = log_trans_(y0(iest));
+        [~, ~, isig, lam] = gsa.log_transform(y0(iest));
         y1 = log(y0*isig+lam);
     end
     if ~options_.nograph
@@ -571,9 +571,9 @@ if iload==0
         title(options_map.title,'interpreter','none')
         subplot(222)
         if ilog
-            hc = cumplot(y1);
+            hc = gsa.cumplot(y1);
         else
-            hc = cumplot(y0);
+            hc = gsa.cumplot(y0);
         end
         set(hc,'color','k','linewidth',2)
         title([options_map.title ' CDF'],'interpreter','none')
@@ -620,7 +620,7 @@ if iload==0
         if nfit<nrun
             if ilog
                 yf = ss_anova_fcast(x0(ipred,:), gsa1);
-                yf = log_trans_(yf,'',isig,lam)+ss_anova_fcast(x0(ipred,:), gsax);
+                yf = gsa.log_transform(yf,'',isig,lam)+ss_anova_fcast(x0(ipred,:), gsax);
             else
                 yf = ss_anova_fcast(x0(ipred,:), gsa_);
             end
@@ -657,7 +657,7 @@ function gsa2 = log2level_map(gsa1, isig, lam)
 nest=length(gsa1.y);
 np = size(gsa1.x0,2);
 gsa2=gsa1;
-gsa2.y = log_trans_(gsa1.y,'',isig,lam);
+gsa2.y = gsa.log_transform(gsa1.y,'',isig,lam);
 gsa2.fit = (exp(gsa1.fit)-lam)*isig;
 gsa2.f0 = mean(gsa2.fit);
 gsa2.out.SSE = sum((gsa2.fit-gsa2.y).^2);
@@ -727,7 +727,7 @@ for jt=1:10
     indy{jt}=find( (y0>post_deciles(jt)) & (y0<=post_deciles(jt+1)));
     leg{jt}=[int2str(jt) '-dec'];
 end
-[proba] = stab_map_1(x0, indy{1}, indy{end}, [], fname, options_, parnames, estim_params_,0);
+[proba] = gsa.stability_mapping_univariate(x0, indy{1}, indy{end}, [], fname, options_, parnames, estim_params_,0);
 indmcf=find(proba<options_mcf.pvalue_ks);
 if isempty(indmcf)
     [~,jtmp] = sort(proba,1,'ascend');
@@ -747,7 +747,7 @@ for jx=1:nbr_par
     subplot(nrow,ncol,jx)
     hold off
     for jt=1:10
-        h=cumplot(x0(indy{jt},indmcf(jx)));
+        h=gsa.cumplot(x0(indy{jt},indmcf(jx)));
         set(h,'color', cmap(jt,:), 'linewidth', 2)
         hold all
     end
@@ -782,7 +782,7 @@ if nargin<5
 end
 if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
     fidTeX = fopen([figpath '.tex'],'w');
-    fprintf(fidTeX,'%% TeX eps-loader file generated by redform_map.m (Dynare).\n');
+    fprintf(fidTeX,'%% TeX eps-loader file generated by reduced_form_mapping.m (Dynare).\n');
     fprintf(fidTeX,['%% ' datestr(now,0) '\n\n']);
     fprintf(fidTeX,'\\begin{figure}[H]\n');
     fprintf(fidTeX,'\\centering \n');

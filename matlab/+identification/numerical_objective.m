@@ -22,7 +22,7 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 % OUTPUTS
 %   out:    dependent on outputflag
 %   *  0:   out = [Yss; vec(A); vec(B); dyn_vech(Sig_e)]; of indvar variables only, in DR order. This is needed to compute dTAU and Komunjer and Ng's D.
-%           Note that Jacobian of Om is computed in get_identification_Jacobians.m (previously getJJ.m) or get_first_order_solution_params_deriv.m (previously getH.m) from Jacobian of B and Sigma_e, because this is more efficient due to some testing with analytical derivatives from An and Schorfheide model
+%           Note that Jacobian of Om is computed in identification.get_jacobians.m (previously getJJ.m) or get_first_order_solution_params_deriv.m (previously getH.m) from Jacobian of B and Sigma_e, because this is more efficient due to some testing with analytical derivatives from An and Schorfheide model
 %   *  1:   out = [vech(cov(Y_t,Y_t)); vec(cov(Y_t,Y_{t-1}); ...; vec(cov(Y_t,Y_{t-nlags})] of indvar variables, in DR order. This is needed to compute Iskrev's J.
 %   *  2:   out = vec(spectral density) with dimension [var_nbr^2*grid_nbr,1] Spectral density of indvar variables evaluated at (grid_nbr/2+1) discretized points in the interval [0;pi]. This is needed for Qu and Tkachenko's G.
 %   * -1:   out = g1(:); of all variables, in DR order. This is needed to compute dLRE.
@@ -32,7 +32,7 @@ function out = identification_numerical_objective(params, outputflag, estim_para
 % Jacobian of the dynamic model equations, and Y_t selected variables
 % -------------------------------------------------------------------------
 % This function is called by
-%   * get_identification_jacobians.m (previously getJJ.m)
+%   * identification.get_jacobians.m (previously getJJ.m)
 % -------------------------------------------------------------------------
 % This function calls
 %   * [M_.fname,'.dynamic']

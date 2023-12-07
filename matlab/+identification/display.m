@@ -1,5 +1,5 @@
-function disp_identification(pdraws, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, name, options_ident)
-% disp_identification(pdraws, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, name, options_ident)
+function display(pdraws, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, name, options_ident)
+% display(pdraws, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, name, options_ident)
 % -------------------------------------------------------------------------
 % This function displays all identification analysis to the command line
 % =========================================================================
@@ -26,7 +26,7 @@ function disp_identification(pdraws, ide_reducedform, ide_moments, ide_spectrum,
 %   * all output is printed on the command line
 % -------------------------------------------------------------------------
 % This function is called by
-%   * dynare_identification.m
+%   * identification.run
 % =========================================================================
 % Copyright © 2010-2021 Dynare Team
 %
@@ -207,7 +207,7 @@ for jide = 1:4
                 end
             end
 
-            %% display problematic parameters computed by identification_checks_via_subsets
+            %% display problematic parameters computed by identification.checks_via_subsets
         elseif checks_via_subsets
             if ide.rank < size(Jacob,2)
                 no_warning_message_display = 0;

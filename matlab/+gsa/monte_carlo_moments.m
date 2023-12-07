@@ -1,5 +1,5 @@
-function [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_, estim_params_)
-% [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_,estim_params_)
+function [vdec, cc, ac] = monte_carlo_moments(mm, ss, dr, M_, options_, estim_params_)
+% [vdec, cc, ac] = monte_carlo_moments(mm, ss, dr, M_, options_,estim_params_)
 % Conduct Monte Carlo simulation of second moments for GSA
 % Inputs:
 %  - dr                 [structure]     decision rules
@@ -32,7 +32,7 @@ function [vdec, cc, ac] = mc_moments(mm, ss, dr, M_, options_, estim_params_)
 
 [~, nc1, nsam] = size(mm);
 nobs=length(options_.varobs);
-disp('mc_moments: Computing theoretical moments ...')
+disp('monte_carlo_moments: Computing theoretical moments ...')
 h = dyn_waitbar(0,'Theoretical moments ...');
 vdec = zeros(nobs,M_.exo_nbr,nsam);
 cc = zeros(nobs,nobs,nsam);
@@ -42,9 +42,9 @@ for j=1:nsam
     dr.ghx = mm(:, 1:(nc1-M_.exo_nbr),j);
     dr.ghu = mm(:, (nc1-M_.exo_nbr+1):end, j);
     if ~isempty(ss)
-        M_=set_shocks_param(M_,estim_params_,ss(j,:));
+        M_=gsa.set_shocks_param(M_,estim_params_,ss(j,:));
     end
-    [vdec(:,:,j), corr, autocorr] = th_moments(dr,options_,M_);
+    [vdec(:,:,j), corr, autocorr] = gsa.th_moments(dr,options_,M_);
     cc(:,:,j)=triu(corr);
     dum=NaN(nobs,nobs*options_.ar);
     for i=1:options_.ar

@@ -1,5 +1,5 @@
-function map_ident_(OutputDirectoryName,opt_gsa,M_,oo_,options_,estim_params_,bayestopt_)
-% map_ident_(OutputDirectoryName,opt_gsa,M_,oo_,options_,estim_params_,bayestopt_)
+function map_identification(OutputDirectoryName,opt_gsa,M_,oo_,options_,estim_params_,bayestopt_)
+% map_identification(OutputDirectoryName,opt_gsa,M_,oo_,options_,estim_params_,bayestopt_)
 % Inputs
 %  - OutputDirectoryName [string]    name of the output directory
 %  - opt_gsa             [structure]     GSA options structure
@@ -58,16 +58,16 @@ fname_ = M_.fname;
 
 if opt_gsa.load_ident_files==0
     mss = yys(bayestopt_.mfys,:);
-    mss = teff(mss(:,istable),Nsam,istable);
-    yys = teff(yys(dr.order_var,istable),Nsam,istable);
+    mss = gsa.teff(mss(:,istable),Nsam,istable);
+    yys = gsa.teff(yys(dr.order_var,istable),Nsam,istable);
     if exist('T','var')
-        [vdec, cc, ac] = mc_moments(T, lpmatx, dr, M_, options_, estim_params_);
+        [vdec, cc, ac] = gsa.monte_carlo_moments(T, lpmatx, dr, M_, options_, estim_params_);
     else
         return
     end
 
     if opt_gsa.morris==2
-        pdraws = dynare_identification(M_,oo_,options_,bayestopt_,estim_params_,options_.options_ident,[lpmatx lpmat(istable,:)]);
+        pdraws = identification.run(M_,oo_,options_,bayestopt_,estim_params_,options_.options_ident,[lpmatx lpmat(istable,:)]);
         if ~isempty(pdraws) && max(max(abs(pdraws-[lpmatx lpmat(istable,:)])))==0
             disp(['Sample check OK. Largest difference: ', num2str(max(max(abs(pdraws-[lpmatx lpmat(istable,:)]))))]),
             clear pdraws;
@@ -84,7 +84,7 @@ if opt_gsa.load_ident_files==0
             end
             iplo=iplo+1;
             subplot(2,3,iplo)
-            myboxplot(squeeze(vdec(:,j,:))',[],'.',[],10)
+            gsa.boxplot(squeeze(vdec(:,j,:))',[],'.',[],10)
             set(gca,'xticklabel',' ','fontsize',10,'xtick',1:size(options_.varobs,1))
             set(gca,'xlim',[0.5 size(options_.varobs,1)+0.5])
             set(gca,'ylim',[-2 102])
@@ -105,11 +105,11 @@ if opt_gsa.load_ident_files==0
         end
     end
     for j=1:size(cc,1)
-        cc(j,j,:)=stand_(squeeze(log(cc(j,j,:))))./2;
+        cc(j,j,:)=gsa.standardize_columns(squeeze(log(cc(j,j,:))))./2;
     end
-    [vdec, ~, ir_vdec, ic_vdec] = teff(vdec,Nsam,istable);
-    [cc, ~, ir_cc, ic_cc] = teff(cc,Nsam,istable);
-    [ac, ~, ir_ac, ic_ac] = teff(ac,Nsam,istable);
+    [vdec, ~, ir_vdec, ic_vdec] = gsa.teff(vdec,Nsam,istable);
+    [cc, ~, ir_cc, ic_cc] = gsa.teff(cc,Nsam,istable);
+    [ac, ~, ir_ac, ic_ac] = gsa.teff(ac,Nsam,istable);
 
     nc1= size(T,2);
     endo_nbr = M_.endo_nbr;
@@ -123,7 +123,7 @@ if opt_gsa.load_ident_files==0
     [Aa,Bb] = kalman_transition_matrix(dr,iv,ic);
     A = zeros(size(Aa,1),size(Aa,2)+size(Aa,1),length(istable));
     if ~isempty(lpmatx)
-        M_=set_shocks_param(M_,estim_params_,lpmatx(1,:));
+        M_=gsa.set_shocks_param(M_,estim_params_,lpmatx(1,:));
     end
     A(:,:,1)=[Aa, triu(Bb*M_.Sigma_e*Bb')];
     for j=2:length(istable)
@@ -131,14 +131,14 @@ if opt_gsa.load_ident_files==0
         dr.ghu = T(:, (nc1-M_.exo_nbr+1):end, j);
         [Aa,Bb] = kalman_transition_matrix(dr, iv, ic);
         if ~isempty(lpmatx)
-            M_=set_shocks_param(M_,estim_params_,lpmatx(j,:));
+            M_=gsa.set_shocks_param(M_,estim_params_,lpmatx(j,:));
         end
         A(:,:,j)=[Aa, triu(Bb*M_.Sigma_e*Bb')];
     end
     clear T
     clear lpmatx
 
-    [yt, j0]=teff(A,Nsam,istable);
+    [yt, j0]=gsa.teff(A,Nsam,istable);
     yt = [yys yt];
     if opt_gsa.morris==2
         clear TAU A
@@ -155,7 +155,7 @@ if opt_gsa.morris==1
         if opt_gsa.load_ident_files==0
             SAMorris=NaN(npT,3,size(vdec,2));
             for i=1:size(vdec,2)
-                [~, SAMorris(:,:,i)] = Morris_Measure_Groups(npT, [lpmat0 lpmat], vdec(:,i),nliv);
+                [~, SAMorris(:,:,i)] = gsa.Morris_Measure_Groups(npT, [lpmat0 lpmat], vdec(:,i),nliv);
             end
             SAvdec = squeeze(SAMorris(:,1,:))';
             save([OutputDirectoryName,'/',fname_,'_morris_IDE.mat'],'SAvdec','vdec','ir_vdec','ic_vdec')
@@ -164,7 +164,7 @@ if opt_gsa.morris==1
         end
 
         hh_fig = dyn_figure(options_.nodisplay,'name','Screening identification: variance decomposition');
-        myboxplot(SAvdec,[],'.',[],10)
+        gsa.boxplot(SAvdec,[],'.',[],10)
         set(gca,'xticklabel',' ','fontsize',10,'xtick',1:npT)
         set(gca,'xlim',[0.5 npT+0.5])
         ydum = get(gca,'ylim');
@@ -190,7 +190,7 @@ if opt_gsa.morris==1
         ccac = [mss cc ac];
         SAMorris=NaN(npT,3,size(ccac,2));
         for i=1:size(ccac,2)
-            [~, SAMorris(:,:,i)] = Morris_Measure_Groups(npT, [lpmat0 lpmat], [ccac(:,i)],nliv);
+            [~, SAMorris(:,:,i)] = gsa.Morris_Measure_Groups(npT, [lpmat0 lpmat], [ccac(:,i)],nliv);
         end
         SAcc = squeeze(SAMorris(:,1,:))';
         SAcc = SAcc./(max(SAcc,[],2)*ones(1,npT));
@@ -202,7 +202,7 @@ if opt_gsa.morris==1
     end
 
     hh_fig=dyn_figure(options_.nodisplay,'name','Screening identification: theoretical moments');
-    myboxplot(SAcc,[],'.',[],10)
+    gsa.boxplot(SAcc,[],'.',[],10)
     set(gca,'xticklabel',' ','fontsize',10,'xtick',1:npT)
     set(gca,'xlim',[0.5 npT+0.5])
     set(gca,'ylim',[0 1])
@@ -223,7 +223,7 @@ if opt_gsa.morris==1
     if opt_gsa.load_ident_files==0
         SAMorris=NaN(npT,3,j0);
         for j=1:j0
-            [~, SAMorris(:,:,j)] = Morris_Measure_Groups(npT, [lpmat0 lpmat], yt(:,j),nliv);
+            [~, SAMorris(:,:,j)] = gsa.Morris_Measure_Groups(npT, [lpmat0 lpmat], yt(:,j),nliv);
         end
 
         SAM = squeeze(SAMorris(1:end,1,:));
@@ -249,7 +249,7 @@ if opt_gsa.morris==1
         load([OutputDirectoryName,'/',fname_,'_morris_IDE'],'SAnorm')
     end
     hh_fig=dyn_figure(options_.nodisplay,'name','Screening identification: model');
-    myboxplot(SAnorm',[],'.',[],10)
+    gsa.boxplot(SAnorm',[],'.',[],10)
     set(gca,'xticklabel',' ','fontsize',10,'xtick',1:npT)
     set(gca,'xlim',[0.5 npT+0.5])
     set(gca,'ylim',[0 1])
@@ -297,7 +297,7 @@ else  % main effects analysis
         catch
             EET=[];
         end
-        ccac = stand_([mss cc ac]);
+        ccac = gsa.standardize_columns([mss cc ac]);
         [pcc, dd] = eig(cov(ccac(istable,:)));
         [latent, isort] = sort(-diag(dd));
         latent = -latent;
@@ -314,7 +314,7 @@ else  % main effects analysis
             if itrans==0
                 y0 = ccac(istable,j);
             elseif itrans==1
-                y0 = log_trans_(ccac(istable,j));
+                y0 = gsa.log_transform(ccac(istable,j));
             else
                 y0 = trank(ccac(istable,j));
             end

@@ -1,22 +1,18 @@
-function [y, meany, stdy] = stand_(x)
-% [y, meany, stdy] = stand_(x)
-% Standardise a matrix by columns
-%
-% [x,my,sy]=stand(y)
-%
+function s=skewness(y)
+% s=skewness(y)
+% Compute normalized skewness of y
 % Inputs:
-%  - x: Time series (column matrix)
-%
-%  - y:         standardised equivalent of x
-%  - meany:     Vector of mean values for each column of x
-%  - stdy:      Vector of standard deviations for each column of x
-%
+%  - y  [double]  input vector
+% Outputs:
+%  - s  [double]  standardized skewness 
+
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu
 
 % Copyright © 2012 European Commission
 % Copyright © 2012-2023 Dynare Team
+%
 % This file is part of Dynare.
 %
 % Dynare is free software: you can redistribute it and/or modify
@@ -32,15 +28,6 @@ function [y, meany, stdy] = stand_(x)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if nargin==0
-    return
-end
-
-meany=NaN(size(x,2),1);
-stdy=NaN(size(x,2),1);
-y=NaN(size(x));
-for j=1:size(x,2)
-    meany(j)=mean(x(~isnan(x(:,j)),j));
-    stdy(j)=std(x(~isnan(x(:,j)),j));
-    y(:,j)=(x(:,j)-meany(j))./stdy(j);
-end
+m2=mean((y-mean(y)).^2);
+m3=mean((y-mean(y)).^3);
+s=m3/m2^1.5;

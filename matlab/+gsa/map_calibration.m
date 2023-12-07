@@ -229,7 +229,7 @@ if ~isempty(indx_irf)
         if ~options_.nograph && length(time_matrix{plot_indx(ij)})==1
             set(0,'currentfigure',h1),
             subplot(nrow,ncol, plot_indx(ij)),
-            hc = cumplot(mat_irf{ij}(:,ik));
+            hc = gsa.cumplot(mat_irf{ij}(:,ik));
             a=axis;
             delete(hc);
             x1val=max(endo_prior_restrictions.irf{ij,4}(1),a(1));
@@ -237,7 +237,7 @@ if ~isempty(indx_irf)
             hp = patch([x1val x2val x2val x1val],a([3 3 4 4]),'b');
             hold all,
             set(hp,'FaceColor', [0.7 0.8 1])
-            hc = cumplot(mat_irf{ij}(:,ik));
+            hc = gsa.cumplot(mat_irf{ij}(:,ik));
             set(hc,'color','k','linewidth',2)
             hold off,
             %         hold off,
@@ -259,7 +259,7 @@ if ~isempty(indx_irf)
         end
         options_mcf.title = atitle0;
         if ~isempty(indx1) && ~isempty(indx2)
-            mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
+            gsa.monte_carlo_filtering_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
     end
     for ij=1:nbr_irf_couples
@@ -316,7 +316,7 @@ if ~isempty(indx_irf)
 
                 options_mcf.title = atitle0;
                 if ~isempty(indx1) && ~isempty(indx2)
-                    mcf_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
+                    gsa.monte_carlo_filtering_analysis(xmat(:,nshock+1:end), indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
                 end
             end
         end
@@ -434,7 +434,7 @@ if ~isempty(indx_moment)
         if ~options_.nograph && length(time_matrix{plot_indx(ij)})==1
             set(0,'currentfigure',h2);
             subplot(nrow,ncol,plot_indx(ij)),
-            hc = cumplot(mat_moment{ij}(:,ik));
+            hc = gsa.cumplot(mat_moment{ij}(:,ik));
             a=axis; delete(hc),
             %     hist(mat_moment{ij}),
             x1val=max(endo_prior_restrictions.moment{ij,4}(1),a(1));
@@ -442,7 +442,7 @@ if ~isempty(indx_moment)
             hp = patch([x1val x2val x2val x1val],a([3 3 4 4]),'b');
             set(hp,'FaceColor', [0.7 0.8 1])
             hold all
-            hc = cumplot(mat_moment{ij}(:,ik));
+            hc = gsa.cumplot(mat_moment{ij}(:,ik));
             set(hc,'color','k','linewidth',2)
             hold off
             title([endo_prior_restrictions.moment{ij,1},' vs ',endo_prior_restrictions.moment{ij,2},'(',leg,')'],'interpreter','none'),
@@ -463,7 +463,7 @@ if ~isempty(indx_moment)
         end
         options_mcf.title = atitle0;
         if ~isempty(indx1) && ~isempty(indx2)
-            mcf_analysis(xmat, indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
+            gsa.monte_carlo_filtering_analysis(xmat, indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
     end
     for ij=1:nbr_moment_couples
@@ -520,7 +520,7 @@ if ~isempty(indx_moment)
                 end                
                 options_mcf.title = atitle0;
                 if ~isempty(indx1) && ~isempty(indx2)
-                    mcf_analysis(xmat, indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
+                    gsa.monte_carlo_filtering_analysis(xmat, indx1, indx2, options_mcf, M_, options_, bayestopt_, estim_params_);
                 end
             end
         end

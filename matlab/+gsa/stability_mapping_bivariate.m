@@ -1,5 +1,5 @@
-function indcorr = stab_map_2(x,alpha2, pvalue_crit, M_,options_,bayestopt_,estim_params_, case_name_plain, case_name_latex, dirname,xparam1,figtitle,fig_caption_latex)
-% indcorr = stab_map_2(x,alpha2, pvalue_crit, M_,options_,bayestopt_,estim_params_, fnam, fnam_latex, dirname,xparam1,figtitle,fig_caption_latex)
+function indcorr = stability_mapping_bivariate(x,alpha2, pvalue_crit, M_,options_,bayestopt_,estim_params_, case_name_plain, case_name_latex, dirname,xparam1,figtitle,fig_caption_latex)
+% indcorr = stability_mapping_bivariate(x,alpha2, pvalue_crit, M_,options_,bayestopt_,estim_params_, fnam, fnam_latex, dirname,xparam1,figtitle,fig_caption_latex)
 % Inputs:
 %  - x
 %  - alpha2

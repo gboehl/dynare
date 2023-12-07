@@ -1,5 +1,5 @@
-function x0 = stab_map_(OutputDirectoryName,opt_gsa,M_,oo_,options_,bayestopt_,estim_params_)
-% x0 = stab_map_(OutputDirectoryName,opt_gsa,M_,oo_,options_,bayestopt_,estim_params_)
+function x0 = stability_mapping(OutputDirectoryName,opt_gsa,M_,oo_,options_,bayestopt_,estim_params_)
+% x0 = stability_mapping(OutputDirectoryName,opt_gsa,M_,oo_,options_,bayestopt_,estim_params_)
 % Mapping of stability regions in the prior ranges applying
 % Monte Carlo filtering techniques.
 %
@@ -37,7 +37,7 @@ function x0 = stab_map_(OutputDirectoryName,opt_gsa,M_,oo_,options_,bayestopt_,e
 % 3) Bivariate plots of significant correlation patterns
 %  ( abs(corrcoef) > alpha2) under the stable and unacceptable subsets
 %
-% USES qmc_sequence, stab_map_1, stab_map_2
+% USES qmc_sequence, gsa.stability_mapping_univariate, gsa.stability_mapping_bivariate
 %
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
@@ -147,7 +147,7 @@ if fload==0 %run new MC
     yys=zeros(length(dr_.ys),Nsam);
 
     if opt_gsa.morris == 1
-        [lpmat] = Sampling_Function_2(nliv, np+nshock, ntra, ones(np+nshock, 1), zeros(np+nshock,1), []);
+        [lpmat] = gsa.Sampling_Function_2(nliv, np+nshock, ntra, ones(np+nshock, 1), zeros(np+nshock,1), []);
         lpmat = lpmat.*(nliv-1)/nliv+1/nliv/2;
         Nsam=size(lpmat,1);
         lpmat0 = lpmat(:,1:nshock);
@@ -167,7 +167,7 @@ if fload==0 %run new MC
             end
         end
     end
-    prior_draw_gsa(M_,bayestopt_,options_,estim_params_,1); %initialize
+    gsa.prior_draw(M_,bayestopt_,options_,estim_params_,1); %initialize
     if pprior
         for j=1:nshock
             if opt_gsa.morris~=1
@@ -184,7 +184,7 @@ if fload==0 %run new MC
                 lpmat(:,j)=lpmat(:,j).*(upper_bound-lower_bound)+lower_bound;
             end
         else
-            xx=prior_draw_gsa(M_,bayestopt_,options_,estim_params_,0,[lpmat0 lpmat]);
+            xx=gsa.prior_draw(M_,bayestopt_,options_,estim_params_,0,[lpmat0 lpmat]);
             lpmat0=xx(:,1:nshock);
             lpmat=xx(:,nshock+1:end);
             clear xx;
@@ -500,7 +500,7 @@ if ~isempty(iunstable) || ~isempty(iwrong)
             options_mcf.nobeha_title_latex = 'NO unique Stable Saddle-Path';            
         end
         options_mcf.title = 'unique solution';
-        mcf_analysis(lpmat, istable, itmp, options_mcf, M_, options_, bayestopt_, estim_params_);
+        gsa.monte_carlo_filtering_analysis(lpmat, istable, itmp, options_mcf, M_, options_, bayestopt_, estim_params_);
 
         if ~isempty(iindeterm)
             itmp = isolve(~ismember(isolve,iindeterm));
@@ -513,7 +513,7 @@ if ~isempty(iunstable) || ~isempty(iwrong)
                 options_mcf.nobeha_title_latex = 'indeterminacy';
             end
             options_mcf.title = 'indeterminacy';
-            mcf_analysis(lpmat, itmp, iindeterm, options_mcf, M_, options_, bayestopt_, estim_params_);
+            gsa.monte_carlo_filtering_analysis(lpmat, itmp, iindeterm, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
 
         if ~isempty(ixun)
@@ -527,7 +527,7 @@ if ~isempty(iunstable) || ~isempty(iwrong)
                 options_mcf.nobeha_title_latex = 'explosive solution';
             end
             options_mcf.title = 'instability';
-            mcf_analysis(lpmat, itmp, ixun, options_mcf, M_, options_, bayestopt_, estim_params_);
+            gsa.monte_carlo_filtering_analysis(lpmat, itmp, ixun, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
 
         inorestriction = istable(~ismember(istable,irestriction)); % violation of prior restrictions
@@ -543,7 +543,7 @@ if ~isempty(iunstable) || ~isempty(iwrong)
                 options_mcf.nobeha_title_latex = 'inability to find a solution';
             end
             options_mcf.title = 'inability to find a solution';
-            mcf_analysis(lpmat, itmp, iwrong, options_mcf, M_, options_, bayestopt_, estim_params_);
+            gsa.monte_carlo_filtering_analysis(lpmat, itmp, iwrong, options_mcf, M_, options_, bayestopt_, estim_params_);
         end
 
         if ~isempty(irestriction)
@@ -576,7 +576,7 @@ if ~isempty(iunstable) || ~isempty(iwrong)
                 options_mcf.nobeha_title_latex = 'NO prior IRF/moment calibration';
             end
             options_mcf.title = 'prior restrictions';
-            mcf_analysis([lpmat0 lpmat], irestriction, inorestriction, options_mcf, M_, options_, bayestopt_, estim_params_);
+            gsa.monte_carlo_filtering_analysis([lpmat0 lpmat], irestriction, inorestriction, options_mcf, M_, options_, bayestopt_, estim_params_);
             iok = irestriction(1);
             x0 = [lpmat0(iok,:)'; lpmat(iok,:)'];
         else

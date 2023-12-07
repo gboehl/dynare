@@ -80,8 +80,8 @@ function pruned_state_space = pruned_state_space_system(M_, options_, dr, indy, 
 %                 parameter Jacobian of E_y
 % -------------------------------------------------------------------------
 % This function is called by
-%   * get_identification_jacobians.m
-%   * identification_numerical_objective.m
+%   * identification.get_jacobians.m
+%   * identification.numerical_objective.m
 % -------------------------------------------------------------------------
 % This function calls
 %   * allVL1.m

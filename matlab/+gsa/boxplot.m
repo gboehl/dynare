@@ -1,5 +1,5 @@
-function sout = myboxplot (data,notched,symbol,vertical,maxwhisker)
-% sout = myboxplot (data,notched,symbol,vertical,maxwhisker)
+function sout = boxplot (data,notched,symbol,vertical,maxwhisker)
+% sout = boxplot (data,notched,symbol,vertical,maxwhisker)
 % Creates a box plot
 
 % Copyright © 2010-2023 Dynare Team

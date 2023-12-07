@@ -1,5 +1,5 @@
-function x0=dynare_sensitivity(M_,oo_,options_,bayestopt_,estim_params_,options_gsa)
-% x0=dynare_sensitivity(M_,oo_,options_,bayestopt_,estim_params_,options_gsa)
+function x0=run(M_,oo_,options_,bayestopt_,estim_params_,options_gsa)
+% x0=run(M_,oo_,options_,bayestopt_,estim_params_,options_gsa)
 % Frontend to the Sensitivity Analysis Toolbox for DYNARE
 % Inputs:
 %  - M_                     [structure]     Matlab's structure describing the model
@@ -306,7 +306,7 @@ if (options_gsa.load_stab || options_gsa.load_rmse || options_gsa.load_redform) 
 end
 
 if options_gsa.stab && ~options_gsa.ppost
-    x0 = stab_map_(OutputDirectoryName,options_gsa,M_,oo_,options_,bayestopt_,estim_params_);
+    x0 = gsa.stability_mapping(OutputDirectoryName,options_gsa,M_,oo_,options_,bayestopt_,estim_params_);
     if isempty(x0)
         skipline()
         disp('Sensitivity computations stopped: no parameter set provided a unique solution')
@@ -316,11 +316,11 @@ end
 
 options_.opt_gsa = options_gsa;
 if ~isempty(options_gsa.moment_calibration) || ~isempty(options_gsa.irf_calibration)
-    map_calibration(OutputDirectoryName, M_, options_, oo_, estim_params_,bayestopt_);
+    gsa.map_calibration(OutputDirectoryName, M_, options_, oo_, estim_params_,bayestopt_);
 end
 
 if options_gsa.identification
-    map_ident_(OutputDirectoryName,options_gsa,M_,oo_,options_,estim_params_,bayestopt_);
+    gsa.map_identification(OutputDirectoryName,options_gsa,M_,oo_,options_,estim_params_,bayestopt_);
 end
 
 if options_gsa.redform && ~isempty(options_gsa.namendo)
@@ -346,10 +346,10 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
         save([OutputDirectoryName filesep M_.fname '_mc.mat'],'lpmat','lpmat0','istable','iunstable','iwrong','iindeterm')
         options_gsa.load_stab=1;
 
-        x0 = stab_map_(OutputDirectoryName,options_gsa,M_,oo_,options_,bayestopt_,estim_params_);
+        x0 = gsa.stability_mapping(OutputDirectoryName,options_gsa,M_,oo_,options_,bayestopt_,estim_params_);
     end
     if options_gsa.morris==1
-        redform_screen(OutputDirectoryName,options_gsa, estim_params_, M_, oo_.dr, options_, bayestopt_);
+        gsa.reduced_form_screening(OutputDirectoryName,options_gsa, estim_params_, M_, oo_.dr, options_, bayestopt_);
     else
         % check existence of the SS_ANOVA toolbox
         if isempty(options_gsa.threshold_redform) && ~(exist('gsa_sdp','file')==6 || exist('gsa_sdp','file')==2)
@@ -360,7 +360,7 @@ if options_gsa.redform && ~isempty(options_gsa.namendo)
             fprintf('After obtaining the files, you need to unpack them and set a Matlab Path to those files.\n')
             error('SS-ANOVA-R Toolbox missing!')
         end
-        redform_map(OutputDirectoryName,options_gsa,M_,estim_params_,options_,bayestopt_,oo_);
+        gsa.reduced_form_mapping(OutputDirectoryName,options_gsa,M_,estim_params_,options_,bayestopt_,oo_);
     end
 end
 % RMSE mapping
@@ -415,7 +415,7 @@ if options_gsa.rmse
         end
     end
     clear a;
-    filt_mc_(OutputDirectoryName,options_gsa,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_);
+    gsa.monte_carlo_filtering(OutputDirectoryName,options_gsa,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_);
 end
 options_.opt_gsa = options_gsa;
 

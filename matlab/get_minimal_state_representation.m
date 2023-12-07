@@ -53,7 +53,7 @@ function [CheckCO,minns,minSYS] = get_minimal_state_representation(SYS, derivs_f
 %                 Jacobian (wrt to all parameters) of measurement matrix minD
 % -------------------------------------------------------------------------
 % This function is called by
-%   * get_identification_jacobians.m (previously getJJ.m)
+%   * identification.get_jacobians.m (previously getJJ.m)
 % -------------------------------------------------------------------------
 % This function calls
 %   * check_minimality (embedded)

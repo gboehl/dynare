@@ -1,4 +1,5 @@
-function pdraw = prior_draw_gsa(M_,bayestopt_,options_,estim_params_,init,rdraw)
+function pdraw = prior_draw(M_,bayestopt_,options_,estim_params_,init,rdraw)
+% pdraw = prior_draw(M_,bayestopt_,options_,estim_params_,init,rdraw)
 % Draws from the prior distributions for use with Sensitivity Toolbox for DYNARE
 %
 % INPUTS

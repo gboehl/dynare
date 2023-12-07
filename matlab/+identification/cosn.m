@@ -17,7 +17,7 @@ function [co, b, yhat] = cosn(H)
 %   * y     [n by 1] predicted endogenous values given ols estimation
 % -------------------------------------------------------------------------
 % This function is called by
-%   * identification_checks.m
+%   * identification.checks.m
 %   * ident_bruteforce.m
 % =========================================================================
 % Copyright © 2008-2019 Dynare Team

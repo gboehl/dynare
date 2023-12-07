@@ -1,5 +1,5 @@
-function [yy, xdir, isig, lam]=log_trans_(y0,xdir0,isig,lam)
-% [yy, xdir, isig, lam]=log_trans_(y0,xdir0,isig,lam)
+function [yy, xdir, isig, lam]=log_transform(y0,xdir0,isig,lam)
+% [yy, xdir, isig, lam]=log_transform(y0,xdir0,isig,lam)
 % Conduct automatic log transformation lam(yy/isig+lam)
 % Inputs:
 %   - y0    [double]    series to transform
@@ -56,10 +56,10 @@ end
 if nargin==1
     xdir0='';
 end
-f=@(lam,y)gsa_skewness(log(y+lam));
+f=@(lam,y)gsa.skewness(log(y+lam));
 isig=1;
 if ~(max(y0)<0 || min(y0)>0)
-    if gsa_skewness(y0)<0
+    if gsa.skewness(y0)<0
         isig=-1;
         y0=-y0;
     end

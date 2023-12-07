@@ -1,7 +1,7 @@
-function [H,prob,d] = smirnov(x1 , x2 , alpha, iflag )
+function [H,prob,d] = smirnov_test(x1 , x2 , alpha, iflag )
+% [H,prob,d] = smirnov_test(x1 , x2 , alpha, iflag )
 % Smirnov test for 2 distributions
-%   [H,prob,d] = smirnov(x1 , x2 , alpha, iflag )
-%
+
 % Written by Marco Ratto
 % Joint Research Centre, The European Commission,
 % marco.ratto@ec.europa.eu

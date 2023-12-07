@@ -1,5 +1,5 @@
-function [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] = identification_checks_via_subsets(ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, totparam_nbr, modparam_nbr, options_ident,error_indicator)
-%[ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] = identification_checks_via_subsets(ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, totparam_nbr, modparam_nbr, options_ident,error_indicator)
+function [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] = checks_via_subsets(ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, totparam_nbr, modparam_nbr, options_ident,error_indicator)
+%[ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] = checks_via_subsets(ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal, totparam_nbr, modparam_nbr, options_ident,error_indicator)
 % -------------------------------------------------------------------------
 % Finds problematic sets of paramters via checking the necessary rank condition
 % of the Jacobians for all possible combinations of parameters. The rank is
@@ -50,7 +50,7 @@ function [ide_dynamic, ide_reducedform, ide_moments, ide_spectrum, ide_minimal] 
 %   * rank:       [integer] rank of Jacobian
 % -------------------------------------------------------------------------
 % This function is called by
-%   * identification_analysis.m
+%   * identification.analysis.m
 % =========================================================================
 % Copyright © 2019-2021 Dynare Team
 %
@@ -161,7 +161,7 @@ end
 
 % initialize for spectrum criteria
 if ~no_identification_spectrum && ~error_indicator.identification_spectrum
-    dSPECTRUM = ide_spectrum.tilda_dSPECTRUM; %tilda dSPECTRUM is normalized dSPECTRUM matrix in identification_analysis.m
+    dSPECTRUM = ide_spectrum.tilda_dSPECTRUM; %tilda dSPECTRUM is normalized dSPECTRUM matrix in identification.analysis.m
     %alternative normalization
     %dSPECTRUM = ide_spectrum.dSPECTRUM;
     %dSPECTRUM(ide_spectrum.ind_dSPECTRUM,:) = dSPECTRUM(ide_spectrum.ind_dSPECTRUM,:)./ide_spectrum.norm_dSPECTRUM; %normalize

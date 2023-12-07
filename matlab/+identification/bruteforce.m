@@ -18,7 +18,7 @@ function [pars, cosnJ] = ident_bruteforce(dname,fname,J, max_dim_cova_group, TeX
 %  cosnJ : cosn of each column with the selected group of columns
 % -------------------------------------------------------------------------
 % This function is called by
-%   * identification_analysis.m
+%   * identification.analysis.m
 % =========================================================================
 % Copyright © 2009-2023 Dynare Team
 %
@@ -67,7 +67,7 @@ for ll = 1:max_dim_cova_group
         cosnJ2=zeros(size(tmp2,1),1);
         b=[];
         for jj = 1:size(tmp2,1)
-            [cosnJ2(jj,1), b(:,jj)] = cosn([J(:,ii),J(:,tmp2(jj,:))]);
+            [cosnJ2(jj,1), b(:,jj)] = identification.cosn([J(:,ii),J(:,tmp2(jj,:))]);
         end
         cosnJ(ii,ll) = max(cosnJ2(:,1));
         if cosnJ(ii,ll)>tol_deriv

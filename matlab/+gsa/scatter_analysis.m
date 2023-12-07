@@ -50,8 +50,8 @@ if ~options_.nograph
         xx=xparam1;
     end
     if options_.TeX
-        scatter_plots(lpmat, xdata, param_names_tex, '.', [fname_, '_', amcf_name], OutputDirectoryName, amcf_title, xx, options_)
+        gsa.scatter_plots(lpmat, xdata, param_names_tex, '.', [fname_, '_', amcf_name], OutputDirectoryName, amcf_title, xx, options_)
     else 
-        scatter_plots(lpmat, xdata, param_names, '.', [fname_, '_', amcf_name], OutputDirectoryName, amcf_title, xx, options_)
+        gsa.scatter_plots(lpmat, xdata, param_names, '.', [fname_, '_', amcf_name], OutputDirectoryName, amcf_title, xx, options_)
     end
 end

@@ -1,5 +1,5 @@
-function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = dynare_identification(M_,oo_,options_,bayestopt_,estim_params_,options_ident, pdraws0)
-% [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = dynare_identification(options_ident, pdraws0)
+function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = run(M_,oo_,options_,bayestopt_,estim_params_,options_ident, pdraws0)
+% [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, STO_si_dREDUCEDFORM, STO_si_dMOMENTS, STO_dSPECTRUM, STO_dMINIMAL] = run(options_ident, pdraws0)
 % -------------------------------------------------------------------------
 % This function is called, when the user specifies identification(...); in the mod file. It prepares all identification analysis:
 % (1) set options, local and persistent variables for a new identification
@@ -32,19 +32,19 @@ function [pdraws, STO_REDUCEDFORM, STO_MOMENTS, STO_DYNAMIC, STO_si_dDYNAMIC, ST
 % -------------------------------------------------------------------------
 % This function is called by
 %    * driver.m
-%    * map_ident_.m
+%    * gsa.map_identification.m
 % -------------------------------------------------------------------------
 % This function calls
 %    * checkpath
-%    * disp_identification
+%    * identification.display
 %    * dyn_waitbar
 %    * dyn_waitbar_close
 %    * get_all_parameters
 %    * get_posterior_parameters
 %    * get_the_name
-%    * identification_analysis
+%    * identification.analysis
 %    * isoctave
-%    * plot_identification
+%    * identification.plot
 %    * dprior.draw
 %    * set_default_option
 %    * set_prior
@@ -95,7 +95,7 @@ end
 options_ident = set_default_option(options_ident,'gsa_sample_file',0);
     % 0: do not use sample file
     % 1: triggers gsa prior sample
-    % 2: triggers gsa Monte-Carlo sample (i.e. loads a sample corresponding to pprior=0 and ppost=0 in dynare_sensitivity options)
+    % 2: triggers gsa Monte-Carlo sample (i.e. loads a sample corresponding to pprior=0 and ppost=0 in sensitivity.run options)
     % FILENAME: use sample file in provided path
 options_ident = set_default_option(options_ident,'parameter_set','prior_mean');
     % 'calibration':      use values in M_.params and M_.Sigma_e to update estimated stderr, corr and model parameters (get_all_parameters)
@@ -140,7 +140,7 @@ options_ident = set_default_option(options_ident,'tol_rank','robust');
 options_ident = set_default_option(options_ident,'tol_deriv',1.e-8);
     % tolerance level for selecting columns of non-zero derivatives
 options_ident = set_default_option(options_ident,'tol_sv',1.e-3);
-    % tolerance level for selecting non-zero singular values in identification_checks.m
+    % tolerance level for selecting non-zero singular values in identification.checks.m
 options_ident = set_default_option(options_ident,'schur_vec_tol',1e-11);
     % tolerance level used to find nonstationary variables in Schur decomposition of the transition matrix.
 
@@ -181,7 +181,7 @@ if (isfield(options_ident,'no_identification_strength') &&  options_ident.no_ide
     options_ident.no_identification_moments = 0;
 end
 
-%overwrite setting, as dynare_sensitivity does not make use of spectrum and minimal system
+%overwrite setting, as sensitivity.run does not make use of spectrum and minimal system
 if isfield(options_,'opt_gsa') && isfield(options_.opt_gsa,'identification') && options_.opt_gsa.identification == 1
     options_ident.no_identification_minimal = 1;
     options_ident.no_identification_spectrum = 1;
@@ -308,12 +308,12 @@ options_.options_ident = [];
 options_ident = set_default_option(options_ident,'analytic_derivation_mode', options_.analytic_derivation_mode); % if not set by user, inherit default global one
     %  0: efficient sylvester equation method to compute analytical derivatives as in Ratto & Iskrev (2012)
     %  1: kronecker products method to compute analytical derivatives as in Iskrev (2010) (only for order=1)
-    % -1: numerical two-sided finite difference method to compute numerical derivatives of all identification Jacobians using function identification_numerical_objective.m (previously thet2tau.m)
+    % -1: numerical two-sided finite difference method to compute numerical derivatives of all identification Jacobians using function identification.numerical_objective.m (previously thet2tau.m)
     % -2: numerical two-sided finite difference method to compute numerically dYss, dg1, dg2, dg3, d2Yss and d2g1, the identification Jacobians are then computed analytically as with 0
 
 if options_.discretionary_policy || options_.ramsey_policy
     if options_ident.analytic_derivation_mode~=-1
-        fprintf('dynare_identification: discretionary_policy and ramsey_policy require analytic_derivation_mode=-1. Resetting the option.')
+        fprintf('identification.run: discretionary_policy and ramsey_policy require analytic_derivation_mode=-1. Resetting the option.')
         options_ident.analytic_derivation_mode=-1;
     end
 end
@@ -384,7 +384,7 @@ else % no estimated_params block, choose all model parameters and all stderr par
     name_tex = cellfun(@(x) horzcat('$ SE_{', x, '} $'), M_.exo_names_tex, 'UniformOutput', false);
     name_tex = vertcat(name_tex, cellfun(@(x) horzcat('$ ', x, ' $'), M_.param_names_tex, 'UniformOutput', false));
     if ~isequal(M_.H,0)
-        fprintf('\ndynare_identification:: Identification does not support measurement errors (yet) and will ignore them in the following. To test their identifiability, instead define them explicitly as varexo and provide measurement equations in the model definition.\n')
+        fprintf('\nidentification.run:: Identification does not support measurement errors (yet) and will ignore them in the following. To test their identifiability, instead define them explicitly as varexo and provide measurement equations in the model definition.\n')
     end
 end
 options_ident.name_tex = name_tex;
@@ -402,13 +402,13 @@ end
 % settings dependent on number of parameters
 options_ident = set_default_option(options_ident,'max_dim_cova_group',min([2,totparam_nbr-1]));
 options_ident.max_dim_cova_group = min([options_ident.max_dim_cova_group,totparam_nbr-1]);
-    % In brute force search (ident_bruteforce.m) when advanced=1 this option sets the maximum dimension of groups of parameters that best reproduce the behavior of each single model parameter
+    % In brute force search (identification.bruteforce.m) when advanced=1 this option sets the maximum dimension of groups of parameters that best reproduce the behavior of each single model parameter
 
 options_ident = set_default_option(options_ident,'checks_via_subsets',0);
-    % 1: uses identification_checks_via_subsets.m to compute problematic parameter combinations
-    % 0: uses identification_checks.m to compute problematic parameter combinations [default]
+    % 1: uses identification.checks_via_subsets.m to compute problematic parameter combinations
+    % 0: uses identification.checks.m to compute problematic parameter combinations [default]
 options_ident = set_default_option(options_ident,'max_dim_subsets_groups',min([4,totparam_nbr-1]));
-    % In identification_checks_via_subsets.m, when checks_via_subsets=1, this option sets the maximum dimension of groups of parameters for which the corresponding rank criteria is checked
+    % In identification.checks_via_subsets.m, when checks_via_subsets=1, this option sets the maximum dimension of groups of parameters for which the corresponding rank criteria is checked
 
 
 % store identification options
@@ -471,7 +471,7 @@ if iload <=0
     options_ident.tittxt = parameters; %title text for graphs and figures
     % perform identification analysis for single point
     [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info, error_indicator_point] = ...
-        identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end implies initialization of persistent variables
+        identification.analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end implies initialization of persistent variables
     if info(1)~=0
         % there are errors in the solution algorithm
         message = get_error_message(info,options_);
@@ -488,7 +488,7 @@ if iload <=0
                 options_ident.tittxt = 'Random_prior_params'; %title text for graphs and figures
                 % perform identification analysis
                 [ide_moments_point, ide_spectrum_point, ide_minimal_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, derivatives_info_point, info, error_indicator_point] = ...
-                    identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
+                    identification.analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
             end
         end
         if info(1)
@@ -513,10 +513,10 @@ if iload <=0
     save([IdentifDirectoryName '/' fname                '_identif.mat'], 'ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_hess_point', 'ide_reducedform_point', 'ide_dynamic_point', 'store_options_ident');
     save([IdentifDirectoryName '/' fname '_' parameters '_identif.mat'], 'ide_moments_point', 'ide_spectrum_point', 'ide_minimal_point', 'ide_hess_point', 'ide_reducedform_point', 'ide_dynamic_point', 'store_options_ident');
     % display results of identification analysis
-    disp_identification(params, ide_reducedform_point, ide_moments_point, ide_spectrum_point, ide_minimal_point, name, options_ident);
+    identification.display(params, ide_reducedform_point, ide_moments_point, ide_spectrum_point, ide_minimal_point, name, options_ident);
     if ~options_ident.no_identification_strength && ~options_.nograph && ~error_indicator_point.identification_strength && ~error_indicator_point.identification_moments
         % plot (i) identification strength and sensitivity measure based on the moment information matrix and (ii) plot advanced analysis graphs
-        plot_identification(M_,params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, ...
+        identification.plot(M_,params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, ...
             IdentifDirectoryName, M_.fname, options_, estim_params_, bayestopt_, parameters_TeX, name_tex);
     end
 
@@ -529,7 +529,7 @@ if iload <=0
         file_index = 0; % initialize counter for files (if options_.MaxNumberOfBytes is reached, we store results in files)
         options_MC = options_ident; %store options structure for Monte Carlo analysis
         options_MC.advanced = 0;    %do not run advanced checking in a Monte Carlo analysis
-        options_ident.checks_via_subsets = 0; % for Monte Carlo analysis currently only identification_checks and not identification_checks_via_subsets is supported
+        options_ident.checks_via_subsets = 0; % for Monte Carlo analysis currently only identification.checks and not identification.checks_via_subsets is supported
     else
         iteration = 1; % iteration equals SampleSize and we are finished
         pdraws = [];   % to have output object otherwise map_ident.m may crash
@@ -543,7 +543,7 @@ if iload <=0
         options_ident.tittxt = []; % clear title text for graphs and figures
         % run identification analysis
         [ide_moments, ide_spectrum, ide_minimal, ide_hess, ide_reducedform, ide_dynamic, ide_derivatives_info, info, error_indicator] = ...
-            identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_MC, dataset_info, prior_exist, 0); % the 0 implies that we do not initialize persistent variables anymore
+            identification.analysis(M_,options_,oo_,bayestopt_,estim_params_,params, indpmodel, indpstderr, indpcorr, options_MC, dataset_info, prior_exist, 0); % the 0 implies that we do not initialize persistent variables anymore
 
         if iteration==0 && info(1)==0 % preallocate storage in the first admissable run
             delete([IdentifDirectoryName '/' fname '_identif_*.mat']) % delete previously saved results
@@ -801,25 +801,25 @@ if iload <=0
             end            
             for irun=1:max([maxrun_dDYNAMIC, maxrun_dREDUCEDFORM, maxrun_dMOMENTS, maxrun_dSPECTRUM, maxrun_dMINIMAL])
                 iter=iter+1;
-                % note that this is not the same si_dDYNAMICnorm as computed in identification_analysis
+                % note that this is not the same si_dDYNAMICnorm as computed in identification.analysis
                 % given that we have the MC sample of the Jacobians, we also normalize by the std of the sample of Jacobian entries, to get a fully standardized sensitivity measure
                 si_dDYNAMICnorm(iter,:) = vnorm(STO_si_dDYNAMIC(:,:,irun)./repmat(normalize_STO_DYNAMIC,1,totparam_nbr-(stderrparam_nbr+corrparam_nbr))).*normaliz1((stderrparam_nbr+corrparam_nbr)+1:end);
                 if ~options_MC.no_identification_reducedform && ~isempty(STO_si_dREDUCEDFORM)
-                    % note that this is not the same si_dREDUCEDFORMnorm as computed in identification_analysis
+                    % note that this is not the same si_dREDUCEDFORMnorm as computed in identification.analysis
                     % given that we have the MC sample of the Jacobians, we also normalize by the std of the sample of Jacobian entries, to get a fully standardized sensitivity measure
                     si_dREDUCEDFORMnorm(iter,:) = vnorm(STO_si_dREDUCEDFORM(:,:,irun)./repmat(normalize_STO_REDUCEDFORM,1,totparam_nbr)).*normaliz1;
                 end
                 if ~options_MC.no_identification_moments && ~isempty(STO_si_dMOMENTS)
-                    % note that this is not the same si_dMOMENTSnorm as computed in identification_analysis
+                    % note that this is not the same si_dMOMENTSnorm as computed in identification.analysis
                     % given that we have the MC sample of the Jacobians, we also normalize by the std of the sample of Jacobian entries, to get a fully standardized sensitivity measure
                     si_dMOMENTSnorm(iter,:) = vnorm(STO_si_dMOMENTS(:,:,irun)./repmat(normalize_STO_MOMENTS,1,totparam_nbr)).*normaliz1;
                 end
                 if ~options_MC.no_identification_spectrum && ~isempty(STO_dSPECTRUM)
-                    % note that this is not the same dSPECTRUMnorm as computed in identification_analysis
+                    % note that this is not the same dSPECTRUMnorm as computed in identification.analysis
                     dSPECTRUMnorm(iter,:) = vnorm(STO_dSPECTRUM(:,:,irun)); %not yet used
                 end
                 if ~options_MC.no_identification_minimal && ~isempty(STO_dMINIMAL)
-                    % note that this is not the same dMINIMALnorm as computed in identification_analysis
+                    % note that this is not the same dMINIMALnorm as computed in identification.analysis
                     dMINIMALnorm(iter,:) = vnorm(STO_dMINIMAL(:,:,irun)); %not yet used
                 end
             end
@@ -847,7 +847,7 @@ else
     options_.options_ident      = options_ident;
 end
 
-%% if dynare_identification is called as it own function (not through identification command) and if we load files
+%% if identification.run is called as it own function (not through identification command) and if we load files
 if nargout>3 && iload
     filnam = dir([IdentifDirectoryName '/' fname '_identif_*.mat']);
     STO_si_dDYNAMIC     = [];
@@ -876,10 +876,10 @@ end
 if iload
     %if previous analysis is loaded
     fprintf(['Testing %s\n',parameters]);
-    disp_identification(ide_hess_point.params, ide_reducedform_point, ide_moments_point, ide_spectrum_point, ide_minimal_point, name, options_ident);
+    identification.display(ide_hess_point.params, ide_reducedform_point, ide_moments_point, ide_spectrum_point, ide_minimal_point, name, options_ident);
     if ~options_.nograph && ~error_indicator_point.identification_strength && ~error_indicator_point.identification_moments
         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-        plot_identification(M_,ide_hess_point.params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, ...
+        identification.plot(M_,ide_hess_point.params, ide_moments_point, ide_hess_point, ide_reducedform_point, ide_dynamic_point, options_ident.advanced, parameters, name, ...
             IdentifDirectoryName, M_.fname, options_, estim_params_, bayestopt_, [], name_tex);
     end
 end
@@ -890,11 +890,11 @@ if SampleSize > 1
     %print results to console but make sure advanced=0
     advanced0 = options_ident.advanced;
     options_ident.advanced = 0;
-    disp_identification(pdraws, IDE_REDUCEDFORM, IDE_MOMENTS, IDE_SPECTRUM, IDE_MINIMAL, name, options_ident);
+    identification.display(pdraws, IDE_REDUCEDFORM, IDE_MOMENTS, IDE_SPECTRUM, IDE_MINIMAL, name, options_ident);
     options_ident.advanced = advanced0; % reset advanced setting
     if ~options_.nograph && isfield(ide_hess_point,'ide_strength_dMOMENTS')
         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-        plot_identification(M_, pdraws, IDE_MOMENTS, ide_hess_point, IDE_REDUCEDFORM, IDE_DYNAMIC, options_ident.advanced, 'MC sample ', name, ...
+        identification.plot(M_, pdraws, IDE_MOMENTS, ide_hess_point, IDE_REDUCEDFORM, IDE_DYNAMIC, options_ident.advanced, 'MC sample ', name, ...
             IdentifDirectoryName, M_.fname, options_, estim_params_, bayestopt_, [], name_tex);
     end
     %advanced display and plots for MC Sample, i.e. look at draws with highest/lowest condition number
@@ -912,15 +912,15 @@ if SampleSize > 1
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
                     [ide_moments_max, ide_spectrum_max, ide_minimal_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, derivatives_info_max, info_max, error_indicator_max] = ...
-                        identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,pdraws(jmax,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes some persistent variables
+                        identification.analysis(M_,options_,oo_,bayestopt_,estim_params_,pdraws(jmax,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes some persistent variables
                     save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_max', 'ide_moments_max', 'ide_spectrum_max', 'ide_minimal_max','ide_reducedform_max', 'ide_dynamic_max', 'jmax', '-append');
                 end
                 advanced0 = options_ident.advanced; options_ident.advanced = 1; % make sure advanced setting is on
-                disp_identification(pdraws(jmax,:), ide_reducedform_max, ide_moments_max, ide_spectrum_max, ide_minimal_max, name, options_ident);
+                identification.display(pdraws(jmax,:), ide_reducedform_max, ide_moments_max, ide_spectrum_max, ide_minimal_max, name, options_ident);
                 options_ident.advanced = advanced0; %reset advanced setting
                 if ~options_.nograph && ~error_indicator_max.identification_strength && ~error_indicator_max.identification_moments
                     % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-                    plot_identification(M_, pdraws(jmax,:), ide_moments_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, 1, tittxt, name, ...
+                    identification.plot(M_, pdraws(jmax,:), ide_moments_max, ide_hess_max, ide_reducedform_max, ide_dynamic_max, 1, tittxt, name, ...
                         IdentifDirectoryName, M_.fname, options_, estim_params_, bayestopt_, tittxt, name_tex);
                 end
 
@@ -931,15 +931,15 @@ if SampleSize > 1
                 if ~iload
                     options_ident.tittxt = tittxt; %title text for graphs and figures
                     [ide_moments_min, ide_spectrum_min, ide_minimal_min, ide_hess_min, ide_reducedform_min, ide_dynamic_min, ~, ~, error_indicator_min] = ...
-                        identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,pdraws(jmin,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes persistent variables
+                        identification.analysis(M_,options_,oo_,bayestopt_,estim_params_,pdraws(jmin,:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1); %the 1 at the end initializes persistent variables
                     save([IdentifDirectoryName '/' fname '_identif.mat'], 'ide_hess_min', 'ide_moments_min','ide_spectrum_min','ide_minimal_min','ide_reducedform_min', 'ide_dynamic_min', 'jmin', '-append');
                 end
                 advanced0 = options_ident.advanced; options_ident.advanced = 1; % make sure advanced setting is on
-                disp_identification(pdraws(jmin,:), ide_reducedform_min, ide_moments_min, ide_spectrum_min, ide_minimal_min, name, options_ident);
+                identification.display(pdraws(jmin,:), ide_reducedform_min, ide_moments_min, ide_spectrum_min, ide_minimal_min, name, options_ident);
                 options_ident.advanced = advanced0; %reset advanced setting
                 if ~options_.nograph && ~error_indicator_min.identification_strength && ~error_indicator_min.identification_moments
                     % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-                    plot_identification(M_, pdraws(jmin,:),ide_moments_min,ide_hess_min,ide_reducedform_min,ide_dynamic_min,1,tittxt,name,...
+                    identification.plot(M_, pdraws(jmin,:),ide_moments_min,ide_hess_min,ide_reducedform_min,ide_dynamic_min,1,tittxt,name,...
                         IdentifDirectoryName, M_.fname, options_, estim_params_, bayestopt_, tittxt,name_tex);
                 end
                 % reset nodisplay option
@@ -954,14 +954,14 @@ if SampleSize > 1
                     if ~iload
                         options_ident.tittxt = tittxt; %title text for graphs and figures
                         [ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), derivatives_info_(j), info_resolve, error_indicator_j] = ...
-                            identification_analysis(M_,options_,oo_,bayestopt_,estim_params_,pdraws(jcrit(j),:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
+                            identification.analysis(M_,options_,oo_,bayestopt_,estim_params_,pdraws(jcrit(j),:), indpmodel, indpstderr, indpcorr, options_ident, dataset_info, prior_exist, 1);
                     end
                     advanced0 = options_ident.advanced; options_ident.advanced = 1; %make sure advanced setting is on
-                    disp_identification(pdraws(jcrit(j),:), ide_reducedform_(j), ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), name, options_ident);
+                    identification.display(pdraws(jcrit(j),:), ide_reducedform_(j), ide_moments_(j), ide_spectrum_(j), ide_minimal_(j), name, options_ident);
                     options_ident.advanced = advanced0; % reset advanced
                     if ~options_.nograph && ~error_indicator_j.identification_strength && ~error_indicator_j.identification_moments
                         % plot (i) identification strength and sensitivity measure based on the sample information matrix and (ii) advanced analysis graphs
-                        plot_identification(M_, pdraws(jcrit(j),:), ide_moments_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), 1, tittxt, name, ...
+                        identification.plot(M_, pdraws(jcrit(j),:), ide_moments_(j), ide_hess_(j), ide_reducedform_(j), ide_dynamic_(j), 1, tittxt, name, ...
                             IdentifDirectoryName, M_.fname, options_, estim_params_, bayestopt_, tittxt, name_tex);
                     end
                 end

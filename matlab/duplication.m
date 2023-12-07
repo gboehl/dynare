@@ -11,7 +11,7 @@ function [Dp,DpMPinv] = duplication(p)
 %   DpMPinv: Moore-Penroze inverse of Dp
 % -------------------------------------------------------------------------
 % This function is called by
-%   * get_identification_jacobians.m (previously getJJ.m)
+%   * identification.get_jacobians.m (previously getJJ.m)
 % =========================================================================
 % Copyright © 1997 Tom Minka <minka@microsoft.com>
 % Copyright © 2019 Dynare Team

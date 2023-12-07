@@ -1,5 +1,5 @@
-function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = identification_checks(X, test_flag, tol_rank, tol_sv, param_nbr)
-% function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = identification_checks(X, test_flag, tol_rank, tol_sv, param_nbr)
+function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = checks(X, test_flag, tol_rank, tol_sv, param_nbr)
+% function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = checks(X, test_flag, tol_rank, tol_sv, param_nbr)
 % -------------------------------------------------------------------------
 % Checks rank criteria of identification tests and finds out parameter sets
 % that are not identifiable via the nullspace, pairwise correlation
@@ -24,10 +24,10 @@ function [condX, rankX, ind0, indno, ixno, Mco, Pco, jweak, jweak_pair] = identi
 %    * jweak_pair       [(vech) matrix] gives 1 if a couple parameters has Pco=1 (with tolerance tol_rank)
 % -------------------------------------------------------------------------
 % This function is called by
-%   * identification_analysis.m
+%   * identification.analysis.m
 % -------------------------------------------------------------------------
 % This function calls
-%    * cosn
+%    * identification.cosn
 %    * dyn_vech
 %    * vnorm
 % =========================================================================
@@ -141,7 +141,7 @@ if test_flag == 0 || test_flag == 3 % G is a Gram matrix and hence should be a c
 else
     Mco = NaN(param_nbr,1);
     for ii = 1:size(Xparnonzero,2)
-        Mco(ind1(ii),:) = cosn([Xparnonzero(:,ii) , Xparnonzero(:,find([1:1:size(Xparnonzero,2)]~=ii)), Xrest]);
+        Mco(ind1(ii),:) = identification.cosn([Xparnonzero(:,ii) , Xparnonzero(:,find([1:1:size(Xparnonzero,2)]~=ii)), Xrest]);
     end
 end
 
@@ -176,7 +176,7 @@ if test_flag ~= 0
     for ii = 1:size(Xparnonzero,2)
         Pco(ind1(ii),ind1(ii)) = 1;
         for jj = ii+1:size(Xparnonzero,2)
-            Pco(ind1(ii),ind1(jj)) = cosn([Xparnonzero(:,ii),Xparnonzero(:,jj),Xrest]);
+            Pco(ind1(ii),ind1(jj)) = identification.cosn([Xparnonzero(:,ii),Xparnonzero(:,jj),Xrest]);
             Pco(ind1(jj),ind1(ii)) = Pco(ind1(ii),ind1(jj));
         end
     end

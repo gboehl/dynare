@@ -86,7 +86,7 @@ for i = 1:p
     for j = 1:p
         h = axes('position',[fL(i),fL(p+1-j),ffl,ffl]);
         if i==j
-            h1=cumplot(X(:,j));
+            h1=gsa.cumplot(X(:,j));
             set(h,'Tag','cumplot')
             set(h1,'color',[0 0 1],'LineWidth',1.5)
             if ~isempty(xparam1)

@@ -88,7 +88,7 @@ function DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, dr
 % -------------------------------------------------------------------------
 % This function is called by
 %   * dsge_likelihood.m
-%   * get_identification_jacobians.m
+%   * identification.get_jacobians.m
 % -------------------------------------------------------------------------
 % This function calls
 %   * [fname,'.dynamic']

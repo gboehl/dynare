@@ -14,7 +14,7 @@ function k = commutation(n, m, sparseflag)
 % -------------------------------------------------------------------------
 % This function is called by
 %   * get_perturbation_params_derivs.m (previously getH.m)
-%   * get_identification_jacobians.m (previously getJJ.m)
+%   * identification.get_jacobians.m (previously getJJ.m)
 %   * pruned_state_space_system.m
 % -------------------------------------------------------------------------
 % This function calls

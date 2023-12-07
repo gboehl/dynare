@@ -30,7 +30,7 @@ function fjac = fjaco(f,x,varargin)
 ff=feval(f,x,varargin{:});
 
 tol = eps.^(1/3); %some default value
-if strcmp(func2str(f),'get_perturbation_params_derivs_numerical_objective') || strcmp(func2str(f),'identification_numerical_objective')
+if strcmp(func2str(f),'get_perturbation_params_derivs_numerical_objective') || strcmp(func2str(f),'identification.numerical_objective')
     tol= varargin{4}.dynatol.x;
 end
 h = tol.*max(abs(x),1);
@@ -40,12 +40,12 @@ fjac = NaN(length(ff),length(x));
 for j=1:length(x)
     xx = x;
     xx(j) = xh1(j); f1=feval(f,xx,varargin{:});
-    if isempty(f1) && (strcmp(func2str(f),'get_perturbation_params_derivs_numerical_objective') || strcmp(func2str(f),'identification_numerical_objective') )
+    if isempty(f1) && (strcmp(func2str(f),'get_perturbation_params_derivs_numerical_objective') || strcmp(func2str(f),'identification.numerical_objective') )
         [~,info]=feval(f,xx,varargin{:});
         disp_info_error_identification_perturbation(info,j);
     end
     xx(j) = xh0(j); f0=feval(f,xx,varargin{:});
-    if isempty(f0) && (strcmp(func2str(f),'get_perturbation_params_derivs_numerical_objective') || strcmp(func2str(f),'identification_numerical_objective') )
+    if isempty(f0) && (strcmp(func2str(f),'get_perturbation_params_derivs_numerical_objective') || strcmp(func2str(f),'identification.numerical_objective') )
         [~,info]=feval(f,xx,varargin{:});
         disp_info_error_identification_perturbation(info,j)
     end

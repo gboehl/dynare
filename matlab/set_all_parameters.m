@@ -26,7 +26,7 @@ function M_ = set_all_parameters(xparam1,estim_params_,M_)
 %! @sp 2
 %! @strong{This function is called by:}
 %! @sp 1
-%! @ref{DsgeSmoother}, @ref{dynare_estimation_1}, @ref{@@gsa/filt_mc_}, @ref{identification_analysis}, @ref{PosteriorFilterSmootherAndForecast}, @ref{prior_posterior_statistics_core}, @ref{prior_sampler}
+%! @ref{DsgeSmoother}, @ref{dynare_estimation_1}, @ref{@@gsa.monte_carlo_filtering}, @ref{identification.analysis}, @ref{PosteriorFilterSmootherAndForecast}, @ref{prior_posterior_statistics_core}, @ref{prior_sampler}
 %! @sp 2
 %! @strong{This function calls:}
 %! @sp 2

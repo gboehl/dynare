@@ -1,5 +1,5 @@
-function [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_)
-% [rmse_MC, ixx] = filt_mc_(OutDir,options_gsa_,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_
+function [rmse_MC, ixx] = monte_carlo_filtering(OutDir,options_gsa_,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_)
+% [rmse_MC, ixx] = monte_carlo_filtering(OutDir,options_gsa_,dataset_,dataset_info,M_,oo_,options_,bayestopt_,estim_params_
 % Inputs:
 %  - OutputDirectoryName [string]       name of the output directory
 %  - options_gsa_        [structure]    GSA options
@@ -288,7 +288,7 @@ options_scatter.OutputDirectoryName = OutDir;
 options_scatter.amcf_name = asname;
 options_scatter.amcf_title = atitle;
 options_scatter.title = tmp_title;
-scatter_analysis(r2_MC, x,options_scatter, options_);
+gsa.scatter_analysis(r2_MC, x,options_scatter, options_);
 % end of visual scatter analysis
 
 if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
@@ -320,7 +320,7 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
         options_mcf.nobeha_title_latex = 'worse posterior kernel';
     end
 
-    mcf_analysis(x, ipost(1:nfilt), ipost(nfilt+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
+    gsa.monte_carlo_filtering_analysis(x, ipost(1:nfilt), ipost(nfilt+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
     if options_.opt_gsa.pprior
         anam = 'rmse_prior_lik';
         atitle = 'RMSE prior: Log Likelihood Kernel';
@@ -338,7 +338,7 @@ if ~options_.opt_gsa.ppost && options_.opt_gsa.lik_only
         options_mcf.nobeha_title_latex = 'worse likelihood';
     end
 
-    mcf_analysis(x, ilik(1:nfilt), ilik(nfilt+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
+    gsa.monte_carlo_filtering_analysis(x, ilik(1:nfilt), ilik(nfilt+1:end), options_mcf, M_, options_, bayestopt_, estim_params_);
 
 else
     if options_.opt_gsa.ppost
@@ -367,9 +367,9 @@ else
     SS = zeros(npar+nshock, length(vvarvecm));
     for j = 1:npar+nshock
         for i = 1:length(vvarvecm)
-            [~, P] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j), alpha);
-            [H1] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j),alpha,1);
-            [H2] = smirnov(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j),alpha,-1);
+            [~, P] = gsa.smirnov_test(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j), alpha);
+            [H1] = gsa.smirnov_test(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j),alpha,1);
+            [H2] = gsa.smirnov_test(x(ixx(nfilt0(i)+1:end,i),j),x(ixx(1:nfilt0(i),i),j),alpha,-1);
             if H1==0 && H2==0
                 SS(j,i)=1;
             elseif H1==0
@@ -382,7 +382,7 @@ else
         for i = 1:length(vvarvecm)
             for l = 1:length(vvarvecm)
                 if l~=i && PP(j,i)<alpha && PP(j,l)<alpha
-                    [~,P] = smirnov(x(ixx(1:nfilt0(i),i),j),x(ixx(1:nfilt0(l),l),j), alpha);
+                    [~,P] = gsa.smirnov_test(x(ixx(1:nfilt0(i),i),j),x(ixx(1:nfilt0(l),l),j), alpha);
                     PPV(i,l,j) = P;
                 elseif l==i
                     PPV(i,l,j) = PP(j,i);
@@ -407,11 +407,11 @@ else
                 hh_fig=dyn_figure(options_.nodisplay,'name',[temp_name,' ',int2str(ifig)]);
             end
             subplot(3,3,i-9*(ifig-1))
-            h=cumplot(lnprior(ixx(1:nfilt0(i),i)));
+            h=gsa.cumplot(lnprior(ixx(1:nfilt0(i),i)));
             set(h,'color','blue','linewidth',2)
-            hold on, h=cumplot(lnprior);
+            hold on, h=gsa.cumplot(lnprior);
             set(h,'color','k','linewidth',1)
-            h=cumplot(lnprior(ixx(nfilt0(i)+1:end,i)));
+            h=gsa.cumplot(lnprior(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
             if options_.TeX
                 title(vvarvecm_tex{i},'interpreter','latex')
@@ -459,11 +459,11 @@ else
                 hh_fig = dyn_figure(options_.nodisplay,'Name',[temp_name,' ',int2str(ifig)]);
             end
             subplot(3,3,i-9*(ifig-1))
-            h=cumplot(likelihood(ixx(1:nfilt0(i),i)));
+            h=gsa.cumplot(likelihood(ixx(1:nfilt0(i),i)));
             set(h,'color','blue','linewidth',2)
-            hold on, h=cumplot(likelihood);
+            hold on, h=gsa.cumplot(likelihood);
             set(h,'color','k','linewidth',1)
-            h=cumplot(likelihood(ixx(nfilt0(i)+1:end,i)));
+            h=gsa.cumplot(likelihood(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
             if options_.TeX
                 title(vvarvecm_tex{i},'interpreter','latex')
@@ -514,11 +514,11 @@ else
                 hh_fig = dyn_figure(options_.nodisplay,'Name',[temp_name,' ',int2str(ifig)]);
             end
             subplot(3,3,i-9*(ifig-1))
-            h=cumplot(logpo2(ixx(1:nfilt0(i),i)));
+            h=gsa.cumplot(logpo2(ixx(1:nfilt0(i),i)));
             set(h,'color','blue','linewidth',2)
-            hold on, h=cumplot(logpo2);
+            hold on, h=gsa.cumplot(logpo2);
             set(h,'color','k','linewidth',1)
-            h=cumplot(logpo2(ixx(nfilt0(i)+1:end,i)));
+            h=gsa.cumplot(logpo2(ixx(nfilt0(i)+1:end,i)));
             set(h,'color','red','linewidth',2)
             if options_.TeX
                 title(vvarvecm_tex{i},'interpreter','latex')
@@ -756,7 +756,7 @@ else
                 options_mcf.nobeha_title_latex = ['worse fit of ' vvarvecm_tex{iy}];
             end
             options_mcf.title = ['the fit of ' vvarvecm{iy}];
-            mcf_analysis(x, ixx(1:nfilt0(iy),iy), ixx(nfilt0(iy)+1:end,iy), options_mcf, M_, options_, bayestopt_, estim_params_);
+            gsa.monte_carlo_filtering_analysis(x, ixx(1:nfilt0(iy),iy), ixx(nfilt0(iy)+1:end,iy), options_mcf, M_, options_, bayestopt_, estim_params_);
         end
         for iy = 1:length(vvarvecm)
             ipar = find(any(squeeze(PPV(iy,:,:))<alpha));
@@ -764,20 +764,20 @@ else
                 hh_fig = dyn_figure(options_.nodisplay,'name',[temp_name,' observed variable ', vvarvecm{iy}]);
                 for j=1+5*(ix-1):min(length(ipar),5*ix)
                     subplot(2,3,j-5*(ix-1))
-                    h0=cumplot(x(:,ipar(j)));
+                    h0=gsa.cumplot(x(:,ipar(j)));
                     set(h0,'color',[0 0 0])
                     hold on,
                     iobs=find(squeeze(PPV(iy,:,ipar(j)))<alpha);
                     for i = 1:length(vvarvecm)
                         if any(iobs==i) || i==iy
-                            h0=cumplot(x(ixx(1:nfilt0(i),i),ipar(j)));
+                            h0=gsa.cumplot(x(ixx(1:nfilt0(i),i),ipar(j)));
                             if ~isoctave
                                 hcmenu = uicontextmenu;
                                 uimenu(hcmenu,'Label',vvarvecm{i});
                                 set(h0,'uicontextmenu',hcmenu)
                             end
                         else
-                            h0=cumplot(x(ixx(1:nfilt0(i),i),ipar(j))*NaN);
+                            h0=gsa.cumplot(x(ixx(1:nfilt0(i),i),ipar(j))*NaN);
                         end
                         set(h0,'color',a00(i,:),'linewidth',2)
                     end
@@ -829,15 +829,15 @@ else
             hh_fig = dyn_figure(options_.nodisplay,'name',[temp_name,' estimated params and shocks ',int2str(ix)]);
             for j=1+5*(ix-1):min(size(snam2,1),5*ix)
                 subplot(2,3,j-5*(ix-1))
-                h0=cumplot(x(:,nsnam(j)));
+                h0=gsa.cumplot(x(:,nsnam(j)));
                 set(h0,'color',[0 0 0])
                 hold on,
                 npx=find(SP(nsnam(j),:)==0);
                 for i = 1:length(vvarvecm)
                     if any(npx==i)
-                        h0=cumplot(x(ixx(1:nfilt0(i),i),nsnam(j))*NaN);
+                        h0=gsa.cumplot(x(ixx(1:nfilt0(i),i),nsnam(j))*NaN);
                     else
-                        h0=cumplot(x(ixx(1:nfilt0(i),i),nsnam(j)));
+                        h0=gsa.cumplot(x(ixx(1:nfilt0(i),i),nsnam(j)));
                         if ~isoctave
                             hcmenu = uicontextmenu;
                             uimenu(hcmenu,'Label', vvarvecm{i});
