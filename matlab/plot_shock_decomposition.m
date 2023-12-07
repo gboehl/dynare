@@ -536,6 +536,11 @@ b = size(z,3);
 if ~isempty(options_.plot_shock_decomp.plot_init_date)
     my_initial_date = max(initial_date,options_.plot_shock_decomp.plot_init_date);
     a = find((initial_date:initial_date+b-1)==options_.plot_shock_decomp.plot_init_date);
+    if isempty(a)
+        warning(['You set plot_init_date larger than the last observation. The last observation is %s,\n' ...
+            'while you requested as the first observation %s.Exiting because there is nothing to do.'],initial_date+b,options_.plot_shock_decomp.plot_init_date);
+        return;
+    end
 end
 if ~isempty(options_.plot_shock_decomp.plot_end_date)
     if options_.plot_shock_decomp.plot_end_date<=(max(initial_date:initial_date+b-1))
