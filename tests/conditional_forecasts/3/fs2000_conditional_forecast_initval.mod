@@ -59,7 +59,7 @@ var e_a; stderr 0.014;
 var e_m; stderr 0.005;
 end;
 
-steady;
+steady(tolx=1e-10,tolf=1e-12);
 
 check;
 

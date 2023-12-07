@@ -1,4 +1,5 @@
-function plot_icforecast(Variables,periods,options_,oo_)
+function plot(Variables,periods,options_,oo_)
+% plot(Variables,periods,options_,oo_)
 % Build plots for the conditional forecasts.
 %
 % INPUTS
@@ -11,7 +12,7 @@ function plot_icforecast(Variables,periods,options_,oo_)
 %  None.
 %
 % SPECIAL REQUIREMENTS
-%  This routine has to be called after imcforecast.m.
+%  This routine has to be called after conditional_forecasts.run
 
 % Copyright © 2006-2023 Dynare Team
 %
@@ -44,7 +45,7 @@ else
 end
 
 if periods>forecast_periods
-    fprintf('\nplot_icforecast:: Number of periods for plotting exceeds forecast horizon. Setting periods to %d.\n',forecast_periods-1)
+    fprintf('\nconditional_forecasts.plot:: Number of periods for plotting exceeds forecast horizon. Setting periods to %d.\n',forecast_periods-1)
     periods=forecast_periods;
 end
 
