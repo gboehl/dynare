@@ -28,9 +28,7 @@
 #include <complex>
 #include <utility>
 
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-# include <dynmex.h>
-#endif
+#include <dynmex.h>
 
 class GeneralMatrix;
 class ConstVector;
@@ -72,9 +70,7 @@ public:
   Vector(const Vector& v, int off_arg, int l);
   Vector(Vector& v, int off_arg, int skip, int l);
   Vector(const Vector& v, int off_arg, int skip, int l);
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   explicit Vector(mxArray* p);
-#endif
   Vector& operator=(const Vector& v);
   /* The move-assignment operator is not implemented, because moving pointers
      across class instances would break the “reference semantics” that the
@@ -198,9 +194,7 @@ public:
   ConstVector(const ConstVector& v, int off_arg, int l);
   ConstVector(const ConstVector& v, int off_arg, int skip, int l);
   ConstVector(const double* d, int skip, int l);
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   explicit ConstVector(const mxArray* p);
-#endif
   virtual ~ConstVector() = default;
   ConstVector& operator=(const ConstVector& v) = delete;
   ConstVector& operator=(ConstVector&& v) = delete;

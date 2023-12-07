@@ -107,14 +107,12 @@ Vector::Vector(const Vector& v, int off_arg, int skip, int l) : len(l), data {ne
   copy(v.data + off_arg * v.s, v.s * skip);
 }
 
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 Vector::Vector(mxArray* p) :
     len {static_cast<int>(mxGetNumberOfElements(p))}, data {mxGetPr(p)}, destroy {false}
 {
   if (!mxIsDouble(p) || mxIsComplex(p) || mxIsSparse(p))
     throw SYLV_MES_EXCEPTION("This is not a dense array of real doubles.");
 }
-#endif
 
 bool
 Vector::operator==(const Vector& y) const
@@ -305,14 +303,12 @@ ConstVector::ConstVector(const double* d, int skip, int l) : len {l}, s {skip}, 
 {
 }
 
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 ConstVector::ConstVector(const mxArray* p) :
     len {static_cast<int>(mxGetNumberOfElements(p))}, data {mxGetPr(p)}
 {
   if (!mxIsDouble(p))
     throw SYLV_MES_EXCEPTION("This is not a MATLAB array of doubles.");
 }
-#endif
 
 bool
 ConstVector::operator==(const ConstVector& y) const

@@ -25,9 +25,7 @@
 #include <string>
 #include <vector>
 
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
-# include <dynmex.h>
-#endif
+#include <dynmex.h>
 
 enum class status
 {
@@ -111,9 +109,7 @@ protected:
       ParamItem<double>::operator=(val);
       return *this;
     }
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
     [[nodiscard]] mxArray* createMatlabArray() const;
-#endif
   };
 
   class IntParamItem : public ParamItem<int>
@@ -132,9 +128,7 @@ protected:
       ParamItem<int>::operator=(val);
       return *this;
     }
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
     [[nodiscard]] mxArray* createMatlabArray() const;
-#endif
   };
 
   class BoolParamItem : public ParamItem<bool>
@@ -153,9 +147,7 @@ protected:
       ParamItem<bool>::operator=(val);
       return *this;
     }
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
     [[nodiscard]] mxArray* createMatlabArray() const;
-#endif
   };
 
   class MethodParamItem : public ParamItem<solve_method>
@@ -174,9 +166,7 @@ protected:
       ParamItem<solve_method>::operator=(val);
       return *this;
     }
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
     [[nodiscard]] mxArray* createMatlabArray() const;
-#endif
   };
 
 public:
@@ -224,9 +214,8 @@ public:
   void print(const std::string& prefix) const;
   void print(std::ostream& fdesc, const std::string& prefix) const;
   [[nodiscard]] std::vector<const char*> getArrayNames() const;
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   [[nodiscard]] mxArray* createStructArray() const;
-#endif
+
 private:
   void copy(const SylvParams& p);
 };

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -63,11 +63,9 @@ public:
       ConstGeneralMatrix(m, first_row, first_col, rows, cols)
   {
   }
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   explicit ConstTwoDMatrix(const mxArray* p) : ConstGeneralMatrix(p)
   {
   }
-#endif
   ~ConstTwoDMatrix() override = default;
 
   ConstTwoDMatrix& operator=(const ConstTwoDMatrix& v) = delete;
@@ -125,11 +123,9 @@ public:
   {
   }
 
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
   explicit TwoDMatrix(mxArray* p) : GeneralMatrix(p)
   {
   }
-#endif
   ~TwoDMatrix() override = default;
 
   TwoDMatrix& operator=(const TwoDMatrix& m) = default;

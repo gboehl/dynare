@@ -457,7 +457,8 @@ shared_module('k_order_welfare', k_order_welfare_src, kwargs : korder_mex_kwargs
 
 # Unit tests
 
-k_order_test_kwargs = { 'include_directories' : [ mex_incdir, korder_incdir ],
+k_order_test_kwargs = { 'include_directories' : mex_kwargs['include_directories'] + korder_incdir,
+                        'cpp_args' : mex_kwargs['cpp_args'],
                         'link_args' : exe_link_args,
                         'build_rpath' : exe_rpath,
                         'link_with' : korder_lib }

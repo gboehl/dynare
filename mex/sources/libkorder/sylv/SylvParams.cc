@@ -125,7 +125,6 @@ SylvParams::getArrayNames() const
   return names;
 }
 
-#if defined(MATLAB_MEX_FILE) || defined(OCTAVE_MEX_FILE)
 mxArray*
 SylvParams::DoubleParamItem::createMatlabArray() const
 {
@@ -136,11 +135,11 @@ mxArray*
 SylvParams::IntParamItem::createMatlabArray() const
 {
   mxArray* res = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-# if MX_HAS_INTERLEAVED_COMPLEX
+#if MX_HAS_INTERLEAVED_COMPLEX
   *mxGetInt32s(res) = value;
-# else
+#else
   *static_cast<int*>(mxGetData(res)) = value;
-# endif
+#endif
   return res;
 }
 
@@ -225,4 +224,3 @@ SylvParams::createStructArray() const
 
   return res;
 }
-#endif
