@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2022 Dynare Team
+ * Copyright © 2008-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -248,7 +248,7 @@ DynareStateNameList::DynareStateNameList(const KordpDynare& dynare, const Dynare
                                          const DynareNameList& denl)
 {
   for (int i = 0; i < dynare.nYs; i++)
-    names.emplace_back(dnl.getName(i + dynare.nstat()));
-  for (int i = 0; i < dynare.nexog(); i++)
+    names.emplace_back(dnl.getName(i + dynare.nStat));
+  for (int i = 0; i < dynare.nExog; i++)
     names.emplace_back(denl.getName(i));
 }

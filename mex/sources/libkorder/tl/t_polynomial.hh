@@ -216,7 +216,7 @@ public:
                   auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
                   ten_smart->zeros();
                   ten = ten_smart.get();
-                  insert(std::move(ten_smart));
+                  _Tparent::insert(std::move(ten_smart));
                 }
 
               Symmetry sym {i, j};
@@ -245,7 +245,7 @@ public:
               auto ten_smart = std::make_unique<_Ttype>(nrows(), nvars(), j);
               ten_smart->zeros();
               ten = ten_smart.get();
-              insert(std::move(ten_smart));
+              _Tparent::insert(std::move(ten_smart));
             }
 
           Symmetry sym {0, j};
