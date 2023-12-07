@@ -514,4 +514,4 @@ e.g. by adding this to your mod file. Alternatively, you can create a `startup.m
 ## Docker
 We offer a variety of pre-configured Docker containers for Dynare, pre-configured with Octave and MATLAB including all recommended toolboxes.
 These are readily available for your convenience on [Docker Hub](https://hub.docker.com/r/dynare/dynare).
-The docker folder contains [information and instructions](docker/README.md) to interact, built and customize the containers.
+The `scripts/docker` folder contains [information and instructions](scripts/docker/README.md) to interact, built and customize the containers.
