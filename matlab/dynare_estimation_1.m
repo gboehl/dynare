@@ -371,11 +371,6 @@ elseif ~any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode_estimation
     oo_=display_estimation_results_table(xparam1, stdh, M_, options_, estim_params_, bayestopt_, oo_, prior_dist_names, 'Maximum Likelihood', 'mle');
 end
 
-if np > 0
-    pindx = estim_params_.param_vals(:,1);
-    save([M_.dname filesep 'Output' filesep M_.fname '_params.mat'],'pindx');
-end
-
 invhess = set_mcmc_jumping_covariance(invhess, nx, options_.MCMC_jumping_covariance, bayestopt_, 'dynare_estimation_1');
 
 if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) || ...
