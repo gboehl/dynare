@@ -153,7 +153,7 @@ obs_nbr         = length(indvobs);
 d2flag          = 0; % do not compute second parameter derivatives
 
 % Get Jacobians (wrt selected params) of steady state, dynamic model derivatives and perturbation solution matrices for all endogenous variables
-dr.derivs = get_perturbation_params_derivs(M_, options_, estim_params, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indpmodel, indpstderr, indpcorr, d2flag);
+dr.derivs = identification.get_perturbation_params_derivs(M_, options_, estim_params, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indpmodel, indpstderr, indpcorr, d2flag);
 
 [I,~] = find(lead_lag_incidence'); %I is used to select nonzero columns of the Jacobian of endogenous variables in dynamic model files
 yy0 = dr.ys(I);           %steady state of dynamic (endogenous and auxiliary variables) in lead_lag_incidence order
@@ -230,7 +230,7 @@ elseif order == 3
 end
 
 % Get (pruned) state space representation:
-pruned = pruned_state_space_system(M_, options_, dr, indvobs, nlags, useautocorr, 1);
+pruned = pruned_SS.pruned_state_space_system(M_, options_, dr, indvobs, nlags, useautocorr, 1);
 MEAN  = pruned.E_y;
 dMEAN = pruned.dE_y;
 %storage for Jacobians used in dsge_likelihood.m for analytical Gradient and Hession of likelihood (only at order=1)
@@ -258,7 +258,7 @@ if ~no_identification_moments
     
     if kronflag == -1
         %numerical derivative of autocovariogram
-        dMOMENTS = fjaco(str2func('identification.numerical_objective'), xparam1, 1, estim_params, M_, options_, indpmodel, indpstderr, indvobs, useautocorr, nlags, grid_nbr, dr, endo_steady_state, exo_steady_state, exo_det_steady_state); %[outputflag=1]
+        dMOMENTS = identification.fjaco(str2func('identification.numerical_objective'), xparam1, 1, estim_params, M_, options_, indpmodel, indpstderr, indvobs, useautocorr, nlags, grid_nbr, dr, endo_steady_state, exo_steady_state, exo_det_steady_state); %[outputflag=1]
         dMOMENTS = [dMEAN; dMOMENTS]; %add Jacobian of steady state of VAROBS variables
     else
         dMOMENTS = zeros(obs_nbr + obs_nbr*(obs_nbr+1)/2 + nlags*obs_nbr^2 , totparam_nbr);
@@ -315,7 +315,7 @@ if ~no_identification_spectrum
     IA = eye(size(pruned.A,1));
     if kronflag == -1
         %numerical derivative of spectral density
-        dOmega_tmp = fjaco(str2func('identification.numerical_objective'), xparam1, 2, estim_params, M_, options_, indpmodel, indpstderr, indvobs, useautocorr, nlags, grid_nbr, dr, endo_steady_state, exo_steady_state, exo_det_steady_state); %[outputflag=2]
+        dOmega_tmp = identification.fjaco(str2func('identification.numerical_objective'), xparam1, 2, estim_params, M_, options_, indpmodel, indpstderr, indvobs, useautocorr, nlags, grid_nbr, dr, endo_steady_state, exo_steady_state, exo_det_steady_state); %[outputflag=2]
         kk = 0;
         for ig = 1:length(freqs)
             kk = kk+1;
@@ -333,7 +333,7 @@ if ~no_identification_spectrum
         dC = reshape(pruned.dC,size(pruned.dC,1)*size(pruned.dC,2),size(pruned.dC,3));
         dD = reshape(pruned.dD,size(pruned.dD,1)*size(pruned.dD,2),size(pruned.dD,3));
         dVarinov = reshape(pruned.dVarinov,size(pruned.dVarinov,1)*size(pruned.dVarinov,2),size(pruned.dVarinov,3));
-        K_obs_exo = commutation(obs_nbr,size(pruned.Varinov,1));
+        K_obs_exo = pruned_SS.commutation(obs_nbr,size(pruned.Varinov,1));
         for ig=1:length(freqs)
             z = tneg(ig);
             zIminusA =  (z*IA - pruned.A);
@@ -400,7 +400,7 @@ if ~no_identification_minimal
         SYS.dC = dr.derivs.dghx(pruned.indy,:,:);
         SYS.D  = dr.ghu(pruned.indy,:);
         SYS.dD = dr.derivs.dghu(pruned.indy,:,:);
-        [CheckCO,minnx,SYS] = get_minimal_state_representation(SYS,1);
+        [CheckCO,minnx,SYS] = identification.get_minimal_state_representation(SYS,1);
         
         if CheckCO == 0
             warning_KomunjerNg = 'WARNING: Komunjer and Ng (2011) failed:\n';
@@ -423,7 +423,7 @@ if ~no_identification_minimal
             dvechSig = dvechSig(indvechSig,:);
             Inx = eye(minnx);
             Inu = eye(exo_nbr);
-            [~,Enu] = duplication(exo_nbr);
+            [~,Enu] = pruned_SS.duplication(exo_nbr);
             KomunjerNg_DL = [dminA; dminB; dminC; dminD; dvechSig];
             KomunjerNg_DT = [kron(transpose(minA),Inx) - kron(Inx,minA);
                              kron(transpose(minB),Inx);

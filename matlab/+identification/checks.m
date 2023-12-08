@@ -75,7 +75,7 @@ end
 
 % find non-zero columns at machine precision
 if size(Xpar,1) > 1
-    ind1 = find(vnorm(Xpar) >= eps);
+    ind1 = find(identification.vnorm(Xpar) >= eps);
 else
     ind1 = find(abs(Xpar) >= eps);   % if only one parameter
 end

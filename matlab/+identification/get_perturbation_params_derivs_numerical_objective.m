@@ -95,7 +95,7 @@ if strcmp(outputflag,'dynamic_model')
         out = [Yss; g1(:); g2(:)];
     elseif options_.order == 3
         [~, g1, g2, g3] = feval([M_.fname,'.dynamic'], ys(I), exo_steady_state', M_.params, ys, 1);
-        g3 = unfold_g3(g3, length(ys(I))+M_.exo_nbr);
+        g3 = identification.unfold_g3(g3, length(ys(I))+M_.exo_nbr);
         out = [Yss; g1(:); g2(:); g3(:)];
     end
 end

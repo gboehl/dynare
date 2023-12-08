@@ -375,7 +375,7 @@ if info(1) == 0 %no errors in solution
             if size(quant,1)==1
                 si_dMOMENTSnorm = abs(quant).*normaliz_prior_std;
             else
-                si_dMOMENTSnorm = vnorm(quant).*normaliz_prior_std;
+                si_dMOMENTSnorm = identification.vnorm(quant).*normaliz_prior_std;
             end
             iy = find(diag_chh);
             ind_dREDUCEDFORM = ind_dREDUCEDFORM(iy);
@@ -385,7 +385,7 @@ if info(1) == 0 %no errors in solution
                 if size(quant,1)==1
                     si_dREDUCEDFORMnorm = abs(quant).*normaliz_prior_std;
                 else
-                    si_dREDUCEDFORMnorm = vnorm(quant).*normaliz_prior_std;
+                    si_dREDUCEDFORMnorm = identification.vnorm(quant).*normaliz_prior_std;
                 end
             else
                 si_dREDUCEDFORMnorm = [];
@@ -399,7 +399,7 @@ if info(1) == 0 %no errors in solution
                 if size(quant,1)==1
                     si_dDYNAMICnorm = abs(quant).*normaliz_prior_std(stderrparam_nbr+corrparam_nbr+1:end);
                 else
-                    si_dDYNAMICnorm = vnorm(quant).*normaliz_prior_std(stderrparam_nbr+corrparam_nbr+1:end);
+                    si_dDYNAMICnorm = identification.vnorm(quant).*normaliz_prior_std(stderrparam_nbr+corrparam_nbr+1:end);
                 end
             else
                 si_dDYNAMICnorm=[];

@@ -49,7 +49,7 @@ for i1=1:p
             for i4=i3:p
                 for i5=i4:p
                     for i6=i5:p
-                        idx = uperm([i6 i5 i4 i3 i2 i1]);
+                        idx = pruned_SS.uperm([i6 i5 i4 i3 i2 i1]);
                         for r = 1:size(idx,1)
                             ii1 = idx(r,1); ii2= idx(r,2); ii3=idx(r,3); ii4=idx(r,4); ii5=idx(r,5); ii6=idx(r,6);
                             n = ii1 + (ii2-1)*p + (ii3-1)*p^2 + (ii4-1)*p^3  + (ii5-1)*p^4 + (ii6-1)*p^5;

@@ -414,7 +414,7 @@ SS.B = oo_.dr.ghu(indx,:);
 SS.C = oo_.dr.ghx(indy,:);
 SS.D = oo_.dr.ghu(indy,:);
 
-[CheckCO,minnx,minSS] = get_minimal_state_representation(SS,0);
+[CheckCO,minnx,minSS] = identification.get_minimal_state_representation(SS,0);
 
 Sigmax_full = lyapunov_symm(SS.A, SS.B*M_.Sigma_e*SS.B', options_.lyapunov_fixed_point_tol, options_.qz_criterium, options_.lyapunov_complex_threshold, 1, options_.debug);
 Sigmay_full = SS.C*Sigmax_full*SS.C' + SS.D*M_.Sigma_e*SS.D';

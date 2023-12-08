@@ -482,14 +482,14 @@ if analytic_derivation
         old_analytic_derivation_mode = options_.analytic_derivation_mode;
         options_.analytic_derivation_mode = kron_flag;
         if full_Hess
-            DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indparam, indexo, [], true);
+            DERIVS = identification.get_perturbation_params_derivs(M_, options_, estim_params_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indparam, indexo, [], true);
             indD2T = reshape(1:M_.endo_nbr^2, M_.endo_nbr, M_.endo_nbr);
             indD2Om = dyn_unvech(1:M_.endo_nbr*(M_.endo_nbr+1)/2);
             D2T = DERIVS.d2KalmanA(indD2T(iv,iv),:);
             D2Om = DERIVS.d2Om(dyn_vech(indD2Om(iv,iv)),:);
             D2Yss = DERIVS.d2Yss(iv,:,:);
         else
-            DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indparam, indexo, [], false);
+            DERIVS = identification.get_perturbation_params_derivs(M_, options_, estim_params_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indparam, indexo, [], false);
         end
         DT = zeros(M_.endo_nbr, M_.endo_nbr, size(DERIVS.dghx,3));
         DT(:,M_.nstatic+(1:M_.nspred),:) = DERIVS.dghx;

@@ -2,7 +2,7 @@ function check_model(M_)
 % check_model(M_)
 % Performs various consistency checks on the model
 
-% Copyright (C) 2005-2033 Dynare Team
+% Copyright (C) 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %

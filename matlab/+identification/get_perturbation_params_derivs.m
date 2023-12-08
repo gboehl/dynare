@@ -191,7 +191,7 @@ if order > 1 && analytic_derivation_mode == 1
     analytic_derivation_mode = 0; fprintf('As order > 1, reset ''analytic_derivation_mode'' to 0\n');
 end
 
-numerical_objective_fname = str2func('get_perturbation_params_derivs_numerical_objective');
+numerical_objective_fname = str2func('identification.get_perturbation_params_derivs_numerical_objective');
 idx_states      = nstatic+(1:nspred); %index for state variables, in DR order
 modparam_nbr    = length(indpmodel);  %number of selected model parameters
 stderrparam_nbr = length(indpstderr); %number of selected stderr parameters
@@ -295,7 +295,7 @@ if analytic_derivation_mode == -1
 % - perturbation solution matrices: dghx, dghu, dghxx, dghxu, dghuu, dghs2, dghxxx, dghxxu, dghxuu, dghuuu, dghxss, dghuss
 
     %Parameter Jacobian of covariance matrix and solution matrices (wrt selected stderr, corr and model paramters)
-    dSig_gh         = fjaco(numerical_objective_fname, xparam1, 'perturbation_solution', estim_params_, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+    dSig_gh         = identification.fjaco(numerical_objective_fname, xparam1, 'perturbation_solution', estim_params_, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     ind_Sigma_e     = (1:exo_nbr^2);
     ind_ghx         = ind_Sigma_e(end) + (1:endo_nbr*nspred);
     ind_ghu         = ind_ghx(end) + (1:endo_nbr*exo_nbr);
@@ -348,7 +348,7 @@ if analytic_derivation_mode == -1
     end
 
     %Parameter Jacobian of dynamic model derivatives (wrt selected model parameters only)
-    dYss_g = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+    dYss_g = identification.fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     ind_Yss = 1:endo_nbr;
     if options_.discretionary_policy || options_.ramsey_policy
         ind_g1 = ind_Yss(end) + (1:M_.eq_nbr*yy0ex0_nbr);
@@ -374,7 +374,7 @@ if analytic_derivation_mode == -1
         % Hessian (wrt paramters) of steady state and first-order solution matrices ghx and Om
         % note that hessian_sparse.m (contrary to hessian.m) does not take symmetry into account, but focuses already on unique values
         options_.order = 1; %make sure only first order
-        d2Yss_KalmanA_Om = hessian_sparse(numerical_objective_fname, xparam1, gstep, 'Kalman_Transition', estim_params_, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+        d2Yss_KalmanA_Om = identification.hessian_sparse(numerical_objective_fname, xparam1, gstep, 'Kalman_Transition', estim_params_, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
         options_.order = order; %make sure to set back
         ind_KalmanA = ind_Yss(end) + (1:endo_nbr^2);
         DERIVS.d2KalmanA = d2Yss_KalmanA_Om(ind_KalmanA, indp2tottot2);               %only unique elements
@@ -394,7 +394,7 @@ if analytic_derivation_mode == -2
 % The parameter derivatives of perturbation solution matrices are computed analytically below (analytic_derivation_mode=0)
     if order == 3
         [~, g1, g2, g3] = feval([fname,'.dynamic'], ys(I), exo_steady_state', params, ys, 1);
-        g3 = unfold_g3(g3, yy0ex0_nbr);
+        g3 = identification.unfold_g3(g3, yy0ex0_nbr);
     elseif order == 2
         [~, g1, g2] = feval([fname,'.dynamic'], ys(I), exo_steady_state', params, ys, 1);
     elseif order == 1
@@ -405,7 +405,7 @@ if analytic_derivation_mode == -2
         % computation of d2Yss and d2g1
         % note that hessian_sparse does not take symmetry into account, i.e. compare hessian_sparse.m to hessian.m, but focuses already on unique values, which are duplicated below
         options_.order = 1; %d2flag requires only first order
-        d2Yss_g1 = hessian_sparse(numerical_objective_fname, modparam1, gstep, 'dynamic_model', estim_params_model, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);  % d2flag requires only first-order
+        d2Yss_g1 = identification.hessian_sparse(numerical_objective_fname, modparam1, gstep, 'dynamic_model', estim_params_model, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);  % d2flag requires only first-order
         options_.order = order; %make sure to set back the order
         d2Yss = reshape(full(d2Yss_g1(1:endo_nbr,:)), [endo_nbr modparam_nbr modparam_nbr]); %put into tensor notation
         for j=1:endo_nbr
@@ -431,7 +431,7 @@ if analytic_derivation_mode == -2
     end
 
     %Parameter Jacobian of dynamic model derivatives (wrt selected model parameters only)
-    dYss_g  = fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+    dYss_g  = identification.fjaco(numerical_objective_fname, modparam1, 'dynamic_model', estim_params_model, M_, options_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     ind_Yss = 1:endo_nbr;
     ind_g1  = ind_Yss(end) + (1:endo_nbr*yy0ex0_nbr);
     dYss    = dYss_g(ind_Yss,:); %in tensor notation, wrt selected model parameters only
@@ -460,7 +460,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
         [~, ~, g2_static] = feval([fname,'.static'], ys, exo_steady_state', params); %g2_static is [endo_nbr by endo_nbr^2] second derivative (wrt all endogenous variables) of static model equations f, i.e. d(df/dys)/dys, in declaration order
         if order < 3
             [~, g1, g2, g3] = feval([fname,'.dynamic'], ys(I), exo_steady_state', params, ys, 1); %note that g3 does not contain symmetric elements
-            g3 = unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3
+            g3 = identification.unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3
         else
             T  = NaN(sum(dynamic_tmp_nbr(1:5)));
             T  = feval([fname, '.dynamic_g4_tt'], T, ys(I), exo_steady_state', params, ys, 1);
@@ -468,8 +468,8 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
             g2 = feval([fname, '.dynamic_g2'],    T, ys(I), exo_steady_state', params, ys, 1, false); %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
             g3 = feval([fname, '.dynamic_g3'],    T, ys(I), exo_steady_state', params, ys, 1, false); %note that g3 does not contain symmetric elements
             g4 = feval([fname, '.dynamic_g4'],    T, ys(I), exo_steady_state', params, ys, 1, false); %note that g4 does not contain symmetric elements
-            g3 = unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3, %g3 is [endo_nbr by yy0ex0_nbr^3] third-derivative (wrt all dynamic variables) of dynamic model equations, i.e. (d(df/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
-            g4 = unfold_g4(g4, yy0ex0_nbr); %add symmetric elements to g4, %g4 is [endo_nbr by yy0ex0_nbr^4] fourth-derivative (wrt all dynamic variables) of dynamic model equations, i.e. ((d(df/dyy0ex0)/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
+            g3 = identification.unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3, %g3 is [endo_nbr by yy0ex0_nbr^3] third-derivative (wrt all dynamic variables) of dynamic model equations, i.e. (d(df/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
+            g4 = identification.unfold_g4(g4, yy0ex0_nbr); %add symmetric elements to g4, %g4 is [endo_nbr by yy0ex0_nbr^4] fourth-derivative (wrt all dynamic variables) of dynamic model equations, i.e. ((d(df/dyy0ex0)/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
         end
         %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
         %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
@@ -556,7 +556,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
                 error('For analytical parameter derivatives ''dynamic_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
             end
             [~, g1, g2, g3] = feval([fname,'.dynamic'], ys(I), exo_steady_state', params, ys, 1); %note that g3 does not contain symmetric elements
-            g3 = unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3
+            g3 = identification.unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3
                 %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
                 %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
                 %g3 is [endo_nbr by yy0ex0_nbr^3] third-derivative (wrt all dynamic variables) of dynamic model equations, i.e. (d(df/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
@@ -575,8 +575,8 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
             g2 = feval([fname, '.dynamic_g2'],    T, ys(I), exo_steady_state', params, ys, 1, false); %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
             g3 = feval([fname, '.dynamic_g3'],    T, ys(I), exo_steady_state', params, ys, 1, false); %note that g3 does not contain symmetric elements
             g4 = feval([fname, '.dynamic_g4'],    T, ys(I), exo_steady_state', params, ys, 1, false); %note that g4 does not contain symmetric elements
-            g3 = unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3, %g3 is [endo_nbr by yy0ex0_nbr^3] third-derivative (wrt all dynamic variables) of dynamic model equations, i.e. (d(df/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
-            g4 = unfold_g4(g4, yy0ex0_nbr); %add symmetric elements to g4, %g4 is [endo_nbr by yy0ex0_nbr^4] fourth-derivative (wrt all dynamic variables) of dynamic model equations, i.e. ((d(df/dyy0ex0)/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
+            g3 = identification.unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3, %g3 is [endo_nbr by yy0ex0_nbr^3] third-derivative (wrt all dynamic variables) of dynamic model equations, i.e. (d(df/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
+            g4 = identification.unfold_g4(g4, yy0ex0_nbr); %add symmetric elements to g4, %g4 is [endo_nbr by yy0ex0_nbr^4] fourth-derivative (wrt all dynamic variables) of dynamic model equations, i.e. ((d(df/dyy0ex0)/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
         end
     end
     % Parameter Jacobian of steady state in different orderings, note dys is in declaration order
@@ -801,7 +801,7 @@ if analytic_derivation_mode == 1
     dghu = [zeros(endo_nbr*exo_nbr, stderrparam_nbr+corrparam_nbr) dghu];
 
     % Compute dOm = dvec(ghu*Sigma_e*ghu') from expressions 34 in Iskrev (2010) Appendix A
-    dOm = kron(I_endo,ghu*Sigma_e)*(commutation(endo_nbr, exo_nbr)*dghu)...
+    dOm = kron(I_endo,ghu*Sigma_e)*(pruned_SS.commutation(endo_nbr, exo_nbr)*dghu)...
           + kron(ghu,ghu)*reshape(dSigma_e, exo_nbr^2, totparam_nbr) + kron(ghu*Sigma_e,I_endo)*dghu;
 
     % Put into tensor notation

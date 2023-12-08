@@ -803,24 +803,24 @@ if iload <=0
                 iter=iter+1;
                 % note that this is not the same si_dDYNAMICnorm as computed in identification.analysis
                 % given that we have the MC sample of the Jacobians, we also normalize by the std of the sample of Jacobian entries, to get a fully standardized sensitivity measure
-                si_dDYNAMICnorm(iter,:) = vnorm(STO_si_dDYNAMIC(:,:,irun)./repmat(normalize_STO_DYNAMIC,1,totparam_nbr-(stderrparam_nbr+corrparam_nbr))).*normaliz1((stderrparam_nbr+corrparam_nbr)+1:end);
+                si_dDYNAMICnorm(iter,:) = identification.vnorm(STO_si_dDYNAMIC(:,:,irun)./repmat(normalize_STO_DYNAMIC,1,totparam_nbr-(stderrparam_nbr+corrparam_nbr))).*normaliz1((stderrparam_nbr+corrparam_nbr)+1:end);
                 if ~options_MC.no_identification_reducedform && ~isempty(STO_si_dREDUCEDFORM)
                     % note that this is not the same si_dREDUCEDFORMnorm as computed in identification.analysis
                     % given that we have the MC sample of the Jacobians, we also normalize by the std of the sample of Jacobian entries, to get a fully standardized sensitivity measure
-                    si_dREDUCEDFORMnorm(iter,:) = vnorm(STO_si_dREDUCEDFORM(:,:,irun)./repmat(normalize_STO_REDUCEDFORM,1,totparam_nbr)).*normaliz1;
+                    si_dREDUCEDFORMnorm(iter,:) = identification.vnorm(STO_si_dREDUCEDFORM(:,:,irun)./repmat(normalize_STO_REDUCEDFORM,1,totparam_nbr)).*normaliz1;
                 end
                 if ~options_MC.no_identification_moments && ~isempty(STO_si_dMOMENTS)
                     % note that this is not the same si_dMOMENTSnorm as computed in identification.analysis
                     % given that we have the MC sample of the Jacobians, we also normalize by the std of the sample of Jacobian entries, to get a fully standardized sensitivity measure
-                    si_dMOMENTSnorm(iter,:) = vnorm(STO_si_dMOMENTS(:,:,irun)./repmat(normalize_STO_MOMENTS,1,totparam_nbr)).*normaliz1;
+                    si_dMOMENTSnorm(iter,:) = identification.vnorm(STO_si_dMOMENTS(:,:,irun)./repmat(normalize_STO_MOMENTS,1,totparam_nbr)).*normaliz1;
                 end
                 if ~options_MC.no_identification_spectrum && ~isempty(STO_dSPECTRUM)
                     % note that this is not the same dSPECTRUMnorm as computed in identification.analysis
-                    dSPECTRUMnorm(iter,:) = vnorm(STO_dSPECTRUM(:,:,irun)); %not yet used
+                    dSPECTRUMnorm(iter,:) = identification.vnorm(STO_dSPECTRUM(:,:,irun)); %not yet used
                 end
                 if ~options_MC.no_identification_minimal && ~isempty(STO_dMINIMAL)
                     % note that this is not the same dMINIMALnorm as computed in identification.analysis
-                    dMINIMALnorm(iter,:) = vnorm(STO_dMINIMAL(:,:,irun)); %not yet used
+                    dMINIMALnorm(iter,:) = identification.vnorm(STO_dMINIMAL(:,:,irun)); %not yet used
                 end
             end
         end

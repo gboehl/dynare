@@ -96,7 +96,7 @@ steady; check; model_diagnostics;
 
 @#for orderApp in [1, 2, 3]
     stoch_simul(order=@{orderApp},pruning,irf=0,periods=0);
-    pruned_state_space.order_@{orderApp} = pruned_state_space_system(M_, options_, oo_.dr, [], options_.ar, 1, 0);                                                    
+    pruned_state_space.order_@{orderApp} = pruned_SS.pruned_state_space_system(M_, options_, oo_.dr, [], options_.ar, 1, 0);                                                    
     @#if Andreasen_et_al_toolbox
         addpath('Dynare44Pruning_v2/simAndMoments3order'); %provide path to toolbox
         optPruning.orderApp   = @{orderApp};

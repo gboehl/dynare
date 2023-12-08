@@ -113,7 +113,7 @@ Copyright: 1995 E.G.Tsionas
            2015-2017 Dynare Team
 License: GPL-3+
 
-Files: matlab/endogenous_prior.m
+Files: matlab/estimation/endogenous_prior.m
 Copyright: 2011 Lawrence J. Christiano, Mathias Trabandt and Karl Walentin
            2013-2017 Dynare Team
 License: GPL-3+
@@ -128,7 +128,7 @@ Copyright: 2016 Benjamin Born and Johannes Pfeifer
            2016-2017 Dynare Team
 License: GPL-3+
 
-Files: matlab/commutation.m matlab/duplication.m
+Files: matlab/+pruned_SS/commutation.m matlab/+pruned_SS/duplication.m
 Copyright: 1997 Tom Minka <minka@microsoft.com>
            2019-2020 Dynare Team
 License: GPL-3+
@@ -141,7 +141,7 @@ Comment: The original author gave authorization to change
  the license from BSD-2-clause to GPL-3+ and redistribute 
  it under GPL-3+ with Dynare.
 
-Files: matlab/uperm.m
+Files: matlab/+pruned_SS/uperm.m
 Copyright: 2014 Bruno Luong <brunoluong@yahoo.com> 
            2020 Dynare Team
 License: GPL-3+
@@ -149,7 +149,7 @@ Comment: The original author gave authorization to change
  the license from BSD-2-clause to GPL-3+ and redistribute 
  it under GPL-3+ with Dynare.
 
-Files: matlab/prodmom.m matlab/bivmom.m
+Files: matlab/+pruned_SS/prodmom.m matlab/+pruned_SS/bivmom.m
 Copyright: 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
            2019-2020 Dynare Team
 License: GPL-3+
