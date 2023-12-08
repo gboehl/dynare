@@ -479,7 +479,7 @@ If you want a certain version (e.g. 5.x) , then add `--single-branch --branch 5.
 ```sh
 export BUILDDIR=build-matlab
 export MATLABPATH=/Applications/MATLAB_R2023b.app
-arch -$ARCH meson setup --native-file scripts/homebrew-native-$ARCH.ini -Dmatlab_path=$MATLABPATH -Dbuildtype=debugoptimized -Dfortran_args="['-B','$DYNAREDIR/slicot/lib']" $BUILDDIR
+arch -$ARCH meson setup --native-file macOS/homebrew-native-$ARCH.ini -Dmatlab_path=$MATLABPATH -Dbuildtype=debugoptimized -Dfortran_args="['-B','$DYNAREDIR/slicot/lib']" $BUILDDIR
 ```
 where you need to adapt the path to MATLAB.
 Similarly, if you want to compile for Octave, replace the `-Dmatlab_path` option by `-Dbuild_for=octave`, and change the build directory to `build-octave`.

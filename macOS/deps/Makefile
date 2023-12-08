@@ -22,7 +22,7 @@ DEPS_ARCH ?= x86_64 # use x86_64 by default
 
 BREWDIR := $(if $(filter arm64,$(DEPS_ARCH)),/opt/homebrew,/usr/local)
 
-GCC_VERSION = $(shell sed -En "/^c[[:space:]]*=/s/c[[:space:]]*=[[:space:]]*'.*gcc-([0-9]+)'/\1/p" ../../scripts/homebrew-native-$(DEPS_ARCH).ini)
+GCC_VERSION = $(shell sed -En "/^c[[:space:]]*=/s/c[[:space:]]*=[[:space:]]*'.*gcc-([0-9]+)'/\1/p" ../homebrew-native-$(DEPS_ARCH).ini)
 
 ROOT_PATH = $(realpath .)
 

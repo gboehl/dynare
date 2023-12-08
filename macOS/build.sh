@@ -54,7 +54,7 @@ LIB64="$ROOTDIR"/macOS/deps/"$PKG_ARCH"/lib64
 ## - the macOS linker is different from GNU ld and does not have the equivalent of -Bstatic/-Bdynamic
 ## - libgfortran.spec does not include --as-needed on macOS, hence it will link the library anyways
 ## Also, it does not seem possible to override libgfortran.spec with the --specs option.
-GCC_VERSION=$(sed -En "/^c[[:space:]]*=/s/c[[:space:]]*=[[:space:]]*'.*gcc-([0-9]+)'/\1/p" "$ROOTDIR"/scripts/homebrew-native-"$PKG_ARCH".ini)
+GCC_VERSION=$(sed -En "/^c[[:space:]]*=/s/c[[:space:]]*=[[:space:]]*'.*gcc-([0-9]+)'/\1/p" "$ROOTDIR"/macOS/homebrew-native-"$PKG_ARCH".ini)
 
 QUADMATH_DIR=$(mktemp -d)
 ln -s "$BREWDIR"/opt/gcc/lib/gcc/"$GCC_VERSION"/libquadmath.a "$QUADMATH_DIR"
@@ -67,7 +67,7 @@ cd "$ROOTDIR"
 # NB: the addition of -Wl,-ld_classic is a workaround for https://github.com/mesonbuild/meson/issues/12282 (see also the native file)
 common_meson_opts=(-Dbuild_for=matlab -Dbuildtype=release -Dprefer_static=true -Dfortran_args="[ '-B', '$LIB64/Slicot/' ]" \
                    -Dc_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" -Dcpp_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" -Dfortran_link_args="[ '-Wl,-ld_classic', '-L$QUADMATH_DIR' ]" \
-                   --native-file scripts/homebrew-native-$PKG_ARCH.ini)
+                   --native-file macOS/homebrew-native-$PKG_ARCH.ini)
 
 # Build for MATLAB ⩾ R2018b (x86_64) and MATLAB ⩾ R2023b (arm64)
 arch -"$PKG_ARCH" meson setup "${common_meson_opts[@]}" -Dmatlab_path="$MATLAB_PATH" build-matlab --wipe
