@@ -664,12 +664,6 @@ options_.use_dll = false;
 % model evaluated using bytecode.dll
 options_.bytecode = false;
 
-% if true, use a fixed point method to solve Sylvester equation (for large scale models)
-options_.sylvester_fp = false;
-
-% convergence criteria to solve iteratively a sylvester equations
-options_.sylvester_fixed_point_tol = 1e-12;
-
 % if true, use a fixed point method to solve Lyapunov equation (for large scale models)
 options_.lyapunov_fp = false;
 % if true, use a doubling algorithm to solve Lyapunov equation (for large scale models)

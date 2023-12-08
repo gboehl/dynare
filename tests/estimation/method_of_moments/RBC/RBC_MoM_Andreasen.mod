@@ -218,8 +218,6 @@ method_of_moments(
         % , lyapunov_complex_threshold = 1e-15     % complex block threshold for the upper triangular matrix in symmetric Lyapunov equation solver
         % , lyapunov_fixed_point_tol = 1e-10       % convergence criterion used in the fixed point Lyapunov solver
         % , lyapunov_doubling_tol = 1e-16          % convergence criterion used in the doubling algorithm
-        % , sylvester = default                    % algorithm to solve Sylvester equation; possible values are DEFAULT, FIXED_POINT
-        % , sylvester_fixed_point_tol = 1e-12      % convergence criterion used in the fixed point Sylvester solver
         % , qz_criterium = 0.999999                % value used to split stable from unstable eigenvalues in reordering the Generalized Schur decomposition used for solving first order problems
         % , qz_zero_threshold = 1e-6               % value used to test if a generalized eigenvalue is 0/0 in the generalized Schur decomposition
         % , schur_vec_tol=1e-11                    % tolerance level used to find nonstationary variables in Schur decomposition of the transition matrix

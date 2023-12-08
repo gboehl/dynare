@@ -4787,31 +4787,6 @@ Computing the stochastic solution
        and this option has no effect. More references can be found
        `here <https://archives.dynare.org/DynareWiki/PartialInformation>`__ .
 
-    .. option:: sylvester = OPTION
-
-       Determines the algorithm used to solve the Sylvester equation
-       for block decomposed model. Possible values for OPTION are:
-
-           ``default``
-
-                Uses the default solver for Sylvester equations
-                (``gensylv``) based on Ondra Kamenik’s algorithm (see
-                `here
-                <https://www.dynare.org/assets/team-presentations/sylvester.pdf>`__
-                for more information).
-
-           ``fixed_point``
-
-                Uses a fixed point algorithm to solve the Sylvester
-                equation (``gensylv_fp``). This method is faster than
-                the default one for large scale models.
-
-       |br| Default value is ``default``.
-
-    .. option:: sylvester_fixed_point_tol = DOUBLE
-
-       The convergence criterion used in the fixed point
-       Sylvester solver. Its default value is ``1e-12``.
 
     .. option:: dr = OPTION
 
@@ -7923,15 +7898,6 @@ observed variables.
 
        See :opt:`aim_solver`.
 
-    .. option:: sylvester = OPTION
-
-       See :opt:`sylvester <sylvester = OPTION>`.
-
-    .. option:: sylvester_fixed_point_tol = DOUBLE
-
-       See :opt:`sylvester_fixed_point_tol <sylvester_fixed_point_tol
-       = DOUBLE>` .
-
     .. option:: lyapunov = OPTION
 
        Determines the algorithm used to solve the Lyapunov equation to
@@ -9474,16 +9440,6 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
         See :opt:`lyapunov_doubling_tol <lyapunov_doubling_tol = DOUBLE>`.
         Default: ``1e-16``.
-
-    .. option:: sylvester = OPTION
-
-        See :opt:`sylvester <sylvester = OPTION>`.
-        Default: ``default``, i.e. uses ``gensylv``.
-
-    .. option:: sylvester_fixed_point_tol = DOUBLE
-
-        See :opt:`sylvester_fixed_point_tol <sylvester_fixed_point_tol = DOUBLE>`.
-        Default: ``1e-12``.
 
     .. option:: qz_criterium = DOUBLE
 
