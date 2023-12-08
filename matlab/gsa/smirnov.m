@@ -34,11 +34,16 @@ end
 % empirical cdfs.
 xmix= [x1;x2];
 bin = [-inf ; sort(xmix) ; inf];
-
-ncount1 = histc (x1 , bin);
-ncount1 = ncount1(:);
-ncount2 = histc (x2 , bin);
-ncount2 = ncount2(:);
+if isoctave
+    ncount1 = histc(x1 , bin);
+else
+    ncount1 = histcounts(x1 , bin);
+end
+if isoctave
+    ncount2 = histc(x2 , bin);
+else
+    ncount2 = histcounts(x2 , bin);
+end
 
 cum1  =  cumsum(ncount1)./sum(ncount1);
 cum1  =  cum1(1:end-1);
