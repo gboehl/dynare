@@ -142,11 +142,11 @@ mapkeys = unique(cell2mat([keys(unanticipated_p_shocks) keys(unanticipated_t_sho
 
 %% Simulation
 options_.periods = jm.periods;
-perfect_foresight_setup;
+oo_=perfect_foresight_setup(M_, options_, oo_);
 
 % no surprise shocks present
 if isempty(mapkeys)
-    perfect_foresight_solver;
+    oo_=perfect_foresight_solver(M_, options_, oo_);
     return
 end
 
@@ -161,7 +161,7 @@ end
 if mapkeys(1) ~= 1
     % if first unanticipated shock is not in period 1
     % simulate until first unanticipated shock and save
-    perfect_foresight_solver;
+    oo_=perfect_foresight_solver(M_, options_, oo_);
     yy = [yy oo_.endo_simul(:, 2:mapkeys(1)+1)];
 end
 
@@ -203,7 +203,7 @@ for i = 1:length(mapkeys)
     last_period = this_period;
     assert(rows(oo_.exo_simul) == oo_exo_simul_rows, 'error encountered setting oo_.exo_simul');
     oo_.endo_simul(:, 1) = yy(:, end);
-    perfect_foresight_solver;
+    oo_=perfect_foresight_solver(M_, options_, oo_);
     if next_period > 0
         yy = [yy oo_.endo_simul(:, 2:next_period-this_period+1)];
     else

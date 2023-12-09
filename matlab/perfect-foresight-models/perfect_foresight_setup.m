@@ -1,11 +1,13 @@
-function perfect_foresight_setup()
+function oo_=perfect_foresight_setup(M_, options_, oo_)
 % Prepares a deterministic simulation, by filling oo_.exo_simul and oo_.endo_simul
 %
 % INPUTS
-%   None
+%   M_                  [structure] describing the model
+%   options_            [structure] describing the options
+%   oo_                 [structure] storing the results
 %
 % OUTPUTS
-%   none
+%   oo_                 [structure] storing the results
 %
 % ALGORITHM
 %
@@ -28,8 +30,6 @@ function perfect_foresight_setup()
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-global M_ options_ oo_
 
 test_for_deep_parameters_calibration(M_);
 
