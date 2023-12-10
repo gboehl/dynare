@@ -43,8 +43,6 @@ fname = M_.fname;
 
 if options_.steadystate_flag == 1
     % old format
-    assignin('base','tmp_00_',params);
-    evalin('base','M_.params=tmp_00_; clear(''tmp_00_'')');
     h_steadystate = str2func([fname '_steadystate']);
     [ys,params1,check] = h_steadystate(ys_init, exo_ss,M_,options_);
 else % steadystate_flag == 2
