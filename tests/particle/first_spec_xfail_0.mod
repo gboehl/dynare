@@ -10,6 +10,7 @@ var nnu = 0.03^2;
 end;
 
 stoch_simul(order=3,periods=200, irf=0, nomoments, nofunctions);
+send_endogenous_variables_to_workspace;
 
 save('my_data.mat','q','ca');
 

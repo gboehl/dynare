@@ -4880,14 +4880,10 @@ Computing the stochastic solution
 
     If the ``periods`` option is present, sets ``oo_.skewness``,
     ``oo_.kurtosis``, and ``oo_.endo_simul`` (see
-    :mvar:`oo_.endo_simul`), and also saves the simulated variables in
-    MATLAB/Octave vectors of the global workspace with the same name
-    as the endogenous variables.
+    :mvar:`oo_.endo_simul`).
 
     If option ``irf`` is different from zero, sets ``oo_.irfs`` (see
-    below) and also saves the IRFs in MATLAB/Octave vectors of the
-    global workspace (this latter way of accessing the IRFs is
-    deprecated and will disappear in a future version).
+    below).
 
     If the option ``contemporaneous_correlation`` is different from
     ``0``, sets ``oo_.contemporaneous_correlation``, which is
@@ -5096,10 +5092,13 @@ Computing the stochastic solution
     For example, ``oo_.irfs.gnp_ea`` contains the effect on ``gnp`` of
     a one-standard deviation shock on ``ea``.
 
-.. matcomm:: get_irf ('EXOGENOUS_NAME' [, 'ENDOGENOUS_NAME']... );
+.. matcomm:: IRF_MATRIX=get_irf ('EXOGENOUS_NAME' [, 'ENDOGENOUS_NAME']... );
 
-   |br| Given the name of an exogenous variables, returns the IRFs for the
-   requested endogenous variable(s), as they are stored in ``oo_.irfs``.
+   |br| Given the name of an exogenous variable, returns the IRFs for the
+   requested endogenous variable(s) (as they are stored in ``oo_.irfs``) in the output
+   ``IRF_MATRIX``. The periods are stored along the first dimension, with the steady
+   state in the first row. The variables are stored along the second dimension. If no
+   endogenous variables were specified, the matrix contains all variables stored in ``oo_.irfs``.
 
 The approximated solution of a model takes the form of a set of
 decision rules or transition equations expressing the current value of

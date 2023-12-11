@@ -1,4 +1,4 @@
-function oo_=perfect_foresight_solver(M_, options_, oo_, no_error_if_learnt_in_is_present, marginal_linearization_previous_raw_sims)
+function [oo_, ts]=perfect_foresight_solver(M_, options_, oo_, no_error_if_learnt_in_is_present, marginal_linearization_previous_raw_sims)
 % Computes deterministic simulations
 %
 % INPUTS
@@ -16,6 +16,7 @@ function oo_=perfect_foresight_solver(M_, options_, oo_, no_error_if_learnt_in_i
 %
 % OUTPUTS
 %   oo_                 [structure] storing the results
+%   ts                  [dseries]   final simulation paths
 %
 % ALGORITHM
 %
@@ -273,8 +274,6 @@ if ~isempty(per_block_status)
     oo_.deterministic_simulation.block = per_block_status;
 end
 
-dyn2vec(M_, oo_, options_);
-
 if isfield(oo_, 'initval_series') && ~isempty(oo_.initval_series)
     initial_period = oo_.initval_series.dates(1)+(M_.orig_maximum_lag-1);
 elseif ~isdates(options_.initial_period) && isnan(options_.initial_period)
@@ -289,8 +288,6 @@ if isfield(oo_, 'initval_series') && ~isempty(oo_.initval_series)
     names = ts.name;
     ts = merge(oo_.initval_series{names{:}}, ts);
 end
-
-assignin('base', 'Simulated_time_series', ts);
 
 oo_.gui.ran_perfect_foresight = oo_.deterministic_simulation.status;
 

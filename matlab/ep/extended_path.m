@@ -1,5 +1,5 @@
-function [ts, oo_] = extended_path(initialconditions, samplesize, exogenousvariables, options_, M_, oo_)
-% [ts, oo_] = extended_path(initialconditions, samplesize, exogenousvariables, options_, M_, oo_)
+function [ts,oo_] = extended_path(initialconditions, samplesize, exogenousvariables, options_, M_, oo_)
+% [ts,oo_] = extended_path(initialconditions, samplesize, exogenousvariables, options_, M_, oo_)
 % Stochastic simulation of a non linear DSGE model using the Extended Path method (Fair and Taylor 1983). A time
 % series of size T  is obtained by solving T perfect foresight models.
 %
@@ -13,7 +13,7 @@ function [ts, oo_] = extended_path(initialconditions, samplesize, exogenousvaria
 %
 % OUTPUTS
 %  o ts                     [dseries]   m*samplesize array, the simulations.
-%  o results                [cell]
+%  o results                [struct]    results structure
 %
 % ALGORITHM
 %
@@ -107,8 +107,3 @@ end
 ts = dseries(transpose(endogenous_variables_paths), initial_period, M_.endo_names);
 
 oo_.endo_simul = transpose(ts.data);
-assignin('base', 'Simulated_time_series', ts);
-
-if ~nargout || nargout<2
-    assignin('base', 'oo_', oo_);
-end

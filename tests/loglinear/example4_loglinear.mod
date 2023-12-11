@@ -130,6 +130,7 @@ if max(max(abs(struct2array(forecasts.cond.Mean)-struct2array(conditional_foreca
 end
 
 stoch_simul(loglinear,order=1,periods=100000);
+send_endogenous_variables_to_workspace;
 if abs(mean(y)-0.0776)>0.02
     error('Simulations are wrong')
 end

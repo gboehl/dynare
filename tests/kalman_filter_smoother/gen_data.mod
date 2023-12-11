@@ -33,6 +33,16 @@ end;
 
 stoch_simul(periods=2000,irf=0);
 
+verbatim;
+w=oo_.endo_simul(strmatch('w',M_.endo_names,'exact'),:)';
+x=oo_.endo_simul(strmatch('x',M_.endo_names,'exact'),:)';
+y=oo_.endo_simul(strmatch('y',M_.endo_names,'exact'),:)';
+z=oo_.endo_simul(strmatch('z',M_.endo_names,'exact'),:)';
+dw=oo_.endo_simul(strmatch('dw',M_.endo_names,'exact'),:)';
+dx=oo_.endo_simul(strmatch('dx',M_.endo_names,'exact'),:)';
+dy=oo_.endo_simul(strmatch('dy',M_.endo_names,'exact'),:)';
+end;
+
 plot([w x y z]);
 
 save data_algo.mat w x y z dw dx dy;

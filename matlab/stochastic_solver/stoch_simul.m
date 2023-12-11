@@ -197,9 +197,6 @@ if options_.periods > 0 && ~PI_PCL_solver
         end
     end
     [oo_.endo_simul, oo_.exo_simul] = simult(y0,oo_.dr,M_,options_);
-    if ~options_.minimal_workspace
-        dyn2vec(M_, oo_, options_);
-    end
 end
 
 if ~options_.nomoments
@@ -267,8 +264,6 @@ if options_.irf
                 mylistTeX = [];
             end
             for j = 1:nvar
-                assignin('base',[M_.endo_names{i_var(j)} '_' M_.exo_names{i}],...
-                         y(i_var(j),:)');
                 oo_.irfs.([M_.endo_names{i_var(j)} '_' M_.exo_names{i}]) = y(i_var(j),:);
                 if max(abs(y(i_var(j),:))) >= options_.impulse_responses.plot_threshold
                     irfs  = cat(1,irfs,y(i_var(j),:));
