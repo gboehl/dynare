@@ -447,13 +447,15 @@ if analytic_derivation_mode == -2
     clear dYss_g
 
 elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
-    %% Analytical computation of Jacobian and Hessian (wrt selected model parameters) of steady state, i.e. dYss and d2Yss
-    [~, g1_static] = feval([fname,'.static'], ys, exo_steady_state', params); %g1_static is [endo_nbr by endo_nbr] first-derivative (wrt all endogenous variables) of static model equations f, i.e. df/dys, in declaration order
-    try
-        rp_static = feval([fname,'.static_params_derivs'], ys, exo_steady_state', params); %rp_static is [endo_nbr by param_nbr] first-derivative (wrt all model parameters) of static model equations f, i.e. df/dparams, in declaration order
-    catch
+    if ~exist(['+' fname filesep 'static_params_derivs.m'],'file')
         error('For analytical parameter derivatives ''static_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
     end
+    if ~exist(['+' fname filesep 'dynamic_params_derivs.m'],'file')
+        error('For analytical parameter derivatives ''dynamic_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
+    end
+    %% Analytical computation of Jacobian and Hessian (wrt selected model parameters) of steady state, i.e. dYss and d2Yss
+    [~, g1_static] = feval([fname,'.static'], ys, exo_steady_state', params); %g1_static is [endo_nbr by endo_nbr] first-derivative (wrt all endogenous variables) of static model equations f, i.e. df/dys, in declaration order
+    rp_static = feval([fname,'.static_params_derivs'], ys, exo_steady_state', params); %rp_static is [endo_nbr by param_nbr] first-derivative (wrt all model parameters) of static model equations f, i.e. df/dparams, in declaration order
     dys = -g1_static\rp_static; %use implicit function theorem (equation 5 of Ratto and Iskrev (2012) to compute [endo_nbr by param_nbr] first-derivative (wrt all model parameters) of steady state for all endogenous variables analytically, note that dys is in declaration order
     d2ys = zeros(endo_nbr, param_nbr, param_nbr); %initialize in tensor notation, note that d2ys is only needed for d2flag, i.e. for g1pp
     if d2flag
@@ -474,14 +476,10 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
         %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
         %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
         %g3 is [endo_nbr by yy0ex0_nbr^3] third-derivative (wrt all dynamic variables) of dynamic model equations, i.e. (d(df/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
-        try
-            [~, g1p_static, rpp_static] = feval([fname,'.static_params_derivs'], ys, exo_steady_state', params);
-            %g1p_static is [endo_nbr by endo_nbr by param_nbr] first derivative (wrt all model parameters) of first-derivative (wrt all endogenous variables) of static model equations f, i.e. (df/dys)/dparams, in declaration order
-            %rpp_static is [#second_order_residual_terms by 4] and contains nonzero values and corresponding indices of second derivatives (wrt all model parameters) of static model equations f, i.e. d(df/dparams)/dparams, in declaration order, where
-            %           column 1 contains equation number; column 2 contains first parameter; column 3 contains second parameter; column 4 contains value of derivative
-        catch
-            error('For analytical parameter derivatives ''static_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
-        end
+        [~, g1p_static, rpp_static] = feval([fname,'.static_params_derivs'], ys, exo_steady_state', params);
+        %g1p_static is [endo_nbr by endo_nbr by param_nbr] first derivative (wrt all model parameters) of first-derivative (wrt all endogenous variables) of static model equations f, i.e. (df/dys)/dparams, in declaration order
+        %rpp_static is [#second_order_residual_terms by 4] and contains nonzero values and corresponding indices of second derivatives (wrt all model parameters) of static model equations f, i.e. d(df/dparams)/dparams, in declaration order, where
+        %           column 1 contains equation number; column 2 contains first parameter; column 3 contains second parameter; column 4 contains value of derivative
         rpp_static = get_all_resid_2nd_derivs(rpp_static, endo_nbr, param_nbr); %make full matrix out of nonzero values and corresponding indices
             %rpp_static is [endo_nbr by param_nbr by param_nbr] second derivatives (wrt all model parameters) of static model equations, i.e. d(df/dparams)/dparams, in declaration order
         if isempty(find(g2_static))
@@ -525,50 +523,34 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
     end
 
     if d2flag
-        try
-            if order < 3
-                [~, g1p, ~, g1pp, g2p] = feval([fname,'.dynamic_params_derivs'], ys(I), exo_steady_state', params, ys, 1, dys, d2ys);
-            else
-                [~, g1p, ~, g1pp, g2p, g3p] = feval([fname,'.dynamic_params_derivs'], ys(I), exo_steady_state', params, ys, 1, dys, d2ys);
-            end
-        catch
-            error('For analytical parameter derivatives ''dynamic_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
+        if order < 3
+            [~, g1p, ~, g1pp, g2p] = feval([fname,'.dynamic_params_derivs'], ys(I), exo_steady_state', params, ys, 1, dys, d2ys);
+        else
+            [~, g1p, ~, g1pp, g2p, g3p] = feval([fname,'.dynamic_params_derivs'], ys(I), exo_steady_state', params, ys, 1, dys, d2ys);
         end
         %g1pp are nonzero values and corresponding indices of second-derivatives (wrt all model parameters) of first-derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(d(df/dyy0ex0)/dparam)/dparam, rows are in declaration order, first column in declaration order
         d2Yss = d2ys(order_var,indpmodel,indpmodel); %[endo_nbr by mod_param_nbr by mod_param_nbr], put into DR order and focus only on selected model parameters
     else
         if order == 1
-            try
-                [~, g1p] = feval([fname,'.dynamic_params_derivs'], ys(I), exo_steady_state', params, ys, 1, dys, d2ys);
-                    %g1p is [endo_nbr by yy0ex0_nbr by param_nbr] first-derivative (wrt all model parameters) of first-derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dparam, rows are in declaration order, column in lead_lag_incidence order
-            catch
-                error('For analytical parameter derivatives ''dynamic_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
-            end
+            [~, g1p] = feval([fname,'.dynamic_params_derivs'], ys(I), exo_steady_state', params, ys, 1, dys, d2ys);
+            %g1p is [endo_nbr by yy0ex0_nbr by param_nbr] first-derivative (wrt all model parameters) of first-derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dparam, rows are in declaration order, column in lead_lag_incidence order
             [~, g1, g2 ] = feval([fname,'.dynamic'], ys(I), exo_steady_state', params, ys, 1);
                 %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
                 %g2 is [endo_nbr by yy0ex0_nbr^2] second derivatives (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
         elseif order == 2
-            try
-                [~, g1p, ~, ~, g2p] = feval([fname,'.dynamic_params_derivs'], ys(I), exo_steady_state', params, ys, 1, dys, d2ys);
-                    %g1p is [endo_nbr by yy0ex0_nbr by param_nbr] first-derivative (wrt all model parameters) of first-derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dparam, rows are in declaration order, column in lead_lag_incidence order
-                    %g2p are nonzero values and corresponding indices of first-derivative (wrt all model parameters) of second-derivatives (wrt all dynamic variables) of dynamic model equations, i.e. d(d(df/dyy0ex0)/dyy0ex0)/dparam, rows are in declaration order, first and second column in declaration order
-            catch
-                error('For analytical parameter derivatives ''dynamic_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
-            end
+            [~, g1p, ~, ~, g2p] = feval([fname,'.dynamic_params_derivs'], ys(I), exo_steady_state', params, ys, 1, dys, d2ys);
+            %g1p is [endo_nbr by yy0ex0_nbr by param_nbr] first-derivative (wrt all model parameters) of first-derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dparam, rows are in declaration order, column in lead_lag_incidence order
+            %g2p are nonzero values and corresponding indices of first-derivative (wrt all model parameters) of second-derivatives (wrt all dynamic variables) of dynamic model equations, i.e. d(d(df/dyy0ex0)/dyy0ex0)/dparam, rows are in declaration order, first and second column in declaration order
             [~, g1, g2, g3] = feval([fname,'.dynamic'], ys(I), exo_steady_state', params, ys, 1); %note that g3 does not contain symmetric elements
             g3 = identification.unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3
                 %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
                 %g2 is [endo_nbr by yy0ex0_nbr^2] second derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
                 %g3 is [endo_nbr by yy0ex0_nbr^3] third-derivative (wrt all dynamic variables) of dynamic model equations, i.e. (d(df/dyy0ex0)/dyy0ex0)/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
         elseif order == 3
-            try
-                [~, g1p, ~, ~, g2p, g3p] = feval([fname,'.dynamic_params_derivs'], ys(I), exo_steady_state', params, ys, 1, dys, d2ys);
-                    %g1p is [endo_nbr by yy0ex0_nbr by param_nbr] first-derivative (wrt all model parameters) of first-derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dparam, rows are in declaration order, column in lead_lag_incidence order
-                    %g2p are nonzero values and corresponding indices of first-derivative (wrt all model parameters) of second-derivatives (wrt all dynamic variables) of dynamic model equations, i.e. d(d(df/dyy0ex0)/dyy0ex0)/dparam, rows are in declaration order, first and second column in declaration order
-                    %g3p are nonzero values and corresponding indices of first-derivative (wrt all model parameters) of third-derivatives (wrt all dynamic variables) of dynamic model equations, i.e. d(d(d(df/dyy0ex0)/dyy0ex0)/dyy0ex0)/dparam, rows are in declaration order, first, second and third column in declaration order
-            catch
-                error('For analytical parameter derivatives ''dynamic_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
-            end
+            [~, g1p, ~, ~, g2p, g3p] = feval([fname,'.dynamic_params_derivs'], ys(I), exo_steady_state', params, ys, 1, dys, d2ys);
+            %g1p is [endo_nbr by yy0ex0_nbr by param_nbr] first-derivative (wrt all model parameters) of first-derivative (wrt all dynamic variables) of dynamic model equations, i.e. d(df/dyy0ex0)/dparam, rows are in declaration order, column in lead_lag_incidence order
+            %g2p are nonzero values and corresponding indices of first-derivative (wrt all model parameters) of second-derivatives (wrt all dynamic variables) of dynamic model equations, i.e. d(d(df/dyy0ex0)/dyy0ex0)/dparam, rows are in declaration order, first and second column in declaration order
+            %g3p are nonzero values and corresponding indices of first-derivative (wrt all model parameters) of third-derivatives (wrt all dynamic variables) of dynamic model equations, i.e. d(d(d(df/dyy0ex0)/dyy0ex0)/dyy0ex0)/dparam, rows are in declaration order, first, second and third column in declaration order
             T  = NaN(sum(dynamic_tmp_nbr(1:5)));
             T  = feval([fname, '.dynamic_g4_tt'], T, ys(I), exo_steady_state', params, ys, 1);
             g1 = feval([fname, '.dynamic_g1'],    T, ys(I), exo_steady_state', params, ys, 1, false); %g1 is [endo_nbr by yy0ex0_nbr first derivative (wrt all dynamic variables) of dynamic model equations, i.e. df/dyy0ex0, rows are in declaration order, columns in lead_lag_incidence order
