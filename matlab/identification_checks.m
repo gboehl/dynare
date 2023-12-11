@@ -170,7 +170,7 @@ end
 jweak      = zeros(1,param_nbr);
 jweak_pair = zeros(param_nbr,param_nbr);
 
-if test_flag ~= 0 || test_flag ~= 0
+if test_flag ~= 0
     % these tests only apply to Jacobians, not to Gram matrices, i.e. Hessian-type or 'covariance' matrices
     Pco = NaN(param_nbr,param_nbr);
     for ii = 1:size(Xparnonzero,2)
