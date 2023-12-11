@@ -55,39 +55,40 @@
 ;; Also include "end" in this list
 (defvar dynare-statements
   '("var" "varexo" "varexo_det" "trend_var" "log_trend_var"
-    "predetermined_variables" "parameters" "model_local_variable"
-    "model_info" "estimation" "set_time" "data" "varobs"
-    "varexobs" "unit_root_vars" "rplot" "osr_params" "osr" "dynatype"
-    "dynasave" "model_comparison" "change_type" "load_params_and_steady_state"
-    "save_params_and_steady_state" "write_latex_dynamic_model"
-    "write_latex_static_model" "write_latex_original_model"
-    "write_latex_steady_state_model" "steady" "check" "simul" "stoch_simul"
-    "var_model" "trend_component_model" "var_expectation_model" "pac_model"
-    "dsample" "planner_objective" "ramsey_model" "ramsey_policy"
-    "evaluate_planner_objective" "occbin_setup" "occbin_solver"
-    "occbin_write_regimes" "occbin_graph"
+    "predetermined_variables" "parameters" "model_local_variable" "model_info"
+    "estimation" "set_time" "data" "varobs" "varexobs" "unit_root_vars" "rplot"
+    "osr_params" "osr" "dynatype" "dynasave" "model_comparison" "change_type"
+    "load_params_and_steady_state" "save_params_and_steady_state"
+    "write_latex_dynamic_model" "write_latex_static_model"
+    "write_latex_original_model" "write_latex_steady_state_model" "steady"
+    "check" "simul" "stoch_simul" "var_model" "trend_component_model"
+    "var_expectation_model" "pac_model" "dsample" "planner_objective"
+    "ramsey_model" "ramsey_policy" "evaluate_planner_objective" "occbin_setup"
+    "occbin_solver" "occbin_write_regimes" "occbin_graph"
     "discretionary_policy" "identification" "bvar_density" "bvar_forecast"
-    "dynare_sensitivity" "initval_file" "histval_file" "forecast"
+    "bvar_irf" "dynare_sensitivity" "initval_file" "histval_file" "forecast"
     "shock_decomposition" "realtime_shock_decomposition"
     "plot_shock_decomposition" "initial_condition_decomposition"
-    "squeeze_shock_decomposition" "sbvar"
-    "ms_estimation" "ms_simulation" "ms_compute_mdd" "ms_compute_probabilities"
-    "ms_forecast" "ms_irf" "ms_variance_decomposition" "conditional_forecast"
-    "plot_conditional_forecast" "method_of_moments"
-    "markov_switching" "svar" "svar_global_identification_check"
-    "external_function" "calib_smoother" "model_diagnostics" "extended_path"
-    "smoother2histval" "perfect_foresight_setup" "perfect_foresight_solver"
+    "squeeze_shock_decomposition" "sbvar" "ms_estimation" "ms_simulation"
+    "ms_compute_mdd" "ms_compute_probabilities" "ms_forecast" "ms_irf"
+    "ms_variance_decomposition" "conditional_forecast"
+    "plot_conditional_forecast" "method_of_moments" "markov_switching" "svar"
+    "svar_global_identification_check" "external_function" "calib_smoother"
+    "model_diagnostics" "extended_path" "smoother2histval"
+    "perfect_foresight_setup" "perfect_foresight_solver"
     "perfect_foresight_with_expectation_errors_setup"
-    "perfect_foresight_with_expectation_errors_solver"
-    "compilation_setup" "model_remove" "model_options" "var_remove" "resid"
-    "std" "corr" "prior_function" "posterior_function" "end")
+    "perfect_foresight_with_expectation_errors_solver" "compilation_setup"
+    "model_remove" "model_options" "var_remove" "resid" "std" "corr"
+    "prior_function" "posterior_function" "end")
   "Dynare statement keywords.")
 
 ;; Keywords that may appear in blocks, and that begin a statement which will be
 ;; closed by a semicolon
 (defvar dynare-statements-like
-  '("stderr" "values" "periods" "scales" "restriction" "exclusion" "upper_cholesky" "lower_cholesky"
-    "bind" "relax" "error_bind" "error_relax" "add" "multiply")
+  '("stderr" "values" "periods" "scales" "restriction" "exclusion"
+    "upper_cholesky" "lower_cholesky" "equation" "bind" "relax" "error_bind"
+    "error_relax" "add" "multiply" "target" "auxname_target_nonstationary"
+    "component" "growth" "auxname" "kind")
   "Dynare statements-like keywords.")
 
 ;; Those keywords that makes the lexer enter the DYNARE_BLOCK start condition
@@ -96,13 +97,15 @@
 ;; referenced in another eval-when-compile statement in dynare-calculate-indentation
 (eval-when-compile
   (defvar dynare-blocks
-    '("model" "steady_state_model" "initval" "endval" "histval" "shocks" "heteroskedastic_shocks"
-      "shock_groups" "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
-      "estimated_params_init" "estimated_params_bounds" "estimated_params_remove"
-      "osr_params_bounds" "observation_trends" "deterministic_trends" "optim_weights"
-      "homotopy_setup" "conditional_forecast_paths" "svar_identification"
-      "moment_calibration" "irf_calibration" "ramsey_constraints" "generate_irfs"
-      "matched_moments" "occbin_constraints" "model_replace" "verbatim" "pac_target_info")
+    '("model" "steady_state_model" "initval" "endval" "histval"
+      "filter_initial_state" "shocks" "heteroskedastic_shocks" "shock_groups"
+      "init2shocks" "mshocks" "estimated_params" "epilogue" "priors"
+      "estimated_params_init" "estimated_params_bounds"
+      "estimated_params_remove" "osr_params_bounds" "observation_trends"
+      "deterministic_trends" "optim_weights" "homotopy_setup"
+      "conditional_forecast_paths" "svar_identification" "moment_calibration"
+      "irf_calibration" "ramsey_constraints" "generate_irfs" "matched_moments"
+      "occbin_constraints" "model_replace" "pac_target_info" "verbatim")
     "Dynare block keywords."))
 
 ;; Mathematical functions and operators used in model equations (see "hand_side" in Bison file)
