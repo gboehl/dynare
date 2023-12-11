@@ -18,7 +18,7 @@ MATLAB64_VERSION = 20231122
 ## Build dependencies
 
 # pacman -Ss mingw-w64-x86_64-boost
-MINGW64_BOOST_VERSION = 1.83.0-1
+MINGW64_BOOST_VERSION = 1.83.0-2
 
 # pacman -Ss mingw-w64-x86_64-gsl
 MINGW64_GSL_VERSION = 2.7.1-2
@@ -40,11 +40,11 @@ MINGW64_LIBAEC_VERSION = 1.0.6-2
 
 # Dependency of HDF5
 # pacman -Ss mingw-w64-x86_64-openssl
-MINGW64_OPENSSL_VERSION = 3.1.4-1
+MINGW64_OPENSSL_VERSION = 3.2.0-1
 
 # Dependency of HDF5
 # pacman -Ss mingw-w64-x86_64-curl
-MINGW64_CURL_VERSION = 8.4.0-1
+MINGW64_CURL_VERSION = 8.5.0-1
 
 # Dependency of curl (and of the MinGW compiler)
 # pacman -Ss mingw-w64-x86_64-zstd
@@ -81,22 +81,22 @@ MINGW64_LIBUNISTRING_VERSION = 1.1-1
 ## MinGW packages for the embedded compiler
 
 # pacman -Ss mingw-w64-x86_64-gcc$
-MINGW64_GCC_VERSION = 13.2.0-2
+MINGW64_GCC_VERSION = 13.2.0-3
 
 # pacman -Ss mingw-w64-x86_64-gmp
 MINGW64_GMP_VERSION = 6.3.0-2
 
 # pacman -Ss mingw-w64-x86_64-binutils
-MINGW64_BINUTILS_VERSION = 2.41-2
+MINGW64_BINUTILS_VERSION = 2.41-3
 
 # pacman -Ss mingw-w64-x86_64-headers-git
-MINGW64_HEADERS_VERSION = 11.0.0.r404.g3a137bd87-1
+MINGW64_HEADERS_VERSION = 11.0.0.r442.ga27e7b27e-1
 
 # pacman -Ss mingw-w64-x86_64-crt-git
-MINGW64_CRT_VERSION = 11.0.0.r404.g3a137bd87-1
+MINGW64_CRT_VERSION = 11.0.0.r442.ga27e7b27e-1
 
 # pacman -Ss mingw-w64-x86_64-winpthreads-git
-MINGW64_WINPTHREADS_VERSION = 11.0.0.r404.g3a137bd87-1
+MINGW64_WINPTHREADS_VERSION = 11.0.0.r442.ga27e7b27e-1
 
 # pacman -Ss mingw-w64-x86_64-isl
 MINGW64_ISL_VERSION = 0.26-1
