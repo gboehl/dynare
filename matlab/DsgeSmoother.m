@@ -275,7 +275,7 @@ if kalman_algo == 1 || kalman_algo == 3
             kalman_algo = 2;
         elseif kalman_algo == 3
             fprintf('\nDsgeSmoother: Switching to univariate filter. This is usually due to co-integration in diffuse filter,\n')
-            fprintf(' otherwise it may be a sign of stochastic singularity.\n')
+            fprintf('otherwise it may be a sign of stochastic singularity.\n')
             kalman_algo = 4;
         else
             error('This case shouldn''t happen')
