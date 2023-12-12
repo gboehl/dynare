@@ -1,0 +1,9 @@
+# NB: to use clang-tidy on the MEX source code, make sure that you have
+# libomp-dev installed (the LLVM implementation of OpenMP)
+
+# TODO: add the following check families:
+# - performance-*
+# - bugprone-*
+# - cppcoreguidelines-
+
+Checks: 'modernize-*,-modernize-use-trailing-return-type,-clang-diagnostic-unqualified-std-cast-call'
