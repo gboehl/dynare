@@ -20,7 +20,7 @@ On Linux and macOS, the configuration file is searched by default under
 specification (typically ``$HOME/.config/dynare/dynare.ini`` for the
 user-specific configuration and ``/etc/xdg/dynare/dynare.ini`` for the
 system-wide configuration, the former having precedence over the latter). Under
-Windows, the configuration file it searched by default in
+Windows, the configuration file is searched by default in
 ``%APPDATA%\dynare\dynare.ini`` (typically
 ``c:\Users\USERNAME\AppData\Roaming\dynare\dynare.ini``). You can specify a non
 standard location using the ``conffile`` option of the ``dynare`` command (see
