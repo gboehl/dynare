@@ -1,4 +1,5 @@
-function dataset_info=var_sample_moments(nlag, var_trend_order, dataset_, dataset_info)%datafile,varobs,xls_sheet,xls_range)
+function dataset_info=var_sample_moments(nlag, var_trend_order, dataset_, dataset_info)
+% dataset_info=var_sample_moments(nlag, var_trend_order, dataset_, dataset_info)
 % Computes the sample moments of a VAR model.
 %
 % The VAR(p) model is defined by:
@@ -51,7 +52,7 @@ function dataset_info=var_sample_moments(nlag, var_trend_order, dataset_, datase
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 2007-2021 Dynare Team
+% Copyright © 2007-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -80,14 +81,11 @@ if isequal(var_trend_order,-1)
 elseif isequal(var_trend_order,0)
     % Constant and no linear trend case.
     X = ones(NumberOfObservations,NumberOfVariables*nlag+1);
-    indx = NumberOfVariables*nlag+1;
 elseif isequal(var_trend_order,1)
     % Constant and linear trend case.
     X = ones(NumberOfObservations,NumberOfVariables*nlag+2);
-    indx = NumberOfVariables*nlag+1:NumberOfVariables*nlag+2;
 else
     error('Estimation::var_sample_moments: trend must be equal to -1,0 or 1!')
-    return
 end
 
 % I build matrices Y and X
@@ -109,9 +107,3 @@ dataset_info.mXY=X'*Y;
 dataset_info.mXX=X'*X;
 dataset_info.Ydata=Y;
 dataset_info.Xdata=X;
-% assignin('base', 'mYY', Y'*Y);
-% assignin('base', 'mYX', Y'*X);
-% assignin('base', 'mXY', X'*Y);
-% assignin('base', 'mXX', X'*X);
-% assignin('base', 'Ydata', Y);
-% assignin('base', 'Xdata', X);

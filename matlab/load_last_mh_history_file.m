@@ -7,10 +7,8 @@ function record = load_last_mh_history_file(MetropolisFolder, ModelName)
 % Outputs:
 %   record              [struct]    structure storing the MH history
 %
-% Notes: The record structure is written to the caller workspace via an
-% assignin statement.
 
-% Copyright © 2013-2017 Dynare Team
+% Copyright © 2013-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,7 +34,7 @@ mh_history_files = dir([BaseName '_mh_history_*.mat']);
 
 % Consistency with older versions of Dynare.
 if isequal(length(mh_history_files),0)
-    if exist([BaseName '_mh_history.mat'])
+    if exist([BaseName '_mh_history.mat'],'file')
         format_mh_history_file = 1; % old Dynare format
     else
         error(['Estimation::load_mh_file: I cannot find any mh-history file in ' MetropolisFolder '!'])
@@ -46,7 +44,7 @@ else
 end
 
 if format_mh_history_file %needed to preserve backward compatibility
-    load([BaseName '_mh_history.mat']);
+    load([BaseName '_mh_history.mat'],'record');
     record.LastLogPost = record.LastLogLiK;
     record.InitialLogPost = record.InitialLogLiK;
     record.LastSeeds = record.Seeds;
@@ -60,7 +58,7 @@ if format_mh_history_file %needed to preserve backward compatibility
     record = rmfield(record,'AcceptationRates');
     save([BaseName '_mh_history_0.mat'],'record');
 else
-    load([BaseName '_mh_history_' num2str(length(mh_history_files)-1) '.mat']);
+    load([BaseName '_mh_history_' num2str(length(mh_history_files)-1) '.mat'],'record');
     % add fields that have later been introduced
     if ~isfield(record,'MCMCConcludedSuccessfully')
         record.MCMCConcludedSuccessfully = NaN; % This information is forever lost...
