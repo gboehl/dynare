@@ -31,7 +31,7 @@ class BlockDiagonal : public QuasiTriangular
   std::vector<int> row_len, col_len;
 
 public:
-  BlockDiagonal(ConstVector d, int d_size);
+  BlockDiagonal(const ConstVector& d, int d_size);
   BlockDiagonal(const BlockDiagonal& b) = default;
   explicit BlockDiagonal(const QuasiTriangular& t);
   BlockDiagonal&

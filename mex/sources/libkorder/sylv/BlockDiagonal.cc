@@ -24,8 +24,8 @@
 #include <iostream>
 #include <utility>
 
-BlockDiagonal::BlockDiagonal(ConstVector d, int d_size) :
-    QuasiTriangular(std::move(d), d_size), row_len(d_size), col_len(d_size)
+BlockDiagonal::BlockDiagonal(const ConstVector& d, int d_size) :
+    QuasiTriangular(d, d_size), row_len(d_size), col_len(d_size)
 {
   for (int i = 0; i < d_size; i++)
     {

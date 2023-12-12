@@ -110,8 +110,8 @@ public:
   {
     per.apply(nvmax);
   }
-  PerTensorDimens(IntSequence ss, IntSequence coor) :
-      TensorDimens(std::move(ss), sortIntSequence(coor)), per(std::move(coor))
+  PerTensorDimens(const IntSequence& ss, const IntSequence& coor) :
+      TensorDimens(ss, sortIntSequence(coor)), per(coor)
   {
     per.apply(nvmax);
   }
