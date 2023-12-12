@@ -54,7 +54,7 @@ public:
   {
   }
   Vector(const Vector& v);
-  Vector(Vector&& v) :
+  Vector(Vector&& v) noexcept :
       len {std::exchange(v.len, 0)},
       s {v.s},
       data {std::exchange(v.data, nullptr)},
