@@ -213,7 +213,7 @@ for b=1:nb
             if n_rel  > 1
                 disp(['Relation ' int2str(i)])
             end
-            disp('Colinear variables:')
+            disp('Collinear variables:')
             for j=1:10
                 k = find(abs(ncol(:,i)) > 10^-j);
                 if max(abs(jacob(:,k)*ncol(k,i))) < 1e-6
@@ -236,7 +236,7 @@ for b=1:nb
             if n_rel  > 1
                 disp(['Relation ' int2str(i)])
             end
-            disp('Colinear equations')
+            disp('Collinear equations')
             for j=1:10
                 k = find(abs(neq(:,i)) > 10^-j);
                 if max(abs(jacob(k,:)'*neq(k,i))) < 1e-6
