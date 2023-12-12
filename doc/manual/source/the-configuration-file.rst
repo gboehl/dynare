@@ -15,11 +15,16 @@ related to the model (and hence not placed in the model file). At the
 moment, it is only used when using Dynare to run parallel
 computations.
 
-On Linux and macOS, the default location of the configuration file is
-``$HOME/.dynare``, while on Windows it is ``%APPDATA%\dynare.ini``
-(typically ``c:\Users\USERNAME\AppData\dynare.ini``). You
-can specify a non standard location using the ``conffile`` option of
-the ``dynare`` command (see :ref:`dyn-invoc`).
+On Linux and macOS, the configuration file is searched by default under
+``dynare/dynare.ini`` in the configuration directories defined by the XDG
+specification (typically ``$HOME/.config/dynare/dynare.ini`` for the
+user-specific configuration and ``/etc/xdg/dynare/dynare.ini`` for the
+system-wide configuration, the former having precedence over the latter). Under
+Windows, the configuration file it searched by default in
+``%APPDATA%\dynare\dynare.ini`` (typically
+``c:\Users\USERNAME\AppData\Roaming\dynare\dynare.ini``). You can specify a non
+standard location using the ``conffile`` option of the ``dynare`` command (see
+:ref:`dyn-invoc`).
 
 The parsing of the configuration file is case-sensitive and it should
 take the following form, with each option/choice pair placed on a
@@ -76,8 +81,15 @@ processing. Currently, there is only one option available.
 
     .. option:: GlobalInitFile = PATH_AND_FILE
 
-        The location of the global initialization file to be run at
-        the end of ``global_initialization.m``.
+        The location of a global initialization file that can be used to
+        customize some Dynare internals (typically default option values). This
+        is a MATLAB/Octave script.
+
+        If this option is not specified, Dynare will look for a
+        ``global_init.m`` file in its configuration directory (typically
+        ``$HOME/.config/dynare/global_init.m`` under Linux and macOS, and
+        ``c:\Users\USERNAME\AppData\Roaming\dynare\global_init.m`` under
+        Windows).
 
     *Example*
 
