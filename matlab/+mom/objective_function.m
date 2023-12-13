@@ -302,7 +302,7 @@ if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING') && strcmp(options_mom_.mom
         end
     end
     irf_model_varobs = model_irf(:,options_mom_.varobs_id,:); % focus only on observables (this will be used later for plotting)
-    model_moments = irf_model_varobs(options_mom_.mom.irfIndex); % focus only on selected irf periods
+    model_moments = irf_model_varobs(options_mom_.mom.irfIndex); % focus only on selected IRF periods
 end
 
 

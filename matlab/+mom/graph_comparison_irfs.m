@@ -70,7 +70,7 @@ for jexo = unique_shock_entries'
     for jvar = 1:length(unique_variables)
         if jvar==1 || ~( (fig-1)*nstar<jvar && jvar<=fig*nstar )
             fig = fig+1;
-            fig_irf = dyn_figure(nodisplay,'Name',['Irf matching shock to ' exo_names{jexo} ' figure ' int2str(fig)]);
+            fig_irf = dyn_figure(nodisplay,'Name',['IRF matching shock to ' exo_names{jexo} ' figure ' int2str(fig)]);
         end
         plt = jvar-(fig-1)*nstar;
         data_irf_rows = find(cellfun(@(x) x(1) == unique_variables(jvar) && x(2) == jexo, matched_irfs(:, 1)));

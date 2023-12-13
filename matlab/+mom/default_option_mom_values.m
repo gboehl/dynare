@@ -470,6 +470,6 @@ if options_mom_.mom.analytic_jacobian && ~strcmp(mom_method,'GMM')
 end
 if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
     if any(cellfun(@(x) isnumeric(x) && any(x == 13), options_mom_.optimizer_vec))
-        error('method_of_moments: lsqnonlin (mode_compute=13) is not yet supported for IRF Matching!');
+        error('method_of_moments: lsqnonlin (mode_compute=13) is not yet supported for IRF matching!');
     end
 end

@@ -15,8 +15,8 @@ function [data_irfs, weight_mat, irf_index, max_irf_horizon] = matched_irfs_bloc
 % OUTPUT
 % data_irfs:           [matrix]     irfs for VAROBS as declared in matched_irfs block
 % weight_mat:          [matrix]     weighting matrix for irfs as declared in matched_irfs_weight block
-% irf_index:           [vector]     index for selecting specific irfs from full irf matrix of observables
-% max_irf_horizon:     [scalar]     maximum irf horizon as declared in matched_irfs block
+% irf_index:           [vector]     index for selecting specific irfs from full IRF matrix of observables
+% max_irf_horizon:     [scalar]     maximum IRF horizon as declared in matched_irfs block
 % -------------------------------------------------------------------------
 % This function is called by
 %  o mom.run
@@ -40,8 +40,8 @@ function [data_irfs, weight_mat, irf_index, max_irf_horizon] = matched_irfs_bloc
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
-max_irf_horizon = max(cellfun(@(x) x(end), matched_irfs(:,1))); % get maximum irf horizon
-% create full matrix where 1st dimension are irf periods, 2nd dimension are variables as declared in VAROBS, 3rd dimension are shocks.
+max_irf_horizon = max(cellfun(@(x) x(end), matched_irfs(:,1))); % get maximum IRF horizon
+% create full matrix where 1st dimension are IRF periods, 2nd dimension are variables as declared in VAROBS, 3rd dimension are shocks.
 data_irfs = nan(max_irf_horizon,obs_nbr,exo_nbr);
 % overwrite nan values if they are declared in matched_irfs block; remaining nan values will be later ignored in the matching
 for jj = 1:size(matched_irfs,1)
@@ -52,7 +52,7 @@ for jj = 1:size(matched_irfs,1)
     irf_value    = matched_irfs{jj,2};
     if isempty(id_varobs)
         skipline;
-        error('method_of_moments: You specified an irf matching involving variable %s, but it is not declared as a varobs!',endo_names{id_var})
+        error('method_of_moments: You specified an IRF matching involving variable %s, but it is not declared as a varobs!',endo_names{id_var})
     end
     data_irfs(id_irf_period,id_varobs,id_shock) = irf_value;
 end
@@ -64,11 +64,11 @@ for jj = 1:size(matched_irfs_weight,1)
     weight_mat_value = matched_irfs_weight{jj,3};
     if isempty(id_varobs1)
         skipline;
-        error('method_of_moments: You specified a weight for an irf matching involving variable %s, but it is not a varobs!',endo_names{id_var1})
+        error('method_of_moments: You specified a weight for an IRF matching involving variable %s, but it is not a varobs!',endo_names{id_var1})
     end
     if isempty(id_varobs2)
         skipline;
-        error('method_of_moments: You specified a weight for an irf matching involving variable %s, but it is not a varobs!',endo_names{id_var2})
+        error('method_of_moments: You specified a weight for an IRF matching involving variable %s, but it is not a varobs!',endo_names{id_var2})
     end
     idweight_mat1 = sub2ind(size(data_irfs),id_irf_period1,id_varobs1,id_shock1);
     idweight_mat2 = sub2ind(size(data_irfs),id_irf_period2,id_varobs2,id_shock2);
