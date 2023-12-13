@@ -1,4 +1,5 @@
 function [endogenousvariables, success, err, iter] = sim1(endogenousvariables, exogenousvariables, steadystate, M_, options_)
+% [endogenousvariables, success, err, iter] = sim1(endogenousvariables, exogenousvariables, steadystate, M_, options_)
 % Performs deterministic simulations with lead or lag of one period, using
 % a basic Newton solver on sparse matrices.
 % Uses perfect_foresight_problem DLL to construct the stacked problem.
@@ -90,6 +91,7 @@ for iter = 1:options_.simul.maxit
                 end
             end            
         end
+        check_Jacobian_for_singularity(full(A),M_.endo_names,options_);
     end
     if options_.endogenous_terminal_period && iter > 1
         for it = 1:periods
@@ -280,4 +282,65 @@ if any(isinf(dyy))
     disp('Last iteration diverged (Inf) for the following variables:')
     fprintf('%s, ', endo_names{:}),
     fprintf('\n'),
+end
+
+
+function check_Jacobian_for_singularity(jacob,endo_names,options_)
+n_vars_jacob=size(jacob,2);
+try
+    if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options_.jacobian_tolerance)
+        rank_jacob = rank(jacob); %can sometimes fail
+    else
+        rank_jacob = rank(jacob,options_.jacobian_tolerance); %can sometimes fail
+    end
+catch
+    rank_jacob=size(jacob,1);
+end
+if rank_jacob < size(jacob,1)
+    disp(['sim1:  The Jacobian of the dynamic model is ' ...
+        'singular'])
+    disp(['sim1:  there is ' num2str(n_vars_jacob-rank_jacob) ...
+        ' collinear relationships between the variables and the equations'])
+    if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options_.jacobian_tolerance)
+        ncol = null(jacob);
+    else
+        ncol = null(jacob,options_.jacobian_tolerance); %can sometimes fail
+    end
+    n_rel = size(ncol,2);
+    for i = 1:n_rel
+        if n_rel  > 1
+            disp(['Relation ' int2str(i)])
+        end
+        disp('Collinear variables:')
+        for j=1:10
+            k = find(abs(ncol(:,i)) > 10^-j);
+            if max(abs(jacob(:,k)*ncol(k,i))) < 1e-6
+                break
+            end
+        end
+        fprintf('%s\n',endo_names{mod(k,length(endo_names))})
+    end
+    if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options_.jacobian_tolerance)
+        neq = null(jacob'); %can sometimes fail
+    else
+        neq = null(jacob',options_.jacobian_tolerance); %can sometimes fail
+    end
+    n_rel = size(neq,2);
+    for i = 1:n_rel
+        if n_rel  > 1
+            disp(['Relation ' int2str(i)])
+        end
+        disp('Collinear equations')
+        for j=1:10
+            k = find(abs(neq(:,i)) > 10^-j);
+            if max(abs(jacob(k,:)'*neq(k,i))) < 1e-6
+                break
+            end
+        end
+        equation=mod(k,length(endo_names));
+        period=ceil(k/length(endo_names));
+        for ii=1:length(equation)
+            fprintf('Equation %5u, period %5u\n',equation(ii),period(ii))
+        end
+    end
 end
