@@ -97,10 +97,10 @@ function x = check_bounds(x,bounds)
 
 inx = find(x>=bounds(:,2));
 if ~isempty(inx)
-    x(inx) = bounds(inx,2)-eps;
+    x(inx) = bounds(inx,2)-1.e-10;
 end
 
 inx = find(x<=bounds(:,1));
 if ~isempty(inx)
-    x(inx) = bounds(inx,1)+eps;
+    x(inx) = bounds(inx,1)+1.e-10;
 end
