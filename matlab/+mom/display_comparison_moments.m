@@ -1,8 +1,8 @@
 function display_comparison_moments(M_, options_mom_, data_moments, model_moments)
-% function display_comparison_moments(M_, options_mom_, data_moments, model_moments)
+% display_comparison_moments(M_, options_mom_, data_moments, model_moments)
 % -------------------------------------------------------------------------
 % Displays and saves to disk the comparison of the data moments and the model moments
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 % M_:             [structure]  model information
 % options_mom_:   [structure]  method of moments options
@@ -19,7 +19,8 @@ function display_comparison_moments(M_, options_mom_, data_moments, model_moment
 % o dyn_latex_table
 % o dyntable
 % o cellofchararraymaxlength
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -36,7 +37,7 @@ function display_comparison_moments(M_, options_mom_, data_moments, model_moment
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
+
 
 titl = ['Comparison of matched data moments and model moments (',options_mom_.mom.mom_method,')'];
 headers = {'Moment','Data','Model'};

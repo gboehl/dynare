@@ -57,7 +57,7 @@ function [xparam1, weighting_info, mom_verbose] = mode_compute_gmm_smm(xparam0, 
 
 mom_verbose = [];
 if size(options_mom_.mom.weighting_matrix,1)>1 && ~(any(strcmpi('diagonal',options_mom_.mom.weighting_matrix)) || any(strcmpi('optimal',options_mom_.mom.weighting_matrix)))
-    fprintf('\nYou did not specify the use of an optimal or diagonal weighting matrix. There is no point in running an iterated method of moments.\n')
+    fprintf('\nYou did not specify the use of an optimal or diagonal weighting matrix. There is no point in running an iterated method of moments.\n');
 end
 
 for stage_iter = 1:size(options_mom_.mom.weighting_matrix,1)
@@ -91,17 +91,17 @@ for stage_iter = 1:size(options_mom_.mom.weighting_matrix,1)
             try
                 load(options_mom_.mom.weighting_matrix{stage_iter},'weighting_matrix')
             catch
-                error(['method_of_moments: No matrix named ''weighting_matrix'' could be found in ',options_mom_.mom.weighting_matrix{stage_iter},'.mat !'])
+                error(['method_of_moments: No matrix named ''weighting_matrix'' could be found in ',options_mom_.mom.weighting_matrix{stage_iter},'.mat !']);
             end
             [nrow, ncol] = size(weighting_matrix);
             if ~isequal(nrow,ncol) || ~isequal(nrow,length(data_moments)) %check if square and right size
-                error(['method_of_moments: ''weighting_matrix'' must be square and have ',num2str(length(data_moments)),' rows and columns!'])
+                error(['method_of_moments: ''weighting_matrix'' must be square and have ',num2str(length(data_moments)),' rows and columns!']);
             end
     end
     try % check for positive definiteness of weighting_matrix
         weighting_info.Sw = chol(weighting_matrix);
     catch
-        error('method_of_moments: Specified ''weighting_matrix'' is not positive definite. Check whether your model implies stochastic singularity!')
+        error('method_of_moments: Specified ''weighting_matrix'' is not positive definite. Check whether your model implies stochastic singularity!');
     end
 
     for optim_iter = 1:length(options_mom_.optimizer_vec)
@@ -126,9 +126,9 @@ for stage_iter = 1:size(options_mom_.mom.weighting_matrix,1)
                 fval = fval'*fval;
             end
         end
-        fprintf('\nStage %d Iteration %d: Value of minimized moment distance objective function: %12.10f.\n',stage_iter,optim_iter,fval)
+        fprintf('\nStage %d Iteration %d: Value of minimized moment distance objective function: %12.10f.\n',stage_iter,optim_iter,fval);
         if options_mom_.mom.verbose
-            fprintf('\n''verbose'' option: ')
+            fprintf('\n''verbose'' option: ');
             std_via_invhessian_xparam1_iter = NaN(size(xparam1));            
             tbl_title_iter = sprintf('FREQUENTIST %s (STAGE %d ITERATION %d) VERBOSE',options_mom_.mom.mom_method,stage_iter,optim_iter);
             field_name_iter = sprintf('%s_stage_%d_iter_%d',lower(options_mom_.mom.mom_method),stage_iter,optim_iter);

@@ -1,18 +1,19 @@
 function BoundsInfo = set_correct_bounds_for_stderr_corr(estim_params_,BoundsInfo)
-% function BoundsInfo = set_correct_bounds_for_stderr_corr(estim_params_,BoundsInfo)
+% BoundsInfo = set_correct_bounds_for_stderr_corr(estim_params_,BoundsInfo)
 % -------------------------------------------------------------------------
 % Set correct bounds for standard deviation and corrrelation parameters
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 % o estim_params_ [struct] information on estimated parameters
 % o BoundsInfo    [struct] information on bounds
 % -------------------------------------------------------------------------
 % OUTPUT
-% o BoundsInfo    [struct] updated bounds
+% o BoundsInfo    [struct] updated information on bounds
 % -------------------------------------------------------------------------
 % This function is called by
 %  o mom.run
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -29,7 +30,7 @@ function BoundsInfo = set_correct_bounds_for_stderr_corr(estim_params_,BoundsInf
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
+
 
 number_of_estimated_parameters = estim_params_.nvx+estim_params_.nvn+estim_params_.ncx+estim_params_.ncn+estim_params_.np;
 % set correct bounds for standard deviations and corrrelations

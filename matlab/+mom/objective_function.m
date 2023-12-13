@@ -145,7 +145,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
             indpcorr = estim_params_.corrx(:,1:2); % values correspond to varexo declaration order, row number corresponds to order in estimated_params
         end
         if estim_params_.nvn || estim_params_.ncn % nvn is number of stderr parameters and ncn is number of corr parameters of measurement innovations as declared in estimated_params
-            error('Analytic computation of standard errrors does not (yet) support measurement errors.\nInstead, define them explicitly as varexo and provide measurement equations in the model definition.\nAlternatively, use numerical standard errors.')
+            error('Analytic computation of standard errrors does not (yet) support measurement errors.\nInstead, define them explicitly as varexo and provide measurement equations in the model definition.\nAlternatively, use numerical standard errors.');
         end
         modparam_nbr = estim_params_.np;        % number of model parameters as declared in estimated_params
         stderrparam_nbr = estim_params_.nvx;    % number of stderr parameters

@@ -68,7 +68,7 @@ end
 % remove duplicate elements
 DuplicateMoms = setdiff(1:size(matched_moments_orig,1),UniqueMomIdx);
 if ~isempty(DuplicateMoms)
-    fprintf('Duplicate declared moments found and removed in ''matched_moments'' block in rows:\n %s.\n',num2str(DuplicateMoms))
+    fprintf('Duplicate declared moments found and removed in ''matched_moments'' block in rows:\n %s.\n',num2str(DuplicateMoms));
     fprintf('Dynare will continue with remaining moment conditions\n');
 end
 if strcmp(mom_method, 'SMM')

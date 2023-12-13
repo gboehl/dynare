@@ -122,7 +122,7 @@ function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_,
 % - enable first moments despite prefilter
 % - do "true" Bayesian GMM and SMM not only penalized
 
-fprintf('\n==== Method of Moments Estimation (%s) ====\n\n',options_mom_.mom.mom_method)
+fprintf('\n==== Method of Moments Estimation (%s) ====\n\n',options_mom_.mom.mom_method);
 
 
 % -------------------------------------------------------------------------
@@ -130,18 +130,18 @@ fprintf('\n==== Method of Moments Estimation (%s) ====\n\n',options_mom_.mom.mom
 % -------------------------------------------------------------------------
 if isempty(estim_params_) % structure storing the info about estimated parameters in the estimated_params block
     if ~(isfield(estim_params_,'nvx') && (size(estim_params_.var_exo,1)+size(estim_params_.var_endo,1)+size(estim_params_.corrx,1)+size(estim_params_.corrn,1)+size(estim_params_.param_vals,1))==0)
-        error('method_of_moments: You need to provide an ''estimated_params'' block!')
+        error('method_of_moments: You need to provide an ''estimated_params'' block!');
     else
-        error('method_of_moments: The ''estimated_params'' block must not be empty!')
+        error('method_of_moments: The ''estimated_params'' block must not be empty!');
     end
 end
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
     if ~isfield(M_,'matched_moments') || isempty(M_.matched_moments) % structure storing the moments used for GMM and SMM estimation
-        error('method_of_moments: You need to provide a ''matched_moments'' block for ''mom_method=%s''!',options_mom_.mom.mom_method)
+        error('method_of_moments: You need to provide a ''matched_moments'' block for ''mom_method=%s''!',options_mom_.mom.mom_method);
     end
 end
 if (~isempty(estim_params_.var_endo) || ~isempty(estim_params_.corrn)) && strcmp(options_mom_.mom.mom_method, 'GMM')
-    error('method_of_moments: GMM estimation does not support measurement error(s) yet. Please specify them as a structural shock!')
+    error('method_of_moments: GMM estimation does not support measurement error(s) yet. Please specify them as a structural shock!');
 end
 doBayesianEstimation = [estim_params_.var_exo(:,5); estim_params_.var_endo(:,5); estim_params_.corrx(:,6); estim_params_.corrn(:,6); estim_params_.param_vals(:,5)];
 if all(doBayesianEstimation~=0)
@@ -149,10 +149,10 @@ if all(doBayesianEstimation~=0)
 elseif all(doBayesianEstimation==0)
     doBayesianEstimation = false;
 else
-    error('method_of_moments: Estimation must be either fully Frequentist or fully Bayesian. Maybe you forgot to specify a prior distribution!')
+    error('method_of_moments: Estimation must be either fully Frequentist or fully Bayesian. Maybe you forgot to specify a prior distribution!');
 end
 if ~isfield(options_,'varobs')
-    error('method_of_moments: VAROBS statement is missing!')
+    error('method_of_moments: VAROBS statement is missing!');
 end
 check_varobs_are_endo_and_declared_once(options_.varobs,M_.endo_names);
 
@@ -258,7 +258,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     not_observed_variables=setdiff(oo_.dr.inv_order_var([M_.matched_moments{:,1}]),options_mom_.mom.obs_var);
     if ~isempty(not_observed_variables)
         skipline;
-        error('method_of_moments: You specified moments involving %s, but it is not a varobs!',M_.endo_names{oo_.dr.order_var(not_observed_variables)})
+        error('method_of_moments: You specified moments involving %s, but it is not a varobs!',M_.endo_names{oo_.dr.order_var(not_observed_variables)});
     end
 end
 
@@ -342,7 +342,7 @@ else
     BoundsInfo.lb = lb;
     BoundsInfo.ub = ub;
     if options_mom_.mom.penalized_estimator
-        fprintf('Penalized estimation turned off as you did not declare priors\n')
+        fprintf('Penalized estimation turned off as you did not declare priors\n');
         options_mom_.mom.penalized_estimator = 0;
     end
 end
@@ -355,7 +355,7 @@ if options_mom_.use_calibration_initialization
     try
         check_prior_bounds(xparam0,BoundsInfo,M_,estim_params_,options_mom_,bayestopt_);
     catch last_error
-        fprintf('Cannot use parameter values from calibration as they violate the prior bounds.')
+        fprintf('Cannot use parameter values from calibration as they violate the prior bounds.');
         rethrow(last_error);
     end
 else
@@ -391,8 +391,8 @@ if doBayesianEstimation
     % check value of prior density
     [~,~,~,info]= priordens(xparam0,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
     if any(info)
-        fprintf('The prior density evaluated at the initial values is Inf for the following parameters: %s\n',bayestopt_.name{info,1})
-        error('The initial value of the prior is -Inf!')
+        fprintf('The prior density evaluated at the initial values is Inf for the following parameters: %s\n',bayestopt_.name{info,1});
+        error('The initial value of the prior is -Inf!');
     end
 end
 
@@ -405,7 +405,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     % Check if datafile has same name as mod file
     [~,name] = fileparts(options_mom_.datafile);
     if strcmp(name,M_.fname)
-        error('method_of_moments: ''datafile'' and mod file are not allowed to have the same name; change the name of the ''datafile''!')
+        error('method_of_moments: ''datafile'' and mod file are not allowed to have the same name; change the name of the ''datafile''!');
     end
     dataset_ = makedataset(options_mom_);
     % set options for old interface from the ones for new interface
@@ -421,7 +421,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     % Get data moments for the method of moments
     [oo_.mom.data_moments, oo_.mom.m_data] = mom.get_data_moments(dataset_.data, options_mom_.mom.obs_var, oo_.dr.inv_order_var, M_.matched_moments, options_mom_);
     if ~isreal(dataset_.data)
-        error('method_of_moments: The data moments contain complex values!')
+        error('method_of_moments: The data moments contain complex values!');
     end
 end
 
@@ -470,7 +470,7 @@ else
 end
 [oo_.steady_state, info, steady_state_changes_parameters] = check_steady_state_changes_parameters(M_, estim_params_, oo_, options_mom_, steadystate_check_flag_vec);
 if info(1)
-    fprintf('\nThe steady state at the initial parameters cannot be computed.\n')
+    fprintf('\nThe steady state at the initial parameters cannot be computed.\n');
     print_info(info, 0, options_mom_);
 end
 if steady_state_changes_parameters && strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
@@ -496,9 +496,9 @@ try
     [fval, info] = feval(objective_function, xparam0, oo_.mom.data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     elapsed_time = toc(tic_id);
     if isnan(fval)
-        error('method_of_moments: The initial value of the objective function with identity weighting matrix is NaN!')
+        error('method_of_moments: The initial value of the objective function with identity weighting matrix is NaN!');
     elseif imag(fval)
-        error('method_of_moments: The initial value of the objective function with identity weighting matrix is complex!')
+        error('method_of_moments: The initial value of the objective function with identity weighting matrix is complex!');
     end
     if info(1) > 0
         disp('method_of_moments: Error in computing the objective function for initial parameter values')
@@ -513,10 +513,10 @@ try
 catch last_error % if check fails, provide info on using calibration if present
     if estim_params_.full_calibration_detected %calibrated model present and no explicit starting values
         skipline(1);
-        fprintf('There was an error in computing the moments for initial parameter values.\n')
-        fprintf('If this is not a problem with the setting of options (check the error message below),\n')
-        fprintf('you should try using the calibrated version of the model as starting values. To do\n')
-        fprintf('this, add an empty estimated_params_init-block with use_calibration option immediately before the estimation\n')
+        fprintf('There was an error in computing the moments for initial parameter values.\n');
+        fprintf('If this is not a problem with the setting of options (check the error message below),\n');
+        fprintf('you should try using the calibrated version of the model as starting values. To do\n');
+        fprintf('this, add an empty estimated_params_init-block with use_calibration option immediately before the estimation\n');
         fprintf('command (and after the estimated_params-block so that it does not get overwritten):\n');
         skipline(2);
     end
@@ -569,16 +569,12 @@ if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_meth
     % display comparison of model moments and data moments
     mom.display_comparison_moments(M_, options_mom_, oo_.mom.data_moments, oo_.mom.model_moments);
 end
-
+fprintf('\n==== Method of Moments Estimation (%s) Completed ====\n\n',options_mom_.mom.mom_method);
 
 % -------------------------------------------------------------------------
 % clean up
 % -------------------------------------------------------------------------
-fprintf('\n==== Method of Moments Estimation (%s) Completed ====\n\n',options_mom_.mom.mom_method)
-
-%reset warning state
-warning_config;
-
+warning_config; %reset warning state
 if isoctave && isfield(options_mom_, 'prior_restrictions') && ...
    isfield(options_mom_.prior_restrictions, 'routine')
     % Octave crashes if it tries to save function handles (to the _results.mat file)

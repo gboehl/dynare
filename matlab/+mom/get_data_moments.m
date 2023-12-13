@@ -1,7 +1,8 @@
 function [dataMoments, m_data] = get_data_moments(data, obs_var, inv_order_var, matched_moments_, options_mom_)
 % [dataMoments, m_data] = get_data_moments(data, obs_var, inv_order_var, matched_moments_, options_mom_)
-% This function computes the user-selected empirical moments from data
-% =========================================================================
+% -------------------------------------------------------------------------
+% Computes the user-selected empirical moments from data
+% -------------------------------------------------------------------------
 % INPUTS
 %  o data                    [T x varobs_nbr]  data set
 %  o obs_var:                [integer]         index of observables
@@ -16,7 +17,8 @@ function [dataMoments, m_data] = get_data_moments(data, obs_var, inv_order_var, 
 % This function is called by
 %  o mom.run
 %  o mom.objective_function
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2020-2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -33,11 +35,7 @@ function [dataMoments, m_data] = get_data_moments(data, obs_var, inv_order_var, 
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% -------------------------------------------------------------------------
-% Author(s): 
-% o Willi Mutschler (willi@mutschler.eu)
-% o Johannes Pfeifer (johannes.pfeifer@unibw.de)
-% =========================================================================
+
 
 % Initialization
 T = size(data,1); % Number of observations (T)

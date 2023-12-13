@@ -1,11 +1,11 @@
 function print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters)
-% function print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters)
+% print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters)
 % -------------------------------------------------------------------------
 % Print information on the method of moments estimation settings to the console
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
-% options_mom_                    [struct]   Options for the method of moments estimation
-% number_of_estimated_parameters  [integer]  Number of estimated parameters
+% options_mom_                    [struct]   options for the method of moments estimation
+% number_of_estimated_parameters  [integer]  number of estimated parameters
 % -------------------------------------------------------------------------
 % OUTPUT
 % No output, just displays the chosen settings
@@ -15,7 +15,8 @@ function print_info_on_estimation_settings(options_mom_, number_of_estimated_par
 % -------------------------------------------------------------------------
 % This function calls
 %  o skipline
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -32,8 +33,9 @@ function print_info_on_estimation_settings(options_mom_, number_of_estimated_par
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
-fprintf('\n---------------------------------------------------\n')
+
+
+fprintf('\n---------------------------------------------------\n');
 if strcmp(options_mom_.mom.mom_method,'SMM')
     fprintf('Simulated method of moments with');
 elseif strcmp(options_mom_.mom.mom_method,'GMM')
@@ -106,10 +108,10 @@ for i = 1:length(options_mom_.optimizer_vec)
     end
 end
 if options_mom_.order > 0
-    fprintf('\n  - stochastic simulations with perturbation order: %d', options_mom_.order)
+    fprintf('\n  - stochastic simulations with perturbation order: %d', options_mom_.order);
 end
 if options_mom_.order > 1 && options_mom_.pruning
-    fprintf(' (with pruning)')
+    fprintf(' (with pruning)');
 end
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
     if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
