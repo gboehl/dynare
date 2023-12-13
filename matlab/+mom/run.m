@@ -234,9 +234,9 @@ options_mom_.mom.compute_derivs = false; % flag to compute derivs in objective f
 options_mom_.mom.vector_output = false;  % specifies whether the objective function returns a vector
 % decision rule
 oo_.dr = set_state_space(oo_.dr,M_); % get state-space representation
-oo_.mom.obs_var = []; % create index of observed variables in DR order
+options_mom_.mom.obs_var = []; % create index of observed variables in DR order
 for i = 1:options_mom_.obs_nbr
-    oo_.mom.obs_var = [oo_.mom.obs_var; find(strcmp(options_mom_.varobs{i}, M_.endo_names(oo_.dr.order_var)))];
+    options_mom_.mom.obs_var = [options_mom_.mom.obs_var; find(strcmp(options_mom_.varobs{i}, M_.endo_names(oo_.dr.order_var)))];
 end
 
 
@@ -255,7 +255,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     % Get maximum lag number for autocovariances/autocorrelations
     options_mom_.ar = max(cellfun(@max,M_.matched_moments(:,2))) - min(cellfun(@min,M_.matched_moments(:,2)));
     % Check that only observed variables are involved in moments
-    not_observed_variables=setdiff(oo_.dr.inv_order_var([M_.matched_moments{:,1}]),oo_.mom.obs_var);
+    not_observed_variables=setdiff(oo_.dr.inv_order_var([M_.matched_moments{:,1}]),options_mom_.mom.obs_var);
     if ~isempty(not_observed_variables)
         skipline;
         error('method_of_moments: You specified moments involving %s, but it is not a varobs!',M_.endo_names{oo_.dr.order_var(not_observed_variables)})
@@ -419,7 +419,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     % Provide info on data moments handling
     fprintf('Computing data moments. Note that NaN values in the moments (due to leads and lags or missing data) are replaced by the mean of the corresponding moment.\n');
     % Get data moments for the method of moments
-    [oo_.mom.data_moments, oo_.mom.m_data] = mom.get_data_moments(dataset_.data, oo_.mom.obs_var, oo_.dr.inv_order_var, M_.matched_moments, options_mom_);
+    [oo_.mom.data_moments, oo_.mom.m_data] = mom.get_data_moments(dataset_.data, options_mom_.mom.obs_var, oo_.dr.inv_order_var, M_.matched_moments, options_mom_);
     if ~isreal(dataset_.data)
         error('method_of_moments: The data moments contain complex values!')
     end
@@ -490,10 +490,10 @@ objective_function = str2func('mom.objective_function');
 try
     % Check for NaN or complex values of moment-distance-funtion evaluated at initial parameters
     if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_method,'GMM')
-        oo_.mom.Sw = eye(options_mom_.mom.mom_nbr); % initialize with identity weighting matrix
+        weighting_info.Sw = eye(options_mom_.mom.mom_nbr); % initialize with identity weighting matrix
     end
     tic_id = tic;
-    [fval, info, ~, ~, ~, oo_, M_] = feval(objective_function, xparam0, BoundsInfo, oo_, estim_params_, M_, options_mom_);
+    [fval, info] = feval(objective_function, xparam0, oo_.mom.data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     elapsed_time = toc(tic_id);
     if isnan(fval)
         error('method_of_moments: The initial value of the objective function with identity weighting matrix is NaN!')
@@ -535,16 +535,17 @@ mom.print_info_on_estimation_settings(options_mom_, number_of_estimated_paramete
 % -------------------------------------------------------------------------
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
     % compute mode
-    [xparam1, oo_, Woptflag] = mom.mode_compute_gmm_smm(xparam0, objective_function, oo_, M_, options_mom_, estim_params_, bayestopt_, BoundsInfo);
+    [xparam1, oo_.mom.weighting_info, oo_.mom.verbose] = mom.mode_compute_gmm_smm(xparam0, objective_function, oo_.mom.m_data, oo_.mom.data_moments, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     % compute standard errors at mode
     options_mom_.mom.vector_output = false; % make sure flag is reset
     M_ = set_all_parameters(xparam1,estim_params_,M_); % update M_ and oo_ (in particular to get oo_.mom.model_moments)
     if strcmp(options_mom_.mom.mom_method,'GMM') && options_mom_.mom.analytic_standard_errors
         options_mom_.mom.compute_derivs = true; % for GMM we compute derivatives analytically in the objective function with this flag
     end
-    [~, ~, ~,~,~, oo_] = feval(objective_function, xparam1, BoundsInfo, oo_, estim_params_, M_, options_mom_); % compute model moments and oo_.mom.model_moments_params_derivs
+    [~, ~, ~, ~, ~, oo_.mom.Q, oo_.mom.model_moments, oo_.mom.model_moments_params_derivs] = feval(objective_function, xparam1, oo_.mom.data_moments, oo_.mom.weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     options_mom_.mom.compute_derivs = false; % reset to not compute derivatives in objective function during optimization
-    [stdh,hessian_xparam1] = mom.standard_errors(xparam1, objective_function, BoundsInfo, oo_, estim_params_, M_, options_mom_, Woptflag);
+    [stdh, hessian_xparam1] = mom.standard_errors(xparam1, objective_function, oo_.mom.model_moments, oo_.mom.model_moments_params_derivs, oo_.mom.m_data, oo_.mom.data_moments, oo_.mom.weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+    hessian_xparam1 = inv(hessian_xparam1); % mom.standard_errors returns the asymptotic covariance matrix
 end
 
 
@@ -553,7 +554,7 @@ end
 % -------------------------------------------------------------------------
 if options_mom_.mode_check.status
     mode_check(objective_function, xparam1, hessian_xparam1, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, true,...               
-        BoundsInfo, oo_, estim_params_, M_, options_mom_);
+               oo_.mom.data_moments, oo_.mom.weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 end
 
 
@@ -564,7 +565,7 @@ if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_meth
     % Store results in output structure
     oo_.mom = display_estimation_results_table(xparam1,stdh,M_,options_mom_,estim_params_,bayestopt_,oo_.mom,prior_dist_names,options_mom_.mom.mom_method,lower(options_mom_.mom.mom_method));
     % J test
-    oo_ = mom.Jtest(xparam1, objective_function, Woptflag, oo_, options_mom_, bayestopt_, BoundsInfo, estim_params_, M_, dataset_.nobs);
+    oo_.mom.J_test = mom.Jtest(xparam1, objective_function, oo_.mom.Q, oo_.mom.model_moments, oo_.mom.m_data, oo_.mom.data_moments, oo_.mom.weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     % display comparison of model moments and data moments
     mom.display_comparison_moments(M_, options_mom_, oo_.mom.data_moments, oo_.mom.model_moments);
 end

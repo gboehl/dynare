@@ -1,27 +1,31 @@
-function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(xparam, BoundsInfo, oo_, estim_params_, M_, options_mom_)
-% [fval, info, exit_flag, df, junk1, oo_, M_] = objective_function(xparam, BoundsInfo, oo_, estim_params_, M_, options_mom_)
+function [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moments_params_derivs] = objective_function(xparam, data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moments_params_derivs] = objective_function(xparam, data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
 % -------------------------------------------------------------------------
-% This function evaluates the objective function for method of moments estimation
-% =========================================================================
-% INPUTS
-%  o xparam:         [vector]    current value of estimated parameters as returned by set_prior()
-%  o BoundsInfo:     [structure] containing parameter bounds
-%  o oo_:            [structure] for results
-%  o estim_params_:  [structure] describing the estimated_parameters
-%  o M_              [structure] describing the model
-%  o options_mom_:   [structure] information about all settings (specified by the user, preprocessor, and taken from global options_)
+% This function evaluates the objective function for a method of moments estimation
+% -------------------------------------------------------------------------
+% INPUTS (same ones as in dsge_likelihood.m and dsge_var_likelihood.m)
+%  - xparam:               [vector]     current value of estimated parameters as returned by set_prior()
+%  - data_moments:         [vector]     data with moments/irfs to match (corresponds to dataset_ in likelihood-based estimation)
+%  - weighting_info:       [structure]  storing information on weighting matrices (corresponds to dataset_info in likelihood-based estimation)
+%  - options_mom_:         [structure]  information about all settings (specified by the user, preprocessor, and taken from global options_)
+%  - M_                    [structure]  model information
+%  - estim_params_:        [structure]  information from estimated_params block
+%  - bayestopt_:           [structure]  information on the prior distributions
+%  - BoundsInfo:           [structure]  parameter bounds
+%  - dr:                   [structure]  reduced form model
+%  - endo_steady_state:    [vector]     steady state value for endogenous variables (initval)
+%  - exo_steady_state:     [vector]     steady state value for exogenous variables (initval)
+%  - exo_det_steady_state: [vector]     steady state value for exogenous deterministic variables (initval)
 % -------------------------------------------------------------------------
 % OUTPUTS
-%  o fval:         [double] value of the quadratic form of the moment difference (except for lsqnonlin, where this is done implicitly)
-%  o info:         [vector] information on error codes and penalties
-%  o exit_flag:    [double] flag for exit status (0 if error, 1 if no error)
-%  o df:           [matrix] analytical jacobian of the moment difference (wrt paramters), currently for GMM only
-%  o junkHessian:  [matrix] empty matrix required for optimizer interface (Hessian would typically go here)
-%  o oo_:          [structure] results with the following updated fields:
-%                    - oo_.mom.model_moments: [vector] model moments
-%                    - oo_.mom.Q: [double] value of the quadratic form of the moment difference
-%                    - oo_.mom.model_moments_params_derivs: [matrix] analytical jacobian of the model moments wrt estimated parameters (currently for GMM only)
-%  o M_:           [structure] updated model structure
+%  - fval:                         [double]  value of the quadratic form of the moment difference (except for lsqnonlin, where this is done implicitly)
+%  - info:                         [vector]  information on error codes and penalties
+%  - exit_flag:                    [double]  flag for exit status (0 if error, 1 if no error)
+%  - df:                           [matrix]  analytical jacobian of the moment difference (wrt paramters), currently for GMM only
+%  - junkHessian:                  [matrix]  empty matrix required for optimizer interface (Hessian would typically go here)
+%  - Q:                            [double]  value of the quadratic form of the moment difference
+%  - model_moments:                [vector]  model moments
+%  - model_moments_params_derivs:  [matrix]  analytical jacobian of the model moments wrt estimated parameters (currently for GMM only)
 % -------------------------------------------------------------------------
 % This function is called by
 %  o mom.run
@@ -35,7 +39,8 @@ function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(
 % o resol
 % o set_all_parameters
 % o simult_
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2020-2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -52,25 +57,23 @@ function [fval, info, exit_flag, df, junkHessian, oo_, M_] = objective_function(
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
-
-%% TO DO
-% check the info values and make use of meaningful penalties
-% how do we do the penalty for the prior??
 
 
 %------------------------------------------------------------------------------
 % Initialization of the returned variables and others...
 %------------------------------------------------------------------------------
+model_moments_params_derivs = [];
+model_moments = [];
+Q = [];
 junkHessian = [];
 df = []; % required to be empty by e.g. newrat
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
     if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
         if options_mom_.mom.vector_output == 1
             if options_mom_.mom.penalized_estimator
-                df = nan(size(oo_.mom.data_moments,1)+length(xparam),length(xparam));
+                df = nan(options_mom_.mom.mom_nbr+length(xparam),length(xparam));
             else
-                df = nan(size(oo_.mom.data_moments,1),length(xparam));
+                df = nan(options_mom_.mom.mom_nbr,length(xparam));
             end
         else
             df = nan(length(xparam),1);
@@ -82,14 +85,13 @@ end
 %--------------------------------------------------------------------------
 % Get the structural parameters and define penalties
 %--------------------------------------------------------------------------
-
 % Ensure that xparam1 is a column vector; particleswarm.m requires this.
 xparam = xparam(:);
 M_ = set_all_parameters(xparam, estim_params_, M_);
 [fval,info,exit_flag] = check_bounds_and_definiteness_estimation(xparam, M_, estim_params_, BoundsInfo);
 if info(1)
     if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
-       fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;
+       fval = ones(options_mom_.mom.mom_nbr,1)*options_mom_.huge_number;
     end
     return
 end
@@ -98,9 +100,8 @@ end
 %--------------------------------------------------------------------------
 % Call resol to compute steady state and model solution
 %--------------------------------------------------------------------------
-
 % Compute linear approximation around the deterministic steady state
-[oo_.dr, info, M_.params] = resol(0, M_, options_mom_, oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+[dr, info, M_.params] = resol(0, M_, options_mom_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
 % Return, with endogenous penalty when possible, if resol issues an error code
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ||...
@@ -111,7 +112,7 @@ if info(1)
         info(4) = info(2);
         exit_flag = 0;
         if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
-            fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;
+            fval = ones(options_mom_.mom.mom_nbr,1)*options_mom_.huge_number;
         end
         return
     else
@@ -119,7 +120,7 @@ if info(1)
         info(4) = 0.1;
         exit_flag = 0;
         if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
-            fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;
+            fval = ones(options_mom_.mom.mom_nbr,1)*options_mom_.huge_number;
         end
         return
     end
@@ -150,38 +151,38 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         stderrparam_nbr = estim_params_.nvx;    % number of stderr parameters
         corrparam_nbr = estim_params_.ncx;      % number of corr parameters
         totparam_nbr = stderrparam_nbr+corrparam_nbr+modparam_nbr;
-        oo_.dr.derivs = identification.get_perturbation_params_derivs(M_, options_mom_, estim_params_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, indpmodel, indpstderr, indpcorr, 0); %analytic derivatives of perturbation matrices
-        oo_.mom.model_moments_params_derivs = NaN(options_mom_.mom.mom_nbr,totparam_nbr);
-        pruned_state_space = pruned_SS.pruned_state_space_system(M_, options_mom_, oo_.dr, oo_.mom.obs_var, options_mom_.ar, 0, 1);
+        dr.derivs = identification.get_perturbation_params_derivs(M_, options_mom_, estim_params_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state, indpmodel, indpstderr, indpcorr, 0); %analytic derivatives of perturbation matrices
+        model_moments_params_derivs = NaN(options_mom_.mom.mom_nbr,totparam_nbr);
+        pruned_state_space = pruned_SS.pruned_state_space_system(M_, options_mom_, dr, options_mom_.mom.obs_var, options_mom_.ar, 0, 1);
     else
-        pruned_state_space = pruned_SS.pruned_state_space_system(M_, options_mom_, oo_.dr, oo_.mom.obs_var, options_mom_.ar, 0, 0);
+        pruned_state_space = pruned_SS.pruned_state_space_system(M_, options_mom_, dr, options_mom_.mom.obs_var, options_mom_.ar, 0, 0);
     end
-    oo_.mom.model_moments = NaN(options_mom_.mom.mom_nbr,1);
+    model_moments = NaN(options_mom_.mom.mom_nbr,1);
     for jm = 1:size(M_.matched_moments,1)
         % First moments
         if ~options_mom_.prefilter && (sum(M_.matched_moments{jm,3}) == 1)
-            idx1 = (oo_.mom.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}) );
-            oo_.mom.model_moments(jm,1) = pruned_state_space.E_y(idx1);
+            idx1 = (options_mom_.mom.obs_var == find(dr.order_var==M_.matched_moments{jm,1}) );
+            model_moments(jm,1) = pruned_state_space.E_y(idx1);
             if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
-                oo_.mom.model_moments_params_derivs(jm,:) = pruned_state_space.dE_y(idx1,:);
+                model_moments_params_derivs(jm,:) = pruned_state_space.dE_y(idx1,:);
             end
         end
         % second moments
         if (sum(M_.matched_moments{jm,3}) == 2)
-            idx1 = (oo_.mom.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}(1)) );
-            idx2 = (oo_.mom.obs_var == find(oo_.dr.order_var==M_.matched_moments{jm,1}(2)) );
+            idx1 = (options_mom_.mom.obs_var == find(dr.order_var==M_.matched_moments{jm,1}(1)) );
+            idx2 = (options_mom_.mom.obs_var == find(dr.order_var==M_.matched_moments{jm,1}(2)) );
             if nnz(M_.matched_moments{jm,2}) == 0
                 % covariance
                 if options_mom_.prefilter
-                    oo_.mom.model_moments(jm,1) = pruned_state_space.Var_y(idx1,idx2);
+                    model_moments(jm,1) = pruned_state_space.Var_y(idx1,idx2);
                     if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
-                        oo_.mom.model_moments_params_derivs(jm,:) = pruned_state_space.dVar_y(idx1,idx2,:);
+                        model_moments_params_derivs(jm,:) = pruned_state_space.dVar_y(idx1,idx2,:);
                     end
                 else
-                    oo_.mom.model_moments(jm,1) = pruned_state_space.Var_y(idx1,idx2) + pruned_state_space.E_y(idx1)*pruned_state_space.E_y(idx2)';
+                    model_moments(jm,1) = pruned_state_space.Var_y(idx1,idx2) + pruned_state_space.E_y(idx1)*pruned_state_space.E_y(idx2)';
                     if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
                         for jp=1:totparam_nbr
-                            oo_.mom.model_moments_params_derivs(jm,jp) = pruned_state_space.dVar_y(idx1,idx2,jp) + pruned_state_space.dE_y(idx1,jp)*pruned_state_space.E_y(idx2)' + pruned_state_space.E_y(idx1)*pruned_state_space.dE_y(idx2,jp)';
+                            model_moments_params_derivs(jm,jp) = pruned_state_space.dVar_y(idx1,idx2,jp) + pruned_state_space.dE_y(idx1,jp)*pruned_state_space.E_y(idx2)' + pruned_state_space.E_y(idx1)*pruned_state_space.dE_y(idx2,jp)';
                         end
                     end
                 end
@@ -189,15 +190,15 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
                 % autocovariance
                 lag = -M_.matched_moments{jm,2}(2); %note that leads/lags in M_.matched_moments are transformed such that first entry is always 0 and the second is a lag
                 if options_mom_.prefilter
-                    oo_.mom.model_moments(jm,1) = pruned_state_space.Var_yi(idx1,idx2,lag);
+                    model_moments(jm,1) = pruned_state_space.Var_yi(idx1,idx2,lag);
                     if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
-                        oo_.mom.model_moments_params_derivs(jm,:) = pruned_state_space.dVar_yi(idx1,idx2,lag,:);
+                        model_moments_params_derivs(jm,:) = pruned_state_space.dVar_yi(idx1,idx2,lag,:);
                     end
                 else
-                    oo_.mom.model_moments(jm,1) = pruned_state_space.Var_yi(idx1,idx2,lag) + pruned_state_space.E_y(idx1)*pruned_state_space.E_y(idx2)';
+                    model_moments(jm,1) = pruned_state_space.Var_yi(idx1,idx2,lag) + pruned_state_space.E_y(idx1)*pruned_state_space.E_y(idx2)';
                     if options_mom_.mom.compute_derivs && ( options_mom_.mom.analytic_standard_errors || options_mom_.mom.analytic_jacobian )
                         for jp=1:totparam_nbr
-                            oo_.mom.model_moments_params_derivs(jm,jp) = vec( pruned_state_space.dVar_yi(idx1,idx2,lag,jp) + pruned_state_space.dE_y(idx1,jp)*pruned_state_space.E_y(idx2)' + pruned_state_space.E_y(idx1)*pruned_state_space.dE_y(idx2,jp)');
+                            model_moments_params_derivs(jm,jp) = vec( pruned_state_space.dVar_yi(idx1,idx2,lag,jp) + pruned_state_space.dE_y(idx1,jp)*pruned_state_space.E_y(idx2)' + pruned_state_space.E_y(idx1)*pruned_state_space.dE_y(idx2,jp)');
                         end
                     end
                 end
@@ -217,11 +218,11 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
     scaled_shock_series = zeros(size(options_mom_.mom.shock_series)); % initialize
     scaled_shock_series(:,i_exo_var) = options_mom_.mom.shock_series(:,i_exo_var)*chol_S; % set non-zero entries
     % simulate series
-    y_sim = simult_(M_, options_mom_, oo_.dr.ys, oo_.dr, scaled_shock_series, options_mom_.order);
+    y_sim = simult_(M_, options_mom_, dr.ys, dr, scaled_shock_series, options_mom_.order);
     % provide meaningful penalty if data is nan or inf
     if any(any(isnan(y_sim))) || any(any(isinf(y_sim)))
         if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
-            fval = Inf(size(oo_.mom.Sw,1),1);
+            fval = Inf(size(weighting_info.Sw,1),1);
         else
             fval = Inf;
         end
@@ -229,12 +230,12 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
         info(4) = 0.1;
         exit_flag = 0;
         if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
-            fval = ones(size(oo_.mom.data_moments,1),1)*options_mom_.huge_number;
+            fval = ones(options_mom_.mom.mom_nbr,1)*options_mom_.huge_number;
         end
         return
     end
     % remove burn-in and focus on observables (note that y_sim is in declaration order)
-    y_sim = y_sim(oo_.dr.order_var(oo_.mom.obs_var) , end-options_mom_.mom.long+1:end)';
+    y_sim = y_sim(dr.order_var(options_mom_.mom.obs_var) , end-options_mom_.mom.long+1:end)';
     if ~all(diag(M_.H)==0)
         i_ME = setdiff(1:size(M_.H,1),find(diag(M_.H) == 0)); % find ME with 0 variance
         chol_S = chol(M_.H(i_ME,i_ME)); % decompose rest
@@ -246,27 +247,27 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
     if options_mom_.prefilter
         y_sim = bsxfun(@minus, y_sim, mean(y_sim,1));
     end
-    oo_.mom.model_moments = mom.get_data_moments(y_sim, oo_.mom.obs_var, oo_.dr.inv_order_var, M_.matched_moments, options_mom_);
+    model_moments = mom.get_data_moments(y_sim, options_mom_.mom.obs_var, dr.inv_order_var, M_.matched_moments, options_mom_);
 end
 
 
 %--------------------------------------------------------------------------
 % Compute quadratic target function
 %--------------------------------------------------------------------------
-moments_difference = oo_.mom.data_moments - oo_.mom.model_moments;
+moments_difference = data_moments - model_moments;
 
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
-    residuals = sqrt(options_mom_.mom.weighting_matrix_scaling_factor)*oo_.mom.Sw*moments_difference;
-    oo_.mom.Q = residuals'*residuals;
+    residuals = sqrt(options_mom_.mom.weighting_matrix_scaling_factor)*weighting_info.Sw*moments_difference;
+    Q = residuals'*residuals;
     if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
         fval = residuals;
         if options_mom_.mom.penalized_estimator
-            fval=[fval;(xparam-oo_.mom.prior.mean)./sqrt(diag(oo_.mom.prior.variance))];
+            fval=[fval;(xparam-bayestopt_.p1)./sqrt(diag(diag(bayestopt_.p2.^2)))];
         end
     else
-        fval = oo_.mom.Q;
+        fval = Q;
         if options_mom_.mom.penalized_estimator
-            fval=fval+(xparam-oo_.mom.prior.mean)'/oo_.mom.prior.variance*(xparam-oo_.mom.prior.mean);
+            fval=fval+(xparam-bayestopt_.p1)'/(diag(bayestopt_.p2.^2))*(xparam-bayestopt_.p1);
         end
     end
     if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
@@ -274,18 +275,18 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
             dxparam1 = eye(length(xparam));
         end
         for jp=1:length(xparam)
-            dmoments_difference = - oo_.mom.model_moments_params_derivs(:,jp);
-            dresiduals = sqrt(options_mom_.mom.weighting_matrix_scaling_factor)*oo_.mom.Sw*dmoments_difference;
+            dmoments_difference = - model_moments_params_derivs(:,jp);
+            dresiduals = sqrt(options_mom_.mom.weighting_matrix_scaling_factor)*weighting_info.Sw*dmoments_difference;
             if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
                 if options_mom_.mom.penalized_estimator
-                    df(:,jp)=[dresiduals;dxparam1(:,jp)./sqrt(diag(oo_.mom.prior.variance))];
+                    df(:,jp)=[dresiduals;dxparam1(:,jp)./sqrt(diag(diag(bayestopt_.p2.^2)))];
                 else
                     df(:,jp) = dresiduals;
                 end
             else
                 df(jp,1) = dresiduals'*residuals + residuals'*dresiduals;
                 if options_mom_.mom.penalized_estimator
-                    df(jp,1)=df(jp,1)+(dxparam1(:,jp))'/oo_.mom.prior.variance*(xparam-oo_.mom.prior.mean)+(xparam-oo_.mom.prior.mean)'/oo_.mom.prior.variance*(dxparam1(:,jp));
+                    df(jp,1)=df(jp,1)+(dxparam1(:,jp))'/(diag(bayestopt_.p2.^2))*(xparam-bayestopt_.p1)+(xparam-bayestopt_.p1)'/(diag(bayestopt_.p2.^2))*(dxparam1(:,jp));
                 end
             end
         end
@@ -294,4 +295,3 @@ end
 
 
 end % main function end
-
