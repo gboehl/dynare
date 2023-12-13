@@ -49,7 +49,7 @@ output_cell{1,1}=mean(xparam1);
 % set the parameters draws to the model structure
 M_ = set_all_parameters(xparam1,estim_params_,M_);
 % compute the steady state for the parameter draw written to M_
-[ys,params,info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,false);
+[ys,params,info] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
 
 %set second part of output cell
 output_cell{1,2}=ys';

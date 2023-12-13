@@ -40,7 +40,7 @@ beta = get_optimal_policy_discount_factor(M_.params, M_.param_names);
 if options_.steadystate_flag
     % explicit steady state file
     [ys,M_.params,info] = evaluate_steady_state_file(endo_steady_state,[exo_steady_state; exo_det_steady_state],M_, ...
-                                                    options_,false);
+                                                    options_,~options_.steadystate.nocheck);
     if info(1)
         return;
     end

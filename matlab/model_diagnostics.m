@@ -111,7 +111,7 @@ if options_.logged_steady_state %if steady state was previously logged, undo thi
     oo_.steady_state=exp(oo_.steady_state);
     options_.logged_steady_state=0;
 end
-[dr.ys,M_.params,check1]=evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,options_.steadystate.nocheck);
+[dr.ys,M_.params,check1]=evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,~options_.steadystate.nocheck);
 
 if isfield(M_,'occbin')
     if any(oo_.exo_steady_state)
