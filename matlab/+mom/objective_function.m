@@ -289,7 +289,7 @@ if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING') && strcmp(options_mom_.mom
     end
     % do transformations on model irfs if irf_matching_file is provided
     if ~isempty(options_mom_.mom.irf_matching_file.name)
-        [modelIrf,check] = feval(str2func(options_mom_.mom.irf_matching_file.name),modelIrf, M_, options_mom_);
+        [modelIrf,check] = feval(str2func(options_mom_.mom.irf_matching_file.name),modelIrf, M_, options_mom_, dr.ys);
         if check
             fval = Inf;
             info(1) = 180;
