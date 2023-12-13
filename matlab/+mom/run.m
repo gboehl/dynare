@@ -231,10 +231,27 @@ end
 % -------------------------------------------------------------------------
 if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
     [oo_.mom.data_moments, oo_.mom.weighting_info.W, options_mom_.mom.irfIndex, options_mom_.irf] = mom.matched_irfs_blocks(M_.matched_irfs, M_.matched_irfs_weights, options_mom_.varobs_id, options_mom_.obs_nbr, M_.exo_nbr, M_.endo_names);
-    oo_.mom.weighting_info.Winv = inv(oo_.mom.weighting_info.W);
-    oo_.mom.weighting_info.Winv_logdet = 2*sum(log(diag(chol(oo_.mom.weighting_info.Winv)))); % use this robust option to avoid inf/nan
+    % compute inverse of weighting matrix
+    try
+        oo_.mom.weighting_info.Winv = inv(oo_.mom.weighting_info.W);
+    catch
+        error('method_of_moments: Something wrong while computing inv(W), check your weighting matrix!');
+    end
+    if any(isnan(oo_.mom.weighting_info.Winv(:))) || any(isinf(oo_.mom.weighting_info.Winv(:)))
+        error('method_of_moments: There are nan or inf in inv(W), check your weighting matrix!');
+    end
+    % compute log determinant of inverse of weighting matrix in a robust way to avoid inf/nan
+    try
+        oo_.mom.weighting_info.Winv_logdet = 2*sum(log(diag(chol(oo_.mom.weighting_info.Winv))));
+    catch
+        error('method_of_moments: Something wrong while computing log(det(inv(W))), check your weighting matrix!');
+    end
+    if any(isnan(oo_.mom.weighting_info.Winv_logdet(:))) || any(isinf(oo_.mom.weighting_info.Winv_logdet(:)))
+        error('method_of_moments: There are nan or inf in log(det(inv(W))), check your weighting matrix!');
+    end
     options_mom_.mom.mom_nbr = length(options_mom_.mom.irfIndex);
 end
+
 
 % -------------------------------------------------------------------------
 % irf_matching_file: checks and transformations
