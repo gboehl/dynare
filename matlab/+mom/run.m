@@ -96,11 +96,6 @@ function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_,
 %  o test_for_deep_parameters_calibration
 %  o transform_prior_to_laplace_prior
 %  o warning_config
-% -------------------------------------------------------------------------
-% Maintaining Author(s):
-% o Willi Mutschler (willi@mutschler.eu)
-% o Johannes Pfeifer (johannes.pfeifer@unibw.de)
-% -------------------------------------------------------------------------
 
 % Copyright © 2020-2023 Dynare Team
 %
@@ -118,47 +113,6 @@ function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_,
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-
-% -------------------------------------------------------------------------
-% TO DO LISTS AND IDEAS
-% -------------------------------------------------------------------------
-% GENERAL
-% - PREPROCESSOR CHANGE CALL TO FUNCTION (SEE ABOVE)
-% - document all options in manual
-% - document analytic_jacobian better
-% - do endogenous_prior_restrictions work?, create test for prior restrictions file
-% - implement penalty objective function for optimization
-% - test optimizers (what about analytic Jacobians? Also check if mode compute is a string and additional optimizers also a string)
-% - factorize mode_compute codes
-% - analytic_jacobian with mode_compute 5
-% - decide on default mode_compute
-% - use same names for variables (e.g. for weighting matrix)
-% - mom.objective_function: check the info values and make use of meaningful penalties (which numbers do we use??)
-% - add Approximate Bayesian Computation (ABC) option
-% - merge mode_compute functions for GMM/SMM and IRF_MATCHING
-% GMM/SMM
-% - do true Bayesian MCMC sampling and not just penalized
-% - speed up pruned_state_space_system (by using doubling with old initial values, hardcoding zeros, other "tricks" used in e.g. nlma)
-% - add option to use autocorrelations (we have useautocorr in identification toolbox already)
-% - deal with measurement errors (once @wmutschl has implemented this in identification toolbox)
-% - display scaled moments
-% - enable to use first moments even if prefilter option is set
-% IRF_MATCHING/SMM
-% - add option to do simulations with extended path
-% - add option to do simulations with perfect_foresight and perfect_foresight_with_expectation_errors
-% - add option to do simulations with occbin
-% - factorize stoch_simul irf codes that are the same as in mom.objective_function
-% IRF_MATCHING
-% - add analytic_standard_errors and analytic_jacobian (at least for order=1)
-% - What about iterating over mode_compute and updating the weighting matrix? Is that also useful for IRF_MATCHING?
-%   Can we also use optimal_weighting_matrix for IRF_MATCHING or is this done outside of our codes?
-% - check all mode compute options (and also optim options)
-% - use_penalized_objective_for_hessian
-% - do we need bayesian_irf? If not remove as option
-% - check order > 1
-% - print more info to console
-
 
 fprintf('\n==== Method of Moments Estimation (%s) ====\n\n',options_mom_.mom.mom_method);
 
