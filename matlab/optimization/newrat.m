@@ -93,6 +93,7 @@ end
 
 outer_product_gradient=1;
 if isempty(hh)
+    penalty=fval0;
     [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(x,func0,penalty,flagit,htol,hess_info,bounds,prior_std,Save_files,varargin{:});
     if isempty(dum)
         outer_product_gradient=0;
