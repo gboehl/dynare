@@ -270,14 +270,15 @@ if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING') && strcmp(options_mom_.mom
             y_irf = irf(M_, options_mom_, dr, cs(:,i), options_mom_.irf, options_mom_.drop, options_mom_.replic, options_mom_.order);
         end
         if any(any(isnan(y_irf))) && ~options_mom_.pruning && ~(options_mom_.order==1)
-            fprintf('\nirf_matching: The simulations conducted for generating IRFs to %s were explosive: Either reduce the shock size, use pruning, or set the approximation order to 1.\n', M_.exo_names{i})
-            fval = Inf;
-            info(1) = 180;
+            info(1) = 181;
             info(4) = 0.1;
+            fval = Inf;
             exit_flag = 0;
             if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
                 fval = ones(options_mom_.mom.mom_nbr,1)*options_mom_.huge_number;
             end
+            message = get_error_message(info,options_mom_);
+            fprintf('\n%s\n              info = %d for shock %s.\n', message, info(1), M_.exo_names{i});            
             return
         end
         if options_mom_.relative_irf
