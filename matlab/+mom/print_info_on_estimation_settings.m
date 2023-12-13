@@ -1,12 +1,12 @@
-function print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters, doBayesianEstimation)
-% print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters, doBayesianEstimation)
+function print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters, do_bayesian_estimation)
+% print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters, do_bayesian_estimation)
 % -------------------------------------------------------------------------
 % Print information on the method of moments estimation settings to the console
 % -------------------------------------------------------------------------
 % INPUTS
 % options_mom_                    [struct]   options for the method of moments estimation
 % number_of_estimated_parameters  [integer]  number of estimated parameters
-% doBayesianEstimation            [boolean]  true if the estimation is Bayesian
+% do_bayesian_estimation          [boolean]  true if the estimation is Bayesian
 % -------------------------------------------------------------------------
 % OUTPUT
 % No output, just displays the chosen settings
@@ -53,7 +53,7 @@ if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_meth
     end
 end
 if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
-    if doBayesianEstimation
+    if do_bayesian_estimation
         fprintf('Bayesian Impulse Response Function Matching with');
     else
         fprintf('Frequentist Impulse Response Function Matching with');

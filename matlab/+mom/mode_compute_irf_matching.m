@@ -78,7 +78,7 @@ for optim_iter = 1:length(options_mom_.optimizer_vec)
             if options_mom_.optimizer_vec{optim_iter}==0
                 hessian_xparam1_iter = hessian_xparam1;
             else
-                fprintf('computing hessian');
+                fprintf('computing Hessian');
                 hessian_xparam1_iter = hessian(objective_function, xparam1, options_mom_.gstep,...
                                                data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
                 hessian_xparam1_iter = reshape(hessian_xparam1_iter, length(xparam1), length(xparam1));

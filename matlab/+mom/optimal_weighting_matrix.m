@@ -18,7 +18,7 @@ function W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
 %  o mom.run.m
 % -------------------------------------------------------------------------
 % This function calls:
-%  o CorrMatrix (embedded)
+%  o corr_matrix (embedded)
 % -------------------------------------------------------------------------
 
 % Copyright © 2020-2023 Dynare Team
@@ -43,36 +43,36 @@ function W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
 [T,num_Mom] = size(m_data); % note that in m_data NaN values (due to leads or lags in matched_moments and missing data) were replaced by the mean
 
 % center around moments (could be either data_moments or model_moments)
-h_Func = m_data - repmat(moments',T,1);
+h_func = m_data - repmat(moments',T,1);
 
 % the required correlation matrices
-GAMA_array = zeros(num_Mom,num_Mom,q_lag);
-GAMA0 = Corr_Matrix(h_Func,T,num_Mom,0);
+gamma_array = zeros(num_Mom,num_Mom,q_lag);
+gamma0 = corr_matrix(h_func,T,num_Mom,0);
 if q_lag > 0
     for ii=1:q_lag
-        GAMA_array(:,:,ii) = Corr_Matrix(h_Func,T,num_Mom,ii);
+        gamma_array(:,:,ii) = corr_matrix(h_func,T,num_Mom,ii);
     end
 end
 
 % the estimate of S
-S = GAMA0;
+S = gamma0;
 if q_lag > 0
     for ii=1:q_lag
-        S = S + (1-ii/(q_lag+1))*(GAMA_array(:,:,ii) + GAMA_array(:,:,ii)');
+        S = S + (1-ii/(q_lag+1))*(gamma_array(:,:,ii) + gamma_array(:,:,ii)');
     end
 end
 
 % the estimate of W
 W_opt = S\eye(size(S,1));
 
-W_opt=(W_opt+W_opt')/2; % ensure symmetry
+W_opt = (W_opt+W_opt')/2; % ensure symmetry
 end % main function end
 
 % The correlation matrix
-function GAMA_corr = Corr_Matrix(h_Func,T,num_Mom,v)
-    GAMA_corr = zeros(num_Mom,num_Mom);
+function gamma_corr = corr_matrix(h_func,T,num_Mom,v)
+    gamma_corr = zeros(num_Mom,num_Mom);
     for t = 1+v:T
-        GAMA_corr = GAMA_corr + h_Func(t-v,:)'*h_Func(t,:);
+        gamma_corr = gamma_corr + h_func(t-v,:)'*h_func(t,:);
     end
-    GAMA_corr = GAMA_corr/T;
-end % Corr_Matrix end
+    gamma_corr = gamma_corr/T;
+end % corr_matrix end

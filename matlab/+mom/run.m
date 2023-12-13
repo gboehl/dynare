@@ -185,11 +185,11 @@ end
 if (~isempty(estim_params_.var_endo) || ~isempty(estim_params_.corrn)) && strcmp(options_mom_.mom.mom_method, 'GMM')
     error('method_of_moments: GMM estimation does not support measurement error(s) yet. Please specify them as a structural shock!');
 end
-doBayesianEstimation = [estim_params_.var_exo(:,5); estim_params_.var_endo(:,5); estim_params_.corrx(:,6); estim_params_.corrn(:,6); estim_params_.param_vals(:,5)];
-if all(doBayesianEstimation~=0)
-    doBayesianEstimation = true;
-elseif all(doBayesianEstimation==0)
-    doBayesianEstimation = false;
+do_bayesian_estimation = [estim_params_.var_exo(:,5); estim_params_.var_endo(:,5); estim_params_.corrx(:,6); estim_params_.corrn(:,6); estim_params_.param_vals(:,5)];
+if all(do_bayesian_estimation~=0)
+    do_bayesian_estimation = true;
+elseif all(do_bayesian_estimation==0)
+    do_bayesian_estimation = false;
 else
     error('method_of_moments: Estimation must be either fully Frequentist or fully Bayesian. Maybe you forgot to specify a prior distribution!');
 end
@@ -208,7 +208,7 @@ check_varobs_are_endo_and_declared_once(options_.varobs,M_.endo_names);
 % The idea is to be independent of options_ and have full control of the
 % estimation instead of possibly having to deal with options chosen somewhere
 % else in the mod file.
-options_mom_ = mom.default_option_mom_values(options_mom_, options_, M_.dname, doBayesianEstimation);
+options_mom_ = mom.default_option_mom_values(options_mom_, options_, M_.dname, do_bayesian_estimation);
 
 
 % -------------------------------------------------------------------------
@@ -234,12 +234,12 @@ CheckPath(M_.dname,'.');
 CheckPath('method_of_moments',M_.dname);
 CheckPath('graphs',M_.dname);
 
-if doBayesianEstimation
+if do_bayesian_estimation
     oo_.mom.posterior.optimization.mode = [];
     oo_.mom.posterior.optimization.Variance = [];
     oo_.mom.posterior.optimization.log_density=[];
 end
-doBayesianEstimationMCMC = doBayesianEstimation && ( (options_mom_.mh_replic>0) || options_mom_.load_mh_file );
+do_bayesian_estimation_mcmc = do_bayesian_estimation && ( (options_mom_.mh_replic>0) || options_mom_.load_mh_file );
 invhess = [];
 % decision rule
 oo_.dr = set_state_space(oo_.dr,M_); % get state-space representation
@@ -314,7 +314,7 @@ if exist([M_.fname '_prior_restrictions.m'],'file')
     options_mom_.prior_restrictions.routine = str2func([M_.fname '_prior_restrictions']);
 end
 % check that the provided mode_file is compatible with the current estimation settings
-if ~isempty(options_mom_.mode_file) && ( ~doBayesianEstimation || (doBayesianEstimation && ~options_mom_.mh_posterior_mode_estimation) )
+if ~isempty(options_mom_.mode_file) && ( ~do_bayesian_estimation || (do_bayesian_estimation && ~options_mom_.mh_posterior_mode_estimation) )
     [xparam0, hessian_xparam0] = check_mode_file(xparam0, hessian_xparam0, options_mom_, bayestopt_);
 end
 % check on specified priors and penalized estimation (which uses Laplace approximated priors)
@@ -340,18 +340,18 @@ else
     estim_params_.full_calibration_detected = false;
 end
 if options_mom_.use_calibration_initialization % set calibration as starting values
-    if ~isempty(bayestopt_) && ~doBayesianEstimation && any(all(isnan([xparam_calib xparam0]),2))
+    if ~isempty(bayestopt_) && ~do_bayesian_estimation && any(all(isnan([xparam_calib xparam0]),2))
         error('method_of_moments: When using the use_calibration option with %s without prior, the parameters must be explicitly initialized!',options_mom_.mom.mom_method);
     else
         [xparam0,estim_params_] = do_parameter_initialization(estim_params_,xparam_calib,xparam0); % get explicitly initialized parameters that have precedence over calibrated values
     end
 end
 % check initialization
-if ~isempty(bayestopt_) && ~doBayesianEstimation && any(isnan(xparam0))
+if ~isempty(bayestopt_) && ~do_bayesian_estimation && any(isnan(xparam0))
     error('method_of_moments: Frequentist %s requires all estimated parameters to be initialized, either in an estimated_params or estimated_params_init-block!',options_mom_.mom.mom_method);
 end
 % set and check parameter bounds
-if ~isempty(bayestopt_) && doBayesianEstimation
+if ~isempty(bayestopt_) && do_bayesian_estimation
     % plot prior densities
     if ~options_mom_.nograph && options_mom_.plot_priors
         if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
@@ -402,7 +402,7 @@ if estim_params_.ncx || any(nnz(tril(M_.Correlation_matrix,-1))) || isfield(esti
     M_.sigma_e_is_diagonal = false;
 end
 % storing prior parameters in results structure
-if doBayesianEstimation || ( (strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')) && options_mom_.mom.penalized_estimator)
+if do_bayesian_estimation || ( (strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')) && options_mom_.mom.penalized_estimator)
     oo_.mom.prior.mean = bayestopt_.p1;
     oo_.mom.prior.mode = bayestopt_.p5;
     oo_.mom.prior.variance = diag(bayestopt_.p2.^2);
@@ -414,7 +414,7 @@ M_ = set_all_parameters(xparam0,estim_params_,M_);
 % provide warning if there is NaN in parameters
 test_for_deep_parameters_calibration(M_);
 % set jscale
-if doBayesianEstimationMCMC
+if do_bayesian_estimation_mcmc
     if ~strcmp(options_mom_.posterior_sampler_options.posterior_sampling_method,'slice')
         if isempty(options_mom_.mh_jscale)
             options_mom_.mh_jscale = 2.38/sqrt(number_of_estimated_parameters); % use optimal value for univariate normal distribution (check_posterior_sampler_options and mode_compute=6 may overwrite this setting)
@@ -423,7 +423,7 @@ if doBayesianEstimationMCMC
     end
 end
 % initialization of posterior sampler options
-if doBayesianEstimationMCMC
+if do_bayesian_estimation_mcmc
     [current_options, options_mom_, bayestopt_] = check_posterior_sampler_options([], M_.fname, M_.dname, options_mom_, BoundsInfo, bayestopt_);
     options_mom_.posterior_sampler_options.current_options = current_options;
     if strcmp(current_options.posterior_sampling_method,'slice') && current_options.use_mh_covariance_matrix && ~current_options.rotated
@@ -431,7 +431,7 @@ if doBayesianEstimationMCMC
     end
 end
 % warning if prior allows that stderr parameters are negative or corr parameters are outside the unit circle
-if doBayesianEstimation
+if do_bayesian_estimation
     check_prior_stderr_corr(estim_params_,bayestopt_);
     % check value of prior density
     [~,~,~,info] = priordens(xparam0,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
@@ -578,7 +578,7 @@ end
 % -------------------------------------------------------------------------
 % print some info to console
 % -------------------------------------------------------------------------
-mom.print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters, doBayesianEstimation);
+mom.print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters, do_bayesian_estimation);
 
 
 % -------------------------------------------------------------------------
@@ -592,8 +592,8 @@ end
 % compute mode for IRF matching
 % -------------------------------------------------------------------------
 if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
-    if ~doBayesianEstimation || (doBayesianEstimation && ~options_mom_.mh_posterior_mode_estimation)
-        [xparam1, hessian_xparam1, fval, oo_.mom.verbose] = mom.mode_compute_irf_matching(xparam0, hessian_xparam0, objective_function, doBayesianEstimation, oo_.mom.weighting_info, oo_.mom.data_moments, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+    if ~do_bayesian_estimation || (do_bayesian_estimation && ~options_mom_.mh_posterior_mode_estimation)
+        [xparam1, hessian_xparam1, fval, oo_.mom.verbose] = mom.mode_compute_irf_matching(xparam0, hessian_xparam0, objective_function, do_bayesian_estimation, oo_.mom.weighting_info, oo_.mom.data_moments, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     else
         xparam1 = xparam0;
         hessian_xparam1 = hessian_xparam0;
@@ -618,8 +618,8 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
         hessian_xparam1 = inv(invhess);
     end
 else
-    if ~doBayesianEstimation || ~options_mom_.mh_posterior_mode_estimation
-        if doBayesianEstimation
+    if ~do_bayesian_estimation || ~options_mom_.mh_posterior_mode_estimation
+        if do_bayesian_estimation
             oo_.mom.posterior.optimization.mode = xparam1;
             if exist('fval','var')
                 oo_.mom.posterior.optimization.log_density = -fval;
@@ -629,18 +629,18 @@ else
             hsd = sqrt(diag(hessian_xparam1)); % represent the curvature (or second derivatives) of the likelihood with respect to each parameter being estimated.
             invhess = inv(hessian_xparam1./(hsd*hsd'))./(hsd*hsd'); % before taking the inverse scale the Hessian matrix by dividing each of its elements by the outer product of hsd such that the diagonal of the resulting matrix is approximately 1. This kind of scaling can help in regularizing the matrix and potentially improves its condition number, which in turn can make the matrix inversion more stable.
             stdh = sqrt(diag(invhess));
-            if doBayesianEstimation
+            if do_bayesian_estimation
                 oo_.mom.posterior.optimization.Variance = invhess;
             end
         end
     else
         variances = bayestopt_.p2.*bayestopt_.p2;
-        idInf = isinf(variances);
-        variances(idInf) = 1;
+        id_inf = isinf(variances);
+        variances(id_inf) = 1;
         invhess = options_mom_.mh_posterior_mode_estimation*diag(variances);
         xparam1 = bayestopt_.p5;
-        idNaN = isnan(xparam1);
-        xparam1(idNaN) = bayestopt_.p1(idNaN);
+        id_nan = isnan(xparam1);
+        xparam1(id_nan) = bayestopt_.p1(id_nan);
         outside_bound_pars=find(xparam1 < BoundsInfo.lb | xparam1 > BoundsInfo.ub);
         xparam1(outside_bound_pars) = bayestopt_.p1(outside_bound_pars);
     end
@@ -653,7 +653,7 @@ end
 % -------------------------------------------------------------------------
 % display estimation results at mode
 % -------------------------------------------------------------------------
-if doBayesianEstimation && ~options_mom_.mom.penalized_estimator && ~options_mom_.mh_posterior_mode_estimation
+if do_bayesian_estimation && ~options_mom_.mom.penalized_estimator && ~options_mom_.mh_posterior_mode_estimation
     % display table with Bayesian mode estimation results and store parameter estimates and standard errors in oo_
     oo_.mom = display_estimation_results_table(xparam1, stdh, M_, options_mom_, estim_params_, bayestopt_, oo_.mom, prior_dist_names, 'Posterior', 'posterior');
     % Laplace approximation to the marginal log density
@@ -668,7 +668,7 @@ if doBayesianEstimation && ~options_mom_.mom.penalized_estimator && ~options_mom
         end        
         fprintf('\nLog data density [Laplace approximation] is %f.\n',oo_.mom.MarginalDensity.LaplaceApproximation);
     end
-elseif ~doBayesianEstimation || (doBayesianEstimation && options_mom_.mom.penalized_estimator)
+elseif ~do_bayesian_estimation || (do_bayesian_estimation && options_mom_.mom.penalized_estimator)
     % display table with Frequentist estimation results and store parameter estimates and standard errors in oo_
     oo_.mom = display_estimation_results_table(xparam1, stdh, M_, options_mom_, estim_params_, bayestopt_, oo_.mom, prior_dist_names, options_mom_.mom.mom_method, lower(options_mom_.mom.mom_method));    
 end
@@ -677,11 +677,11 @@ end
 % -------------------------------------------------------------------------
 % checks for mode and hessian at the mode
 % -------------------------------------------------------------------------
-if (~doBayesianEstimation && options_mom_.cova_compute) || (doBayesianEstimation && ~options_mom_.mh_posterior_mode_estimation && options_mom_.cova_compute)
+if (~do_bayesian_estimation && options_mom_.cova_compute) || (do_bayesian_estimation && ~options_mom_.mh_posterior_mode_estimation && options_mom_.cova_compute)
     check_hessian_at_the_mode(hessian_xparam1, xparam1, M_, estim_params_, options_, BoundsInfo);
 end
 if options_mom_.mode_check.status
-    if ~doBayesianEstimation || (doBayesianEstimation && ~options_mom_.mh_posterior_mode_estimation)
+    if ~do_bayesian_estimation || (do_bayesian_estimation && ~options_mom_.mh_posterior_mode_estimation)
         mode_check(objective_function, xparam1, diag(stdh), options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, true,... % use diag(stdh) instead of hessian_xparam1 as mode_check uses diagonal elements
                    oo_.mom.data_moments, oo_.mom.weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     end
@@ -690,7 +690,7 @@ end
 % -------------------------------------------------------------------------
 % Bayesian MCMC estimation
 % -------------------------------------------------------------------------
-if doBayesianEstimationMCMC
+if do_bayesian_estimation_mcmc
     invhess = set_mcmc_jumping_covariance(invhess, length(xparam1), options_mom_.MCMC_jumping_covariance, bayestopt_, 'method_of_moments');
     % reset bounds as lb and ub must only be operational during mode-finding
     BoundsInfo = set_mcmc_prior_bounds(xparam1, bayestopt_, options_mom_, 'method_of_moments');
@@ -801,20 +801,20 @@ if doBayesianEstimationMCMC
     end
     % MAYBE USEFUL????
     % % Posterior correlations
-    % ExtremeCorrBound=0.7;
-    % if  ~isnan(ExtremeCorrBound)
+    % extreme_corr_bound = 0.7;
+    % if  ~isnan(extreme_corr_bound)
     %     tril_para_correlation_matrix=tril(para_correlation_matrix,-1);
-    %     [RowIndex,ColIndex]=find(abs(tril_para_correlation_matrix)>ExtremeCorrBound);
-    %     ExtremeCorrParams=cell(length(RowIndex),3);
-    %     for i=1:length(RowIndex)
-    %         ExtremeCorrParams{i,1}=char(parameter_names(RowIndex(i),:));
-    %         ExtremeCorrParams{i,2}=char(parameter_names(ColIndex(i),:));
-    %         ExtremeCorrParams{i,3}=tril_para_correlation_matrix(RowIndex(i),ColIndex(i));
+    %     [row_index,col_index]=find(abs(tril_para_correlation_matrix)>extreme_corr_bound);
+    %     extreme_corr_params=cell(length(row_index),3);
+    %     for i=1:length(row_index)
+    %         extreme_corr_params{i,1}=char(parameter_names(row_index(i),:));
+    %         extreme_corr_params{i,2}=char(parameter_names(col_index(i),:));
+    %         extreme_corr_params{i,3}=tril_para_correlation_matrix(row_index(i),col_index(i));
     %     end
     % end
     % disp(' ');
-    % disp(['Correlations of Parameters (at Posterior Mode) > ',num2str(ExtremeCorrBound)]);
-    % disp(ExtremeCorrParams)
+    % disp(['Correlations of Parameters (at Posterior Mode) > ',num2str(extreme_corr_bound)]);
+    % disp(extreme_corr_params)
 end
 
 

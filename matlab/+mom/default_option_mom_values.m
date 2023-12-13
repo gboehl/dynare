@@ -1,5 +1,5 @@
-function options_mom_ = default_option_mom_values(options_mom_, options_, dname, doBayesianEstimation)
-% options_mom_ = default_option_mom_values(options_mom_, options_, dname, doBayesianEstimation)
+function options_mom_ = default_option_mom_values(options_mom_, options_, dname, do_bayesian_estimation)
+% options_mom_ = default_option_mom_values(options_mom_, options_, dname, do_bayesian_estimation)
 % -------------------------------------------------------------------------
 % Returns structure containing the options for method_of_moments command.
 % Note 1: options_mom_ is local and contains default and user-specified
@@ -13,10 +13,10 @@ function options_mom_ = default_option_mom_values(options_mom_, options_, dname,
 % computed from the model and the moments/irfs computed from the data.
 % -------------------------------------------------------------------------
 % INPUTS
-%  o options_mom_:         [structure]  all user-specified settings (from the method_of_moments command)
-%  o options_:             [structure]  global options
-%  o dname:                [string]     default name of directory to store results
-%  o doBayesianEstimation  [boolean]    indicator whether we do Bayesian estimation
+%  o options_mom_:           [structure]  all user-specified settings (from the method_of_moments command)
+%  o options_:               [structure]  global options
+%  o dname:                  [string]     default name of directory to store results
+%  o do_bayesian_estimation  [boolean]    indicator whether we do Bayesian estimation
 % -------------------------------------------------------------------------
 % OUTPUTS
 %  o options_mom_:         [structure]  all user-specified and updated settings required for method_of_moments estimation
@@ -96,7 +96,7 @@ options_mom_ = set_default_option(options_mom_,'nograph',false);         % do no
 options_mom_ = set_default_option(options_mom_,'noprint',false);         % do not print output to console
 options_mom_ = set_default_option(options_mom_,'TeX',false);             % print TeX tables and graphics
 options_mom_.mom = set_default_option(options_mom_.mom,'verbose',false); % display and store intermediate estimation results
-if doBayesianEstimation
+if do_bayesian_estimation
     options_mom_ = set_default_option(options_mom_,'plot_priors',true);  % control plotting of priors
     options_mom_ = set_default_option(options_mom_,'prior_trunc',1e-10); % probability of extreme values of the prior density that is ignored when computing bounds for the parameters
 end
@@ -193,7 +193,7 @@ options_mom_ = set_default_option(options_mom_,'lyapunov_fixed_point_tol',1e-10)
 options_mom_ = set_default_option(options_mom_,'lyapunov_doubling_tol',1e-16);          % convergence criterion used in the doubling algorithm
 
 % Bayesian MCMC related
-if doBayesianEstimation
+if do_bayesian_estimation
     options_mom_ = set_default_option(options_mom_,'mh_replic',0);                         % number of draws in Metropolis-Hastings and slice samplers
     options_mom_ = set_default_option(options_mom_,'mh_posterior_mode_estimation',false);  % skip optimizer-based mode-finding and instead compute the mode based on a run of a MCMC
     options_mom_ = set_default_option(options_mom_,'load_mh_file',false);                  % add to previous Metropolis-Hastings or slice simulations instead of starting from scratch
@@ -448,7 +448,7 @@ if strcmp(mom_method,'GMM')
         error('method_of_moments: Perturbation orders higher than 3 are not implemented for GMM estimation, try using SMM!');
     end
 end
-if strcmp(mom_method,'IRF_MATCHING') && doBayesianEstimation
+if strcmp(mom_method,'IRF_MATCHING') && do_bayesian_estimation
     if isfield(options_mom_,'mh_tune_jscale') && options_mom_.mh_tune_jscale.status && (options_mom_.mh_tune_jscale.maxiter<options_mom_.mh_tune_jscale.stepsize)
         warning('method_of_moments: You specified mh_tune_jscale, but the maximum number of iterations is smaller than the step size. No update will take place.')
     end

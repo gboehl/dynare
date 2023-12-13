@@ -1,5 +1,5 @@
-function [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moments_params_derivs, irf_model_varobs] = objective_function(xparam, data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
-% [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moments_params_derivs, irf_model_varobs] = objective_function(xparam, data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+function [fval, info, exit_flag, df, junk_hessian, Q, model_moments, model_moments_params_derivs, irf_model_varobs] = objective_function(xparam, data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
+% [fval, info, exit_flag, df, junk_hessian, Q, model_moments, model_moments_params_derivs, irf_model_varobs] = objective_function(xparam, data_moments, weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % -------------------------------------------------------------------------
 % This function evaluates the objective function for method of moments estimation,
 % i.e. distance between model and data moments/irfs, possibly augmented with priors.
@@ -23,7 +23,7 @@ function [fval, info, exit_flag, df, junkHessian, Q, model_moments, model_moment
 %  - info:                         [vector]  information on error codes and penalties
 %  - exit_flag:                    [double]  flag for exit status (0 if error, 1 if no error)
 %  - df:                           [matrix]  analytical jacobian of the moment difference (wrt paramters), currently for GMM only
-%  - junkHessian:                  [matrix]  empty matrix required for optimizer interface (Hessian would typically go here)
+%  - junk_hessian:                 [matrix]  empty matrix required for optimizer interface (Hessian would typically go here)
 %  - Q:                            [double]  value of the quadratic form of the moment difference
 %  - model_moments:                [vector]  model moments
 %  - model_moments_params_derivs:  [matrix]  analytical jacobian of the model moments wrt estimated parameters (currently for GMM only)
@@ -72,7 +72,7 @@ irf_model_varobs = [];
 model_moments_params_derivs = [];
 model_moments = [];
 Q = [];
-junkHessian = [];
+junk_hessian = [];
 df = []; % required to be empty by e.g. newrat
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
     if options_mom_.mom.compute_derivs && options_mom_.mom.analytic_jacobian
@@ -262,7 +262,7 @@ end
 if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING') && strcmp(options_mom_.mom.simulation_method,'STOCH_SIMUL')
     cs = get_lower_cholesky_covariance(M_.Sigma_e,options_mom_.add_tiny_number_to_cholesky);
     irf_shocks_indx = getIrfShocksIndx(M_, options_mom_);
-    modelIrf = nan(options_mom_.irf,M_.endo_nbr,M_.exo_nbr);
+    model_irf = nan(options_mom_.irf,M_.endo_nbr,M_.exo_nbr);
     for i = irf_shocks_indx
         if options_mom_.order>1 && options_mom_.relative_irf % normalize shock to 0.01 before IRF generation for GIRFs; multiply with 100 later
             y_irf = irf(M_, options_mom_, dr, cs(:,i)./cs(i,i)/100, options_mom_.irf, options_mom_.drop, options_mom_.replic, options_mom_.order);
@@ -285,11 +285,11 @@ if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING') && strcmp(options_mom_.mom
                 y_irf = 100*y_irf/cs(i,i);
             end
         end
-        modelIrf(:,:,i) = transpose(y_irf);
+        model_irf(:,:,i) = transpose(y_irf);
     end
     % do transformations on model irfs if irf_matching_file is provided
     if ~isempty(options_mom_.mom.irf_matching_file.name)
-        [modelIrf,check] = feval(str2func(options_mom_.mom.irf_matching_file.name),modelIrf, M_, options_mom_, dr.ys);
+        [model_irf, check] = feval(str2func(options_mom_.mom.irf_matching_file.name), model_irf, M_, options_mom_, dr.ys);
         if check
             fval = Inf;
             info(1) = 180;
@@ -301,7 +301,7 @@ if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING') && strcmp(options_mom_.mom
             return
         end
     end
-    irf_model_varobs = modelIrf(:,options_mom_.varobs_id,:); % focus only on observables (this will be used later for plotting)
+    irf_model_varobs = model_irf(:,options_mom_.varobs_id,:); % focus only on observables (this will be used later for plotting)
     model_moments = irf_model_varobs(options_mom_.mom.irfIndex); % focus only on selected irf periods
 end
 

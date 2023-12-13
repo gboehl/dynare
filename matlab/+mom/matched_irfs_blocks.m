@@ -1,5 +1,5 @@
-function [data_irfs, weightMat, irfIndex, maxIrfHorizon] = matched_irfs_blocks(matched_irfs, matched_irfs_weight, varobs_id, obs_nbr, exo_nbr, endo_names)
-% [data_irfs, weightMat, irfIndex, maxIrfHorizon] = matched_irfs_blocks(matched_irfs, matched_irfs_weight, varobs_id, obs_nbr, exo_nbr, endo_names)
+function [data_irfs, weight_mat, irf_index, max_irf_horizon] = matched_irfs_blocks(matched_irfs, matched_irfs_weight, varobs_id, obs_nbr, exo_nbr, endo_names)
+% [data_irfs, weight_mat, irf_index, max_irf_horizon] = matched_irfs_blocks(matched_irfs, matched_irfs_weight, varobs_id, obs_nbr, exo_nbr, endo_names)
 % -------------------------------------------------------------------------
 % Checks and transforms matched_irfs and matched_irfs_weight blocks
 % for further use in the estimation.
@@ -14,9 +14,9 @@ function [data_irfs, weightMat, irfIndex, maxIrfHorizon] = matched_irfs_blocks(m
 % -------------------------------------------------------------------------
 % OUTPUT
 % data_irfs:           [matrix]     irfs for VAROBS as declared in matched_irfs block
-% weightMat:           [matrix]     weighting matrix for irfs as declared in matched_irfs_weight block
-% irfIndex:            [vector]     index for selecting specific irfs from full irf matrix of observables
-% maxIrfHorizon:       [scalar]     maximum irf horizon as declared in matched_irfs block
+% weight_mat:          [matrix]     weighting matrix for irfs as declared in matched_irfs_weight block
+% irf_index:           [vector]     index for selecting specific irfs from full irf matrix of observables
+% max_irf_horizon:     [scalar]     maximum irf horizon as declared in matched_irfs block
 % -------------------------------------------------------------------------
 % This function is called by
 %  o mom.run
@@ -40,42 +40,42 @@ function [data_irfs, weightMat, irfIndex, maxIrfHorizon] = matched_irfs_blocks(m
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 
-maxIrfHorizon = max(cellfun(@(x) x(end), matched_irfs(:,1))); % get maximum irf horizon
+max_irf_horizon = max(cellfun(@(x) x(end), matched_irfs(:,1))); % get maximum irf horizon
 % create full matrix where 1st dimension are irf periods, 2nd dimension are variables as declared in VAROBS, 3rd dimension are shocks.
-data_irfs = nan(maxIrfHorizon,obs_nbr,exo_nbr);
+data_irfs = nan(max_irf_horizon,obs_nbr,exo_nbr);
 % overwrite nan values if they are declared in matched_irfs block; remaining nan values will be later ignored in the matching
 for jj = 1:size(matched_irfs,1)
-    idVar       = matched_irfs{jj,1}(1);
-    idVarobs    = find(varobs_id==idVar,1);
-    idShock     = matched_irfs{jj,1}(2);
-    idIrfPeriod = matched_irfs{jj,1}(3);
-    irfValue    = matched_irfs{jj,2};
-    if isempty(idVarobs)
+    id_var       = matched_irfs{jj,1}(1);
+    id_varobs    = find(varobs_id==id_var,1);
+    id_shock     = matched_irfs{jj,1}(2);
+    id_irf_period = matched_irfs{jj,1}(3);
+    irf_value    = matched_irfs{jj,2};
+    if isempty(id_varobs)
         skipline;
-        error('method_of_moments: You specified an irf matching involving variable %s, but it is not declared as a varobs!',endo_names{idVar})
+        error('method_of_moments: You specified an irf matching involving variable %s, but it is not declared as a varobs!',endo_names{id_var})
     end
-    data_irfs(idIrfPeriod,idVarobs,idShock) = irfValue;
+    data_irfs(id_irf_period,id_varobs,id_shock) = irf_value;
 end
 % create (full) empirical weighting matrix
-weightMat = eye(maxIrfHorizon*obs_nbr*exo_nbr); % identity matrix by default: all irfs are equally important
+weight_mat = eye(max_irf_horizon*obs_nbr*exo_nbr); % identity matrix by default: all irfs are equally important
 for jj = 1:size(matched_irfs_weight,1)
-    idVar1 = matched_irfs_weight{jj,1}(1);  idVarobs1 = find(varobs_id==idVar1,1);  idShock1 = matched_irfs_weight{jj,1}(2);  idIrfPeriod1 = matched_irfs_weight{jj,1}(3);
-    idVar2 = matched_irfs_weight{jj,2}(1);  idVarobs2 = find(varobs_id==idVar2,1);  idShock2 = matched_irfs_weight{jj,2}(2);  idIrfPeriod2 = matched_irfs_weight{jj,2}(3);
-    weightMatValue = matched_irfs_weight{jj,3};
-    if isempty(idVarobs1)
+    id_var1 = matched_irfs_weight{jj,1}(1);  id_varobs1 = find(varobs_id==id_var1,1);  id_shock1 = matched_irfs_weight{jj,1}(2);  id_irf_period1 = matched_irfs_weight{jj,1}(3);
+    id_var2 = matched_irfs_weight{jj,2}(1);  id_varobs2 = find(varobs_id==id_var2,1);  id_shock2 = matched_irfs_weight{jj,2}(2);  id_irf_period2 = matched_irfs_weight{jj,2}(3);
+    weight_mat_value = matched_irfs_weight{jj,3};
+    if isempty(id_varobs1)
         skipline;
-        error('method_of_moments: You specified a weight for an irf matching involving variable %s, but it is not a varobs!',endo_names{idVar1})
+        error('method_of_moments: You specified a weight for an irf matching involving variable %s, but it is not a varobs!',endo_names{id_var1})
     end
-    if isempty(idVarobs2)s
+    if isempty(id_varobs2)
         skipline;
-        error('method_of_moments: You specified a weight for an irf matching involving variable %s, but it is not a varobs!',endo_names{idVar2})
+        error('method_of_moments: You specified a weight for an irf matching involving variable %s, but it is not a varobs!',endo_names{id_var2})
     end
-    idweightMat1 = sub2ind(size(data_irfs),idIrfPeriod1,idVarobs1,idShock1);
-    idweightMat2 = sub2ind(size(data_irfs),idIrfPeriod2,idVarobs2,idShock2);
-    weightMat(idweightMat1,idweightMat2) = weightMatValue;
-    weightMat(idweightMat2,idweightMat1) = weightMatValue; % symmetry
+    idweight_mat1 = sub2ind(size(data_irfs),id_irf_period1,id_varobs1,id_shock1);
+    idweight_mat2 = sub2ind(size(data_irfs),id_irf_period2,id_varobs2,id_shock2);
+    weight_mat(idweight_mat1,idweight_mat2) = weight_mat_value;
+    weight_mat(idweight_mat2,idweight_mat1) = weight_mat_value; % symmetry
 end
 % focus only on specified irfs
-irfIndex = find(~isnan(data_irfs));
-data_irfs = data_irfs(irfIndex);
-weightMat = weightMat(irfIndex,irfIndex);
+irf_index = find(~isnan(data_irfs));
+data_irfs = data_irfs(irf_index);
+weight_mat = weight_mat(irf_index,irf_index);

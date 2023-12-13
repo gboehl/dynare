@@ -61,11 +61,11 @@ if options_mom_.mom.mom_nbr > length(xparam)
     end
     % Compute J statistic
     if strcmp(options_mom_.mom.mom_method,'SMM')
-        Variance_correction_factor = options_mom_.mom.variance_correction_factor;
+        variance_correction_factor = options_mom_.mom.variance_correction_factor;
     elseif strcmp(options_mom_.mom.mom_method,'GMM')
-        Variance_correction_factor = 1;
+        variance_correction_factor = 1;
     end
-    J_test.j_stat          = options_mom_.nobs*Variance_correction_factor*fval/options_mom_.mom.weighting_matrix_scaling_factor;
+    J_test.j_stat          = options_mom_.nobs*variance_correction_factor*fval/options_mom_.mom.weighting_matrix_scaling_factor;
     J_test.degrees_freedom = length(model_moments)-length(xparam);
     J_test.p_val           = 1-chi2cdf(J_test.j_stat, J_test.degrees_freedom);
     fprintf('\nValue of J-test statistic: %f\n',J_test.j_stat);
