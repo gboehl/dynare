@@ -1,5 +1,7 @@
+% -------------------------------------------------------------------------
 % Functionality testing of Frequentist IRF matching
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -16,7 +18,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
+
 @#define ML = 1
 @#include "cet_model.inc"
 

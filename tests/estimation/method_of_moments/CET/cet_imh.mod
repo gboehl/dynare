@@ -1,7 +1,9 @@
+% -------------------------------------------------------------------------
 % Functionality testing of Bayesian IRF matching with 
 % - independent Metropolis-Hastings
 % - >1 MCMC chains
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -18,7 +20,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
+
 @#include "cet_model.inc"
 
 options_.prior_interval= 0.95;

@@ -1,7 +1,10 @@
 function [matched_irfs, matched_irfs_weights] = cet_matched_irfs_no_interface_workaround(endo_names,exo_names)
+% [matched_irfs, matched_irfs_weights] = cet_matched_irfs_no_interface_workaround(endo_names,exo_names)
+% -------------------------------------------------------------------------
 % Based on replication codes for Christiano, Eichenbaum, Trabandt (2016, Econometrica) - Unemployment and the Business Cycle
 % This currently replaces the interface for the IRF Matching capabilities of the method_of_moments toolbox.
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -18,13 +21,12 @@ function [matched_irfs, matched_irfs_weights] = cet_matched_irfs_no_interface_wo
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
 %% settings
-irf_horizon = 15;        % horizon of impulse responses to match
-do_monetary_shock_only = 0; % if = 0 all shocks used in estimation
+irf_horizon = 15;           % horizon of impulse responses to match
+do_monetary_shock_only = 0; % if = 0 all shocks are used in estimation
 
-%% load VAR impulse responses from Christiano, Trabandt and Walentin (2010)- Handbook of Monetary Economics Chapter( see main text for reference).
+%% load VAR impulse responses from Christiano, Trabandt and Walentin (2010)- Handbook of Monetary Economics Chapter
 % IRFFF: impulse responses with respect to monetary policy shock
 % IRFFz: impulse responses with respect to neutral tech shock
 % IRFFu: impulse responses with respect to invest tech shock
@@ -48,7 +50,7 @@ load('cet_data','IRFz','IRFzSE','IRFFF','IRFFFSE','IRFu','IRFuSE');
 
 %% map empirical irf data to a model variable
 % note that any further required transformations or manipulations to model variables (such as cumsum, adding muF and mupsiF)
-% as well as selection of which periods to match occurs in an extra function cet_irf_matching.m
+% as well as selection of which periods to match occurs in an extra function cet_irf_matching_file.m
 % if no such function is given then the mapping is exact and the whole horizon will be considered
 
 % irfs with respect to monetary shock

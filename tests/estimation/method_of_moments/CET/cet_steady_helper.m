@@ -1,9 +1,12 @@
-function [info,nG,nKAP,nD,nGAM,nPHI] = cet_steady_helper(justCheck,Kw,J,V,U,  dolagZBAR,mu,thetaG,thetaKAP,thetaD,thetaGAM,thetaPHI)
+function [info,nG,nKAP,nD,nGAM,nPHI] = cet_steady_helper(justCheck,Kw,J,V,U,dolagZBAR,mu,thetaG,thetaKAP,thetaD,thetaGAM,thetaPHI)
+% [info,nG,nKAP,nD,nGAM,nPHI] = cet_steady_helper(justCheck,Kw,J,V,U,dolagZBAR,mu,thetaG,thetaKAP,thetaD,thetaGAM,thetaPHI)
+% -------------------------------------------------------------------------
 % Based on cet_steadystate.m of the replication codes for
-% Christiano, Eichenbaum, Trabandt (2016, Econometrica) - Unemployment and the Business Cycle;
-% slightly modified such that most code is now in a steady_state_model block
+% Christiano, Eichenbaum, Trabandt (2016, Econometrica);
+% slightly modified such that most of the code is in a steady_state_model block
 % and only the two if statements are computed in this helper function.
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -20,7 +23,6 @@ function [info,nG,nKAP,nD,nGAM,nPHI] = cet_steady_helper(justCheck,Kw,J,V,U,  do
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
 
 info = 0;
 if justCheck

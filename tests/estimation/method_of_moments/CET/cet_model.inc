@@ -1,6 +1,6 @@
 /*
  * Model codes kindly provided by Mathias Trabandt, modified to work with
- * Dynare 5.0 and newer.
+ * Parameters here are set such that the AOB Model is active.
  *
  * Please note that the following copyright notice only applies to this Dynare
  * implementation of the model.
@@ -23,70 +23,66 @@
  * see <https://www.gnu.org/licenses/>.
  */
 
-//////////////////////////////////////////////////////////////////////////
-//Medium-sized DSGE model of Christiano, Eichenbaum and Trabandt        //
-//''Unemployment and Business Cycles'', Econometrica, forthcoming       //
-//                                                                      //
-//Based on parameters: AltOffer(AOB)/Nash bargaining, search/hiring cost//
-//EHL labor market as nested cases. Checkout params.m                   //
-//                                                                      //
-//Parameters here are set such that the AOB Model is active. That model //
-//is estimated here and the code reproduces the results.                //
-//////////////////////////////////////////////////////////////////////////
 
+/*
+ * Wanted: monetary policy shock is not in period t information set of agents 
+ *         (just as in VAR identified with Choleski decomp.) 
+ *         All other shocks are in period t information set. 
+ * Solution: create two parallel economies which are structurally identical.
+ *           One which is subject to the monetary shock only.
+ *           This shock is not in period t info set.
+ *           The other economy has the other shocks with the standard info set.
+ * Naming convention: variables ending with 'F' are in the economy with full info set
+ *                    variables ending with 'R' are in the restricted info set economy
+ *                    variables ending with 'AGG' are aggregated variables from both economies
+ * Note that in the 'R' economy, all exogenous variables are set to their steady states, except the monetary shock
+ * Likewise, in the 'F' economy, the monetary shock is set to zero while all other shocks are active
+ * Both steady states (i.e. 'R' and 'F' economy) are identical
+ * All variables are in logs
+ */
 
-//Wanted: monetary policy shock is not in period t information set of agents 
-//(just as in VAR identified with Choleski decomp.) 
-//All other shocks are in period t information set. 
-
-//Solution: create two parallel economies which are structually identical. One which is 
-//subject to the monetary shock only. This shock is not in period t info set. 
-//The other economy has the other shocks with the standard info set.
-
-//variables ending with 'F' are in the economy with full info set
-//variables ending with 'R' are in the restricted info set economy
-//variables ending with 'AGG' are aggregated variables from both economies
-
-//Note that in the 'R' economy, all exogenous variables are set to their steady states, except the monetary shock
-//likewise, in the 'F' economy, the monetary shock is set to zero while all other shocks are active
-
-//Note that both steady states (i.e. 'R' and 'F' economy) are identical
-
-//All Variables in logs.
- 
 // Endogenous variables (R economy)
-var wpR wpF wR wF psiR cR RR piR iR pkprimeR FR KR ukR
+var
+wpR wpF wR wF psiR cR RR piR iR pkprimeR FR KR ukR
 kbarR lR xR varthetR phaloR yR JR UR GDPR fR vR
 unempR VR AAR vTotR QR piwR whaloR FwR KwR 
-varthetpR;  
+varthetpR
+;  
 
 // Endogenous variables (F economy)
-var psiF cF RF piF iF pkprimeF FF KF ukF
+var
+psiF cF RF piF iF pkprimeF FF KF ukF
 kbarF lF xF varthetF phaloF yF JF UF GDPF fF 
 vF unempF VF AAF vTotF QF piwF whaloF FwF KwF
 muzF mupsiF muF nGF nPHIF nGAMF nDF nKAPF 
-varthetpF;
+varthetpF
+;
 
 // Endogenous variables (AGG economy)
-var GDPAGG piAGG RAGG ukAGG lAGG wAGG cAGG 
-iAGG unempAGG vTotAGG fAGG pinvestAGG; 
+var
+GDPAGG piAGG RAGG ukAGG lAGG wAGG cAGG 
+iAGG unempAGG vTotAGG fAGG pinvestAGG
+;
 
-//Shocks
-varexo epsR_eps muz_eps mupsi_eps;
+// Shocks
+varexo
+epsR_eps muz_eps mupsi_eps
+;
 
-parameters ydiffdataPercent,idiffdataPercent,alfa,rho,u,Q,sigm,
+parameters
+ydiffdataPercent,idiffdataPercent,alfa,rho,u,Q,sigm,
 betta,lambda,deltak,tau,nuf,etag,kappa,b,xi,D,delta,gamma,Spp 
 sigmab sigmaa phi rhoR rpi ry sig_epsR sigmam kappaf DSHARE deltapercent
 recSHAREpercent iota doNash eta doEHL xiw lambdaw AEHL  
 f rhomupsi rhomuz sig_mupsi sig_muz thetaG thetaPHI thetaKAP thetaD 
 dolagZBAR profy varkappaw pibreve thetaw varkappaf M sigmaL 
 tau_SS epsilon_SS upsilon_SS zetac_SS g_SS pibar thetaGAM kappaw
-unemp_SS vTot_SS alp1 alp2 alp3 alp4 bet1 bet2 bet3 s searchSHAREpercent;
+unemp_SS vTot_SS alp1 alp2 alp3 alp4 bet1 bet2 bet3 s searchSHAREpercent
+;
    
 model;
-///////////////////////////////////////////////////////////////////////////////////////
-//R economy, monetary policy shock, current realization not in info set//////////////// 
-///////////////////////////////////////////////////////////////////////////////////////
+
+// auxiliary equations for R economy such that current realization fo monetary policy shock is not in information set
 //information set in line with Choleski decomposition in VAR
 //set exogenous variables to steady states (except monetary shock, of course)
 #epsilonR=epsilon_SS;
@@ -128,7 +124,7 @@ model;
 #AAR_tp1=EXPECTATION(-1)(AAR(+1));
 #RRinfo=EXPECTATION(-1)(RR);
 
-%abbreviations
+// abbreviations
 #aofukprimeR=sigmab*sigmaa*(exp(ukR))+sigmab*(1-sigmaa);
 #aofukprimeR_tp1=sigmab*sigmaa*(exp(ukR_tp1))+sigmab*(1-sigmaa);
 #aofukR=0.5*sigmab*sigmaa*(exp(ukR))^2+sigmab*(1-sigmaa)*exp(ukR)+sigmab*((sigmaa/2)-1);
@@ -263,7 +259,7 @@ doEHL*(1-(1-xiw)*(AEHL*exp(KwR)/(exp(FwR)*exp(wR)))^( 1/( 1-lambdaw*(1+sigmaL) )
 #zetacF_tp1=zetac_SS;
 #gF=g_SS;
 
-%abbreviations
+//abbreviations
 #aofukprimeF=sigmab*sigmaa*(exp(ukF))+sigmab*(1-sigmaa);
 #aofukprimeF_tp1=sigmab*sigmaa*(exp(ukF(+1)))+sigmab*(1-sigmaa);
 #aofukF=0.5*sigmab*sigmaa*(exp(ukF))^2+sigmab*(1-sigmaa)*exp(ukF)+sigmab*((sigmaa/2)-1);
@@ -445,36 +441,33 @@ end;
 ///////////////////////////////// 
 
 
-%read parameters from params.m
-%model switches
+% model switches
 doNash=0;    %if =0, alt offer barg. ; if =1, Nash bargaining; note: requires doEHL=0 below
 doEHL=0;     %if=0, alt offer barg or Nash barg; if=1, EHL labor market
 @#define do_given_bets=0  // 1: given values for beta's in sharing rule
-
-bet1 = 0.0907;    %AOB sharing rule coefficients
+%AOB sharing rule coefficients
+bet1 = 0.0907;
 bet2 = 28.9219;
 bet3 = 0.4562;
 
-
 %Labor market parameters
-u=0.055;                %unemp. rate
-rho=0.9;                %job survival rate
+u=0.055;                 %unemp. rate
+rho=0.9;                 %job survival rate
 sigm=0.5570;             %matching function share of unemp.
 recSHAREpercent=0.5;     %hiring cost para; hiring cost relative to output, in percent
-searchSHAREpercent=0.05;     %search cost para; hiring cost relative to output, in percent
+searchSHAREpercent=0.05; %search cost para; hiring cost relative to output, in percent
 
-DSHARE=0.6682;             %unempl. benefits as share of w (replacement ratio)
-Q=0.7;                  %vacancy filling rate
+DSHARE=0.6682;           %unempl. benefits as share of w (replacement ratio)
+Q=0.7;                   %vacancy filling rate
 
-deltapercent=0.3022;      %prob. of barg. session determination
-M=60;                   %Maximum bargaining rounds per quarter, needs to be an even number!!!!
+deltapercent=0.3022;     %prob. of barg. session determination
+M=60;                    %maximum bargaining rounds per quarter, needs to be an even number!!!!
  
 if M<2, error('M must be at least equal to 2!');end
 if mod(M,2)==1, error('M must be an even number so that the worker makes the last offer!');end 
 
-
 %prices  
-xi=0.5841;           %Calvo prices
+xi=0.5841;         %Calvo prices
 pibar=1.00625;     %inflation rate, gross, quarterly
 kappaf=0;          %price indexation to past inflation
 varkappaf=1;       %price indexation parameter; if kappaf=0 and varkappaf=1 and pibreve=1 -> no indexation at all.
@@ -495,8 +488,8 @@ idiffdataPercent=2.9;
 ydiffdataPercent=1.7; 
 
 %Preferences
-betta=0.996783170280770;    %discount factor households; implies 3% real rate
-b=0.8320;                   %habit formation in consumption
+betta=0.996783170280770; %discount factor households; implies 3% real rate
+b=0.8320;                %habit formation in consumption
 
 %Monetary Policy by Taylor rule
 rhoR	=	0.8555;   %Interest rate smoothing
@@ -550,8 +543,6 @@ rhozetac	=	0;      %cons. preference
 rhog        =	0;      %gov. spending
 rhotaud     =   0;      %price markup
 rhosigmam	=	0;      %matching function shock
-
- 
 
 iota=1;      %This parameter does not apprear in the model anymore. Just ignore it.
 
@@ -670,6 +661,7 @@ fAGG=log(f); pinvestAGG=-log(mupsi);
 
 info = cet_steady_helper(1,Kw,J,V,U); % THIS CHECKS WHETHER STEADY-STATES ARE NONZERO
 end;
+
 resid;
 steady;
 check;
