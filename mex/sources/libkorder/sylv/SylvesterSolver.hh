@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SYLVESTER_SOLVER_H
-#define SYLVESTER_SOLVER_H
+#ifndef SYLVESTER_SOLVER_HH
+#define SYLVESTER_SOLVER_HH
 
 #include "KronVector.hh"
 #include "QuasiTriangular.hh"
@@ -66,4 +66,4 @@ public:
   virtual void solve(SylvParams& pars, KronVector& x) const = 0;
 };
 
-#endif /* SYLVESTER_SOLVER_H */
+#endif

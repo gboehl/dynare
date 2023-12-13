@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MM_MATRIX_H
-#define MM_MATRIX_H
+#ifndef MM_MATRIX_HH
+#define MM_MATRIX_HH
 
 #include "GeneralMatrix.hh"
 
@@ -79,4 +79,4 @@ public:
   static void write(const std::string& fname, const GeneralMatrix& m);
 };
 
-#endif /* MM_MATRIX_H */
+#endif

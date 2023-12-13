@@ -22,6 +22,9 @@
 ** AUTHOR(S): stephane DOT adjemian AT univ DASH lemans DOT fr
 */
 
+#ifndef GAUSSIAN_HH
+#define GAUSSIAN_HH
+
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -162,3 +165,5 @@ usphereRadius(int d, int n, double radius, T* U)
         U[k + i] = radius * U[k + i] / norm;
     }
 }
+
+#endif

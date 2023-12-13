@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef OGU_EXCEPTION_H
-#define OGU_EXCEPTION_H
+#ifndef EXCEPTION_HH
+#define EXCEPTION_HH
 
 #include <iostream>
 #include <string>

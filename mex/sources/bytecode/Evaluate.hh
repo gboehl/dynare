@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVALUATE_HH
-#define _EVALUATE_HH
+#ifndef EVALUATE_HH
+#define EVALUATE_HH
 
 #include <deque>
 #include <filesystem>
@@ -170,4 +170,4 @@ public:
   }
 };
 
-#endif // _EVALUATE_HH
+#endif

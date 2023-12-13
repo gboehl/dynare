@@ -37,8 +37,8 @@
    For this multiplication, we also need to represent products of type A⊗I,
    I⊗A⊗I and I⊗A. */
 
-#ifndef KRON_PROD_H
-#define KRON_PROD_H
+#ifndef KRON_PROD_HH
+#define KRON_PROD_HH
 
 #include <memory>
 #include <utility>

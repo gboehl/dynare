@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef KRON_VECTOR_H
-#define KRON_VECTOR_H
+#ifndef KRON_VECTOR_HH
+#define KRON_VECTOR_HH
 
 #include "Vector.hh"
 
@@ -101,4 +101,4 @@ public:
   }
 };
 
-#endif /* KRON_VECTOR */
+#endif

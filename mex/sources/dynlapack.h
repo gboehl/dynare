@@ -26,8 +26,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _DYNLAPACK_H
-#define _DYNLAPACK_H
+#ifndef DYNLAPACK_H
+#define DYNLAPACK_H
 
 #if defined(MATLAB_MEX_FILE) && __SIZEOF_POINTER__ == 8
 # ifdef __cplusplus
@@ -231,4 +231,4 @@ extern "C"
 } /* extern "C" */
 #endif
 
-#endif /* _DYNLAPACK_H */
+#endif

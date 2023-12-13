@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _DYNAMIC_M_HH
-#define _DYNAMIC_M_HH
+#ifndef DYNAMIC_M_HH
+#define DYNAMIC_M_HH
 
 #include "dynamic_abstract_class.hh"
 

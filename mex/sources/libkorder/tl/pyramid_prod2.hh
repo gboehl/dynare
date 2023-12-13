@@ -67,8 +67,8 @@
    only through the ‘index’. Note that this does not matter, since
    [f_zˡ] are sparse. */
 
-#ifndef PYRAMID_PROD2_H
-#define PYRAMID_PROD2_H
+#ifndef PYRAMID_PROD2_HH
+#define PYRAMID_PROD2_HH
 
 #include "permutation.hh"
 #include "rfs_tensor.hh"

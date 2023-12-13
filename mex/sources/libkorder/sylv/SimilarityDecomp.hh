@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SIMILARITY_DECOMP_H
-#define SIMILARITY_DECOMP_H
+#ifndef SIMILARITY_DECOMP_HH
+#define SIMILARITY_DECOMP_HH
 
 #include "BlockDiagonal.hh"
 #include "SylvMatrix.hh"
@@ -63,4 +63,4 @@ protected:
   void diagonalize(double norm);
 };
 
-#endif /* SIMILARITY_DECOMP_H */
+#endif

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2021 Dynare Team
+ * Copyright © 2007-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _MEM_MNGR_HH
-#define _MEM_MNGR_HH
+#ifndef MEM_MNGR_HH
+#define MEM_MNGR_HH
 
 #include <fstream>
 #include <string>
@@ -61,4 +61,4 @@ private:
   string filename_mem;
 };
 
-#endif // _MEM_MNGR_HH
+#endif

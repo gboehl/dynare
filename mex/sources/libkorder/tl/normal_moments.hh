@@ -113,8 +113,8 @@
    exactly 2 elements.
 */
 
-#ifndef NORMAL_MOMENTS_H
-#define NORMAL_MOMENTS_H
+#ifndef NORMAL_MOMENTS_HH
+#define NORMAL_MOMENTS_HH
 
 #include "t_container.hh"
 

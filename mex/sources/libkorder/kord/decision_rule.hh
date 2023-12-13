@@ -32,8 +32,8 @@
    DRFixPoint allows for calculation of the fix point of a given decision
    rule. */
 
-#ifndef DECISION_RULE_H
-#define DECISION_RULE_H
+#ifndef DECISION_RULE_HH
+#define DECISION_RULE_HH
 
 #include "kord_exception.hh"
 #include "korder.hh"

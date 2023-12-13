@@ -58,8 +58,8 @@
    multiplied by folded tensors g yielding folded tensor B, but unfolded tensor
    h is multiplied by unfolded tensors g yielding unfolded tensor B. */
 
-#ifndef T_CONTAINER_H
-#define T_CONTAINER_H
+#ifndef T_CONTAINER_HH
+#define T_CONTAINER_HH
 
 #include "Vector.hh"
 #include "equivalence.hh"

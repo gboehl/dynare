@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _DYNAMIC_DLL_HH
-#define _DYNAMIC_DLL_HH
+#ifndef DYNAMIC_DLL_HH
+#define DYNAMIC_DLL_HH
 
 #if defined(_WIN32) || defined(__CYGWIN32__)
 # ifndef NOMINMAX

@@ -18,6 +18,9 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef SOBOL_HH
+#define SOBOL_HH
+
 #include <cstdint>
 #include <dynblas.h> // For the FORTRAN_WRAPPER macro
 
@@ -63,3 +66,5 @@ expand_unit_hypercube(int dimension, int block_size, T* block, const T* lower_bo
     }
   delete[] hypercube_length;
 }
+
+#endif

@@ -20,8 +20,8 @@
 
 // First order at deterministic steady state
 
-#ifndef FIRST_ORDER_H
-#define FIRST_ORDER_H
+#ifndef FIRST_ORDER_HH
+#define FIRST_ORDER_HH
 
 #include "korder.hh"
 

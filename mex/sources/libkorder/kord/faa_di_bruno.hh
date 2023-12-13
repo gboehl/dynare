@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -29,8 +29,8 @@
    where sᵏ is a general symmetry of dimension k and z is a stack of
    functions. */
 
-#ifndef FAA_DI_BRUNO_H
-#define FAA_DI_BRUNO_H
+#ifndef FAA_DI_BRUNO_HH
+#define FAA_DI_BRUNO_HH
 
 #include "gs_tensor.hh"
 #include "journal.hh"

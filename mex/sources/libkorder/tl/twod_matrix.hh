@@ -29,8 +29,8 @@
    ConstTwoDMatrix. The only purpose of the latter is to allow submatrix
    construction from const reference arguments. */
 
-#ifndef TWOD_MATRIX_H
-#define TWOD_MATRIX_H
+#ifndef TWOD_MATRIX_HH
+#define TWOD_MATRIX_HH
 
 #include "GeneralMatrix.hh"
 

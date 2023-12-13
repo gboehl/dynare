@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERAL_SYLVESTER_H
-#define GENERAL_SYLVESTER_H
+#ifndef GENERAL_SYLVESTER_HH
+#define GENERAL_SYLVESTER_HH
 
 #include "SimilarityDecomp.hh"
 #include "SylvMatrix.hh"
@@ -87,4 +87,4 @@ private:
   void init();
 };
 
-#endif /* GENERAL_SYLVESTER_H */
+#endif

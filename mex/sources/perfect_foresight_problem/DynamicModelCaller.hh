@@ -17,6 +17,9 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef DYNAMIC_MODEL_CALLER_HH
+#define DYNAMIC_MODEL_CALLER_HH
+
 #include <algorithm>
 #include <limits>
 #include <memory>
@@ -185,3 +188,5 @@ DynamicModelMatlabCaller::cmplxToReal(mxArray* cmplx_mx)
   mxDestroyArray(cmplx_mx);
   return real_mx;
 }
+
+#endif

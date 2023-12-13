@@ -22,23 +22,23 @@
 
 /* This is a simple code defining an exception and two convenience macros. */
 
+#ifndef KORD_EXCEPTION_HH
+#define KORD_EXCEPTION_HH
+
 #include <iostream>
 #include <string>
 
-#ifndef KORD_EXCEPTION_H
-# define KORD_EXCEPTION_H
+#define KORD_RAISE(mes) throw KordException(__FILE__, __LINE__, mes);
 
-# define KORD_RAISE(mes) throw KordException(__FILE__, __LINE__, mes);
+#define KORD_RAISE_IF(expr, mes)                                                                   \
+ if (expr)                                                                                         \
+  throw KordException(__FILE__, __LINE__, mes);
 
-# define KORD_RAISE_IF(expr, mes)                                                                  \
-  if (expr)                                                                                        \
-   throw KordException(__FILE__, __LINE__, mes);
+#define KORD_RAISE_X(mes, c) throw KordException(__FILE__, __LINE__, mes, c);
 
-# define KORD_RAISE_X(mes, c) throw KordException(__FILE__, __LINE__, mes, c);
-
-# define KORD_RAISE_IF_X(expr, mes, c)                                                             \
-  if (expr)                                                                                        \
-   throw KordException(__FILE__, __LINE__, mes, c);
+#define KORD_RAISE_IF_X(expr, mes, c)                                                              \
+ if (expr)                                                                                         \
+  throw KordException(__FILE__, __LINE__, mes, c);
 
 class KordException
 {

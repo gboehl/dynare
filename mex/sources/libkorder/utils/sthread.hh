@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -38,8 +38,8 @@
    The number of maximum parallel threads is controlled via a static member of
    the detach_thread_group class. */
 
-#ifndef STHREAD_H
-#define STHREAD_H
+#ifndef STHREAD_HH
+#define STHREAD_HH
 
 #include <condition_variable>
 #include <map>

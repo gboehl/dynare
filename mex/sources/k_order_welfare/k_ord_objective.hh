@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef K_ORD_OBJECTIVE_H
-#define K_ORD_OBJECTIVE_H
+#ifndef K_ORD_OBJECTIVE_HH
+#define K_ORD_OBJECTIVE_HH
 
 #include "k_ord_dynare.hh"
 #include "objective_abstract_class.hh"

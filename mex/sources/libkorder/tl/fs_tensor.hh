@@ -24,8 +24,8 @@
    tensors from here are identifying the multidimensional index with
    columns. */
 
-#ifndef FS_TENSOR_H
-#define FS_TENSOR_H
+#ifndef FS_TENSOR_HH
+#define FS_TENSOR_HH
 
 #include "int_power.hh"
 #include "symmetry.hh"

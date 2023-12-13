@@ -57,8 +57,8 @@
    objects are not used very often. They have limited usage due to their
    specialized constructor. */
 
-#ifndef TENSOR_H
-#define TENSOR_H
+#ifndef TENSOR_HH
+#define TENSOR_HH
 
 #include "int_sequence.hh"
 #include "twod_matrix.hh"

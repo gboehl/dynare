@@ -38,8 +38,8 @@
    PartitionY, MatrixA, MatrixS and MatrixB.
 */
 
-#ifndef KORDER_H
-#define KORDER_H
+#ifndef KORDER_HH
+#define KORDER_HH
 
 #include "faa_di_bruno.hh"
 #include "fs_tensor.hh"

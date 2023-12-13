@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _OBJECTIVE_M_HH
-#define _OBJECTIVE_M_HH
+#ifndef OBJECTIVE_M_HH
+#define OBJECTIVE_M_HH
 
 #include "objective_abstract_class.hh"
 

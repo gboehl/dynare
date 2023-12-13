@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SYM_SCHUR_DECOMP_H
-#define SYM_SCHUR_DECOMP_H
+#ifndef SYM_SCHUR_DECOMP_HH
+#define SYM_SCHUR_DECOMP_HH
 
 #include "SylvMatrix.hh"
 

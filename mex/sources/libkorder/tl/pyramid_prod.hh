@@ -66,8 +66,8 @@
    implemented in FGSContainer::multAndAdd() unfolded code or
    FGSContainer::multAndAdd() folded code. */
 
-#ifndef PYRAMID_PROD_H
-#define PYRAMID_PROD_H
+#ifndef PYRAMID_PROD_HH
+#define PYRAMID_PROD_HH
 
 #include "gs_tensor.hh"
 #include "int_sequence.hh"

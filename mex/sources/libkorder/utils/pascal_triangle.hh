@@ -1,6 +1,6 @@
 /*
  * Copyright © 2005 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PASCAL_TRIANGLE_H
-#define PASCAL_TRIANGLE_H
+#ifndef PASCAL_TRIANGLE_HH
+#define PASCAL_TRIANGLE_HH
 
 #include <vector>
 

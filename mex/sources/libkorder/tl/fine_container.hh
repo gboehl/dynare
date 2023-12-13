@@ -42,8 +42,8 @@
    similar thing for tensor multidimensional index. Thus, the abstraction
    is not currently used, but it might be useful in future. */
 
-#ifndef FINE_CONTAINER_H
-#define FINE_CONTAINER_H
+#ifndef FINE_CONTAINER_HH
+#define FINE_CONTAINER_HH
 
 #include "stack_container.hh"
 

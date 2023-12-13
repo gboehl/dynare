@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -20,8 +20,8 @@
 
 // contains algorithms for eigenvalue reordering
 
-#ifndef SCHUR_DECOMP_EIG_H
-#define SCHUR_DECOMP_EIG_H
+#ifndef SCHUR_DECOMP_EIG_HH
+#define SCHUR_DECOMP_EIG_HH
 
 #include "QuasiTriangular.hh"
 #include "SchurDecomp.hh"
@@ -44,4 +44,4 @@ protected:
   bool tryToSwap(diag_iter& it, diag_iter& itadd);
 };
 
-#endif /* SCHUR_DECOMP_EIG_H */
+#endif

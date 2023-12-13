@@ -52,8 +52,8 @@
    implement getOffset(). Process of unfolding is not used, so we implemented
    it so that unfolding and then folding a tensor would yield the same data. */
 
-#ifndef RFS_TENSOR_H
-#define RFS_TENSOR_H
+#ifndef RFS_TENSOR_HH
+#define RFS_TENSOR_HH
 
 #include "fs_tensor.hh"
 #include "symmetry.hh"

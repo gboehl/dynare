@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BLOCK_DIAGONAL_H
-#define BLOCK_DIAGONAL_H
+#ifndef BLOCK_DIAGONAL_HH
+#define BLOCK_DIAGONAL_HH
 
 #include <memory>
 #include <vector>
@@ -70,4 +70,4 @@ private:
                           Vector& work) const;
 };
 
-#endif /* BLOCK_DIAGONAL_H */
+#endif

@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DYNARE_EXCEPTION_H
-#define DYNARE_EXCEPTION_H
+#ifndef DYNARE_EXCEPTION_HH
+#define DYNARE_EXCEPTION_HH
 
 #include <string>
 #include <utility>

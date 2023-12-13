@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _INTERPRETER_HH
-#define _INTERPRETER_HH
+#ifndef INTERPRETER_HH
+#define INTERPRETER_HH
 
 #include <cstddef>
 #include <fstream>
@@ -287,4 +287,4 @@ public:
   }
 };
 
-#endif // _INTERPRETER_HH
+#endif

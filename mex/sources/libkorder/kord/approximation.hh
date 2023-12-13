@@ -61,8 +61,8 @@
    calculate also its unfolded versions, to be available for simulations
    and so on. */
 
-#ifndef APPROXIMATION_H
-#define APPROXIMATION_H
+#ifndef APPROXIMATION_HH
+#define APPROXIMATION_HH
 
 #include "decision_rule.hh"
 #include "dynamic_model.hh"

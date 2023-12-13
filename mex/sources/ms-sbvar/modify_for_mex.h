@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _MODIFY_FOR_MEX_H
-#define _MODIFY_FOR_MEX_H
+#ifndef MODIFY_FOR_MEX_H
+#define MODIFY_FOR_MEX_H
 
 #include <dynblas.h>
 #include <dynlapack.h>
@@ -56,4 +56,4 @@ _Noreturn
     void
     msExit(int status);
 
-#endif // _MODIFY_FOR_MEX_H
+#endif

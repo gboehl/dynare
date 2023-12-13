@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -17,5 +17,10 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef INT_POWER_HH
+#define INT_POWER_HH
+
 // Integer exponentiation (by squaring)
 int power(int a, int b);
+
+#endif

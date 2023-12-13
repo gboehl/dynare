@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef KRON_UTILS_H
-#define KRON_UTILS_H
+#ifndef KRON_UTILS_HH
+#define KRON_UTILS_HH
 
 #include "KronVector.hh"
 #include "QuasiTriangular.hh"
@@ -38,4 +38,4 @@ public:
   static void multKron(const QuasiTriangular& f, const QuasiTriangular& k, KronVector& x);
 };
 
-#endif /* KRON_UTILS_H */
+#endif

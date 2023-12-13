@@ -38,6 +38,9 @@
    h as an extrapolation based on an approximation to g at lower σ.
 */
 
+#ifndef KORDER_STOCH_HH
+#define KORDER_STOCH_HH
+
 #include <memory>
 
 #include "faa_di_bruno.hh"
@@ -573,3 +576,5 @@ KOrderStoch::performStep(int order)
         Gstack<t>().multAndAdd(1, h<t>(), *G_sym_ptr);
       }
 }
+
+#endif

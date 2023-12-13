@@ -21,8 +21,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _DYNUMFPACK_H
-#define _DYNUMFPACK_H
+#ifndef DYNUMFPACK_H
+#define DYNUMFPACK_H
 
 #ifdef OCTAVE_MEX_FILE
 # ifdef HAVE_SUITESPARSE_UMFPACK_H
@@ -108,4 +108,4 @@ typedef long SuiteSparse_long;
 # endif
 
 #endif // OCTAVE_MEX_FILE
-#endif /* DYNUMFPACK */
+#endif

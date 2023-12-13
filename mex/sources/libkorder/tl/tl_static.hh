@@ -29,8 +29,8 @@
    TLStatic::init() must be called at the beginning of the program, as
    soon as dimension and number of variables is known. */
 
-#ifndef TL_STATIC_H
-#define TL_STATIC_H
+#ifndef TL_STATIC_HH
+#define TL_STATIC_HH
 
 #include "equivalence.hh"
 #include "permutation.hh"

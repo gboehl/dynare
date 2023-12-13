@@ -50,8 +50,8 @@
    classes according to their averages, and according to the smallest
    equivalence class element if the averages are the same. */
 
-#ifndef EQUIVALENCE_H
-#define EQUIVALENCE_H
+#ifndef EQUIVALENCE_HH
+#define EQUIVALENCE_HH
 
 #include "int_sequence.hh"
 

@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _DYNMEX_H
-#define _DYNMEX_H
+#ifndef DYNMEX_H
+#define DYNMEX_H
 
 #if !defined(MATLAB_MEX_FILE) && !defined(OCTAVE_MEX_FILE)
 # error You must define either MATLAB_MEX_FILE or OCTAVE_MEX_FILE

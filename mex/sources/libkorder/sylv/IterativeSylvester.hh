@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ITERATIVE_SYLVESTER_H
-#define ITERATIVE_SYLVESTER_H
+#ifndef ITERATIVE_SYLVESTER_HH
+#define ITERATIVE_SYLVESTER_HH
 
 #include "KronVector.hh"
 #include "QuasiTriangular.hh"
@@ -47,4 +47,4 @@ private:
   static double performStep(const QuasiTriangular& k, const QuasiTriangular& f, KronVector& x);
 };
 
-#endif /* ITERATIVE_SYLVESTER_H */
+#endif

@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef QUASI_TRIANGULAR_H
-#define QUASI_TRIANGULAR_H
+#ifndef QUASI_TRIANGULAR_HH
+#define QUASI_TRIANGULAR_HH
 
 #include "KronVector.hh"
 #include "SylvMatrix.hh"
@@ -472,4 +472,4 @@ private:
   void multsVecTrans(Vector& x, const ConstVector& d) const;
 };
 
-#endif /* QUASI_TRIANGULAR_H */
+#endif

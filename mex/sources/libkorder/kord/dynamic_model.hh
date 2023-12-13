@@ -27,8 +27,8 @@
 
    The interface is defined via pure virtual class DynamicModel. */
 
-#ifndef DYNAMIC_MODEL_H
-#define DYNAMIC_MODEL_H
+#ifndef DYNAMIC_MODEL_HH
+#define DYNAMIC_MODEL_HH
 
 #include "sparse_tensor.hh"
 #include "t_container.hh"

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2019 Dynare Team
+ * Copyright © 2010-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _DYNAMICMODELAC_HH
-#define _DYNAMICMODELAC_HH
+#ifndef DYNAMIC_ABSTRACT_CLASS_HH
+#define DYNAMIC_ABSTRACT_CLASS_HH
 
 #include <vector>
 

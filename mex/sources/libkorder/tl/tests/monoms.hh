@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MONOMS_H
-#define MONOMS_H
+#ifndef MONOMS_HH
+#define MONOMS_HH
 
 #include <memory>
 #include <random>

@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019-2020 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -20,8 +20,8 @@
 
 // Resource usage journal
 
-#ifndef JOURNAL_H
-#define JOURNAL_H
+#ifndef JOURNAL_HH
+#define JOURNAL_HH
 
 #include "int_sequence.hh"
 

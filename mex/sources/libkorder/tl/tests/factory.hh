@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef FACTORY_H
-#define FACTORY_H
+#ifndef FACTORY_HH
+#define FACTORY_HH
 
 #include <memory>
 #include <random>

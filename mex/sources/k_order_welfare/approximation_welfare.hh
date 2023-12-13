@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef APPROXIMATION_WELFARE_H
-#define APPROXIMATION_WELFARE_H
+#ifndef APPROXIMATION_WELFARE_HH
+#define APPROXIMATION_WELFARE_HH
 
 #include "journal.hh"
 #include "k_ord_objective.hh"

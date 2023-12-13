@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SYLV_PARAMS_H
-#define SYLV_PARAMS_H
+#ifndef SYLV_PARAMS_HH
+#define SYLV_PARAMS_HH
 
 #include <ostream>
 #include <string>
@@ -235,4 +235,4 @@ operator<<(std::ostream& out, SylvParams::solve_method m)
   return out;
 }
 
-#endif /* SYLV_PARAMS_H */
+#endif

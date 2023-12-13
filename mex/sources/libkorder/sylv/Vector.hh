@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef VECTOR_HH
+#define VECTOR_HH
 
 /* NOTE: Vector and ConstVector have not common super class in order
    to avoid running virtual method invokation mechanism. Some
@@ -251,4 +251,4 @@ public:
   void print() const;
 };
 
-#endif /* VECTOR_H */
+#endif

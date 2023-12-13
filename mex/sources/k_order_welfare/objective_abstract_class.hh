@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Dynare Team
+ * Copyright © 2021-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _OBJECTIVEAC_HH
-#define _OBJECTIVEAC_HH
+#ifndef OBJECTIVE_ABSTRACT_CLASS_HH
+#define OBJECTIVE_ABSTRACT_CLASS_HH
 
 #include <vector>
 

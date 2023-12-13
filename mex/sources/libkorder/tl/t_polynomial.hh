@@ -51,6 +51,9 @@
    compactification of the polynomial. The class derives from the tensor
    and has a eval method. */
 
+#ifndef T_POLYNOMIAL_HH
+#define T_POLYNOMIAL_HH
+
 #include "fs_tensor.hh"
 #include "pascal_triangle.hh"
 #include "rfs_tensor.hh"
@@ -555,3 +558,5 @@ public:
   {
   }
 };
+
+#endif

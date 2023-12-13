@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019 Dynare Team
+ * Copyright © 2019-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SYLV_MATRIX_H
-#define SYLV_MATRIX_H
+#ifndef SYLV_MATRIX_HH
+#define SYLV_MATRIX_HH
 
 #include "GeneralMatrix.hh"
 #include "KronVector.hh"
@@ -105,4 +105,4 @@ public:
   void setUnit();
 };
 
-#endif /* SYLV_MATRIX_H */
+#endif

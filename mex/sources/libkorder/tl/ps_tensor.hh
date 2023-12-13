@@ -54,8 +54,8 @@
    dimensions is described by PerTensorDimens2. The tensor holding the
    underlying data is FPSTensor. */
 
-#ifndef PS_TENSOR_H
-#define PS_TENSOR_H
+#ifndef PS_TENSOR_HH
+#define PS_TENSOR_HH
 
 #include "equivalence.hh"
 #include "gs_tensor.hh"

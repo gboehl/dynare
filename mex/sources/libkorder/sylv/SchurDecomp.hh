@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SCHUR_DECOMP_H
-#define SCHUR_DECOMP_H
+#ifndef SCHUR_DECOMP_HH
+#define SCHUR_DECOMP_HH
 
 #include "QuasiTriangular.hh"
 #include "SylvMatrix.hh"
@@ -80,4 +80,4 @@ public:
   }
 };
 
-#endif /* SCHUR_DECOMP_H */
+#endif

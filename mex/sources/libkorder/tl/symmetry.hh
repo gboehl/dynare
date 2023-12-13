@@ -48,8 +48,8 @@
    The symmetry is implemented as IntSequence, in fact, it inherits
    from it. */
 
-#ifndef SYMMETRY_H
-#define SYMMETRY_H
+#ifndef SYMMETRY_HH
+#define SYMMETRY_HH
 
 #include "equivalence.hh"
 #include "int_sequence.hh"

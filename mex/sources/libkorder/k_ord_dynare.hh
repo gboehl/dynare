@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef K_ORD_DYNARE3_H
-#define K_ORD_DYNARE3_H
+#ifndef K_ORD_DYNARE_HH
+#define K_ORD_DYNARE_HH
 
 #include <memory>
 #include <string>

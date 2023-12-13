@@ -27,8 +27,8 @@
    some higher level. This header file defines a simple infrastructure
    for this. */
 
-#ifndef TL_EXCEPTION_H
-#define TL_EXCEPTION_H
+#ifndef TL_EXCEPTION_HH
+#define TL_EXCEPTION_HH
 
 #include <iostream>
 #include <string>

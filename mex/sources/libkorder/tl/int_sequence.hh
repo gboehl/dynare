@@ -39,8 +39,8 @@
 
    Also, we need to construct a subsequence of a sequence. */
 
-#ifndef INT_SEQUENCE_H
-#define INT_SEQUENCE_H
+#ifndef INT_SEQUENCE_HH
+#define INT_SEQUENCE_HH
 
 #include <algorithm>
 #include <initializer_list>

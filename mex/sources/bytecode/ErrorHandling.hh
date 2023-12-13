@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2022 Dynare Team
+ * Copyright © 2007-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _ERROR_HANDLING_HH
-#define _ERROR_HANDLING_HH
+#ifndef ERROR_HANDLING_HH
+#define ERROR_HANDLING_HH
 
 #include <cmath>
 #include <sstream>
@@ -111,4 +111,4 @@ test_mxMalloc(void* z, int line, const string& file, const string& func, int amo
 extern "C" bool utIsInterruptPending();
 #endif
 
-#endif // _ERROR_HANDLING_HH
+#endif

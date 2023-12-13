@@ -34,8 +34,8 @@
    also by number of variables for each group. This is dealt in the class
    for tensor dimensions defined also here. */
 
-#ifndef GS_TENSOR_H
-#define GS_TENSOR_H
+#ifndef GS_TENSOR_HH
+#define GS_TENSOR_HH
 
 #include "fs_tensor.hh"
 #include "rfs_tensor.hh"

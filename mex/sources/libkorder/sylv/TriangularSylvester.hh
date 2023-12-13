@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TRIANGULAR_SYLVESTER_H
-#define TRIANGULAR_SYLVESTER_H
+#ifndef TRIANGULAR_SYLVESTER_HH
+#define TRIANGULAR_SYLVESTER_HH
 
 #include "KronVector.hh"
 #include "QuasiTriangular.hh"
@@ -113,4 +113,4 @@ private:
   static constexpr double diag_zero_sq = diag_zero * diag_zero;
 };
 
-#endif /* TRIANGULAR_SYLVESTER_H */
+#endif

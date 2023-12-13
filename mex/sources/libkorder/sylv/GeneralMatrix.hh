@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef GENERAL_MATRIX_H
-#define GENERAL_MATRIX_H
+#ifndef GENERAL_MATRIX_HH
+#define GENERAL_MATRIX_HH
 
 #include "SylvException.hh"
 #include "Vector.hh"
@@ -611,4 +611,4 @@ private:
   void construct(const GeneralMatrix& A);
 };
 
-#endif /* GENERAL_MATRIX_H */
+#endif

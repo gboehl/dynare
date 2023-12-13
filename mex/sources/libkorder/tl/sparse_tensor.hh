@@ -39,8 +39,8 @@
    the only constructor of general symmetry sparse tensor is slicing from
    the full symmetry sparse. */
 
-#ifndef SPARSE_TENSOR_H
-#define SPARSE_TENSOR_H
+#ifndef SPARSE_TENSOR_HH
+#define SPARSE_TENSOR_HH
 
 #include "Vector.hh"
 #include "gs_tensor.hh"

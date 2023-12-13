@@ -75,8 +75,8 @@
    We have also two supporting classes StackProduct and KronProdStack
    and a number of worker classes used as threads. */
 
-#ifndef STACK_CONTAINER_H
-#define STACK_CONTAINER_H
+#ifndef STACK_CONTAINER_HH
+#define STACK_CONTAINER_HH
 
 #include "equivalence.hh"
 #include "int_sequence.hh"

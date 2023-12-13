@@ -45,8 +45,8 @@
    which contains all permutation sets up to a given number.
 */
 
-#ifndef PERMUTATION_H
-#define PERMUTATION_H
+#ifndef PERMUTATION_HH
+#define PERMUTATION_HH
 
 #include "equivalence.hh"
 #include "int_sequence.hh"

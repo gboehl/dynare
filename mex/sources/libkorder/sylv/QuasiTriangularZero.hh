@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef QUASI_TRIANGULAR_ZERO_H
-#define QUASI_TRIANGULAR_ZERO_H
+#ifndef QUASI_TRIANGULAR_ZERO_HH
+#define QUASI_TRIANGULAR_ZERO_HH
 
 #include "GeneralMatrix.hh"
 #include "QuasiTriangular.hh"
@@ -84,4 +84,4 @@ public:
   void print() const override;
 };
 
-#endif /* QUASI_TRIANGULAR_ZERO_H */
+#endif

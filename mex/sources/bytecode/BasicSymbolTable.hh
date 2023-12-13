@@ -17,8 +17,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef _BASIC_SYMBOL_TABLE_HH
-#define _BASIC_SYMBOL_TABLE_HH
+#ifndef BASIC_SYMBOL_TABLE_HH
+#define BASIC_SYMBOL_TABLE_HH
 
 #include <map>
 #include <string>
@@ -44,4 +44,4 @@ private:
   map<string, pair<SymbolType, int>> name_to_id_and_type;
 };
 
-#endif // _BASIC_SYMBOL_TABLE_HH
+#endif

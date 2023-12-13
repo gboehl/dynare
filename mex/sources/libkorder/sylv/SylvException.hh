@@ -18,8 +18,8 @@
  * along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef SYLV_EXCEPTION_H
-#define SYLV_EXCEPTION_H
+#ifndef SYLV_EXCEPTION_HH
+#define SYLV_EXCEPTION_HH
 
 #include <string>
 
@@ -48,4 +48,4 @@ public:
 // define macros:
 #define SYLV_MES_EXCEPTION(mes) (SylvExceptionMessage(__FILE__, __LINE__, mes))
 
-#endif /* SYLV_EXCEPTION_H */
+#endif
