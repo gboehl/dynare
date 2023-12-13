@@ -337,7 +337,7 @@ elseif strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_
     if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
         fval = residuals;
         if options_mom_.mom.penalized_estimator
-            fval=[fval;(xparam-bayestopt_.p1)./sqrt(diag(diag(bayestopt_.p2.^2)))];
+            fval=[fval;(xparam-bayestopt_.p1)./bayestopt_.p2];
         end
     else
         fval = Q;
@@ -354,7 +354,7 @@ elseif strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_
             dresiduals = sqrt(options_mom_.mom.weighting_matrix_scaling_factor)*weighting_info.Sw*dmoments_difference;
             if options_mom_.mom.vector_output == 1 % lsqnonlin requires vector output
                 if options_mom_.mom.penalized_estimator
-                    df(:,jp)=[dresiduals;dxparam(:,jp)./sqrt(diag(diag(bayestopt_.p2.^2)))];
+                    df(:,jp)=[dresiduals;dxparam(:,jp)./bayestopt_.p2];
                 else
                     df(:,jp) = dresiduals;
                 end
