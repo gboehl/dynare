@@ -1,11 +1,11 @@
 function [xparam1, hessian_xparam1, fval, mom_verbose] = mode_compute_irf_matching(xparam0, hessian_xparam0, objective_function, doBayesianEstimation, weighting_info, data_moments, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % [xparam1, hessian_xparam1, fval, mom_verbose] = mode_compute_irf_matching(xparam0, hessian_xparam0, objective_function, doBayesianEstimation, weighting_info, data_moments, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, dr, endo_steady_state, exo_steady_state, exo_det_steady_state)
 % -------------------------------------------------------------------------
-% Computes the minimum of the objective function (distance between data irfs
-% and model irfs) for a sequence of optimizers.
+% Computes the minimum of the objective function (distance between data IRFs
+% and model IRFs) for a sequence of optimizers.
 % Note that we call a "mode" the minimum of the objective function, i.e.
-% the parameter vector that minimizes the distance between the irfs
-% computed from the model and the irfs computed from the data.
+% the parameter vector that minimizes the distance between the IRFs
+% computed from the model and the IRFs computed from the data.
 % -------------------------------------------------------------------------
 % INPUTS
 % xparam0:               [vector]       initialized parameters

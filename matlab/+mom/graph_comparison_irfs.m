@@ -1,14 +1,14 @@
 function graph_comparison_irfs(matched_irfs,irf_model_varobs,varobs_id,irf_horizon,relative_irf,endo_names,exo_names,exo_names_tex,dname,fname,graph_format,TeX,nodisplay,figures_textwidth)
 % graph_comparison_irfs(matched_irfs,irf_model_varobs,varobs_id,irf_horizon,relative_irf,endo_names,exo_names,exo_names_tex,dname,fname,graph_format,TeX,nodisplay,figures_textwidth)
 % -------------------------------------------------------------------------
-% Plots and saves to disk the comparison of the selected data irfs and corresponding model irfs
+% Plots and saves to disk the comparison of the selected data IRFs and corresponding model IRfs
 % -------------------------------------------------------------------------
 % INPUTS
-% matched_irfs:      [matrix]   information on matched data irfs
-% irf_model_varobs:  [matrix]   model irfs for observable variables
+% matched_irfs:      [matrix]   information on matched data IRFs
+% irf_model_varobs:  [matrix]   model IRFs for observable variables
 % varobs_id:         [vector]   index for observable variables in endo_names
-% irf_horizon:       [scalar]   maximum horizon of irfs
-% relative_irf:      [boolean]  if true, plots normalized irfs
+% irf_horizon:       [scalar]   maximum horizon of IRFs
+% relative_irf:      [boolean]  if true, plots normalized IRFs
 % endo_names:        [cell]     names of endogenous variables
 % exo_names:         [cell]     names of exogenous variables
 % exo_names_tex:     [cell]     names of exogenous variables in latex

@@ -17,12 +17,12 @@ function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_,
 %  o Bayesian MCMC estimation
 %  o Display of results
 %    - GMM/SMM: J-Test and fit of moments
-%    - IRF_MATCHING: fit of irfs
+%    - IRF_MATCHING: fit of IRFs
 %  o Clean up
 % -------------------------------------------------------------------------
 % Note that we call a "mode" the minimum of the objective function, i.e.
-% the parameter vector that minimizes the distance between the moments/irfs
-% computed from the model and the moments/irfs computed from the data.
+% the parameter vector that minimizes the distance between the moments/IRFs
+% computed from the model and the moments/IRFs computed from the data.
 % -------------------------------------------------------------------------
 % This function is inspired by replication codes accompanied to the following papers:
 % GMM/SMM:
@@ -45,7 +45,7 @@ function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_,
 %                                                vars: matched_moments{:,1});
 %                                                lead/lags: matched_moments{:,2};
 %                                                powers: matched_moments{:,3};
-%                     o matched_irfs:          [cell] information about selected irfs to match in IRF_MATCHING estimation
+%                     o matched_irfs:          [cell] information about selected IRFs to match in IRF_MATCHING estimation
 %                     o matched_irfs_weights:  [cell] information about entries in weight matrix for an IRF_MATCHING estimation
 %  o options_mom_:   [structure] information about settings specified by the user
 % -------------------------------------------------------------------------
@@ -238,16 +238,16 @@ if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
         error('method_of_moments: Something wrong while computing inv(W), check your weighting matrix!');
     end
     if any(isnan(oo_.mom.weighting_info.Winv(:))) || any(isinf(oo_.mom.weighting_info.Winv(:)))
-        error('method_of_moments: There are nan or inf in inv(W), check your weighting matrix!');
+        error('method_of_moments: There are NaN or Inf values in inv(W), check your weighting matrix!');
     end
-    % compute log determinant of inverse of weighting matrix in a robust way to avoid inf/nan
+    % compute log determinant of inverse of weighting matrix in a robust way to avoid Inf or NaN
     try
         oo_.mom.weighting_info.Winv_logdet = 2*sum(log(diag(chol(oo_.mom.weighting_info.Winv))));
     catch
         error('method_of_moments: Something wrong while computing log(det(inv(W))), check your weighting matrix!');
     end
     if any(isnan(oo_.mom.weighting_info.Winv_logdet(:))) || any(isinf(oo_.mom.weighting_info.Winv_logdet(:)))
-        error('method_of_moments: There are nan or inf in log(det(inv(W))), check your weighting matrix!');
+        error('method_of_moments: There are NaN or Inf values in log(det(inv(W))), check your weighting matrix!');
     end
     options_mom_.mom.mom_nbr = length(options_mom_.mom.irfIndex);
 end
@@ -606,12 +606,12 @@ else
         end
     else
         variances = bayestopt_.p2.*bayestopt_.p2;
-        id_inf = isinf(variances);
-        variances(id_inf) = 1;
+        id_Inf = isinf(variances);
+        variances(id_Inf) = 1;
         invhess = options_mom_.mh_posterior_mode_estimation*diag(variances);
         xparam1 = bayestopt_.p5;
-        id_nan = isnan(xparam1);
-        xparam1(id_nan) = bayestopt_.p1(id_nan);
+        id_NaN = isnan(xparam1);
+        xparam1(id_NaN) = bayestopt_.p1(id_NaN);
         outside_bound_pars=find(xparam1 < BoundsInfo.lb | xparam1 > BoundsInfo.ub);
         xparam1(outside_bound_pars) = bayestopt_.p1(outside_bound_pars);
     end
@@ -802,7 +802,7 @@ elseif strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
         mom.graph_comparison_irfs(M_.matched_irfs,oo_.mom.irf_model_varobs,options_mom_.varobs_id,options_mom_.irf,options_mom_.relative_irf,M_.endo_names,M_.exo_names,M_.exo_names_tex,M_.dname,M_.fname,options_mom_.graph_format,options_mom_.TeX,options_mom_.nodisplay,options_mom_.figures.textwidth)
     end
 end
-% display comparison of model moments/irfs and data moments/irfs
+% display comparison of model moments/IRFs and data moments/IRFs
 mom.display_comparison_moments_irfs(M_, options_mom_, oo_.mom.data_moments, oo_.mom.model_moments);
 % save results to _mom_results.mat
 save([M_.dname filesep 'method_of_moments' filesep M_.fname '_mom_results.mat'], 'oo_', 'options_mom_', 'M_', 'estim_params_', 'bayestopt_');

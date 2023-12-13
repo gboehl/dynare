@@ -13,9 +13,9 @@ function [data_irfs, weight_mat, irf_index, max_irf_horizon] = matched_irfs_bloc
 % endo_names:          [cell array] list of endogenous variables
 % -------------------------------------------------------------------------
 % OUTPUT
-% data_irfs:           [matrix]     irfs for VAROBS as declared in matched_irfs block
-% weight_mat:          [matrix]     weighting matrix for irfs as declared in matched_irfs_weight block
-% irf_index:           [vector]     index for selecting specific irfs from full IRF matrix of observables
+% data_irfs:           [matrix]     IRFs for VAROBS as declared in matched_irfs block
+% weight_mat:          [matrix]     weighting matrix for IRFs as declared in matched_irfs_weight block
+% irf_index:           [vector]     index for selecting specific IRFs from full IRF matrix of observables
 % max_irf_horizon:     [scalar]     maximum IRF horizon as declared in matched_irfs block
 % -------------------------------------------------------------------------
 % This function is called by
@@ -42,8 +42,8 @@ function [data_irfs, weight_mat, irf_index, max_irf_horizon] = matched_irfs_bloc
 
 max_irf_horizon = max(cellfun(@(x) x(end), matched_irfs(:,1))); % get maximum IRF horizon
 % create full matrix where 1st dimension are IRF periods, 2nd dimension are variables as declared in VAROBS, 3rd dimension are shocks.
-data_irfs = nan(max_irf_horizon,obs_nbr,exo_nbr);
-% overwrite nan values if they are declared in matched_irfs block; remaining nan values will be later ignored in the matching
+data_irfs = NaN(max_irf_horizon,obs_nbr,exo_nbr);
+% overwrite NaN values if they are declared in matched_irfs block; remaining NaN values will be later ignored in the matching
 for jj = 1:size(matched_irfs,1)
     id_var       = matched_irfs{jj,1}(1);
     id_varobs    = find(varobs_id==id_var,1);
@@ -57,7 +57,7 @@ for jj = 1:size(matched_irfs,1)
     data_irfs(id_irf_period,id_varobs,id_shock) = irf_value;
 end
 % create (full) empirical weighting matrix
-weight_mat = eye(max_irf_horizon*obs_nbr*exo_nbr); % identity matrix by default: all irfs are equally important
+weight_mat = eye(max_irf_horizon*obs_nbr*exo_nbr); % identity matrix by default: all IRFs are equally important
 for jj = 1:size(matched_irfs_weight,1)
     id_var1 = matched_irfs_weight{jj,1}(1);  id_varobs1 = find(varobs_id==id_var1,1);  id_shock1 = matched_irfs_weight{jj,1}(2);  id_irf_period1 = matched_irfs_weight{jj,1}(3);
     id_var2 = matched_irfs_weight{jj,2}(1);  id_varobs2 = find(varobs_id==id_var2,1);  id_shock2 = matched_irfs_weight{jj,2}(2);  id_irf_period2 = matched_irfs_weight{jj,2}(3);
@@ -75,7 +75,7 @@ for jj = 1:size(matched_irfs_weight,1)
     weight_mat(idweight_mat1,idweight_mat2) = weight_mat_value;
     weight_mat(idweight_mat2,idweight_mat1) = weight_mat_value; % symmetry
 end
-% focus only on specified irfs
+% focus only on specified IRFs
 irf_index = find(~isnan(data_irfs));
 data_irfs = data_irfs(irf_index);
 weight_mat = weight_mat(irf_index,irf_index);

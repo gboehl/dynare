@@ -6,7 +6,7 @@ function [irf_matching_file_name, irf_matching_file_path] = check_irf_matching_f
 % -------------------------------------------------------------------------
 % INPUTS
 % - irf_matching_file:  [string] user provided name (with possible path and extension)
-%                                of the MATLAB function that transforms model irfs
+%                                of the MATLAB function that transforms model IRFs
 % -------------------------------------------------------------------------
 % OUTPUTS
 % - irf_matching_file_name: [string] name of the MATLAB function (without extension)

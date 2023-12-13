@@ -131,7 +131,7 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
     end
     fprintf('\n  - number of matched moments: %d', options_mom_.mom.mom_nbr);
 elseif strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
-    fprintf('\n  - number of matched irfs: %d', options_mom_.mom.mom_nbr);
+    fprintf('\n  - number of matched IRFs: %d', options_mom_.mom.mom_nbr);
 end
 fprintf('\n  - number of parameters: %d', number_of_estimated_parameters);
 fprintf('\n\n');

@@ -1,7 +1,7 @@
 function display_comparison_moments_irfs(M_, options_mom_, data_moments, model_moments)
 % display_comparison_moments_irfs(M_, options_mom_, data_moments, model_moments)
 % -------------------------------------------------------------------------
-% Displays and saves to disk the comparison of the data moments/irfs and the model moments/irfs
+% Displays and saves to disk the comparison of the data moments/IRFs and the model moments/IRFs
 % -------------------------------------------------------------------------
 % INPUTS
 % M_:             [structure]  model information
@@ -40,7 +40,7 @@ function display_comparison_moments_irfs(M_, options_mom_, data_moments, model_m
 
 
 if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
-    titl = upper('Comparison of matched data irfs and model irfs');
+    titl = upper('Comparison of matched data IRFs and model IRFs');
     headers = {'IRF','Data','Model'};
     for jm = 1:size(M_.matched_irfs,1)
         labels{jm,1} = [M_.endo_names{M_.matched_irfs{jm,1}(1)} ' ' M_.exo_names{M_.matched_irfs{jm,1}(2)} ' (' num2str(M_.matched_irfs{jm,1}(3)) ')'];

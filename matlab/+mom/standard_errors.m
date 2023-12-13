@@ -12,7 +12,7 @@ function [stderr_values, asympt_cov_mat] = standard_errors(xparam, objective_fun
 %  - model_moments:        [vector]     model moments
 %  - model_moments_params_derivs:  [matrix]  analytical jacobian of the model moments wrt estimated parameters (currently for GMM only)
 %  - m_data                [matrix]     selected empirical moments at each point in time
-%  - data_moments:         [vector]     data with moments/irfs to match
+%  - data_moments:         [vector]     data with moments/IRFs to match
 %  - weighting_info:       [structure]  storing information on weighting matrices
 %  - options_mom_:         [structure]  information about all settings (specified by the user, preprocessor, and taken from global options_)
 %  - M_                    [structure]  model information

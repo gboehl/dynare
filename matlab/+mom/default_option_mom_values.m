@@ -9,8 +9,8 @@ function options_mom_ = default_option_mom_values(options_mom_, options_, dname,
 % control of the estimation instead of possibly having to deal with options
 % chosen somewhere else in the mod file.
 % Note 2: we call a "mode" the minimum of the objective function, i.e.
-% the parameter vector that minimizes the distance between the moments/irfs
-% computed from the model and the moments/irfs computed from the data.
+% the parameter vector that minimizes the distance between the moments/IRFs
+% computed from the model and the moments/IRFs computed from the data.
 % -------------------------------------------------------------------------
 % INPUTS
 %  o options_mom_:           [structure]  all user-specified settings (from the method_of_moments command)
