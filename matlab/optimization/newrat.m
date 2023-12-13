@@ -174,9 +174,25 @@ while norm(gg)>gtol && check==0 && jit<nit
         iggx(ig_pos,ig_pos) = inv( hhx(ig_pos,ig_pos) );
         [~,x0] = csminit1(func0,x0,penalty,fval,ggx,0,iggx,Verbose,varargin{:});
     end
-    x0 = check_bounds(x0,bounds);
+    if not(isequal(x0 , check_bounds(x0,bounds)))
+        x0 = check_bounds(x0,bounds);
+        [fvala,exit_flag]=penalty_objective_function(x0,func0,penalty,varargin{:});
+        if exit_flag==1
+            penalty=fvala;
+        else
+            disp_verbose('last step exited with bad status!',Verbose)
+        end
+    end
     [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon, parameter_names,varargin{:});
-    x0 = check_bounds(x0,bounds);
+    if not(isequal(x0 , check_bounds(x0,bounds)))
+        x0 = check_bounds(x0,bounds);
+        [fvala,exit_flag]=penalty_objective_function(x0,func0,penalty,varargin{:});
+        if exit_flag==1
+            penalty=fvala;
+        else
+            disp_verbose('last step exited with bad status!',Verbose)
+        end
+    end
     if Save_files
         nig=[nig ig];
     end
