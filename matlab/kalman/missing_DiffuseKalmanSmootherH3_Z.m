@@ -153,9 +153,9 @@ alphahat0=[];
 aalphahat0=[];
 V0=[];
 
+C=0;
 if ~occbin_.status
     isoccbin = 0;
-    C=0;
     TT=[];
     RR=[];
     CC=[];
@@ -171,6 +171,15 @@ else
     occbin_options=occbin_.info{7};
     opts_regime = occbin_options.opts_regime;
     %     first_period_occbin_update = inf;
+    if M_.occbin.constraint_nbr==1
+        base_regime.regime = 0;
+        base_regime.regimestart = 1;
+    else
+        base_regime.regime1 = 0;
+        base_regime.regimestart1 = 1;
+        base_regime.regime2 = 0;
+        base_regime.regimestart2 = 1;
+    end
     if isfield(opts_regime,'regime_history') && ~isempty(opts_regime.regime_history)
         opts_regime.regime_history=[opts_regime.regime_history(1) opts_regime.regime_history];
     else
@@ -239,8 +248,19 @@ if newRank
     % add this to get smoothed states in period 0
     Pinf_init = Pinf(:,:,1);
     Pstar_init = Pstar(:,:,1);
-    Pstar(:,:,1)  = T*Pstar(:,:,1)*T' + QQ;
     ainit = a1(:,1);
+    if isoccbin && length(occbin_.info)>6
+        if isqvec
+            QQ = RR(:,:,1)*Qvec(:,:,1)*transpose(RR(:,:,1));
+        else
+            QQ = RR(:,:,1)*Q*transpose(RR(:,:,1));
+        end
+        T = TT(:,:,1);
+        C = CC(:,1);
+        a1(:,1) = T*a(:,1)+C;                                                 %transition according to (6.14) in DK (2012)
+%         Pinf(:,:,1)   = T*Pinf(:,:,1)*T';
+    end
+    Pstar(:,:,1)  = T*Pstar(:,:,1)*T' + QQ;
 end
 
 while newRank && t < smpl
@@ -285,10 +305,20 @@ while newRank && t < smpl
         oldRank = 0;
     end
     if isoccbin
-        TT(:,:,t+1)=  T;
-        RR(:,:,t+1)=  R;
+        if length(occbin_.info)>9
+            if isqvec
+                QQ = RR(:,:,t+1)*Qvec(:,:,t+1)*transpose(RR(:,:,t+1));
+            else
+                QQ = RR(:,:,t+1)*Q*transpose(RR(:,:,t+1));
+            end
+            T = TT(:,:,t+1);
+            C = CC(:,t+1);
+        else
+            TT(:,:,t+1)=  T;
+            RR(:,:,t+1)=  R;
+        end
     end
-    a1(:,t+1) = T*a(:,t);
+    a1(:,t+1) = T*a(:,t)+C;
     aK(1,:,t+1) = a1(:,t+1);
     for jnk=2:nk
         aK(jnk,:,t+jnk) = T*dynare_squeeze(aK(jnk-1,:,t+jnk-1));
@@ -311,13 +341,14 @@ while newRank && t < smpl
     end
 end
 
+d = t;
 if isoccbin
     first_period_occbin_update = occbin_options.first_period_occbin_update;
     if d>0
         first_period_occbin_update = max(t+2,occbin_options.first_period_occbin_update);
         % kalman update is not yet robust to accommodate diffuse steps
     end
-    if occbin_options.opts_regime.waitbar
+    if occbin_options.opts_regime.waitbar && first_period_occbin_update<smpl
         hh_fig = dyn_waitbar(0,'Occbin: Piecewise Kalman Filter');
         set(hh_fig,'Name','Occbin: Piecewise Kalman Filter.');
         waitbar_indicator=1;
@@ -328,7 +359,6 @@ else
     first_period_occbin_update = inf;
     waitbar_indicator=0;
 end
-d = t;
 P(:,:,d+1) = Pstar(:,:,d+1);
 Fstar = Fstar(:,1:d);
 Finf = Finf(:,1:d);
@@ -371,12 +401,16 @@ while notsteady && t<smpl
             RR01 = cat(3,R,RR(:,:,1));
             CC01 = zeros(size(CC,1),2);
             CC01(:,2) = CC(:,1);
-            [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a0,a10,P0,P10,data_index0,Z,v0,Fi0,Ki0,Y0,H,Qt,T0,R0,TT01,RR01,CC01,regimes_(t:t+1),M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options,kalman_tol,nk);
+    %        [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a0,a10,P0,P10,data_index0,Z,v0,Fi0,Ki0,Y0,H,Qt,T0,R0,TT01,RR01,CC01,regimes_(t:t+1),M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options,kalman_tol,nk);
+            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, tmp, error_flag, M_, likx, etaha, aha, V, Fix, Kix, TTx,RRx,CCx] = occbin.kalman_update_engine(a0, a10, P0, P10, t, data_index0, Z, v0, Y0, H, Qt, T0, R0, TT01, RR01, CC01, regimes_(t:t+1), base_regime, di, M_, dr,endo_steady_state,exo_steady_state,exo_det_steady_state, options_, occbin_options, ...
+                Fi0,Ki0,kalman_tol,nk);
         else
             if isqvec
                 Qt = Qvec(:,:,t-1:t+1);
             end
-            [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a(:,t-1),a1(:,t-1:t),P(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,v(:,t-1:t),Fi(:,t-1),Ki(:,:,t-1),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options,kalman_tol,nk);
+     %       [ax, a1x, Px, P1x, vx, Fix, Kix, Tx, Rx, Cx, tmp, error_flag, M_, aha, etaha,TTx,RRx,CCx] = occbin.kalman_update_algo_3(a(:,t-1),a1(:,t-1:t),P(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,v(:,t-1:t),Fi(:,t-1),Ki(:,:,t-1),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options,kalman_tol,nk);
+            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, tmp, error_flag, M_, likx, etaha, aha, V, Fix, Kix,TTx,RRx,CCx] = occbin.kalman_update_engine(a(:,t-1),a1(:,t-1:t),P(:,:,t-1),P1(:,:,t-1:t),t,data_index(t-1:t),Z,v(:,t-1:t), Y(:,t-1:t), H, Qt, T0, R0, TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t), regimes_(t:t+1), base_regime, di, M_, dr,endo_steady_state,exo_steady_state,exo_det_steady_state, options_, occbin_options, ...
+                Fi(:,t-1),Ki(:,:,t-1),kalman_tol,nk);
         end
         if ~error_flag
             regimes_(t:t+2)=tmp;
@@ -425,6 +459,7 @@ while notsteady && t<smpl
             T = TT(:,:,t);
             C = CC(:,t);
             a1(:,t) = T*a(:,t)+C;                                                 %transition according to (6.14) in DK (2012)
+            a(:,t) = a1(:,t);
             P(:,:,t) = T*P(:,:,t)*T' + QQ;                                        %transition according to (6.14) in DK (2012)
             P1(:,:,t) = P(:,:,t);
         end

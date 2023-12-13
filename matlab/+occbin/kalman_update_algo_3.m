@@ -1,4 +1,4 @@
-function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, alphahat, etahat, TT, RR, CC] = kalman_update_algo_3(a,a1,P,P1,data_index,Z,v,Fi,Ki,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_,occbin_options,kalman_tol,nk)
+function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, lik, alphahat, etahat, TT, RR, CC] = kalman_update_algo_3(a,a1,P,P1,data_index,Z,v,Fi,Ki,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_,occbin_options,kalman_tol,nk)
 % function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, alphahat, etahat, TT, RR, CC] = kalman_update_algo_3(a,a1,P,P1,data_index,Z,v,Fi,Ki,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_,occbin_options,kalman_tol,nk)
 %
 % INPUTS
@@ -86,6 +86,7 @@ end
 nk=max(nk,1);
 
 opts_simul = occbin_options.opts_regime;
+options_.occbin.simul=opts_simul;
 base_regime = struct();
 if M_.occbin.constraint_nbr==1
     base_regime.regime = 0;
@@ -96,6 +97,7 @@ else
     base_regime.regime2 = 0;
     base_regime.regimestart2 = 1;
 end
+regimes_ = [base_regime base_regime base_regime];
 myrestrict=[];
 if options_.smoother_redux
     opts_simul.restrict_state_space =1;
@@ -103,15 +105,46 @@ if options_.smoother_redux
 end
 
 mm=size(a,1);
-if ~options_.occbin.filter.use_relaxation
-    [a, a1, P, P1, v, Fi, Ki, alphahat, etahat] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
+if ~options_.occbin.filter.use_relaxation && ~isempty(fieldnames(regimes0))
+    if options_.occbin.filter.guess_regime
+        [~,~,~,~,~,~, TTx, RRx, CCx] ...
+            = occbin.dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state, regimes0(1),myrestrict,T0,R0);
+        if M_.occbin.constraint_nbr==1
+            bindx = occbin.backward_map_regime(regimes0(1).regime, regimes0(1).regimestart);
+            bindx = bindx(2:end);
+            [regimes0(2).regime, regimes0(2).regimestart, error_flag]=occbin.map_regime(bindx);
+            bindx = bindx(2:end);
+            [regimes0(3).regime, regimes0(3).regimestart, error_flag]=occbin.map_regime(bindx);
+        else
+            bindx1 = occbin.backward_map_regime(regimes0(1).regime1, regimes0(1).regimestart1);
+            bindx2 = occbin.backward_map_regime(regimes0(1).regime2, regimes0(1).regimestart2);
+            bindx1 = bindx1(2:end);
+            bindx2 = bindx2(2:end);
+            [regimes0(2).regime1, regimes0(2).regimestart1, error_flag]=occbin.map_regime(bindx1);
+            [regimes0(2).regime2, regimes0(2).regimestart2, error_flag]=occbin.map_regime(bindx2);
+            bindx1 = bindx1(2:end);
+            bindx2 = bindx2(2:end);
+            [regimes0(3).regime1, regimes0(3).regimestart1, error_flag]=occbin.map_regime(bindx1);
+            [regimes0(3).regime2, regimes0(3).regimestart2, error_flag]=occbin.map_regime(bindx2);
+        end
+%         regimes0=[regimes0 base_regime base_regime];
+        TT(:,:,2) = TTx(:,:,end);
+        RR(:,:,2) = RRx(:,:,end);
+        CC(:,2) = CCx(:,end);
+    end
+    [a, a1, P, P1, v, Fi, Ki, alphahat, etahat, lik] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
 else
     [~,~,~,~,~,~, TTx, RRx, CCx] ...
         = occbin.dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state, base_regime,myrestrict,T0,R0);
+    if isempty(fieldnames(regimes0))
+        regimes0 = regimes_;
+    else
+        regimes0(1)=base_regime;
+    end
     TT(:,:,2) = TTx(:,:,end);
     RR(:,:,2) = RRx(:,:,end);
     CC(:,2) = CCx(:,end);
-    [a, a1, P, P1, v, Fi, Ki, alphahat, etahat] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
+    [a, a1, P, P1, v, Fi, Ki, alphahat, etahat, lik] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
     regimes0(1)=base_regime;
 end
 
@@ -132,9 +165,23 @@ else
 end
 
 options_.occbin.simul=opts_simul;
-[~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
+if options_.occbin.filter.guess_regime
+    options_.occbin.simul.init_regime=regimes0;
+    [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
+    if out.error_flag
+        options_.occbin.simul=opts_simul;
+        [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
+    end
+else
+    [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
+    if out.error_flag
+        options_.occbin.simul.init_regime=regimes0;
+        [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
+    end
+end
 if out.error_flag
     error_flag = out.error_flag;
+    etahat=etahat(:,2);
     return;
 end
 
@@ -148,6 +195,7 @@ regime_hist = {regimes0(1)};
 if M_.occbin.constraint_nbr==1
     regime_end = regimes0(1).regimestart(end);
 end
+lik_hist=lik;
 niter=1;
 is_periodic=0;
 if options_.occbin.filter.use_relaxation || isequal(regimes0(1),base_regime)
@@ -200,7 +248,8 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         if M_.occbin.constraint_nbr==1
             regime_end(niter) = regimes_(1).regimestart(end);
         end
-        [a, a1, P, P1, v, Fi, Ki, alphahat, etahat] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
+        [a, a1, P, P1, v, Fi, Ki, alphahat, etahat, lik] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
+        lik_hist(niter) = lik;
         opts_simul.SHOCKS(1,:) = etahat(:,2)';
         %         if opts_simul.restrict_state_space
         %             tmp=zeros(M_.endo_nbr,1);
@@ -228,6 +277,8 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
         if out.error_flag
             error_flag = out.error_flag;
+            etahat=etahat(:,2);
+            lik=inf;
             return;
         end
         regimes0=regimes_;
@@ -236,36 +287,15 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             for kiter=1:niter-1
                 is_periodic(kiter) = isequal(regime_hist{kiter}, regimes_(1));
             end
+            is_periodic_iter = find(is_periodic);
             is_periodic =  any(is_periodic);
             if is_periodic
-                if nguess<3 && M_.occbin.constraint_nbr==1
-                    newguess=1;
-                    is_periodic=0;
-                    nguess=nguess+1;
-                    if nguess==1
-                        % change starting regime
-                        regimes_(1).regime=0;
-                        regimes_(1).regimestart=1;
-                    elseif nguess==2
-                        % change starting regime
-                        regimes_(1).regime=[0 1 0];
-                        regimes_(1).regimestart=[1 2 3];
-                    else
-                        regimes_(1).regime=[1 0];
-                        regimes_(1).regimestart=[1 2];
-                    end
-                    [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                        = occbin.dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state, [base_regime regimes_(1)],myrestrict,T0,R0);
-                    TT(:,:,2) = TTx(:,:,end);
-                    RR(:,:,2) = RRx(:,:,end);
-                    CC(:,2) = CCx(:,end);
-                    regime_hist = regime_hist(1);
-                    niter=1;
-                else
                     % re-set to previous regime
-                    regimes_ = regimes0;
-                    % force projection conditional on previous regime
-                    opts_simul.init_regime=regimes0(1);
+                    if options_.occbin.filter.periodic_solution
+                        % force projection conditional on most likely regime
+%                         [m, im]=max(lik_hist(is_periodic_iter:end));
+                        [m, im]=min(lik_hist(is_periodic_iter:end));
+                        opts_simul.init_regime=regime_hist{is_periodic_iter+im-1};
                     if M_.occbin.constraint_nbr==1
                         myregimestart = [regimes0.regimestart];
                     else
@@ -274,68 +304,39 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     opts_simul.periods = max(opts_simul.periods,max(myregimestart));
                     opts_simul.maxit=1;
                     options_.occbin.simul=opts_simul;
-                    [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
-                end
+                    [~, out, ss] = occbin.solver(M_,oo_,options_);
+                    if out.error_flag
+                        error_flag = out.error_flag;
+                        etahat=etahat(:,2);
+                        lik=inf;
+                        return;
+                    else
+                        regimes_ = out.regime_history;
+                        TT(:,:,2)=ss.T(my_order_var,my_order_var,1);
+                        RR(:,:,2)=ss.R(my_order_var,:,1);
+                        CC(:,2)=ss.C(my_order_var,1);
+                        [a, a1, P, P1, v, Fi, Ki, alphahat, etahat, lik] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
+                    end
+                    else
+                        error_flag = 330;
+                        etahat=etahat(:,2);
+                        lik=inf;
+                        return;
+                    end
             end
         end
     end
 end
 
 error_flag = out.error_flag;
-if error_flag==0 && niter>options_.occbin.likelihood.max_number_of_iterations && ~isequal(regimes_(1),regimes0(1)) %fixed point algorithm did not converge
+if ~error_flag && niter>options_.occbin.likelihood.max_number_of_iterations && ~isequal(regimes_(1),regimes0(1)) %fixed point algorithm did not converge
   error_flag = 1;
-    
-  if M_.occbin.constraint_nbr==1
-    % try some other regime before giving up
-    [~, il]=sort(regime_end);
-    rr=regime_hist(il(2:3));
-    newstart=1;
-    if length(rr{1}(1).regimestart)>1
-        newstart = rr{1}(1).regimestart(end)-rr{1}(1).regimestart(end-1)+1;
-    end
-    oldstart=1;
-    if length(rr{2}(1).regimestart)>1
-        oldstart = rr{2}(1).regimestart(end)-rr{2}(1).regimestart(end-1)+1;
-    end
-    nstart=sort([newstart oldstart]);
-    regimes_=rr{1}(1);
-    for k=(nstart(1)+1):(nstart(2)-1)
-        niter=niter+1;
-        regimes_(1).regimestart(end)=k;
-        
-        [~,~,~,~,~,~, TTx, RRx, CCx] ...
-            = occbin.dynare_resolve(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state, [base_regime regimes_(1)],myrestrict,T0,R0);
-        TT(:,:,2) = TTx(:,:,end);
-        RR(:,:,2) = RRx(:,:,end);
-        CC(:,2) = CCx(:,end);
-        [a, a1, P, P1, v, Fi, Ki, alphahat, etahat] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol);
-        opts_simul.SHOCKS(1,:) = etahat(:,2)';
-        if opts_simul.restrict_state_space
-            tmp=zeros(M_.endo_nbr,1);
-            tmp(dr.restrict_var_list,1)=alphahat(:,1);
-            opts_simul.endo_init = tmp(dr.inv_order_var,1);
-        else
-            opts_simul.endo_init = alphahat(dr.inv_order_var,1);
-        end
-        if M_.occbin.constraint_nbr==1
-            myregimestart = [regimes_.regimestart];
-        else
-            myregimestart = [regimes_.regimestart1 regimes_.regimestart2];
-        end
-        opts_simul.periods = max(opts_simul.periods,max(myregimestart));
-        options_.occbin.simul=opts_simul;
-        [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
-        if isequal(out.regime_history(1),regimes_(1))
-            error_flag=0;
-            break
-        end
-    end
-    regimes_ = out.regime_history;
-  end
 end
 
-regimes_=regimes_(1:3);
-a = out.piecewise(1:nk+1,my_order_var)' - repmat(out.ys(my_order_var),1,nk+1);
+if ~error_flag
+    a = out.piecewise(1:nk+1,my_order_var)' - repmat(out.ys(my_order_var),1,nk+1);
+    regimes_=regimes_(1:3);
+end
 T = ss.T(my_order_var,my_order_var,:);
 R = ss.R(my_order_var,:,:);
 C = ss.C(my_order_var,:);
@@ -352,7 +353,7 @@ end
 
 end
 
-function [a, a1, P, P1, v, Fi, Ki, alphahat, etahat] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol)
+function [a, a1, P, P1, v, Fi, Ki, alphahat, etahat, lik] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol)
 % [a, a1, P, P1, v, Fi, Ki, alphahat, etahat] = occbin_kalman_update(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,Ki,Fi,mm,kalman_tol)
 % - a
 % - a1
@@ -377,9 +378,18 @@ a(:,t) = a1(:,t);
 P1(:,:,t) = T*P(:,:,t-1)*T' + QQ;                                        %transition according to (6.14) in DK (2012)
 P(:,:,t) = P1(:,:,t);
 di = data_index{t}';
+% store info for lik
+if not(isempty(di))
+    vv      = Y(di,t) - Z(di,:)*a(:,t);
+    F = Z(di,:)*P(:,:,t)*Z(di,:)' + diag(H(di));
+    sig=sqrt(diag(F));
+    lik=inf;
+end
+
 if isempty(di)
     Fi(:,t) = 0;
     Ki(:,:,t) = 0;
+    lik =0;
 end
 for i=di
     Zi = Z(i,:);
@@ -393,6 +403,11 @@ for i=di
         % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
         % p. 157, DK (2012)
     end
+end
+if not(isempty(di))
+    log_dF = log(det(F./(sig*sig')))+2*sum(log(sig));
+    iF = inv(F./(sig*sig'))./(sig*sig');
+    lik = log_dF + transpose(vv)*iF*vv + length(di)*log(2*pi);
 end
 
 %% do backward pass

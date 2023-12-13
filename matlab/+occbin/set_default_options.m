@@ -42,6 +42,8 @@ if ismember(flag,{'all'})
 end
 
 if ismember(flag,{'filter','all'})
+    options_occbin_.filter.state_covariance = false;
+    options_occbin_.filter.guess_regime = false;
     options_occbin_.filter.use_relaxation = false;
 end
 
@@ -69,6 +71,7 @@ if ismember(flag,{'irf','all'})
 end
 
 if ismember(flag,{'likelihood','all'})
+    options_occbin_.likelihood.brute_force_regime_guess = true;
     options_occbin_.likelihood.curb_retrench = false;
     options_occbin_.likelihood.first_period_occbin_update = 1;
     options_occbin_.likelihood.full_output = false;
@@ -77,10 +80,12 @@ if ismember(flag,{'likelihood','all'})
     options_occbin_.likelihood.init_binding_indicator = false(0);
     options_occbin_.likelihood.inversion_filter = false;
     options_occbin_.likelihood.IVF_shock_observable_mapping = [];
+    options_occbin_.likelihood.loss_function_regime_guess = false;
     options_occbin_.likelihood.maxit = 30; % this is for occbin solver algo
     options_occbin_.likelihood.max_number_of_iterations = 10; % this is for occbin_kalman_update loop
     options_occbin_.likelihood.max_check_ahead_periods=inf;
-    options_occbin_.likelihood.periods = 100;
+    options_occbin_.likelihood.number_of_initial_periods_with_extra_regime_guess=0;
+    options_occbin_.likelihood.periods = 3;
     options_occbin_.likelihood.check_ahead_periods=200;
     options_occbin_.likelihood.periodic_solution=false;
     options_occbin_.likelihood.piecewise_only = true;
@@ -217,7 +222,7 @@ if ismember(flag,{'smoother','all'})
     options_occbin_.smoother.maxit = 30; % this is for occbin solver algo
     options_occbin_.smoother.max_check_ahead_periods=inf;
     options_occbin_.smoother.max_number_of_iterations = 10; % this is for smoother loop
-    options_occbin_.smoother.periods = 100;
+    options_occbin_.smoother.periods = 3;
     options_occbin_.smoother.check_ahead_periods=200;
     options_occbin_.smoother.periodic_solution=false;
     options_occbin_.smoother.piecewise_only = true;
