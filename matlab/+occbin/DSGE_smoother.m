@@ -82,7 +82,9 @@ if  options_.occbin.smoother.linear_smoother && nargin==12
     oo_.occbin.linear_smoother.T0=T0;
     oo_.occbin.linear_smoother.R0=R0;
     oo_.occbin.linear_smoother.decomp=decomp;
-    
+    oo_.occbin.linear_smoother.alphahat0=alphahat0;
+    oo_.occbin.linear_smoother.state_uncertainty0=state_uncertainty0;
+
     fprintf('\nOccbin: linear smoother done.\n')
     options_.occbin.smoother.status=true;
 end
@@ -120,11 +122,21 @@ occbin_options.first_period_occbin_update = options_.occbin.smoother.first_perio
 occbin_options.opts_regime = opts_simul; % this builds the opts_simul options field needed by occbin.solver
 occbin_options.opts_regime.binding_indicator = options_.occbin.likelihood.init_binding_indicator;
 occbin_options.opts_regime.regime_history=options_.occbin.likelihood.init_regime_history;
+
+error_indicator=false;
 try
     %blanket try-catch should be replaced be proper error handling, see https://git.dynare.org/Dynare/dynare/-/merge_requests/2226#note_20318
     [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
-catch
-    % realtime regimes could not converge, try guess shocks from linear smoother
+catch ME
+    error_indicator=true;
+    disp(ME.message)
+    for iter = 1:numel(ME.stack)
+        ME.stack(iter)
+    end
+end
+if error_indicator || isempty(alphahat0)
+    etahat= oo_.occbin.linear_smoother.etahat;
+    alphahat0= oo_.occbin.linear_smoother.alphahat0;
     base_regime = struct();
     if M_.occbin.constraint_nbr==1
         base_regime.regime = 0;
@@ -135,10 +147,16 @@ catch
         base_regime.regime2 = 0;
         base_regime.regimestart2 = 1;
     end
+    oo_.occbin.smoother.regime_history = [];
     for jper=1:size(alphahat,2)+1
-        oo_.occbin.smoother.regime_history(jper) = base_regime;
+        if jper == 1
+            oo_.occbin.smoother.regime_history = base_regime;
+        else
+            oo_.occbin.smoother.regime_history(jper) = base_regime;
+        end
     end
 end
+
 oo_.occbin.smoother.realtime_regime_history = oo_.occbin.smoother.regime_history;
 regime_history = oo_.occbin.smoother.regime_history;
 opts_regime.regime_history = oo_.occbin.smoother.regime_history;
