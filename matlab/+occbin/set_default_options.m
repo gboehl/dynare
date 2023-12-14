@@ -46,23 +46,26 @@ if ismember(flag,{'filter','all'})
 end
 
 if ismember(flag,{'forecast','all'})
+    options_occbin_.forecast.check_ahead_periods=30;
     options_occbin_.forecast.debug_flag=false;
     options_occbin_.forecast.frcst_regimes=[];
     options_occbin_.forecast.maxit=30;
-    options_occbin_.forecast.periods=30;
     options_occbin_.forecast.qmc=0;
     options_occbin_.forecast.replic=0;
+    options_occbin_.forecast.sepath=0;    
     options_occbin_.forecast.SHOCKS0=[];
     options_occbin_.forecast.treepath=1; % number of branches
 end
 
-if ismember(flag,{'irf','all'})
+if ismember(flag,{'irf','all'})    
+    options_occbin_.irf.check_ahead_periods=30;
+    options_occbin_.irf.exo_names=M_.exo_names;
     options_occbin_.irf.init_regime=[];
     options_occbin_.irf.maxit=30;
-    options_occbin_.irf.threshold = 10^-6;
 %     options_occbin_.irf.periods=options_.irf;
     options_occbin_.irf.shocksize=[];
-    options_occbin_.irf.shocksigns = {'1','_1'}; 
+    options_occbin_.irf.shocksigns = {'pos','neg'}; 
+    options_occbin_.irf.t0=0;
 end
 
 if ismember(flag,{'likelihood','all'})
@@ -85,6 +88,21 @@ if ismember(flag,{'likelihood','all'})
     options_occbin_.likelihood.status=true; %initialized to false in default_option_values
     options_occbin_.likelihood.use_updated_regime = true;
     options_occbin_.likelihood.waitbar=false;
+end
+
+if ismember(flag,{'plot_irf','all'})
+    options_occbin_.plot_irf.add_steadystate = 0;
+    options_occbin_.plot_irf.exo_names = [];
+    options_occbin_.plot_irf.endo_names = M_.endo_names;
+    options_occbin_.plot_irf.endo_names_long = [];
+    options_occbin_.plot_irf.endo_scaling_factor = [];
+    options_occbin_.plot_irf.grid            = true;
+    options_occbin_.plot_irf.ncols            = 3;
+    options_occbin_.plot_irf.nrows            = 3;
+    options_occbin_.plot_irf.shocksigns = {'pos','neg'}; 
+    options_occbin_.plot_irf.simulname='';
+    options_occbin_.plot_irf.threshold = 10^-6;
+    options_occbin_.plot_irf.tplot = [];
 end
 
 if ismember(flag,{'plot_shock_decomp','all'})
