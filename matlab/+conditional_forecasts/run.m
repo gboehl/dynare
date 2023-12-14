@@ -1,11 +1,16 @@
-function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
-
+function forecasts=run(M_,options_,oo_,bayestopt_,estim_params_,constrained_paths, constrained_vars, options_cond_fcst)
+% run(constrained_paths, constrained_vars, options_cond_fcst)
 % Computes conditional forecasts.
 %
 % INPUTS
-% - constrained_paths  [double]        m*p array, where m is the number of constrained endogenous variables and p is the number of constrained periods.
-% - constrained_vars     [integer]     m*1 array, indices in M_.endo_names of the constrained variables.
-% - options_cond_fcst    [structure]   containing the options. The fields are:
+%   M_                  [structure]     describing the model
+%   options_            [structure]     describing the options
+%   oo_:                [structure]     storing the results
+%   bayestopt_          [structure]     describing the priors
+%   estim_params_       [structure]     characterizing parameters to be estimated
+% - constrained_paths   [double]        m*p array, where m is the number of constrained endogenous variables and p is the number of constrained periods.
+% - constrained_vars    [integer]       m*1 array, indices in M_.endo_names of the constrained variables.
+% - options_cond_fcst   [structure]     containing the options. The fields are:
 %
 %                                      + replic              [integer]   scalar, number of monte carlo simulations.
 %                                      + parameter_set       [char]      values of the estimated parameters:
@@ -19,16 +24,16 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 %                                      + conf_sig            [double]     scalar in [0,1], probability mass covered by the confidence bands.
 %
 % OUTPUTS
-% None.
+%  - forecasts          [structure]     results of the conditional forecast exercise
 %
 % SPECIAL REQUIREMENTS
 % This routine has to be called after an estimation statement or an estimated_params block.
 %
 % REMARKS
 % [1] Results are stored in oo_.conditional_forecast.
-% [2] Use the function plot_icforecast to plot the results.
+% [2] Use the function conditional_forecasts.plot to plot the results.
 
-% Copyright © 2006-2020 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,8 +49,6 @@ function imcforecast(constrained_paths, constrained_vars, options_cond_fcst)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-global options_ oo_ M_ bayestopt_ estim_params_
 
 if ~isfield(options_cond_fcst,'parameter_set') || isempty(options_cond_fcst.parameter_set)
     if isfield(oo_,'posterior_mode')
@@ -123,7 +126,6 @@ if estimated_model
     missing_value = dataset_info.missing.state;
 
     %store qz_criterium
-    qz_criterium_old=options_.qz_criterium;
     options_=select_qz_criterium_value(options_);
     options_smoothed_state_uncertainty_old = options_.smoothed_state_uncertainty;
     [atT, ~, ~, ~,ys, ~, ~, ~, ~, ~, ~, ~, ~, ~,oo_,bayestopt_] = ...
@@ -155,7 +157,6 @@ if estimated_model
     trend = constant(oo_.dr.order_var,:);
     InitState(:,1) = atT(:,end);
 else
-    qz_criterium_old=options_.qz_criterium;
     if isempty(options_.qz_criterium)
         options_.qz_criterium = 1+1e-6;
     end
@@ -246,7 +247,7 @@ FORCS1_shocks = zeros(n1,cL,options_cond_fcst.replic);
 for b=1:options_cond_fcst.replic %conditional forecast using cL set to constrained values
     shocks = sQ*randn(ExoSize,options_cond_fcst.periods);
     shocks(controlled_varexo,:) = zeros(n1, options_cond_fcst.periods);
-    [FORCS1(:,:,b), FORCS1_shocks(:,:,b)] = mcforecast3(cL,options_cond_fcst.periods,constrained_paths,shocks,FORCS1(:,:,b),T,R,mv, mu);
+    [FORCS1(:,:,b), FORCS1_shocks(:,:,b)] = conditional_forecasts.get_shock_paths(cL,options_cond_fcst.periods,constrained_paths,shocks,FORCS1(:,:,b),T,R,mv, mu);
     FORCS1(:,:,b)=FORCS1(:,:,b)+trend; %add trend
 end
 if max(max(max(abs(bsxfun(@minus,FORCS1(constrained_vars,1+1:1+cL,:),trend(constrained_vars,1:cL)+constrained_paths)))))>1e-4
@@ -292,7 +293,7 @@ FORCS2(:,1,:) = repmat(InitState,1,options_cond_fcst.replic); %set initial stead
 for b=1:options_cond_fcst.replic %conditional forecast using cL set to 0
     shocks = sQ*randn(ExoSize,options_cond_fcst.periods);
     shocks(controlled_varexo,:) = zeros(n1, options_cond_fcst.periods);
-    FORCS2(:,:,b) = mcforecast3(0,options_cond_fcst.periods,constrained_paths,shocks,FORCS2(:,:,b),T,R,mv, mu)+trend;
+    FORCS2(:,:,b) = conditional_forecasts.get_shock_paths(0,options_cond_fcst.periods,constrained_paths,shocks,FORCS2(:,:,b),T,R,mv, mu)+trend;
 end
 
 mFORCS2 = mean(FORCS2,3);
@@ -308,7 +309,3 @@ for i = 1:EndoSize
 end
 forecasts.graph.title = graph_title;
 forecasts.graph.fname = M_.fname;
-
-%reset qz_criterium
-options_.qz_criterium=qz_criterium_old;
-oo_.conditional_forecast = forecasts;
