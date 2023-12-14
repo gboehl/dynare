@@ -141,48 +141,37 @@ for curr_block = fblck:nblck
         options_=set_dynare_seed_local_options(options_,options_.DynareRandomStreams.seed+curr_block);
     end
     mh_recover_flag=0;
-    if (options_.load_mh_file~=0) && (fline(curr_block)>1) && OpenOldFile(curr_block) %load previous draws and likelihood
-        load([BaseName '_mh' int2str(NewFile(curr_block)) '_blck' int2str(curr_block) '.mat'])
-        x2 = [x2;zeros(InitSizeArray(curr_block)-fline(curr_block)+1,npar)];
-        logpo2 = [logpo2;zeros(InitSizeArray(curr_block)-fline(curr_block)+1,1)];
+    if options_.mh_recover && exist([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat'],'file')==2 && OpenOldFile(curr_block)
+        % this should be done whatever value of load_mh_file
+        load([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat']);
+        draw_iter = size(neval_this_chain,2)+1;
+        draw_index_current_file = draw_iter+fline(curr_block)-1;
+        feval_this_chain = sum(sum(neval_this_chain));
+        feval_this_file = sum(sum(neval_this_chain));
+        if feval_this_chain>draw_index_current_file-fline(curr_block)
+            % non Metropolis type of sampler
+            accepted_draws_this_chain = draw_index_current_file-fline(curr_block);
+            accepted_draws_this_file = draw_index_current_file-fline(curr_block);
+        else
+            accepted_draws_this_chain = 0;
+            accepted_draws_this_file = 0;
+        end
+        mh_recover_flag=1;
+        set_dynare_random_generator_state(LastSeeds.(['file' int2str(NewFile(curr_block))]).Unifor, LastSeeds.(['file' int2str(NewFile(curr_block))]).Normal);
+        last_draw(curr_block,:)=x2(draw_index_current_file-1,:);
+        last_posterior(curr_block)=logpo2(draw_index_current_file-1);
         OpenOldFile(curr_block) = 0;
     else
-        if options_.mh_recover && exist([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat'],'file')==2
-            load([BaseName '_mh_tmp_blck' int2str(curr_block) '.mat']);
-            draw_iter = size(neval_this_chain,2)+1;
-            draw_index_current_file = draw_iter;
-            feval_this_chain = sum(sum(neval_this_chain));
-            feval_this_file = sum(sum(neval_this_chain));
-            if feval_this_chain>draw_iter-1
-                % non Metropolis type of sampler
-                accepted_draws_this_chain = draw_iter-1;
-                accepted_draws_this_file = draw_iter-1;
-            else
-                accepted_draws_this_chain = 0;
-                accepted_draws_this_file = 0;
-            end
-            mh_recover_flag=1;
-            set_dynare_random_generator_state(LastSeeds.(['file' int2str(NewFile(curr_block))]).Unifor, LastSeeds.(['file' int2str(NewFile(curr_block))]).Normal);
-            last_draw(curr_block,:)=x2(draw_iter-1,:);
-            last_posterior(curr_block)=logpo2(draw_iter-1);
-
+        if (options_.load_mh_file~=0) && (fline(curr_block)>1) && OpenOldFile(curr_block) %load previous draws and likelihood
+            load([BaseName '_mh' int2str(NewFile(curr_block)) '_blck' int2str(curr_block) '.mat'])
+            x2 = [x2;zeros(InitSizeArray(curr_block)-fline(curr_block)+1,npar)];
+            logpo2 = [logpo2;zeros(InitSizeArray(curr_block)-fline(curr_block)+1,1)];
+            OpenOldFile(curr_block) = 0;
         else
 
             x2 = zeros(InitSizeArray(curr_block),npar);
             logpo2 = zeros(InitSizeArray(curr_block),1);
         end
-    end
-    %Prepare waiting bars
-    if whoiam
-        refresh_rate = sampler_options.parallel_bar_refresh_rate;
-        bar_title = sampler_options.parallel_bar_title;
-        prc0=(curr_block-fblck)/(nblck-fblck+1)*(isoctave || options_.console_mode);
-        hh_fig = dyn_waitbar({prc0,whoiam,options_.parallel(ThisMatlab)},[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
-    else
-        refresh_rate = sampler_options.serial_bar_refresh_rate;
-        bar_title = sampler_options.serial_bar_title;
-        hh_fig = dyn_waitbar(0,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
-        set(hh_fig,'Name',bar_title);
     end
     if mh_recover_flag==0
         accepted_draws_this_chain = 0;
@@ -191,6 +180,18 @@ for curr_block = fblck:nblck
         feval_this_file = 0;
         draw_iter = 1;
         draw_index_current_file = fline(curr_block); %get location of first draw in current block
+    end
+    %Prepare waiting bars
+    if whoiam
+        refresh_rate = sampler_options.parallel_bar_refresh_rate;
+        bar_title = sampler_options.parallel_bar_title;
+        prc0=(curr_block-fblck)/(nblck-fblck+1)*(isoctave || options_.console_mode)+(draw_iter-1)/nruns(curr_block);
+        hh_fig = dyn_waitbar({prc0,whoiam,options_.parallel(ThisMatlab)},[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
+    else
+        refresh_rate = sampler_options.serial_bar_refresh_rate;
+        bar_title = sampler_options.serial_bar_title;
+        hh_fig = dyn_waitbar(0,[bar_title ' (' int2str(curr_block) '/' int2str(options_.mh_nblck) ')...']);
+        set(hh_fig,'Name',bar_title);
     end
     sampler_options.curr_block = curr_block;
     while draw_iter <= nruns(curr_block)

@@ -170,6 +170,12 @@ if ~options_.load_mh_file && ~options_.mh_recover
         ilogpo2 = zeros(NumberOfBlocks,1);
         ilogpo2(:,1) = record0.LastLogPost;
         ix2(:,IA) = record0.LastParameters(:,IB);
+        for j=1:NumberOfBlocks
+            if not(all(ix2(j,:)' >= mh_bounds.lb) && all(ix2(j,:)' <= mh_bounds.ub))
+                new_estimated_parameters = logical(new_estimated_parameters + (ix2(j,:)' < mh_bounds.lb));
+                new_estimated_parameters = logical(new_estimated_parameters + (ix2(j,:)' > mh_bounds.ub));
+            end
+        end
     else
         new_estimated_parameters = true(1,npar);
     end
@@ -458,7 +464,7 @@ elseif options_.mh_recover
     AllMhFiles = dir([BaseName '_mh*_blck*.mat']);
     TotalNumberOfMhFiles = length(AllMhFiles)-length(dir([BaseName '_mh_tmp*_blck*.mat']));
     % Quit if no crashed mcmc chain can be found as there are as many files as expected
-    if (TotalNumberOfMhFiles==ExpectedNumberOfMhFiles)
+    if (ExpectedNumberOfMhFilesPerBlock>LastFileNumberInThePreviousMh) && (TotalNumberOfMhFiles==ExpectedNumberOfMhFiles)
         if isnumeric(options_.parallel)
             fprintf('%s: It appears that you don''t need to use the mh_recover option!\n',dispString);
             fprintf('                  You have to edit the mod file and remove the mh_recover option\n');
@@ -469,15 +475,23 @@ elseif options_.mh_recover
     % 2. Something needs to be done; find out what
     % Count the number of saved mh files per block.
     NumberOfMhFilesPerBlock = zeros(NumberOfBlocks,1);
+    is_chain_complete = true(NumberOfBlocks,1);
     for b = 1:NumberOfBlocks
         BlckMhFiles = dir([BaseName '_mh*_blck' int2str(b) '.mat']);
         NumberOfMhFilesPerBlock(b) = length(BlckMhFiles)-length(dir([BaseName '_mh_tmp*_blck' int2str(b) '.mat']));
+        if (ExpectedNumberOfMhFilesPerBlock==LastFileNumberInThePreviousMh)
+            % here we need to check for the number of lines
+            tmpdata = load([BaseName '_mh' int2str(LastFileNumberInThePreviousMh) '_blck' int2str(b) '.mat'],'logpo2');
+            if length(tmpdata.logpo2) == LastLineNumberInThePreviousMh
+                is_chain_complete(b) = false;
+            end
+        end
     end
     % Find FirstBlock (First block), an integer targeting the crashed mcmc chain.
     FirstBlock = 1; %initialize
     FBlock = zeros(NumberOfBlocks,1);
     while FirstBlock <= NumberOfBlocks
-        if  NumberOfMhFilesPerBlock(FirstBlock) < ExpectedNumberOfMhFilesPerBlock
+        if  (NumberOfMhFilesPerBlock(FirstBlock) < ExpectedNumberOfMhFilesPerBlock) || not(is_chain_complete(FirstBlock))
             fprintf('%s: Chain %u is not complete!\n', dispString,FirstBlock);
             FBlock(FirstBlock)=1;
         else

@@ -85,7 +85,7 @@ s = [];
 nu = [];
 
 sigma = sqrt(sigma2);
-mu2 = mu*mu;
+mu2 = (mu-lb)*(mu-lb);
 
 if type == 2       % Inverse Gamma 2
     nu   = 2*(2+mu2/sigma2);
@@ -132,10 +132,10 @@ elseif type == 1   % Inverse Gamma 1
         end
         s = (sigma2+mu2)*(nu-2);
         if check_solution_flag
-            if abs(log(mu)-log(sqrt(s/2))-gammaln((nu-1)/2)+gammaln(nu/2))>1e-7
+            if abs(log(mu-lb)-log(sqrt(s/2))-gammaln((nu-1)/2)+gammaln(nu/2))>1e-7
                 error('inverse_gamma_specification:: Failed in solving for the hyperparameters!');
             end
-            if abs(sigma-sqrt(s/(nu-2)-mu*mu))>1e-7
+            if abs(sigma-sqrt(s/(nu-2)-(mu-lb)*(mu-lb)))>1e-7
                 error('inverse_gamma_specification:: Failed in solving for the hyperparameters!');
             end
         end
