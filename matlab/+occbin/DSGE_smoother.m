@@ -1,5 +1,5 @@
 function [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,PKK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = DSGE_smoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_, dataset_info)
-%function [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,PKK,decomp,Trend,state_uncertainty,M_,oo_,bayestopt_] = DSGE_smoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_, dataset_info)
+% [alphahat,etahat,epsilonhat,ahat0,SteadyState,trend_coeff,aKK,T0,R0,P,PKK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = DSGE_smoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,dataset_, dataset_info)
 % Runs a DSGE smoother with occasionally binding constraints
 %
 % INPUTS
@@ -112,8 +112,6 @@ opts_simul.max_check_ahead_periods = options_.occbin.smoother.max_check_ahead_pe
 opts_simul.periodic_solution = options_.occbin.smoother.periodic_solution;
 opts_simul.full_output = options_.occbin.smoother.full_output;
 opts_simul.piecewise_only = options_.occbin.smoother.piecewise_only;
-% init_mode = options_.occbin.smoother.init_mode; % 0 = standard;  1 = unconditional frcsts zero shocks+smoothed states in each period
-% init_mode = 0;
 occbin_options = struct();
 
 occbin_options.first_period_occbin_update = options_.occbin.smoother.first_period_occbin_update;
@@ -156,15 +154,10 @@ if options_.smoother_redux
     [T0,R0] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     oo_.occbin.linear_smoother.T0=T0;
     oo_.occbin.linear_smoother.R0=R0;
-    %    oo_.occbin.linear_smoother.T0=ss.T(oo_.dr.order_var,oo_.dr.order_var,1);
-    %    oo_.occbin.linear_smoother.R0=ss.R(oo_.dr.order_var,:,1);
 end
 TT = ss.T(oo_.dr.order_var,oo_.dr.order_var,:);
 RR = ss.R(oo_.dr.order_var,:,:);
 CC = ss.C(oo_.dr.order_var,:);
-% TT = cat(3,TT(:,:,1),TT);
-% RR = cat(3,RR(:,:,1),RR);
-% CC = cat(2,CC(:,1),CC);
 
 opts_regime.regime_history = regime_history;
 opts_regime.binding_indicator = [];
@@ -186,6 +179,7 @@ sto_etahat={etahat};
 sto_CC = CC;
 sto_RR = RR;
 sto_TT = TT;
+sto_eee=NaN(size(TT,1),size(TT,3));
 for k=1:size(TT,3)
     sto_eee(:,k) = eig(TT(:,:,k));
 end
@@ -195,11 +189,12 @@ while is_changed && maxiter>iter && ~is_periodic
     iter=iter+1;
     fprintf('Occbin smoother iteration %u.\n', iter)
     occbin_options.opts_regime.regime_history=regime_history;
-    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0, diffuse_steps] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options,TT,RR,CC);%     T1=TT;
+    [alphahat,etahat,epsilonhat,~,SteadyState,trend_coeff,~,T0,R0,P,~,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0]...
+        = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options,TT,RR,CC);
     sto_etahat(iter)={etahat};
     regime_history0(iter,:) = regime_history;
     if occbin_smoother_debug
-        save('info1','regime_history0');
+        save('Occbin_smoother_debug_regime_history','regime_history0');
     end
     
     sto_CC = CC;
@@ -220,13 +215,13 @@ while is_changed && maxiter>iter && ~is_periodic
     TT = ss.T(oo_.dr.order_var,oo_.dr.order_var,:);
     RR = ss.R(oo_.dr.order_var,:,:);
     CC = ss.C(oo_.dr.order_var,:);
-%     TT = cat(3,TT(:,:,1),TT);
-%     RR = cat(3,RR(:,:,1),RR);
-%     CC = cat(2,CC(:,1),CC);
 
     opts_regime.regime_history = regime_history;
     [TT, RR, CC, regime_history] = occbin.check_regimes(TT, RR, CC, opts_regime, M_, options_ , oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     is_changed = ~isequal(regime_history0(iter,:),regime_history);
+    isdiff_regime=NaN(size(regime_history0,2),M_.occbin.constraint_nbr);
+    isdiff_start=NaN(size(isdiff_regime));
+    isdiff_=NaN(size(isdiff_regime));
     if M_.occbin.constraint_nbr==2
         for k=1:size(regime_history0,2)
             isdiff_regime(k,1) = ~isequal(regime_history0(end,k).regime1,regime_history(k).regime1);
@@ -236,16 +231,16 @@ while is_changed && maxiter>iter && ~is_periodic
             isdiff_start(k,2) = ~isequal(regime_history0(end,k).regimestart2,regime_history(k).regimestart2);
             isdiff_(k,2) =  isdiff_regime(k,2) ||  isdiff_start(k,2);
         end
-        is_changed_regime = ~isempty(find(isdiff_regime(:,1))) || ~isempty(find(isdiff_regime(:,2)));
-        is_changed_start = ~isempty(find(isdiff_start(:,1))) || ~isempty(find(isdiff_start(:,2)));
+        is_changed_regime = any(isdiff_regime(:,1)) || any(isdiff_regime(:,2));
+        is_changed_start = any(isdiff_start(:,1)) || any(isdiff_start(:,2));
     else
         for k=1:size(regime_history0,2)
             isdiff_regime(k,1) = ~isequal(regime_history0(end,k).regime,regime_history(k).regime);
             isdiff_start(k,1) = ~isequal(regime_history0(end,k).regimestart,regime_history(k).regimestart);
             isdiff_(k,1) =  isdiff_regime(k,1) ||  isdiff_start(k,1);
         end
-        is_changed_regime = ~isempty(find(isdiff_regime(:,1)));
-        is_changed_start = ~isempty(find(isdiff_start(:,1)));
+        is_changed_regime = any(isdiff_regime(:,1));
+        is_changed_start = any(isdiff_start(:,1));
     end
     if occbin_smoother_fast
         is_changed = is_changed_regime;
@@ -261,15 +256,18 @@ while is_changed && maxiter>iter && ~is_periodic
     end
     
     if is_changed
+        eee=NaN(size(TT,1),size(TT,3));
         for k=1:size(TT,3)
             eee(:,k) = eig(TT(:,:,k));
         end
-        err_eig(iter-1) = max(max(abs(sort(eee)-sort(sto_eee))));
-        err_alphahat(iter-1) = max(max(max(abs(alphahat-sto_alphahat))));
-        err_etahat(iter-1) = max(max(max(abs(etahat-sto_etahat{iter-1}))));
-        err_CC(iter-1) = max(max(max(abs(CC-sto_CC))));
-        err_RR(iter-1) = max(max(max(abs(RR-sto_RR))));
-        err_TT(iter-1) = max(max(max(abs(TT-sto_TT))));
+        if options_.debug
+            err_eig(iter-1) = max(max(abs(sort(eee)-sort(sto_eee))));
+            err_alphahat(iter-1) = max(max(max(abs(alphahat-sto_alphahat))));
+            err_etahat(iter-1) = max(max(max(abs(etahat-sto_etahat{iter-1}))));
+            err_CC(iter-1) = max(max(max(abs(CC-sto_CC))));
+            err_RR(iter-1) = max(max(max(abs(RR-sto_RR))));
+            err_TT(iter-1) = max(max(max(abs(TT-sto_TT))));
+        end
     end
 
     if occbin_smoother_debug || is_periodic
@@ -350,7 +348,7 @@ regime_history0(max(iter+1,1),:) = regime_history;
 oo_.occbin.smoother.regime_history=regime_history0(end,:);
 oo_.occbin.smoother.regime_history_iter=regime_history0;
 if occbin_smoother_debug
-    save('info1','regime_history0')
+    save('Occbin_smoother_debug_regime_history','regime_history0')
 end
 
 if (maxiter==iter && is_changed) || is_periodic
@@ -395,6 +393,14 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
     oo_.occbin.smoother.C0=CC;
     if options_.occbin.smoother.plot
         GraphDirectoryName = CheckPath('graphs',M_.fname);
+        latexFolder = CheckPath('latex',M_.dname);
+
+        if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
+            fidTeX = fopen([latexFolder filesep M_.fname '_OccBin_smoother_plots.tex'],'w');
+            fprintf(fidTeX,'%% TeX eps-loader file generated by occbin.DSGE_smoother.m (Dynare).\n');
+            fprintf(fidTeX,['%% ' datestr(now,0) '\n']);
+            fprintf(fidTeX,' \n');
+        end
         j1=0;
         ifig=0;
         for j=1:M_.exo_nbr
@@ -414,23 +420,49 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
                 plot(oo_.occbin.smoother.etahat(j,:)','r--','linewidth',2)
                 hold on, plot([0 options_.nobs],[0 0],'k--')
                 set(gca,'xlim',[0 options_.nobs])
-                title(deblank(M_.exo_names(j,:)),'interpreter','none')
+                if options_.TeX
+                    title(['$' M_.exo_names_tex{j,:} '$'],'interpreter','latex')
+                else
+                    title(M_.exo_names{j,:},'interpreter','none')
+                end
+
                 if mod(j1,9)==0
                     if  options_.occbin.smoother.linear_smoother
                         annotation('textbox', [0.1,0,0.35,0.05],'String', 'Linear','Color','Blue','horizontalalignment','center','interpreter','none');
                     end
                     annotation('textbox', [0.55,0,0.35,0.05],'String', 'Piecewise','Color','Red','horizontalalignment','center','interpreter','none');
                     dyn_saveas(gcf,[GraphDirectoryName filesep M_.fname,'_smoothedshocks_occbin',int2str(ifig)],options_.nodisplay,options_.graph_format);
+                    if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
+                        % TeX eps loader file
+                        fprintf(fidTeX,'\\begin{figure}[H]\n');
+                        fprintf(fidTeX,'\\centering \n');
+                        fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_smoothedshocks_occbin%s}\n',options_.figures.textwidth*min(j1/3,1),[GraphDirectoryName '/' M_.fname],int2str(ifig)); % don't use filesep as it will create issues with LaTeX on Windows
+                        fprintf(fidTeX,'\\caption{Check plots.}');
+                        fprintf(fidTeX,'\\label{Fig:smoothedshocks_occbin:%s}\n',int2str(ifig));
+                        fprintf(fidTeX,'\\end{figure}\n');
+                        fprintf(fidTeX,' \n');
+                    end
                 end
             end
+        end
 
-            if mod(j1,9)~=0 && j==M_.exo_nbr
-                annotation('textbox', [0.1,0,0.35,0.05],'String', 'Linear','Color','Blue','horizontalalignment','center','interpreter','none');
-                annotation('textbox', [0.55,0,0.35,0.05],'String', 'Piecewise','Color','Red','horizontalalignment','center','interpreter','none');
-                dyn_saveas(hh_fig,[GraphDirectoryName filesep M_.fname,'_smoothedshocks_occbin',int2str(ifig)],options_.nodisplay,options_.graph_format);
+        if mod(j1,9)~=0 && j==M_.exo_nbr
+            annotation('textbox', [0.1,0,0.35,0.05],'String', 'Linear','Color','Blue','horizontalalignment','center','interpreter','none');
+            annotation('textbox', [0.55,0,0.35,0.05],'String', 'Piecewise','Color','Red','horizontalalignment','center','interpreter','none');
+            dyn_saveas(hh_fig,[GraphDirectoryName filesep M_.fname,'_smoothedshocks_occbin',int2str(ifig)],options_.nodisplay,options_.graph_format);
+            if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
+                % TeX eps loader file
+                fprintf(fidTeX,'\\begin{figure}[H]\n');
+                fprintf(fidTeX,'\\centering \n');
+                fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_smoothedshocks_occbin%s}\n',options_.figures.textwidth*min(j1/3,1),[GraphDirectoryName '/' M_.fname],int2str(ifig)); % don't use filesep as it will create issues with LaTeX on Windows
+                fprintf(fidTeX,'\\caption{Check plots.}');
+                fprintf(fidTeX,'\\label{Fig:smoothedshocks_occbin:%s}\n',int2str(ifig));
+                fprintf(fidTeX,'\\end{figure}\n');
+                fprintf(fidTeX,' \n');
             end
         end
+        if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
+            fclose(fidTeX);
+        end
     end
-    
 end
-
