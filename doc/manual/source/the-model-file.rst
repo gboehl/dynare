@@ -7121,6 +7121,18 @@ observed variables.
                    Stopping criteria. Default: ``1e-5`` for numerical
                    derivatives, ``1e-7`` for analytic derivatives.
 
+               ``'robust'``
+
+                   Trigger more robust but computationally more expensive line search. Default: ``false``.
+
+               ``'TolGstep'``
+
+                   Tolerance parameter used for tuning gradient step. Default: same value as ``TolFun``.
+
+               ``'TolGstepRel'``
+
+                   Parameter used for tuning gradient step, governing the tolerance relative to the functions value. Default: not triggered.
+
                ``'verbosity'``
 
                    Controls verbosity of display during
