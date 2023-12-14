@@ -66,7 +66,7 @@ for sss = 1:numel(shocksigns)
             j1=j1+1;
             if mod(j1,npan)==1
                % vector corresponds to [left bottom width height]. 680 and 678 for the left and bottom elements correspond to the default values used by MATLAB while creating a figure and width, .
-                hfig = dyn_figure(options_.nodisplay,'name',['OccbinIRFs ' shocknames{j} ' ' simulname],'PaperPositionMode', 'auto','PaperType','A4','PaperOrientation','portrait','renderermode','auto','position',[10 10 950 650]);
+                hfig = dyn_figure(options_.nodisplay,'name',['OccbinIRFs ' shocknames{j} ' ' simulname ' ' shocksign],'PaperPositionMode', 'auto','PaperType','A4','PaperOrientation','portrait','renderermode','auto','position',[10 10 950 650]);
                 ifig=ifig+1;
                 isub=0;
             end

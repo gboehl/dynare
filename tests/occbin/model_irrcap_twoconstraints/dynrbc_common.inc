@@ -109,5 +109,7 @@ occbin_graph(noconstant) c erra lambdak k i a k;
     line1=100*[oo_.occbin.endo_piecewise.c-oo_.occbin.endo_ss.c,oo_.occbin.endo_piecewise.lambdak/100,oo_.occbin.endo_piecewise.k-oo_.occbin.endo_ss.k,oo_.occbin.endo_piecewise.i-oo_.occbin.endo_ss.i,oo_.occbin.endo_piecewise.a-oo_.occbin.endo_ss.a, shock_vector];
     line2=100*[oo_.occbin.linear_smoother.SmoothedVariables.c-oo_.occbin.endo_ss.c,oo_.occbin.linear_smoother.SmoothedVariables.lambdak/100,oo_.occbin.linear_smoother.SmoothedVariables.k-oo_.occbin.endo_ss.k,oo_.occbin.linear_smoother.SmoothedVariables.i-oo_.occbin.endo_ss.i,oo_.occbin.linear_smoother.SmoothedVariables.a-oo_.occbin.endo_ss.a, oo_.occbin.linear_smoother.SmoothedShocks.erra/100];
     occbin.make_chart(titlelist,legendlist,figtitle,ylabels,cat(3,line1,line2));
+
+    occbin.plot_regimes(oo_.occbin.smoother.regime_history,M_,options_)
 @#endif
 @#endfor

@@ -311,6 +311,41 @@ varobs yg inom pi;
             mh_replic=0, plot_priors=0, smoother,
             nodisplay,consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
     
+    // plot regimes
+    occbin.plot_regimes(oo_.occbin.smoother.regime_history,M_,options_)
+
+    // forecast starting from period 42, zero shocks (default)
+    smoother2histval(period=42);
+    [oo, error_flag] = occbin.forecast(options_,M_,oo_,8);
+    // forecast with stochastic shocks
+    options_.occbin.forecast.qmc=true;
+    options_.occbin.forecast.replic=127;
+    [oo1, error_flag] = occbin.forecast(options_,M_,oo_,8);
+
+    // GIRF given states in 42 and shocks in 43
+    t0=42;
+    options_.occbin.irf.exo_names=M_.exo_names;
+    options_.occbin.irf.t0=t0;
+    oo_ = occbin.irf(M_,oo_,options_);
+
+    vars_irf = {
+    'c', 'consumption'    
+    'n', 'labor'    
+    'y', 'output'    
+    'pigap', 'inflation rate'
+    'inom', 'interest rate'  
+    'inomnot', 'shadow rate'
+    };
+
+    options_.occbin.plot_irf.exo_names = M_.exo_names;
+    options_.occbin.plot_irf.endo_names = vars_irf(:,1);
+    options_.occbin.plot_irf.endo_names_long = vars_irf(:,2);
+    // if you want to scale ...
+    // options_occbin_.plot_irf.endo_scaling_factor = vars_irf(:,3);
+    options_.occbin.plot_irf.simulname = ['t0_' int2str(t0)];
+    options_.occbin.plot_irf.tplot = min(40,options_.irf);
+    occbin.plot_irfs(M_,oo_,options_);
+
     oo0=oo_;
     // use smoother_redux
     estimation(

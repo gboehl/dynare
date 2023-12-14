@@ -20,7 +20,7 @@ else
     options_.occbin.simul.endo_init = oo_.occbin.smoother.alphahat(oo_.dr.inv_order_var,t0);
 end
 options_.occbin.simul.SHOCKS=shocks0;
-[~, out0] = occbin.solver(M_,oo_,options_);
+[~, out0] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
 zlin0 = out0.linear;
 zpiece0 = out0.piecewise;
 
@@ -61,11 +61,11 @@ for counter = 1:length(jexo_all)
         if t0 == 0
             options_.occbin.simul.SHOCKS=shocks1;
             options_.occbin.simul.endo_init = [];
-            [~, out_pos] = occbin.solver(M_,oo_,options_);
+            [~, out_pos] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
         else
             options_.occbin.simul.SHOCKS=shocks1;
             options_.occbin.simul.endo_init = oo_.occbin.smoother.alphahat(oo_.dr.inv_order_var,t0);
-            [~, out_pos] = occbin.solver(M_,oo_,options_);
+            [~, out_pos] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
         end
         if out_pos.error_flag
             warning('Occbin error.')
@@ -85,11 +85,11 @@ for counter = 1:length(jexo_all)
         if t0 == 0
             options_.occbin.simul.SHOCKS=shocks_1;
             options_.occbin.simul.endo_init = [];
-            [~, out_neg] = occbin.solver(M_,oo_,options_);
+            [~, out_neg] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
         else
             options_.occbin.simul.SHOCKS=shocks_1;
             options_.occbin.simul.endo_init = oo_.occbin.smoother.alphahat(oo_.dr.inv_order_var,t0);
-            [~, out_neg] = occbin.solver(M_,oo_,options_);
+            [~, out_neg] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
         end
         if out_neg.error_flag
             warning('Occbin error.')
