@@ -33,7 +33,7 @@
 class Evaluate
 {
 private:
-  using instructions_list_t = vector<BytecodeInstruction*>;
+  using instructions_list_t = vector<Bytecode::Instruction*>;
   using it_code_type = instructions_list_t::const_iterator;
 
   const BasicSymbolTable& symbol_table;
@@ -47,8 +47,8 @@ private:
      std::deque for storing them, because that class guarantees the stability
      of iterators, and thus of pointers to elements; we store such pointers in
      the “instructions_list” data member. */
-  deque<FBEGINBLOCK_> deserialized_fbeginblock;
-  deque<FCALL_> deserialized_fcall;
+  deque<Bytecode::FBEGINBLOCK> deserialized_fbeginblock;
+  deque<Bytecode::FCALL> deserialized_fcall;
 
   /* List of deserialized instructions
      Those are either pointers inside “raw_bytecode” or “deserialized_{fbeginblock,fcall}” */
@@ -63,7 +63,7 @@ private:
   int block_num; // Index of the current block
   int size;      // Size of the current block
 
-  ExpressionType EQN_type;
+  Bytecode::ExpressionType EQN_type;
   int EQN_equation, EQN_dvar1;
   int EQN_lag1, EQN_lag2, EQN_lag3;
 
@@ -79,10 +79,10 @@ private:
                                                             const optional<it_code_type>& faulty_op
                                                             = nullopt) const;
 
-  [[nodiscard]] FBEGINBLOCK_*
+  [[nodiscard]] Bytecode::FBEGINBLOCK*
   currentBlockTag() const
   {
-    return reinterpret_cast<FBEGINBLOCK_*>(instructions_list[begin_block[block_num]]);
+    return reinterpret_cast<Bytecode::FBEGINBLOCK*>(instructions_list[begin_block[block_num]]);
   }
 
   // Returns iterator to first instruction in the current block (after FBEGINBLOCK)

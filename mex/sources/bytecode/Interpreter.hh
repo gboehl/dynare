@@ -148,7 +148,7 @@ private:
   BlockSimulationType type;
   bool is_linear;
   int u_count_int;
-  vector<Block_contain_type> Block_Contain;
+  vector<Bytecode::Block_contain_type> Block_Contain;
 
   int verbosity; // Corresponds to options_.verbosity
 
