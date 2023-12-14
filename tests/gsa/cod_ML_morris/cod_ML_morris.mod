@@ -122,7 +122,7 @@ end;
 
 varobs y_ro, pi_ro, i_ro, s, y_eu, pi_eu, i_eu, tt ;
 options_.TeX    =1;
-dynare_sensitivity (identification=1, nsam = 500, lik_only = 1, morris=2) ;
+sensitivity (identification=1, nsam = 500, lik_only = 1, morris=2) ;
 
 stoch_simul(order=2,irf=20)  y_ro pi_ro i_ro s ;
 //order 1 - impulse response functions are simply the algebraic forward iteration of the model's policy 

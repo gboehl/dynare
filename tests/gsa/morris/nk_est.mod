@@ -53,7 +53,7 @@ stderr eps_A,0.02,0.000000000001,100,INV_GAMMA2_PDF,0.2,inf;
 stderr eps_P,0.03,0.000000000001,100,INV_GAMMA2_PDF,0.2,inf;
 end;
 estimation(order=1,prior_trunc=0,plot_priors =0,silent_optimizer, datafile=nk_est_data,conf_sig =.95,smoother,moments_varendo,filtered_vars,mode_check,mode_compute=4,mh_replic=5000,mh_jscale=1.5,mh_nblocks=1,bayesian_irf,tex) y pi l dy pic;
-dynare_sensitivity (datafile=nk_est_data,rmse=0, nsam = 500, lik_only = 0, morris = 2,var_rmse=(dy pic)) ;
-dynare_sensitivity (datafile=nk_est_data,rmse=0, nsam = 500, lik_only = 0, morris = 1,var_rmse=(dy pic)) ;
+sensitivity (datafile=nk_est_data,rmse=0, nsam = 500, lik_only = 0, morris = 2,var_rmse=(dy pic)) ;
+sensitivity (datafile=nk_est_data,rmse=0, nsam = 500, lik_only = 0, morris = 1,var_rmse=(dy pic)) ;
 
 

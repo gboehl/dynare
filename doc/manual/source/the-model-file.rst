@@ -11755,8 +11755,8 @@ estimation environment is set up.
 Performing sensitivity analysis
 -------------------------------
 
-.. command:: dynare_sensitivity ;
-             dynare_sensitivity(OPTIONS...);
+.. command:: sensitivity ;
+             sensitivity(OPTIONS...);
 
     |br| This command triggers sensitivity analysis on a DSGE model.
 
@@ -12039,6 +12039,12 @@ Performing sensitivity analysis
     .. option:: diffuse_filter = INTEGER
 
         See :opt:`diffuse_filter`.
+
+.. command:: dynare_sensitivity ;
+             dynare_sensitivity(OPTIONS...);
+
+    |br| This is a deprecated alias for the ``sensitivity`` command.
+
 
 .. _irf-momcal:
 

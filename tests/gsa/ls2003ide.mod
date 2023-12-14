@@ -27,11 +27,11 @@ disp(' ')
 % disp('PRESS ENTER TO CONTUNUE');
 % pause(5);
 
-dynare_sensitivity(identification=1, morris_nliv=6, morris_ntra=50);
+sensitivity(identification=1, morris_nliv=6, morris_ntra=50);
 
 disp('CREATE MC SAMPLE, CHECK FOR STABILITY AND PERFORM IDENTIFICATION ANALYSIS');
 disp('With analytic derivatives')
 disp(' ')
 % disp('PRESS ENTER TO CONTUNUE');
 % pause(5);
-dynare_sensitivity(identification=1, morris=2);
+sensitivity(identification=1, morris=2);
