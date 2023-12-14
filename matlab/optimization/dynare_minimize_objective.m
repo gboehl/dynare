@@ -288,6 +288,7 @@ switch minimizer_algorithm
         newratflag = options_.newrat.hess; %default
     end
     nit=options_.newrat.maxiter;
+    robust = options_.newrat.robust;
     Verbose = options_.newrat.verbosity;
     Save_files = options_.newrat.Save_files;
     if ~isempty(options_.optim_opt)
@@ -303,6 +304,8 @@ switch minimizer_algorithm
                 else
                     newratflag=flag;
                 end
+              case 'robust'
+                robust = options_list{i,2};
               case 'TolFun'
                 crit = options_list{i,2};
               case 'verbosity'
@@ -321,6 +324,7 @@ switch minimizer_algorithm
     hess_info.gstep=options_.gstep;
     hess_info.htol = 1.e-4;
     hess_info.h1=options_.gradient_epsilon*ones(n_params,1);
+    hess_info.robust=robust;
     % here we force 7th input argument (flagg) to be 0, since outer product
     % gradient Hessian is handled in dynare_estimation_1
     [opt_par_values,hessian_mat,gg,fval,invhess,new_rat_hess_info] = newrat(objective_function,start_par_value,bounds,analytic_grad,crit,nit,0,Verbose,Save_files,hess_info,prior_information.p2,options_.gradient_epsilon,parameter_names,varargin{:});    %hessian_mat is the plain outer product gradient Hessian

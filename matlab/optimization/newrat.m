@@ -183,7 +183,7 @@ while norm(gg)>gtol && check==0 && jit<nit
             disp_verbose('last step exited with bad status!',Verbose)
         end
     end
-    [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon, parameter_names,varargin{:});
+    [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon, parameter_names, hess_info.robust, varargin{:});
     if not(isequal(x0 , check_bounds(x0,bounds)))
         x0 = check_bounds(x0,bounds);
         [fvala,exit_flag]=penalty_objective_function(x0,func0,penalty,varargin{:});
