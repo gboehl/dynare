@@ -105,17 +105,17 @@ PZI         = P1(:,:,t)*ZZ'*iF(di,di,t);
 % L(:,:,t)    = T-K(:,di,t)*ZZ;
 L(:,:,t)    = eye(mm)-PZI*ZZ;
 
-if ~options_.occbin.filter.use_relaxation && ~isempty(fieldnames(regimes0))
+if ~isempty(fieldnames(regimes0))
     if options_.occbin.filter.guess_regime
         [~,~,~,~,~,~, TTx, RRx, CCx] ...
             = occbin.dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state, regimes0(1),'reduced_state_space',T0,R0);
-    if M_.occbin.constraint_nbr==1
-        bindx = occbin.backward_map_regime(regimes0(1).regime, regimes0(1).regimestart);
-        bindx = bindx(2:end);
-        [regimes0(2).regime, regimes0(2).regimestart, error_flag]=occbin.map_regime(bindx);
-        bindx = bindx(2:end);
-        [regimes0(3).regime, regimes0(3).regimestart, error_flag]=occbin.map_regime(bindx);
-    else
+        if M_.occbin.constraint_nbr==1
+            bindx = occbin.backward_map_regime(regimes0(1).regime, regimes0(1).regimestart);
+            bindx = bindx(2:end);
+            [regimes0(2).regime, regimes0(2).regimestart, error_flag]=occbin.map_regime(bindx);
+            bindx = bindx(2:end);
+            [regimes0(3).regime, regimes0(3).regimestart, error_flag]=occbin.map_regime(bindx);
+        else
             bindx1 = occbin.backward_map_regime(regimes0(1).regime1, regimes0(1).regimestart1);
             bindx2 = occbin.backward_map_regime(regimes0(1).regime2, regimes0(1).regimestart2);
             bindx1 = bindx1(2:end);
@@ -126,7 +126,7 @@ if ~options_.occbin.filter.use_relaxation && ~isempty(fieldnames(regimes0))
             bindx2 = bindx2(2:end);
             [regimes0(3).regime1, regimes0(3).regimestart1, error_flag]=occbin.map_regime(bindx1);
             [regimes0(3).regime2, regimes0(3).regimestart2, error_flag]=occbin.map_regime(bindx2);
-    end
+        end
 %     regimes0=[regimes0 base_regime base_regime];
         TT(:,:,2) = TTx(:,:,end);
         RR(:,:,2) = RRx(:,:,end);
@@ -200,48 +200,13 @@ end
 lik_hist=lik;
 niter=1;
 is_periodic=0;
-if options_.occbin.filter.use_relaxation || isequal(regimes0(1),base_regime)
-    nguess=1;
-else
-    nguess=0;
-end
-newguess=0;
 
 if any(myregime) || ~isequal(regimes_(1),regimes0(1))
     while ~isequal(regimes_(1),regimes0(1)) && ~is_periodic && ~out.error_flag && niter<=options_.occbin.likelihood.max_number_of_iterations
         niter=niter+1;
-        oldstart=1;
-        if M_.occbin.constraint_nbr==1 && length(regimes0(1).regimestart)>1
-            oldstart = regimes0(1).regimestart(end);
-        end
-        newstart=1;
-        if M_.occbin.constraint_nbr==1 && length(regimes_(1).regimestart)>1
-            newstart = regimes_(1).regimestart(end);
-        end
-        if M_.occbin.constraint_nbr==1 && (newstart-oldstart)>2 && options_.occbin.filter.use_relaxation
-            regimestart = max(oldstart+2,round(0.5*(newstart+oldstart)));
-            regimestart = min(regimestart,oldstart+4);
-            if regimestart<=regimes_(1).regimestart(end-1)
-                if length(regimes_(1).regimestart)<=3    
-                    regimestart = max(regimestart, min(regimes_(1).regimestart(end-1)+2,newstart));
-                else
-                    regimes_(1).regime =  regimes_(1).regime(1:end-2);
-                    regimes_(1).regimestart =  regimes_(1).regimestart(1:end-2);
-                    regimestart = max(regimestart, regimes_(1).regimestart(end-1)+1);
-                end
-            end
-            regimes_(1).regimestart(end)=regimestart;
-            [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                = occbin.dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state, [base_regime regimes_(1)],'reduced_state_space', T0, R0);
-            TT(:,:,2) = TTx(:,:,end);
-            RR(:,:,2) = RRx(:,:,end);
-            CC(:,2) = CCx(:,end);
-        elseif newguess==0
-            TT(:,:,2)=ss.T(my_order_var,my_order_var,1);
-            RR(:,:,2)=ss.R(my_order_var,:,1);
-            CC(:,2)=ss.C(my_order_var,1);
-        end
-        newguess=0;
+        TT(:,:,2)=ss.T(my_order_var,my_order_var,1);
+        RR(:,:,2)=ss.R(my_order_var,:,1);
+        CC(:,2)=ss.C(my_order_var,1);
         regime_hist(niter) = {regimes_(1)};
         if M_.occbin.constraint_nbr==1
             regime_end(niter) = regimes_(1).regimestart(end);
@@ -257,9 +222,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         else
             opts_simul.endo_init = alphahat(dr.inv_order_var,1);
         end
-        if not(options_.occbin.filter.use_relaxation)
-            opts_simul.init_regime=regimes_(1);
-        end
+        opts_simul.init_regime=regimes_(1);
         if M_.occbin.constraint_nbr==1
             myregimestart = [regimes_.regimestart];
         else
@@ -287,11 +250,11 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             is_periodic_iter = find(is_periodic);
             is_periodic =  any(is_periodic);
             if is_periodic
-                    % re-set to previous regime
-                    if options_.occbin.filter.periodic_solution
-                        % force projection conditional on most likely regime
-                        [m, im]=min(lik_hist(is_periodic_iter:end));
-                        opts_simul.init_regime=regime_hist{is_periodic_iter+im-1};
+                % re-set to previous regime
+                if options_.occbin.filter.periodic_solution
+                    % force projection conditional on most likely regime
+                    [m, im]=min(lik_hist(is_periodic_iter:end));
+                    opts_simul.init_regime=regime_hist{is_periodic_iter+im-1};
                     if M_.occbin.constraint_nbr==1
                         myregimestart = [regimes0.regimestart];
                     else
@@ -303,23 +266,22 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
                     if out.error_flag
                         error_flag = out.error_flag;
-                            etahat=etahat(:,2);
-                            lik=inf;
-                            return;
-                        else
-                            regimes_ = out.regime_history;
-                            TT(:,:,2)=ss.T(my_order_var,my_order_var,1);
-                            RR(:,:,2)=ss.R(my_order_var,:,1);
-                            CC(:,2)=ss.C(my_order_var,1);
-                            [a, a1, P, P1, v, alphahat, etahat, lik, V] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood, options_.occbin.filter.state_covariance);
-                        end
-                    else
-                        error_flag = 330;
                         etahat=etahat(:,2);
                         lik=inf;
                         return;
+                    else
+                        regimes_ = out.regime_history;
+                        TT(:,:,2)=ss.T(my_order_var,my_order_var,1);
+                        RR(:,:,2)=ss.R(my_order_var,:,1);
+                        CC(:,2)=ss.C(my_order_var,1);
+                        [a, a1, P, P1, v, alphahat, etahat, lik, V] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood, options_.occbin.filter.state_covariance);
                     end
-%                 end
+                else
+                    error_flag = 330;
+                    etahat=etahat(:,2);
+                    lik=inf;
+                    return;
+                end
             end
         end
     end

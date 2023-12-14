@@ -32,6 +32,8 @@ if nargin>26
     is_multivariate = false;
 end
 
+use_relaxation = false;
+
 if is_multivariate
     [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regx, info, M_, likx, etahat, alphahat, V] = occbin.kalman_update_algo_1(a0,a1,P0,P1,data_index,Z,vv,Y,H,Qt,T0,R0,TT,RR,CC,struct(),M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options);
 else
@@ -93,6 +95,31 @@ else
     end
 end
 
+diffstart=0;
+if info==0
+if M_.occbin.constraint_nbr==1
+    oldstart = regimes_(1).regimestart(end);
+    newstart = regx(1).regimestart(end);
+    diffstart = newstart-oldstart;
+else
+    newstart1 = regx(1).regimestart1(end);
+    newstart2 = regx(1).regimestart2(end);
+    oldstart1 = regimes_(1).regimestart1(end);
+    oldstart2 = regimes_(1).regimestart2(end);
+    diffstart = max(newstart1-oldstart1,newstart2-oldstart2);
+end
+end
+
+if options_.occbin.filter.use_relaxation && diffstart>2
+    if info0==0
+        % make sure we match criteria to enter further solution attempts
+        info1=1;
+    end
+    options_.occbin.likelihood.brute_force_regime_guess   = true;
+    options_.occbin.likelihood.loss_function_regime_guess = true;
+    use_relaxation = true;
+end
+
 if options_.occbin.likelihood.brute_force_regime_guess && (info0 || info1) %|| (info==0 &&  ~isequal(regx(1),base_regime))
 
     guess_regime = [base_regime base_regime];
@@ -110,8 +137,9 @@ if options_.occbin.likelihood.brute_force_regime_guess && (info0 || info1) %|| (
             end
             if info2==0
                 use_index= 1;
-                if not(info==0 && isequal(regx2{1},regx))
-                    % found a solution, different from previous one 
+                if not(info==0 && isequal(regx2{1},regx)) && not(use_relaxation && likx2{1}>=likx)
+                    % found a solution, different from previous or
+                    % use_relaxation and likelihood is better
                     break
                 end
             end
@@ -125,6 +153,8 @@ if options_.occbin.likelihood.brute_force_regime_guess && (info0 || info1) %|| (
             end
             if info2==0
                 use_index = 2;
+                % if use_relaxation and we are here, previous guess did not
+                % improve solution, so we test for this one
             end
 
             if use_index
@@ -186,16 +216,18 @@ if options_.occbin.likelihood.brute_force_regime_guess && (info0 || info1) %|| (
                             end
                             if info2==0
                                 use_index= gindex;
-                                if not(info==0 && isequal(regx2{gindex},regx))
+                                if not(info==0 && isequal(regx2{gindex},regx)) && not(use_relaxation && likx2{gindex}>=likx)
                                     % found a solution, different from previous one
+                                    % use_relaxation and likelihood improves
                                     break
                                 end
                             end
                         end % loop over other regime slack, binding in expectation or binding in current period
 
                         if info2==0
-                            if not(info==0 && isequal(regx2{gindex},regx))
+                            if not(info==0 && isequal(regx2{gindex},regx)) && not(use_relaxation && likx2{gindex}>=likx)
                                 % found a solution, different from previous one
+                                % use_relaxation and likelihood improves
                                 break
                             end
                         end
@@ -203,8 +235,9 @@ if options_.occbin.likelihood.brute_force_regime_guess && (info0 || info1) %|| (
                     end % loop over current regime binding in expectation vs binding in current period
 
                     if info2==0
-                        if not(info==0 && isequal(regx2{gindex},regx))
+                        if not(info==0 && isequal(regx2{gindex},regx)) && not(use_relaxation && likx2{gindex}>=likx)
                             % found a solution, different from previous one
+                            % use_relaxation and likelihood improves
                             break
                         end
                     end
