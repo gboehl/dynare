@@ -97,7 +97,7 @@ if (max(abs(Y2_local(:) - Y2_simult(:)))>1e-12)
 end
 
 % pruned_state_space_system.m: implements Andreasen et al.
-pss = pruned_state_space_system(M_, options_, oo_.dr, [], 0, false, false);
+pss = pruned_SS.pruned_state_space_system(M_, options_, oo_.dr, [], 0, false, false);
 Y2_an = zeros(M_.endo_nbr,T+1);
 Y2_an(:,1) = oo_.dr.ys;
 % z    = [xf;xs;kron(xf,xf)]
@@ -127,7 +127,7 @@ stoch_simul(order=3, nograph, irf=0);
 % simult_.m
 Y3_simult = simult_(M_,options_,oo_.dr.ys,oo_.dr,ex,options_.order); 
 % pruned_state_space_system.m
-pss = pruned_state_space_system(M_, options_, oo_.dr, [], 0, false, false);
+pss = pruned_SS.pruned_state_space_system(M_, options_, oo_.dr, [], 0, false, false);
 Y3_an = zeros(M_.endo_nbr,T+1);
 Y3_an(:,1) = oo_.dr.ys;
 % z    = [xf; xs; kron(xf,xf); xrd; kron(xf,xs); kron(kron(xf,xf),xf)]

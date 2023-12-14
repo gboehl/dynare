@@ -69,3 +69,27 @@ for i=(Nc/2)+1: Nc+1
 end
 Parzen=Parzen';
 Ifac= 1+2*sum(Parzen(:).* AcorrXSIM);
+
+
+function acf = dyn_autocorr(y, ar)
+% function acf = dyn_autocorr(y, ar)
+% autocorrelation function of y
+%
+% INPUTS
+%   y:       time series
+%   ar:      # of lags
+%
+% OUTPUTS
+%   acf:       autocorrelation for lags 1 to ar
+%
+% SPECIAL REQUIREMENTS
+%   none
+
+y=y(:);
+acf = NaN(ar+1,1);
+acf(1)=1;
+m = mean(y);
+sd = std(y,1);
+for i=1:ar
+    acf(i+1) = (y(i+1:end)-m)'*(y(1:end-i)-m)./((size(y,1))*sd^2);
+end

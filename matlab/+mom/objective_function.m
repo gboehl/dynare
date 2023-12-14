@@ -150,11 +150,11 @@ if strcmp(options_mom_.mom.mom_method,'GMM')
         stderrparam_nbr = estim_params_.nvx;    % number of stderr parameters
         corrparam_nbr = estim_params_.ncx;      % number of corr parameters
         totparam_nbr = stderrparam_nbr+corrparam_nbr+modparam_nbr;
-        oo_.dr.derivs = get_perturbation_params_derivs(M_, options_mom_, estim_params_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, indpmodel, indpstderr, indpcorr, 0); %analytic derivatives of perturbation matrices
+        oo_.dr.derivs = identification.get_perturbation_params_derivs(M_, options_mom_, estim_params_, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, indpmodel, indpstderr, indpcorr, 0); %analytic derivatives of perturbation matrices
         oo_.mom.model_moments_params_derivs = NaN(options_mom_.mom.mom_nbr,totparam_nbr);
-        pruned_state_space = pruned_state_space_system(M_, options_mom_, oo_.dr, oo_.mom.obs_var, options_mom_.ar, 0, 1);
+        pruned_state_space = pruned_SS.pruned_state_space_system(M_, options_mom_, oo_.dr, oo_.mom.obs_var, options_mom_.ar, 0, 1);
     else
-        pruned_state_space = pruned_state_space_system(M_, options_mom_, oo_.dr, oo_.mom.obs_var, options_mom_.ar, 0, 0);
+        pruned_state_space = pruned_SS.pruned_state_space_system(M_, options_mom_, oo_.dr, oo_.mom.obs_var, options_mom_.ar, 0, 0);
     end
     oo_.mom.model_moments = NaN(options_mom_.mom.mom_nbr,1);
     for jm = 1:size(M_.matched_moments,1)

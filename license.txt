@@ -113,7 +113,7 @@ Copyright: 1995 E.G.Tsionas
            2015-2017 Dynare Team
 License: GPL-3+
 
-Files: matlab/endogenous_prior.m
+Files: matlab/estimation/endogenous_prior.m
 Copyright: 2011 Lawrence J. Christiano, Mathias Trabandt and Karl Walentin
            2013-2017 Dynare Team
 License: GPL-3+
@@ -128,7 +128,7 @@ Copyright: 2016 Benjamin Born and Johannes Pfeifer
            2016-2017 Dynare Team
 License: GPL-3+
 
-Files: matlab/commutation.m matlab/duplication.m
+Files: matlab/+pruned_SS/commutation.m matlab/+pruned_SS/duplication.m
 Copyright: 1997 Tom Minka <minka@microsoft.com>
            2019-2020 Dynare Team
 License: GPL-3+
@@ -141,7 +141,7 @@ Comment: The original author gave authorization to change
  the license from BSD-2-clause to GPL-3+ and redistribute 
  it under GPL-3+ with Dynare.
 
-Files: matlab/uperm.m
+Files: matlab/+pruned_SS/uperm.m
 Copyright: 2014 Bruno Luong <brunoluong@yahoo.com> 
            2020 Dynare Team
 License: GPL-3+
@@ -149,7 +149,7 @@ Comment: The original author gave authorization to change
  the license from BSD-2-clause to GPL-3+ and redistribute 
  it under GPL-3+ with Dynare.
 
-Files: matlab/prodmom.m matlab/bivmom.m
+Files: matlab/+pruned_SS/prodmom.m matlab/+pruned_SS/bivmom.m
 Copyright: 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
            2019-2020 Dynare Team
 License: GPL-3+
@@ -161,33 +161,33 @@ Comment: The author gave authorization to redistribute
  Journal of Multivariate Analysis, 2008, vol. 99, issue 3,
  pages 542-554.
 
-Files: matlab/gsa/Morris_Measure_Groups.m
-       matlab/gsa/Sampling_Function_2.m
+Files: matlab/+gsa/Morris_Measure_Groups.m
+       matlab/+gsa/Sampling_Function_2.m
 Copyright: 2005 European Commission
-           2012-2017 Dynare Team
+           2012-2013 Dynare Team
 License: GPL-3+
 Comment: Written by Jessica Cariboni and Francesca Campolongo
  Joint Research Centre, The European Commission,
 
-Files: matlab/gsa/cumplot.m
-       matlab/gsa/filt_mc_.m
-       matlab/gsa/gsa_skewness.m
-       matlab/gsa/log_trans_.m
-       matlab/gsa/map_calibration.m
-       matlab/gsa/map_ident_.m
-       matlab/gsa/mcf_analysis.m
-       matlab/gsa/myboxplot.m
-       matlab/gsa/prior_draw_gsa.m
-       matlab/gsa/redform_map.m
-       matlab/gsa/redform_screen.m
-       matlab/gsa/scatter_mcf.m
-       matlab/gsa/smirnov.m
-       matlab/gsa/stab_map_.m
-       matlab/gsa/stab_map_1.m
-       matlab/gsa/stab_map_2.m
-       matlab/gsa/stand_.m
-       matlab/gsa/tcrit.m
-       matlab/gsa/teff.m
+Files: matlab/+gsa/cumplot.m
+       matlab/+gsa/monte_carlo_filtering.m
+       matlab/+gsa/skewness.m
+       matlab/+gsa/log_trans_.m
+       matlab/+gsa/map_calibration.m
+       matlab/+gsa/map_identification.m
+       matlab/+gsa/monte_carlo_filtering_analysis.m
+       matlab/+gsa/boxplot.m
+       matlab/+gsa/prior_draw.m
+       matlab/+gsa/reduced_form_mapping.m
+       matlab/+gsa/reduced_form_screening.m
+       matlab/+gsa/scatter_mcf.m
+       matlab/+gsa/smirnov_test.m
+       matlab/+gsa/stability_mapping.m
+       matlab/+gsa/stability_mapping_univariate.m
+       matlab/+gsa/stability_mapping_bivariate.m
+       matlab/+gsa/standardize_columns.m
+       matlab/+gsa/tcrit.m
+       matlab/+gsa/teff.m
 Copyright: 2011-2018 European Commission
            2011-2023 Dynare Team
 License: GPL-3+

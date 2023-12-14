@@ -52,7 +52,7 @@ for i=1:nvars
     obs_var(i,1) = find(strcmp(M_.endo_names(i_var(i),:), M_.endo_names(dr.order_var)));
 end
 
-pruned_state_space = pruned_state_space_system(M_, options_, dr, obs_var, options_.ar, 1, 0);
+pruned_state_space = pruned_SS.pruned_state_space_system(M_, options_, dr, obs_var, options_.ar, 1, 0);
 
 
 m = pruned_state_space.E_y;

@@ -49,7 +49,7 @@ for l=1:p
     for k=l:p
         for j=k:p
             for i=j:p                             
-                idx = uperm([i j k l]);
+                idx = pruned_SS.uperm([i j k l]);
                 for r = 1:size(idx,1)
                     ii = idx(r,1); jj= idx(r,2); kk=idx(r,3); ll=idx(r,4);
                     n = ii + (jj-1)*p + (kk-1)*p^2 + (ll-1)*p^3;                    

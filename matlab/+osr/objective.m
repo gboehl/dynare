@@ -64,9 +64,9 @@ if ~options_.analytic_derivation
     loss = full(weights(:)'*vx(:));
 else
     totparam_nbr=length(i_params);
-    oo_.dr.derivs = get_perturbation_params_derivs(M_, options_, [], oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, i_params, [], [], 0); %analytic derivatives of perturbation matrices
+    oo_.dr.derivs = identification.get_perturbation_params_derivs(M_, options_, [], oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state, i_params, [], [], 0); %analytic derivatives of perturbation matrices
 
-    pruned_state_space = pruned_state_space_system(M_, options_, oo_.dr, i_var, 0, 0, 1);
+    pruned_state_space = pruned_SS.pruned_state_space_system(M_, options_, oo_.dr, i_var, 0, 0, 1);
     vx = pruned_state_space.Var_y + pruned_state_space.E_y*pruned_state_space.E_y';
     dE_yy = pruned_state_space.dVar_y;
     for jp=1:length(i_params)
