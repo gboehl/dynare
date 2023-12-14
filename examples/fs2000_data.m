@@ -1,6 +1,6 @@
 %This file is a direct Matlab implementation of the loaddata.g and data.prn files
-%of Schorfheide, Frank (2000): Loss function-based evaluation of DSGE models 
-%(replication data). Version: 1. Journal of Applied Econometrics. Dataset. 
+%of Schorfheide, Frank (2000): Loss function-based evaluation of DSGE models
+%(replication data). Version: 1. Journal of Applied Econometrics. Dataset.
 %http://dx.doi.org/10.15456/jae.2022314.0708799949
 % Copyright: 2000-2022 Frank Schorfheide
 % Copyright: 2023 Dynare Team
@@ -210,6 +210,6 @@ data_q=[18.02 1474.5 150.2
 
 %Compute growth rates: from 1950:I to 1997:IV
 gy_obs=1000*data_q(:,2)./data_q(:,3); %real GDP per capita
-gy_obs=diff(log(gy_obs)); 
+gy_obs=diff(log(gy_obs));
 
 gp_obs = diff(log(data_q(:,1))); %GDP deflator inflation
