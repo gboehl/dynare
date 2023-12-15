@@ -21,6 +21,8 @@ Bibliography
 * Brooks, Stephen P., and Andrew Gelman (1998): “General methods for monitoring convergence of iterative simulations,” *Journal of Computational and Graphical Statistics*, 7, pp. 434–455.
 * Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): “The simplex simulated annealing approach to continuous non-linear optimization,” *Computers & Chemical Engineering*, 20(9), 1065-1080.
 * Chib, Siddhartha and Srikanth Ramamurthy (2010): “Tailored randomized block MCMC methods with application to DSGE models,” *Journal of Econometrics*, 155, 19–38.
+* Christiano, Lawrence J., Martin Eichenbaum and Charles L. Evans (2005): “Nominal Rigidities and the Dynamic Effects of a Shock to Monetary Policy,” *Journal of Political Economy*, 113(1), 1–45.
+* Christiano, Lawrence J., Mathias Trabandt, and Karl Walentin (2010): “DSGE Models for Monetary Policy Analysis,” In: *Handbook of Monetary Economics 3*, 285–367.
 * Christiano, Lawrence J., Mathias Trabandt and Karl Walentin (2011): “Introducing financial frictions and unemployment into a small open economy model,” *Journal of Economic Dynamics and Control*, 35(12), 1999–2041.
 * Christoffel, Kai, Günter Coenen and Anders Warne (2010): “Forecasting with DSGE models,” *ECB Working Paper Series*, 1185.
 * Collard, Fabrice (2001): “Stochastic simulations with Dynare: A practical guide”.
