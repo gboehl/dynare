@@ -56,7 +56,7 @@ if opts.replic
         options_.occbin.simul.exo_pos=ishock;
         options_.occbin.simul.SHOCKS = SHOCKS;
         options_.occbin.simul.waitbar=0;
-        [~, out] = occbin.solver(M_,oo_,options_);
+        [~, out] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
         zlin0(:,:,iter)=out.linear;
         zpiece0(:,:,iter)=out.piecewise;
         ys=out.ys;
@@ -124,7 +124,8 @@ else
     options_.occbin.simul.init_violvecbool = [];
     options_.occbin.simul.irfshock = M_.exo_names;
     options_.occbin.simul.SHOCKS = SHOCKS;
-    [~, out] = occbin.solver(M_,oo_,options_);
+    [~, out] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+
     zlin=out.linear;
     zpiece=out.piecewise;
     frcst_regime_history=out.regime_history;
