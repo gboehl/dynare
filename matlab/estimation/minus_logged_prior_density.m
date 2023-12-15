@@ -1,4 +1,4 @@
-function [fval, info, exitflag, ~, ~] = minus_logged_prior_density(xparams, Prior, options_, M_, estim_params_, oo_)
+function [fval, info, exitflag, fake1, fake2] = minus_logged_prior_density(xparams, Prior, options_, M_, estim_params_, oo_)
 
 % Evaluates minus the logged prior density.
  %
@@ -33,6 +33,8 @@ function [fval, info, exitflag, ~, ~] = minus_logged_prior_density(xparams, Prio
 
 exitflag = true;
 info = zeros(4,1);
+fake1 = [];
+fake2 = [];
 
 %------------------------------------------------------------------------------
 % 1. Get the structural parameters & define penalties
