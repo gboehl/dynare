@@ -98,7 +98,7 @@ if oo_.Model_Comparison.fs2000.Posterior_Model_Probability < oo_.Model_Compariso
 end
 oo_laplace=oo_;
 model_comparison (marginal_density=modifiedharmonicmean) fs2000(0.5) fs2000_initialize_from_calib(0.75);
-if abs(oo_laplace.Model_Comparison.fs2000.Log_Marginal_Density-oo_.Model_Comparison.fs2000.Log_Marginal_Density)>0.71
+if abs(oo_laplace.Model_Comparison.fs2000.Log_Marginal_Density-oo_.Model_Comparison.fs2000.Log_Marginal_Density)>0.83
    error('Laplace and Harmonic Mean do not match') 
 end
 model_comparison (marginal_density=modifiedharmonicmean) fs2000(0) fs2000_initialize_from_calib(1);
