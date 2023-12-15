@@ -1739,7 +1739,7 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
         if N < 102
             disp(['mean solution:' sprintf(' %+.1e', xmean)]);
             disp(['std deviation:' sprintf('  %.1e', sigma*sqrt(diagC))]);
-            disp(sprintf('use plotcmaesdat.m for plotting the output at any time (option LogModulo must not be zero)'));
+            dprintf('use plotcmaesdat.m for plotting the output at any time (option LogModulo must not be zero)');
         end
         if exist('sfile', 'var')
             disp(['Results saved in ' sfile]);

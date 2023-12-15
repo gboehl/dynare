@@ -264,7 +264,7 @@ while 1
         if nITERATIONS == 0
             disp(' Nr Iter  Nr Fun Eval    Min function       Best function        TEMP           Algorithm Step');
         else
-            disp(sprintf('%5.0f      %5.0f       %12.6g     %15.6g      %12.6g       %s',nITERATIONS,nFUN_EVALS,Y(1),YBEST,TEMP,'best point'));
+            dprintf('%5.0f      %5.0f       %12.6g     %15.6g      %12.6g       %s',nITERATIONS,nFUN_EVALS,Y(1),YBEST,TEMP,'best point');
         end
     end
 
@@ -319,7 +319,7 @@ while 1
         end
 
         if strcmp(OPTIONS.DISPLAY,'iter')
-            disp(sprintf('%5.0f      %5.0f       %12.6g     %15.6g      %12.6g       %s',nITERATIONS,nFUN_EVALS,Y(1),YBEST,TEMP,ALGOSTEP));
+            dprintf('%5.0f      %5.0f       %12.6g     %15.6g      %12.6g       %s',nITERATIONS,nFUN_EVALS,Y(1),YBEST,TEMP,ALGOSTEP);
         end
 
         % if output function given then run output function to plot intermediate result

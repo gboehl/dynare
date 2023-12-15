@@ -373,7 +373,7 @@ if ~issmc(options_) && any(bayestopt_.pshape > 0) && ~options_.mh_posterior_mode
             oo_.MarginalDensity.LaplaceApproximation = NaN;
         end
         skipline()
-        disp(sprintf('Log data density [Laplace approximation] is %f.',oo_.MarginalDensity.LaplaceApproximation))
+        dprintf('Log data density [Laplace approximation] is %f.', oo_.MarginalDensity.LaplaceApproximation)
         skipline()
     end
     if options_.dsge_var

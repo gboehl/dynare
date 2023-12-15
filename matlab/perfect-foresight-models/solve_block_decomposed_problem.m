@@ -48,7 +48,7 @@ else
 end
 if options_.verbosity
     printline(41)
-    disp(sprintf('MODEL SIMULATION (method=%s):',mthd))
+    dprintf('MODEL SIMULATION (method=%s):', mthd)
     skipline()
 end
 

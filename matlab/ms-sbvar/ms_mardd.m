@@ -130,7 +130,7 @@ for k=1:nvar
         for draws = 1:ndraws1
             if ~mod(draws,nbuffer)
                 skipline()
-                disp(sprintf('The %dth column or equation in A0 with %d 1st tossed-away draws in Gibbs',k,draws))
+                dprintf('The %dth column or equation in A0 with %d 1st tossed-away draws in Gibbs', k, draws)
             end
             A0gbs1 = fn_gibbsrvar(A0gbs0,UT,nvar,fss,n0,indx_ks);
             A0gbs0=A0gbs1;    % repeat the Gibbs sampling
@@ -141,7 +141,7 @@ for k=1:nvar
         for draws = 1:ndraws2
             if ~mod(draws,nbuffer)
                 skipline()
-                disp(sprintf('The %dth column or equation in A0 with %d usable draws in Gibbs',k,draws))
+                dprintf('The %dth column or equation in A0 with %d usable draws in Gibbs', k, draws)
             end
             [A0gbs1, Wcell] = fn_gibbsrvar(A0gbs0,UT,nvar,fss,n0,indx_ks);
             %------ See p.71, Forecast (II).
@@ -163,7 +163,7 @@ for k=1:nvar
         % The log value of p(a0_k|Y,a_others) where a_others: other a's at some point such as the peak of ONLY some a0's
     else
         skipline()
-        disp(sprintf('The last(6th) column or equation in A0 with no Gibbs draws'))
+        disp('The last(6th) column or equation in A0 with no Gibbs draws')
         [A0gbs1, Wcell] = fn_gibbsrvar(A0gbs0,UT,nvar,fss,n0,indx_ks)
         %------ See p.71, Forecast (II).
         %------ Computing p(a0_k|Y,a_others) at some point such as the peak along the dimensions of indx_ks.

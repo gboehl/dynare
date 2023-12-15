@@ -126,5 +126,4 @@ switch (extension)
 end
 
 cd(old_pwd)
-disp(sprintf('Loading %d observations from %s\n',...
-             size(dyn_data_01,1),fullname))
+dprintf('Loading %d observations from %s', size(dyn_data_01, 1), fullname)

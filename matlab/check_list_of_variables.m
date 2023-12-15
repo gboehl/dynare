@@ -41,7 +41,7 @@ if options_.dsge_var && options_.bayesian_irf
         for i=1:size(varlist,1)
             idx = strmatch(varlist{i}, options_.varobs, 'exact');
             if isempty(idx)
-                disp(sprintf('%s is not an observed variable!', varlist{i}))
+                dprintf('%s is not an observed variable!', varlist{i})
                 msg = true;
             end
         end

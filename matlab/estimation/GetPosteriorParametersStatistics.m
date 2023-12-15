@@ -119,11 +119,11 @@ if np
                 oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
             end
         end
-        disp(sprintf(pformat, header_width, name, bayestopt_.p1(ip),...
-                     post_mean, ...
-                     hpd_interval, ...
-                     pnames{bayestopt_.pshape(ip)+1}, ...
-                     bayestopt_.p2(ip)));
+        dprintf(pformat, header_width, name, bayestopt_.p1(ip),...
+                post_mean, ...
+                hpd_interval, ...
+                pnames{bayestopt_.pshape(ip)+1}, ...
+                bayestopt_.p2(ip));
         if TeX
             k = estim_params_.param_vals(i,1);
             name = M_.param_names_tex{k};
@@ -167,7 +167,7 @@ if nvx
                 M_.Sigma_e(k,k) = post_mean*post_mean;
             end
         end
-        disp(sprintf(pformat,header_width,name, bayestopt_.p1(ip), post_mean, hpd_interval, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p2(ip)));
+        dprintf(pformat, header_width, name, bayestopt_.p1(ip), post_mean, hpd_interval, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p2(ip));
         if TeX
             name = M_.exo_names_tex{k};
             TeXCore(fid,name, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p1(ip), bayestopt_.p2(ip), post_mean, sqrt(post_var), hpd_interval);
@@ -205,7 +205,7 @@ if nvn
                 oo_ = Filloo(oo_,name,type,post_mean,hpd_interval,post_median,post_var,post_deciles,density);
             end
         end
-        disp(sprintf(pformat, header_width, name,bayestopt_.p1(ip), post_mean, hpd_interval, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p2(ip)));
+        dprintf(pformat, header_width, name,bayestopt_.p1(ip), post_mean, hpd_interval, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p2(ip));
         if TeX
             k = estim_params_.var_endo(i,1);
             name = M_.endo_names_tex{k};
@@ -257,7 +257,7 @@ if ncx
                 M_.Sigma_e(k2,k1) = M_.Sigma_e(k1,k2);
             end
         end
-        disp(sprintf(pformat, header_width,name, bayestopt_.p1(ip), post_mean, hpd_interval, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p2(ip)));
+        dprintf(pformat, header_width,name, bayestopt_.p1(ip), post_mean, hpd_interval, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p2(ip));
         if TeX
             name = sprintf('(%s,%s)', M_.exo_names_tex{k1}, M_.exo_names_tex{k2});
             TeXCore(fid, name, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p1(ip), bayestopt_.p2(ip), post_mean, sqrt(post_var), hpd_interval);
@@ -304,7 +304,7 @@ if ncn
                 oo_ = Filloo(oo_, NAME, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
             end
         end
-        disp(sprintf(pformat, header_width, name, bayestopt_.p1(ip), post_mean, hpd_interval, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p2(ip)));
+        dprintf(pformat, header_width, name, bayestopt_.p1(ip), post_mean, hpd_interval, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p2(ip));
         if TeX
             name = sprintf('(%s,%s)', M_.endo_names_tex{k1}, M_.endo_names_tex{k2});
             TeXCore(fid, name, pnames{bayestopt_.pshape(ip)+1}, bayestopt_.p1(ip), bayestopt_.p2(ip), post_mean, sqrt(post_var), hpd_interval);

@@ -384,19 +384,19 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
         fval_(1:length(fval)) = fval;
         if isfinite(fv(end)) && isfinite(fv(1))
             if fv(end)<0
-                disp(sprintf('%s  %s  %12.7E  %12.7E  %12.7E  %12.7E  %s', iter_, fval_, fv(1), fv(end), critF, critX, move))
+                dprintf('%s  %s  %12.7E  %12.7E  %12.7E  %12.7E  %s', iter_, fval_, fv(1), fv(end), critF, critX, move)
             else
                 if fv(1)>0
-                    disp(sprintf('%s  %s %12.7E %12.7E  %12.7E  %12.7E  %s', iter_, fval_, fv(1), fv(end), critF, critX, move))
+                    dprintf('%s  %s %12.7E %12.7E  %12.7E  %12.7E  %s', iter_, fval_, fv(1), fv(end), critF, critX, move)
                 else
-                    disp(sprintf('%s  %s  %12.7E %12.7E  %12.7E  %12.7E  %s', iter_, fval_, fv(1), fv(end), critF, critX, move))
+                    dprintf('%s  %s  %12.7E %12.7E  %12.7E  %12.7E  %s', iter_, fval_, fv(1), fv(end), critF, critX, move)
                 end
             end
         else
             if isfinite(fv(1))
-                disp(sprintf(['%s  %s  %12.7E                                 %12.7E  %s'], iter_, fval_, fv(1) , critX, move))
+                dprintf(['%s  %s  %12.7E                                 %12.7E  %s'], iter_, fval_, fv(1) , critX, move)
             else
-                disp(sprintf('%s  %s                                         %12.7E  %s', iter_, fval_, critX, move))
+                dprintf('%s  %s                                         %12.7E  %s', iter_, fval_, critX, move)
             end
         end
     end

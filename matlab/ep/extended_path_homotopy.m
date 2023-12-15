@@ -54,7 +54,7 @@ if ismember(method, [1, 2])
             flag = ~flag;
         end
         if debug
-            disp(sprintf('%s\t %1.8f\t %s',int2str(iteration),weight,int2str(flag)))
+            dprintf('%u\t %1.8f\t %u', iteration, weight, flag)
         end
         state(2:end) = state(1:end-1);
         state(1) = flag;
@@ -121,7 +121,7 @@ if isequal(method, 3) || (isequal(method, 2) && noconvergence)
             flag = ~flag;
         end
         if debug
-            disp(sprintf('%s\t %1.8f\t %s',int2str(index),weight,int2str(flag)))
+            dprintf('%u\t %1.8f\t %u', index, weight, flag)
         end
         if flag
             jndex = index;

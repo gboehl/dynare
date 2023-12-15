@@ -94,7 +94,7 @@ try
    for i=1:n_shapes
        for j=1:n_scales
           if debug
-              disp(sprintf('... mu=%s and s2=%s', num2str(mu(j,i)),num2str(s2(j,i))))
+              dprintf('... mu=%s and s2=%s', num2str(mu(j,i)),num2str(s2(j,i)))
           end
           if ~isnan(mu(j,i)) && ~isnan(s2(j,i)) && ~isinf(mu(j,i)) && ~isinf(s2(j,i))
               [shape, scale] = weibull_specification(mu(j,i), s2(j,i));
