@@ -13,66 +13,66 @@
 
 // ----------------- Defintions -----------------------------------------//
 var        
-    c          //1  Consumption 
-    n          //2  Labor
-    y          //5  Output
-    yf         //6  Final goods       
-    yg         //11 Output growth gap
-    w          //12 Real wage rate
-    wf         //13 Flexible real wage
-    pigap      //15 Inflation rate -> pi(t)/pibar = pigap
-    inom    ${i^{nom}}$       //16 Nominal interest rate
-    inomnot    //17 Notional interest rate
-    mc         //19 Real marginal cost
-    lam  ${\lambda}$      //20 Inverse marginal utility of wealth  
-    g          //21 Growth shock       
-    s          //22 Risk premium shock
-    mp         //23 Monetary policy shock    
-    pi   ${\pi}$   //24 Observed inflation    
+    c       $c$         (long_name='Consumption')
+    n                   (long_name='Labor')
+    y       $y$         (long_name='Output')
+    yf                  (long_name='Final goods')
+    yg                  (long_name='Output growth gap')
+    w                   (long_name='Real wage rate')
+    wf                  (long_name='Flexible real wage')
+    pigap               (long_name='Inflation rate -> pi(t)/pibar = pigap')
+    inom    ${i^{nom}}$ (long_name='Nominal interest rate')
+    inomnot             (long_name='Notional interest rate')
+    mc                  (long_name='Real marginal cost')
+    lam  ${\lambda}$    (long_name='Inverse marginal utility of wealth')
+    g                   (long_name='Growth shock')
+    s                   (long_name='Risk premium shock')
+    mp                  (long_name='Monetary policy shock')
+    pi   ${\pi}$        (long_name='Observed inflation')
     @#if !(small_model)
-        x          //3  Investment
-        k          //4  Capital    
-        u          //7  Utilization cost
-        ups        //8  Utilization choice
-        wg         //9  Real wage growth gap    
-        xg         //10 Investment growth
-        rk         //14 Real rental rate
-        q          //18 Tobins q   
+        x               (long_name='Investment')
+        k               (long_name='Capital')
+        u               (long_name='Utilization cost')
+        ups             (long_name='Utilization choice')
+        wg              (long_name='Real wage growth gap')    
+        xg              (long_name='Investment growth')
+        rk              (long_name='Real rental rate')
+        q               (long_name='Tobins q')
     @#endif
 ;
 varexo          
-    epsg    ${\varepsilon_g}$   // Productivity growth shock
-    epsi       // Notional interest rate shock
-    epss       // Risk premium shock
+    epsg    ${\varepsilon_g}$   (long_name='Productivity growth shock')
+    epsi                        (long_name='Notional interest rate shock')
+    epss                        (long_name='Risk premium shock')
 ;        
 parameters
     // Calibrated Parameters    
-    beta    $\beta$    // Discount factor
-    chi         // Labor disutility scale
-    thetap      // Elasticity of subs. between intermediate goods
-    thetaw      // Elasticity of subs. between labor types
-    nbar        // Steady state labor
-    eta         // Inverse frish elasticity of labor supply
-    delta       // Depreciation
-    alpha       // Capital share
-    gbar        // Mean growth rate
-    pibar       // Inflation target
-    inombar     // Steady gross nom interest rate    
-    inomlb      // Effective lower bound on gross nominal interest rate    
-    sbar        // Average risk premium
+    beta    $\beta$    (long_name='Discount factor')
+    chi                 (long_name='Labor disutility scale')
+    thetap              (long_name='Elasticity of subs. between intermediate goods')
+    thetaw              (long_name='Elasticity of subs. between labor types')
+    nbar                (long_name='Steady state labor')
+    eta                 (long_name='Inverse frish elasticity of labor supply')
+    delta               (long_name='Depreciation')
+    alpha               (long_name='Capital share')
+    gbar                (long_name='Mean growth rate')
+    pibar               (long_name='Inflation target')
+    inombar             (long_name='Steady gross nom interest rate')
+    inomlb              (long_name='Effective lower bound on gross nominal interest rate')
+    sbar                (long_name='Average risk premium')
     // Parameters for DGP and Estimated parameters
-    varphip     // Rotemberg price adjustment cost
-    varphiw     // Rotemberg wage adjustment cost
-    h          	// Habit persistence
-    rhos        // Persistence
-    rhoi    	// Persistence
-    sigz        // Standard deviation technology
-    sigs        // Standard deviation risk premia
-    sigi        // Standard deviation mon pol
-    phipi       // Inflation responsiveness
-    phiy        // Output responsiveness
-    nu          // Investment adjustment cost
-    sigups      // Utilization    
+    varphip             (long_name='Rotemberg price adjustment cost')
+    varphiw             (long_name='Rotemberg wage adjustment cost')
+    h          	        (long_name='Habit persistence')
+    rhos                (long_name='Persistence')
+    rhoi    	        (long_name='Persistence')
+    sigz                (long_name='Standard deviation technology')
+    sigs                (long_name='Standard deviation risk premia')
+    sigi                (long_name='Standard deviation mon pol')
+    phipi               (long_name='Inflation responsiveness')
+    phiy                (long_name='Output responsiveness')
+    nu                  (long_name='Investment adjustment cost')
+    sigups              (long_name='Utilization')
  ;
 
 
@@ -316,36 +316,34 @@ varobs yg inom pi;
 
     // forecast starting from period 42, zero shocks (default)
     smoother2histval(period=42);
-    [oo, error_flag] = occbin.forecast(options_,M_,oo_,8);
+    [forecast, error_flag] = occbin.forecast(options_,M_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,8);
     // forecast with stochastic shocks
     options_.occbin.forecast.qmc=true;
     options_.occbin.forecast.replic=127;
-    [oo1, error_flag] = occbin.forecast(options_,M_,oo_,8);
+    [forecast1, error_flag] = occbin.forecast(options_,M_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state,8);
+
+    figure('Name','OccBin: Forecasts')
+    subplot(2,1,1)
+    plot(1:8,forecast.piecewise.Mean.inom,'b-',1:8,forecast1.piecewise.Mean.inom,'r--')
+    subplot(2,1,2)
+    plot(1:8,forecast.piecewise.Mean.y,'b-',1:8,forecast1.piecewise.Mean.y,'r--')
 
     // GIRF given states in 42 and shocks in 43
     t0=42;
     options_.occbin.irf.exo_names=M_.exo_names;
     options_.occbin.irf.t0=t0;
-    oo_ = occbin.irf(M_,oo_,options_);
+    oo_.occbin.irfs = occbin.irf(M_,oo_,options_);
 
-    vars_irf = {
-    'c', 'consumption'    
-    'n', 'labor'    
-    'y', 'output'    
-    'pigap', 'inflation rate'
-    'inom', 'interest rate'  
-    'inomnot', 'shadow rate'
-    };
+    var_list_ = {'c','n','y','pigap','inom','inomnot'};
 
-    options_.occbin.plot_irf.exo_names = M_.exo_names;
-    options_.occbin.plot_irf.endo_names = vars_irf(:,1);
-    options_.occbin.plot_irf.endo_names_long = vars_irf(:,2);
     // if you want to scale ...
     // options_occbin_.plot_irf.endo_scaling_factor = vars_irf(:,3);
     options_.occbin.plot_irf.simulname = ['t0_' int2str(t0)];
-    options_.occbin.plot_irf.tplot = min(40,options_.irf);
-    occbin.plot_irfs(M_,oo_,options_);
-
+    options_.irf=40;
+    occbin.plot_irfs(M_,oo_.occbin.irfs,options_,var_list_);
+    var_list_={};
+    options_.occbin.plot_irf.simulname = ['t0_' int2str(t0) '_full'];
+    occbin.plot_irfs(M_,oo_.occbin.irfs,options_,var_list_);
     oo0=oo_;
     // use smoother_redux
     estimation(
@@ -374,7 +372,7 @@ varobs yg inom pi;
             consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
             
     // show initial condition effect of IF
-    figure,
+    figure('Name','OccBin: Smoothed shocks')
     subplot(221)
     plot([oo0.SmoothedShocks.epsg oo_.SmoothedShocks.epsg]), title('epsg')
     subplot(222)
@@ -382,7 +380,7 @@ varobs yg inom pi;
     subplot(223)
     plot([oo0.SmoothedShocks.epss oo_.SmoothedShocks.epss]), title('epss')
     legend('PKF','IF')
-    figure,
+    figure('Name','OccBin: Smoothed Variables')
     subplot(221)
     plot([oo0.SmoothedVariables.inom oo_.SmoothedVariables.inom]), title('inom')
     subplot(222)
