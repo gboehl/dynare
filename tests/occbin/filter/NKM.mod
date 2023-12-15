@@ -21,14 +21,14 @@ var
     w          //12 Real wage rate
     wf         //13 Flexible real wage
     pigap      //15 Inflation rate -> pi(t)/pibar = pigap
-    inom       //16 Nominal interest rate
+    inom    ${i^{nom}}$       //16 Nominal interest rate
     inomnot    //17 Notional interest rate
     mc         //19 Real marginal cost
-    lam        //20 Inverse marginal utility of wealth  
+    lam  ${\lambda}$      //20 Inverse marginal utility of wealth  
     g          //21 Growth shock       
     s          //22 Risk premium shock
     mp         //23 Monetary policy shock    
-    pi      //24 Observed inflation    
+    pi   ${\pi}$   //24 Observed inflation    
     @#if !(small_model)
         x          //3  Investment
         k          //4  Capital    
@@ -41,13 +41,13 @@ var
     @#endif
 ;
 varexo          
-    epsg       // Productivity growth shock
+    epsg    ${\varepsilon_g}$   // Productivity growth shock
     epsi       // Notional interest rate shock
     epss       // Risk premium shock
 ;        
 parameters
     // Calibrated Parameters    
-    beta        // Discount factor
+    beta    $\beta$    // Discount factor
     chi         // Labor disutility scale
     thetap      // Elasticity of subs. between intermediate goods
     thetaw      // Elasticity of subs. between labor types
@@ -201,7 +201,7 @@ model;
     pi = pigap*pibar;
      
 end;
-
+options_.TeX=1;
 occbin_constraints;
 name 'zlb'; bind inom <=  inomlb; relax inom > inomlb;
 end;
@@ -309,7 +309,7 @@ varobs yg inom pi;
             datafile=dataobsfile2, mode_file=NKM_mh_mode_saved,
             mode_compute=0, nobs=120, first_obs=1,
             mh_replic=0, plot_priors=0, smoother,
-            nodisplay,consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
+            consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
     
     oo0=oo_;
     // use smoother_redux
@@ -317,7 +317,7 @@ varobs yg inom pi;
             datafile=dataobsfile2, mode_file=NKM_mh_mode_saved,
             mode_compute=0, nobs=120, first_obs=1,
             mh_replic=0, plot_priors=0, smoother, smoother_redux,
-            nodisplay,consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
+            consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
 
     // check consistency of smoother_redux
     for k=1:M_.endo_nbr, 
@@ -336,7 +336,7 @@ varobs yg inom pi;
             datafile=dataobsfile2, mode_file=NKM_mh_mode_saved,
             mode_compute=0, nobs=120, first_obs=1,
             mh_replic=0, plot_priors=0, smoother,
-            nodisplay, consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
+            consider_all_endogenous,heteroskedastic_filter,filter_step_ahead=[1],smoothed_state_uncertainty);
             
     // show initial condition effect of IF
     figure,
@@ -356,3 +356,11 @@ varobs yg inom pi;
     plot([oo0.SmoothedVariables.pi oo_.SmoothedVariables.pi]), title('pi')
     legend('PKF','IF')
     occbin_write_regimes(smoother);
+
+write_latex_dynamic_model;
+collect_latex_files;
+[status, cmdout]=system(['pdflatex -halt-on-error -interaction=nonstopmode ' M_.fname '_TeX_binder.tex']);
+if status
+    cmdout
+    error('TeX-File did not compile.')
+end
