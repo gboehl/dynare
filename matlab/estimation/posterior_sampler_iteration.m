@@ -125,7 +125,7 @@ switch posterior_sampling_method
         % check whether draw is valid and compute posterior
         if all( proposed_par(:) > mh_bounds.lb(indices(blocks==block_iter,1),:) ) && all( proposed_par(:) < mh_bounds.ub(indices(blocks==block_iter,1),:) )
             try
-                logpost = - feval('TaRB_optimizer_wrapper', proposed_par(:),...
+                logpost = - TaRB_optimizer_wrapper(proposed_par(:),...
                                   current_draw,indices(blocks==block_iter,1),TargetFun,...% inputs for wrapper
                                   varargin{:});
             catch
