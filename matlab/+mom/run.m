@@ -712,7 +712,7 @@ if do_bayesian_estimation_mcmc
             if ~options_mom_.nograph
                 oo_.mom = PlotPosteriorDistributions(estim_params_, M_, options_mom_, bayestopt_, oo_.mom);
             end
-            [oo_.mom.posterior.metropolis.mean,oo_.mom.posterior.metropolis.Variance] = GetPosteriorMeanVariance(M_,options_mom_.mh_drop);
+            [oo_.mom.posterior.metropolis.mean,oo_.mom.posterior.metropolis.Variance] = GetPosteriorMeanVariance(options_mom_,M_);
         elseif options_mom_.load_mh_file && options_mom_.load_results_after_load_mh
             % load fields from previous MCMC run stored in results-file
             field_names={'posterior_mode','posterior_std_at_mode',...% fields set by marginal_density
