@@ -819,6 +819,11 @@ if isoctave && isfield(options_mom_, 'prior_restrictions') && ...
     % See https://savannah.gnu.org/bugs/?43215
     options_mom_.prior_restrictions.routine = [];
 end
+if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_method,'GMM')
+    if isfield(oo_.mom,'irf_model_varobs') && isempty(oo_.mom.irf_model_varobs)
+        oo_.mom = rmfield(oo_.mom,'irf_model_varobs'); % remove empty field
+    end
+end
 if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING') && ~isempty(options_mom_.mom.irf_matching_file.path) && ~strcmp(options_mom_.mom.irf_matching_file.path,'.')
     rmpath(options_mom_.irf_matching_file.path); % remove path to irf_matching_file
 end
