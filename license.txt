@@ -242,7 +242,7 @@ License: BSD-2-clause
 
 Files: matlab/utilities/graphics/colorspace.m
 Copyright: 2005-2010 Pascal Getreuer
-           2017 Dynare Team
+           2017-2023 Dynare Team
 License: BSD-2-clause
 
 Files: examples/fs2000_data.m

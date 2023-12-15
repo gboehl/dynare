@@ -82,7 +82,7 @@ function varargout = colorspace(Conversion,varargin)
 %  ("short").
 
 % Copyright © 2005-2010 Pascal Getreuer
-% Copyright © 2017 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are
@@ -203,7 +203,7 @@ switch Space
     Space = 'hsv';
   case {'hsl','hsi','hls'}
     Space = 'hsl';
-  case {'rgb','yuv','yiq','ydbdr','ycbcr','jpegycbcr','xyz','lab','luv','lch'}
+  case {'rgb','yuv','yiq','ydbdr','jpegycbcr','xyz','lab','luv','lch'}
     return
 end
 return
