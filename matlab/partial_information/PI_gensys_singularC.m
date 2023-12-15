@@ -71,7 +71,7 @@ try
         singular=1;
     else
         UAVinv=inv(C2);
-        [LastWarningTxt LastWarningID]=lastwarn;
+        [LastWarningTxt, LastWarningID]=lastwarn;
         if any(any(isinf(UAVinv)))==1
             singular=1;
         end

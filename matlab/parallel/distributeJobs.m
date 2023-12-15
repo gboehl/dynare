@@ -129,7 +129,7 @@ if SumOfJobs~=NumbersOfJobs
         % Many choices are possible:
         % - ... (see above).
 
-        [NonServe VeryFast]= min(CPUWeight);
+        [NonServe, VeryFast]= min(CPUWeight);
 
         while SumOfJobs<NumbersOfJobs
             JobsForNode(VeryFast)=JobsForNode(VeryFast)+1;

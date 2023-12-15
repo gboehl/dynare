@@ -893,7 +893,7 @@ switch Strategy
         end
 
         if isempty(dir('dynareParallelLogFiles'))
-            [A B C]=rmdir('dynareParallelLogFiles');
+            [A, B, C]=rmdir('dynareParallelLogFiles');
             mkdir('dynareParallelLogFiles');
         end
         try
@@ -911,7 +911,7 @@ switch Strategy
     delete(['temp_input.mat'])
     if newInstance
         if isempty(dir('dynareParallelLogFiles'))
-            [A B C]=rmdir('dynareParallelLogFiles');
+            [A, B, C]=rmdir('dynareParallelLogFiles');
             mkdir('dynareParallelLogFiles');
         end
     end

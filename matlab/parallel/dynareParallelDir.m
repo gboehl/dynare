@@ -59,7 +59,7 @@ for indPC=1:length(Parallel)
             if isoctave % Patch for peculiar behaviour of ls under Linux.
 
                 % It is necessary to capture the ls warning message and properly manage the jolly char '*'!
-                [check ax]=system(['ls ' ,filename, ' 2> OctaveStandardOutputMessage.txt']);
+                [check, ax]=system(['ls ' ,filename, ' 2> OctaveStandardOutputMessage.txt']);
 
                 if check ~= 0 || ~isempty(strfind(ax,'No such file or directory'))
                     ax=[];

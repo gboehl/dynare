@@ -2256,7 +2256,7 @@ ax(2) = max(minxend, ax(2));
 axis(ax);
 
 % add some annotation lines
-[ignore idx] = sort(d.x(end,6:end));
+[ignore, idx] = sort(d.x(end,6:end));
 % choose no more than 25 indices
 idxs = round(linspace(1, size(d.x,2)-5, min(size(d.x,2)-5, 25)));
 yy = repmat(NaN, 2, size(d.x,2)-5);

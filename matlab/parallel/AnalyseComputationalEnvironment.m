@@ -175,12 +175,12 @@ for Node=1:length(DataInput) % To obtain a recursive function remove the 'for'
 
         if Environment
             if OScallerWindows
-                [si1 de1]=system(['ping ', DataInput(Node).ComputerName]);
+                [si1, de1]=system(['ping ', DataInput(Node).ComputerName]);
             else
-                [si1 de1]=system(['ping ', DataInput(Node).ComputerName, ' -c 4']);
+                [si1, de1]=system(['ping ', DataInput(Node).ComputerName, ' -c 4']);
             end
         else
-            [si1 de1]=system(['ping ', DataInput(Node).ComputerName]);
+            [si1, de1]=system(['ping ', DataInput(Node).ComputerName]);
         end
 
         if (si1)
@@ -387,15 +387,15 @@ for Node=1:length(DataInput) % To obtain a recursive function remove the 'for'
         else
             if ~strcmp(DataInput(Node).ComputerName,MasterName) % run on remote machine
                 if  strfind([DataInput(Node).MatlabOctavePath], 'octave') % Hybrid computing Matlab(Master)->Octave(Slaves) and Vice Versa!
-                    [NonServeS NenServeD]=system(['start /B psexec \\',DataInput(Node).ComputerName,' -e -u ',DataInput(Node).UserName,' -p ',DataInput(Node).Password,' -W ',DataInput(Node).RemoteDrive,':\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder ' -low   ',DataInput(Node).MatlabOctavePath,' Tracing.m']);
+                    [NonServeS, NenServeD]=system(['start /B psexec \\',DataInput(Node).ComputerName,' -e -u ',DataInput(Node).UserName,' -p ',DataInput(Node).Password,' -W ',DataInput(Node).RemoteDrive,':\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder ' -low   ',DataInput(Node).MatlabOctavePath,' Tracing.m']);
                 else
-                    [NonServeS NenServeD]=system(['start /B psexec \\',DataInput(Node).ComputerName,' -e -u ',DataInput(Node).UserName,' -p ',DataInput(Node).Password,' -W ',DataInput(Node).RemoteDrive,':\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder ' -low   ',DataInput(Node).MatlabOctavePath,' -nosplash -nodesktop -minimize -r Tracing']);
+                    [NonServeS, NenServeD]=system(['start /B psexec \\',DataInput(Node).ComputerName,' -e -u ',DataInput(Node).UserName,' -p ',DataInput(Node).Password,' -W ',DataInput(Node).RemoteDrive,':\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder ' -low   ',DataInput(Node).MatlabOctavePath,' -nosplash -nodesktop -minimize -r Tracing']);
                 end
             else % run on local machine via the network: user and passwd cannot be used!
                 if  strfind([DataInput(Node).MatlabOctavePath], 'octave') % Hybrid computing Matlab(Master)->Octave(Slaves) and Vice Versa!
-                    [NonServeS NenServeD]=system(['start /B psexec \\',DataInput(Node).ComputerName,' -e ',' -W ',DataInput(Node).RemoteDrive,':\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder ' -low   ',DataInput(Node).MatlabOctavePath,' Tracing.m']);
+                    [NonServeS, NenServeD]=system(['start /B psexec \\',DataInput(Node).ComputerName,' -e ',' -W ',DataInput(Node).RemoteDrive,':\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder ' -low   ',DataInput(Node).MatlabOctavePath,' Tracing.m']);
                 else
-                    [NonServeS NenServeD]=system(['start /B psexec \\',DataInput(Node).ComputerName,' -e ',' -W ',DataInput(Node).RemoteDrive,':\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder ' -low   ',DataInput(Node).MatlabOctavePath,' -nosplash -nodesktop -minimize -r Tracing']);
+                    [NonServeS, NenServeD]=system(['start /B psexec \\',DataInput(Node).ComputerName,' -e ',' -W ',DataInput(Node).RemoteDrive,':\',DataInput(Node).RemoteDirectory,'\',RemoteTmpFolder ' -low   ',DataInput(Node).MatlabOctavePath,' -nosplash -nodesktop -minimize -r Tracing']);
                 end
             end
 
@@ -570,7 +570,7 @@ for Node=1:length(DataInput) % To obtain a recursive function remove the 'for'
 
     % Questo controllo penso che si possa MIGLIORARE!!!!!
     if  isempty (RealCPUnbr) && Environment1==0
-        [si0 de0]=system(['psinfo \\',DataInput(Node).ComputerName]);
+        [si0, de0]=system(['psinfo \\',DataInput(Node).ComputerName]);
     end
     RealCPUnbr=GiveCPUnumber(de0,Environment1);
 

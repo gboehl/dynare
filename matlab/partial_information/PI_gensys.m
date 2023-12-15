@@ -76,7 +76,7 @@ try
         warning('off','MATLAB:nearlySingularMatrix');
         warning('off','MATLAB:singularMatrix');
         UAVinv=inv(C2); % i.e. inv(U02'*a1*V02)
-        [LastWarningTxt LastWarningID]=lastwarn;
+        [LastWarningTxt, LastWarningID]=lastwarn;
         if any(any(isinf(UAVinv)))==1
             singular=1;
         end
@@ -178,9 +178,9 @@ G0pi=eye(n+FL_RANK+NX);
 try
     if isoctave && octave_ver_less_than('9')
         % Need to force QZ complex on Octave ⩽ 8 (otherwise it returns the real one)
-        [a b q z]=qz(complex(G0pi),complex(G1pi));
+        [a, b, q, z]=qz(complex(G0pi),complex(G1pi));
     else
-        [a b q z]=qz(G0pi,G1pi);
+        [a, b, q, z]=qz(G0pi,G1pi);
     end
 catch
     try
@@ -239,7 +239,7 @@ for i=1:nn
 end
 div ;
 if ~zxz
-    [a b q z]=qzdiv(div,a,b,q,z);
+    [a, b, q, z]=qzdiv(div,a,b,q,z);
 end
 
 gev=[diag(a) diag(b)];
