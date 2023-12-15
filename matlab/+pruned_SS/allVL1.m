@@ -78,14 +78,14 @@ end
 Counter(0);
 
 switch L1ops
-    case {'==' '='},
+    case {'==' '='}
         if isnan(MaxCounter)
             % return the number of solutions
             v = nchoosek(n+L1-1,L1); % nchoosek(n+L1-1,n-1)
         else
             v = allVL1eq(n, L1);
         end
-    case '<=', % call allVL1eq for various sum targets
+    case '<=' % call allVL1eq for various sum targets
         if isnan(MaxCounter)
             % return the number of solutions
             %v = nchoosek(n+L1,L1)*factorial(n-L1); BUG <- 16/Sep/2009: 
@@ -99,7 +99,7 @@ switch L1ops
             v = cell2mat(arrayfun(@(j) allVL1eq(n, j), (0:L1)', ...
                          'UniformOutput', false));
         end
-    case '<',
+    case '<'
         v = allVL1(n, L1-1, '<=', MaxCounter);
     otherwise
         error('allVL1: unknown L1ops')

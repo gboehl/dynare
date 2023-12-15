@@ -108,7 +108,7 @@ end
 if abs(floor(x(1))-xind_tick(1))-abs(ceil(x(end))-xind_tick(end))<-1
     xind_tick = xind_tick+1;
 end
-if length(xind_tick)==gend,
+if length(xind_tick)==gend
     xind_tick = x(2:end);
 end
 % xind_tick = [x(ind_yrs(1))-floor(dind_tick/2):dind_tick:x(ind_yrs(end))+floor(dind_tick/2)]+1;
@@ -154,7 +154,7 @@ comp_nbr0=comp_nbr;
 %%plot decomposition
 for j=1:nvar
     z1 = squeeze(z(i_var(j),:,:));
-    if screen_shocks,
+    if screen_shocks
         [~, isort] = sort(mean(abs(z1(1:end-2,:)')), 'descend');
         if initval
             labels = char(char(shock_names(isort(1:16))),'Others', 'All shocks');
