@@ -464,11 +464,9 @@ if ~strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
 end
 
 if options_.load_mh_file && posterior_sampler_options.use_mh_covariance_matrix
-    [~, invhess] = compute_mh_covariance_matrix(bayestopt_,fname,dname,outputFolderName);
+    [~, invhess] = compute_posterior_covariance_matrix(bayestopt_.name, fname, dname, outputFolderName);
     posterior_sampler_options.invhess = invhess;
 end
-
-
 
 % check specific options for slice sampler
 if strcmp(posterior_sampler_options.posterior_sampling_method,'slice')
