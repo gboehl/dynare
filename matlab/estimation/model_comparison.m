@@ -87,7 +87,7 @@ for i=1:NumberOfModels
         end
     end
     try
-        eval(['MarginalLogDensity(i) = mstruct.oo_.MarginalDensity.' type ';'])
+        MarginalLogDensity(i) = mstruct.oo_.MarginalDensity.(type);
     catch
         if strcmpi(type,'LaplaceApproximation')
             if isfield(mstruct.oo_,'mle_mode')

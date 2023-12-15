@@ -103,6 +103,6 @@ for taper_index=1:length(taper_steps)
     results_vec(1,4+taper_index*2-1)=NSE_taper;
     results_vec(1,4+taper_index*2)=total_variance/(n_draws_used*NSE_taper^2);
 
-    eval(['results_struct.nse_taper_',num2str(taper),'= NSE_taper;']);
-    eval(['results_struct.rne_taper_',num2str(taper),'= total_variance/(n_draws_used*NSE_taper^2);']);
+    results_struct.(sprintf('nse_taper_%u', taper)) = NSE_taper;
+    results_struct.(sprintf('rne_taper_%u', taper)) = total_variance/(n_draws_used*NSE_taper^2);
 end % end of for mm loop

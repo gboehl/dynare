@@ -36,24 +36,24 @@ function indx = get_new_or_existing_ei_index(substructure_name, name1, name2)
 
 global estimation_info
 
-if eval(['isempty(estimation_info.' substructure_name ')'])
+if isempty(estimation_info.(substructure_name))
     indx = 1;
     return
 end
 
 if isempty(name2) % parameter or std() statement
-    indx = eval(['find(strcmp(name1, estimation_info.' substructure_name ') == 1)']);
+    indx = find(strcmp(name1, estimation_info.(substructure_name)));
 else % corr statement
-    indx = eval(['find(strcmp([''' name1 ':' name2 '''], estimation_info.' substructure_name ') == 1)']);
+    indx = find(strcmp(sprintf('%s:%s', name1, name2), estimation_info.(substructure_name)));
     if isempty(indx)
-        indx = eval(['find(strcmp([''' name2 ':' name1 '''], estimation_info.' substructure_name ') == 1)']);
+        indx = find(strcmp(sprintf('%s:%s', name2, name1), estimation_info.(substructure_name)));
     end
 end
 
 if isempty(indx)
-    indx = eval(['size(estimation_info.' substructure_name ', 2) + 1']);
+    indx = size(estimation_info.(substructure_name), 2) + 1;
 end
 
 if size(indx, 2) > 1
-    error(['Error: ' name1 ' ' name2 'found more than once in estimation_info.subsamples_index']);
+    error('Error: %s %s found more than once in estimation_info.subsamples_index', name1, name2);
 end

@@ -31,10 +31,10 @@ function storeGlobalVars(fname,append)
 
 
 GlobalNames = who('global');
-% varlist = '';
+
 for j=1:length(GlobalNames)
     eval(['global ',GlobalNames{j},';']);
-    eval(['fGlobalVar.',GlobalNames{j},'=',GlobalNames{j},';']);
+    fGlobalvar.(GlobalNames{j}) = GlobalNames{j};
 end
 
 if nargin<2

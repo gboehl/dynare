@@ -56,7 +56,8 @@ elseif NumberOfPlots == 1
 end
 
 for plt = 1:NumberOfPlots
-    eval(['NumberOfCurves = Info.Box' int2str(plt) '.Number;'])
+    field1 = sprintf('Box%u', plt);
+    NumberOfCurves = Info.(field1).Number;
     NumberOfObservations = zeros(2,1);
     x = cell(NumberOfCurves,1);
     y = cell(NumberOfCurves,1);
@@ -66,10 +67,11 @@ for plt = 1:NumberOfPlots
     binf = NaN(NumberOfCurves,1);
     bsup = NaN(NumberOfCurves,1);
     for curve = 1:NumberOfCurves
-        eval(['x{' curve '} = Info.Box' int2str(plt) '.Curve' int2str(curve) '.xdata;'])
-        eval(['y{' curve '} = Info.Box' int2str(plt) '.Curve' int2str(curve) '.ydata;'])
-        eval(['name = Info.Box' int2str(plt) '.Curve' int2str(curve) '.variablename;'])
-        eval(['PltType{' curve  '} = Info.Box' int2str(plt) '.Curve' int2str(curve) '.type']);
+        field2 = sprintf('Curve%u', curve);
+        x{curve} = Info.(field1).(field2).xdata;
+        y{curve} = Info.(field1).(field2).ydata;
+        name = Info.(field1).(field2).variablename;
+        PltType{curve} = Info.(field1).(field2).type;
         if length(x{curve})-length(y{curve})
             disp('MakeFigure :: The number of observations in x doesn''t match with ')
             disp(['the number of observation in y for ' name ])
@@ -90,9 +92,9 @@ for plt = 1:NumberOfPlots
     if isnan(ymin(plt))
         ymin = 0;
     end
-    eval(['NAMES{' int2str(plt) '} = Info.Box' int2str(plt) '.name;'])
+    NAMES{plt} = Info.(field1).name;
     if options_.TeX
-        eval(['TeXNAMES{' int2str(plt) '} = Info.Box' int2str(plt) '.texname;'])
+        TeXNAMES{plt} = Info.(field1).texname;
     end
     subplot(nr,nc,plt)
     hold on
@@ -148,22 +150,24 @@ end
 
 if Info.SaveFormat.Eps
     if isempty(Info.SaveFormat.Name)
-        eval(['print -depsc2 ' M_.fname Info.SaveFormat.GenericName int2str(Info.SaveFormat.Number) '.eps']);
+        print(sprintf('%s%s%u', M_.fname, Info.SaveFormat.GenericName, Info.SaveFormat.Number), '-depsc2')
     else
-        eval(['print -depsc2 ' M_.fname Info.SaveFormat.GenericName Info.SaveFormat.Name '.eps']);
+        print(sprintf('%s%s%s', M_.fname, Info.SaveFormat.GenericName, Info.SaveFormat.Name), '-depsc2')
     end
 end
+
 if Info.SaveFormat.Pdf && ~isoctave
     if isempty(Info.SaveFormat.Name)
-        eval(['print -dpdf ' M_.fname Info.SaveFormat.GenericName int2str(Info.SaveFormat.Number)]);
+        print(sprintf('%s%s%u', M_.fname, Info.SaveFormat.GenericName, Info.SaveFormat.Number), '-dpdf')
     else
-        eval(['print -dpdf ' M_.fname Info.SaveFormat.GenericName Info.SaveFormat.Name]);
+        print(sprintf('%s%s%s', M_.fname, Info.SaveFormat.GenericName, Info.SaveFormat.Name), '-dpdf')
     end
 end
+
 if Info.SaveFormat.Fig && ~isoctave
     if isempty(Info.SaveFormat.Name)
-        saveas(FigHandle,[M_.fname Info.SaveFormat.GenericName int2str(Info.SaveFormat.Number) '.fig']);
+        saveas(FigHandle, sprintf('%s%s%u.fig', M_.fname, Info.SaveFormat.GenericName, Info.SaveFormat.Number));
     else
-        saveas(FigHandle,[M_.fname Info.SaveFormat.GenericName Info.SaveFormat.Name '.fig']);
+        saveas(FigHandle, sprintf('%s%s%s.fig', M_.fname, Info.SaveFormat.GenericName, Info.SaveFormat.Name));
     end
 end
