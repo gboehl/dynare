@@ -48,7 +48,7 @@ function [H,G,retcode]=discretionary_policy_engine(AAlag,AA0,AAlead,BB,bigw,inst
 %  Dennis, Richard (2007): Optimal policy in rational expectations models: new solution algorithms,
 %       Macroeconomic Dynamics, 11, 3155.
 
-% Copyright © 2007-2018 Dynare Team
+% Copyright © 2007-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -189,7 +189,7 @@ function [rcode,NQ]=CheckConvergence(Q,iter,MaxIter,crit)
 NQ=max(max(abs(Q)));% norm(Q); seems too costly
 if isnan(NQ)
     rcode=3;
-elseif iter>MaxIter;
+elseif iter>MaxIter
     rcode=2;
 elseif NQ<crit
     rcode=1;

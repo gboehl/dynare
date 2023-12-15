@@ -888,7 +888,7 @@ else
                 % in case of mixed surprise and perfect foresight on the
                 % endogenous path, at each date all the exogenous paths have to be
                 % stored. The paths are stacked in exo.
-                for time = time_index_constraint;
+                for time = time_index_constraint
                     exo(past_val + time,j_pos) = oo_.exo_simul(time,j_pos);
                 end
             else

@@ -24,7 +24,7 @@ function print_expectations(eqname, expectationmodelname, expectationmodelkind, 
 %
 % The variable expectationmodelkind can take two values 'var' or 'pac'.
 
-% Copyright © 2018-2021 Dynare Team
+% Copyright © 2018-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -347,7 +347,7 @@ for i=1:maxlag
             for k=1:length(expectationmodel.components)
                 parameter = M_.params(expectationmodel.components(k).h_param_indices(id));
                 if parameter>=0
-                    expressions{k} = sprintf('%s+%1.16f*%s', expressions{k}, parameter, variable);;
+                    expressions{k} = sprintf('%s+%1.16f*%s', expressions{k}, parameter, variable);
                 else
                     expressions{k} = sprintf('%s-%1.16f*%s', expressions{k}, -parameter, variable);
                 end

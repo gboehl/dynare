@@ -151,7 +151,7 @@ Comment: The original author gave authorization to change
 
 Files: matlab/+pruned_SS/prodmom.m matlab/+pruned_SS/bivmom.m
 Copyright: 2008-2015 Raymond Kan <kan@chass.utoronto.ca>
-           2019-2020 Dynare Team
+           2019-2023 Dynare Team
 License: GPL-3+
 Comment: The author gave authorization to redistribute
  these functions under GPL-3+ with Dynare and would 
