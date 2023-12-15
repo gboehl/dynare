@@ -1,5 +1,5 @@
-function [pars, cosnJ] = ident_bruteforce(dname,fname,J, max_dim_cova_group, TeX, name_tex, tittxt, tol_deriv)
-% [pars, cosnJ] = ident_bruteforce(dname,fname,J, max_dim_cova_group, TeX, name_tex, tittxt, tol_deriv)
+function [pars, cosnJ] = bruteforce(dname,fname,J, max_dim_cova_group, TeX, name_tex, tittxt, tol_deriv)
+% [pars, cosnJ] = bruteforce(dname,fname,J, max_dim_cova_group, TeX, name_tex, tittxt, tol_deriv)
 % -------------------------------------------------------------------------
 % given the Jacobian matrix J of moment derivatives w.r.t. parameters
 % computes, for  each column of J, the groups of columns from 1 to n that
