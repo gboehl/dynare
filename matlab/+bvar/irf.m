@@ -130,7 +130,7 @@ end
 
 % Save intermediate results
 DirectoryName = [ M_.dname '/bvar_irf' ];
-if ~isdir(DirectoryName)
+if ~isfolder(DirectoryName)
     mkdir('.',DirectoryName);
 end
 save([ DirectoryName '/simulations.mat'], 'sampled_irfs');

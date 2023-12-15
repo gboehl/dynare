@@ -154,8 +154,8 @@ end
 % Store results
 
 DirectoryName = [ M_.dname '/bvar_forecast' ];
-if ~isdir(DirectoryName)
-    if ~isdir(M_.dname)
+if ~isfolder(DirectoryName)
+    if ~isfolder(M_.dname)
         mkdir(M_.dname);
     end
     mkdir(DirectoryName);

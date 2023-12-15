@@ -33,7 +33,7 @@ info = 0;
 
 DirectoryName = [ dname '/' type ]; % don't use filesep as it will create issues with LaTeX on Windows
 
-if ~isdir(dname)
+if ~isfolder(dname)
     % Make sure there isn't a file with the same name, see trac ticket #47
     if isfile(dname)
         delete(dname)
@@ -41,7 +41,7 @@ if ~isdir(dname)
     mkdir('.', dname);
 end
 
-if ~isdir(DirectoryName)
+if ~isfolder(DirectoryName)
     % Make sure there isn't a file with the same name, see trac ticket #47
     if isfile(DirectoryName)
         delete(DirectoryName)
