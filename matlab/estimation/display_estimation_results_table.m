@@ -142,8 +142,8 @@ if ncx
         end
         M_.Sigma_e(k1,k2) = xparam1(ip)*sqrt(M_.Sigma_e(k1,k1)*M_.Sigma_e(k2,k2));
         M_.Sigma_e(k2,k1) = M_.Sigma_e(k1,k2);
-        oo_.(sprintf('%s_mode', field_name)).shocks_corr.(name) = xparam1(ip);
-        oo_.(sprintf('%s_std_at_mode', field_name)).shocks_corr.(name) = stdh(ip);
+        oo_.(sprintf('%s_mode', field_name)).shocks_corr.(NAME) = xparam1(ip);
+        oo_.(sprintf('%s_std_at_mode', field_name)).shocks_corr.(NAME) = stdh(ip);
         ip = ip+1;
     end
     skipline()
@@ -166,8 +166,8 @@ if ncn
             fprintf('%-*s %10.4f %7.4f %7.4f \n',header_width, name, xparam1(ip), ...
                     stdh(ip), tstath(ip));
         end
-        oo_.(sprintf('%s_mode', field_name)).measurement_errors_corr.(name) = xparam1(ip);
-        oo_.(sprintf('%s_std_at_mode', field_name)).measurement_errors_corr.(name) = stdh(ip);
+        oo_.(sprintf('%s_mode', field_name)).measurement_errors_corr.(NAME) = xparam1(ip);
+        oo_.(sprintf('%s_std_at_mode', field_name)).measurement_errors_corr.(NAME) = stdh(ip);
         ip = ip+1;
     end
     skipline()
