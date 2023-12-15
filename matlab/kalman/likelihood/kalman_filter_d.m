@@ -87,13 +87,9 @@ while rank(Z*Pinf*Z',diffuse_kalman_tol) && (t<=last)
         else                                                            %rank of F_{\infty,t} is 0
             Fstar  = Z*Pstar*Z' + H;                                    % (5.7) in DK (2012)
             if rcond(Fstar) < kalman_tol                                %F_{*} is singular
-                if ~all(abs(Fstar(:))<kalman_tol)
-                    % The univariate diffuse kalman filter should be used.
-                    return
-                else                                                    %rank 0
-                                                                        %pathological case, discard draw
-                    return
-                end
+                % if ~all(abs(Fstar(:))<kalman_tol), then use univariate diffuse filter,
+                % otherwise this is a pathological case and the draw is discarded
+                return
             else
                 iFstar = inv(Fstar);
                 dFstar = det(Fstar);

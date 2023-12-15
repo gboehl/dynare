@@ -191,13 +191,9 @@ while notsteady && t<=last
             end
         end
         if badly_conditioned_F && (~occbin_.status || (occbin_.status && t<first_period_occbin_update))
-            if ~all(abs(F(:))<kalman_tol)
-                % Use univariate filter.
-                return
-            else
-                % Pathological case, discard draw
-                return
-            end
+            % if ~all(abs(F(:))<kalman_tol), then use univariate filter, otherwise this is a
+            % pathological case and the draw is discarded
+            return
         else
             F_singular = false;
         end

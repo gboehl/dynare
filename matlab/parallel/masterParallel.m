@@ -710,11 +710,7 @@ if parallel_recover ==0
                 pcerdone(j) = prtfrc;
                 idCPU(j) = njob;
                 if isoctave || options_.console_mode
-                    if (~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem))
-                        statusString = [statusString, int2str(j), ' %3.f%% done! '];
-                    else
-                        statusString = [statusString, int2str(j), ' %3.f%% done! '];
-                    end
+                    statusString = [statusString, int2str(j), ' %3.f%% done! '];
                 else
                     status_String{j} = waitbarString;
                     status_Title{j} = waitbarTitle;
@@ -722,11 +718,7 @@ if parallel_recover ==0
             catch % ME
                   % To define!
                 if isoctave || options_.console_mode
-                    if (~ispc || strcmpi('unix',Parallel(indPC).OperatingSystem))
-                        statusString = [statusString, int2str(j), ' %3.f%% done! '];
-                    else
-                        statusString = [statusString, int2str(j), ' %3.f%% done! '];
-                    end
+                    statusString = [statusString, int2str(j), ' %3.f%% done! '];
                 end
             end
         end

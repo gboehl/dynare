@@ -151,13 +151,9 @@ while notsteady && t<=last
         v  = Y(:,t)-a(Z);
     end
     if rcond(F) < kalman_tol
-        if ~all(abs(F(:))<kalman_tol)
-            % The univariate diffuse kalman filter should be used.
-            return
-        else
-            %pathological case, discard draw
-            return
-        end
+        % if ~all(abs(F(:))<kalman_tol), then use univariate diffuse filter, otherwise
+        % this is a pathological case and the draw is discarded
+        return
     else
         F_singular = 0;
         dF      = det(F);

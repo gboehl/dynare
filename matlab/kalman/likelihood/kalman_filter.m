@@ -194,13 +194,10 @@ while notsteady && t<=last
         end
     end
     if badly_conditioned_F
-        if ~all(abs(F(:))<kalman_tol)
-            % Use univariate filter (will remove observations with zero variance prediction error)
-            return
-        else
-            % Pathological case, discard draw.
-            return
-        end
+        % if ~all(abs(F(:))<kalman_tol), then use univariate filter (will remove
+        % observations with zero variance prediction error), otherwise this is a
+        % pathological case and the draw is discarded
+        return
     else
         F_singular = false;
         if rescale_prediction_error_covariance
