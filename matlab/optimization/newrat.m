@@ -69,7 +69,7 @@ icount=0;
 nx=length(x);
 xparam1=x;
 %ftol0=1.e-6;
-htol_base = max(1.e-7, ftol0);
+htol_base = max(1.e-7, hess_info.htol);
 flagit=0;  % mode of computation of hessian in each iteration; hard-coded outer-product of gradients as it performed best in tests
 ftol=ftol0;
 gtol=1.e-3;
@@ -93,6 +93,7 @@ end
 
 outer_product_gradient=1;
 if isempty(hh)
+    penalty=fval0;
     [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(x,func0,penalty,flagit,htol,hess_info,bounds,prior_std,Save_files,varargin{:});
     if isempty(dum)
         outer_product_gradient=0;
@@ -174,9 +175,25 @@ while norm(gg)>gtol && check==0 && jit<nit
         iggx(ig_pos,ig_pos) = inv( hhx(ig_pos,ig_pos) );
         [~,x0] = csminit1(func0,x0,penalty,fval,ggx,0,iggx,Verbose,varargin{:});
     end
-    x0 = check_bounds(x0,bounds);
-    [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon, parameter_names,varargin{:});
-    x0 = check_bounds(x0,bounds);
+    if not(isequal(x0 , check_bounds(x0,bounds)))
+        x0 = check_bounds(x0,bounds);
+        [fvala,exit_flag]=penalty_objective_function(x0,func0,penalty,varargin{:});
+        if exit_flag==1
+            penalty=fvala;
+        else
+            disp_verbose('last step exited with bad status!',Verbose)
+        end
+    end
+    [fvala, x0, ig] = mr_gstep(h1,x0,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon, parameter_names, hess_info.robust, varargin{:});
+    if not(isequal(x0 , check_bounds(x0,bounds)))
+        x0 = check_bounds(x0,bounds);
+        [fvala,exit_flag]=penalty_objective_function(x0,func0,penalty,varargin{:});
+        if exit_flag==1
+            penalty=fvala;
+        else
+            disp_verbose('last step exited with bad status!',Verbose)
+        end
+    end
     if Save_files
         nig=[nig ig];
     end
@@ -216,7 +233,7 @@ while norm(gg)>gtol && check==0 && jit<nit
             if flagit==2
                 hh=hh0;
             elseif flagg>0
-                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,ftol0,hess_info,bounds,prior_std,Save_files,varargin{:});
+                [dum, gg, htol0, igg, hhg, h1, hess_info]=mr_hessian(xparam1,func0,penalty,flagg,htol_base,hess_info,bounds,prior_std,Save_files,varargin{:});
                 if flagg==2
                     hh = reshape(dum,nx,nx);
                     ee=eig(hh);

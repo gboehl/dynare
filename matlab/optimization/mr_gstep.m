@@ -1,5 +1,5 @@
-function [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon,parameter_names,varargin)
-% [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon,parameter_names,varargin)
+function [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon,parameter_names,robust,varargin)
+% [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_files,gradient_epsilon,parameter_names,robust,varargin)
 %
 % Gibbs type step in optimisation
 %
@@ -12,7 +12,7 @@ function [f0, x, ig] = mr_gstep(h1,x,bounds,func0,penalty,htol0,Verbose,Save_fil
 % varargin{7} --> BoundsInfo
 % varargin{8} --> oo_
 
-% Copyright © 2006-2020 Dynare Team
+% Copyright © 2006-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -73,15 +73,86 @@ while i<n
         gg(i)=(f1(i)'-f_1(i)')./(2.*h1(i));
         hh(i) = 1/max(1.e-9,abs( (f1(i)+f_1(i)-2*f0)./(h1(i)*h1(i)) ));
         if gg(i)*(hh(i)*gg(i))/2 > htol(i)
-            [f0, x, ~, ~] = csminit1(func0,x,penalty,f0,gg,0,diag(hh),Verbose,varargin{:});
+            [ff, xx,~,retcode] = csminit1(func0,x,penalty,f0,gg,0,diag(hh),Verbose,varargin{:});
+            if retcode && robust 
+                if abs(x(i))<1.e-6
+                    xa=transpose(linspace(x(i)/2, sign(x(i))*1.e-6*3/2, 7));
+                else
+                    xa=transpose(linspace(x(i)/2, x(i)*3/2, 7));
+                end
+                fa=NaN(7,1);
+                for k=1:7
+                    xh1(i)=xa(k);
+                    fa(k,1) = penalty_objective_function(xh1,func0,penalty,varargin{:});
+                end
+                b=[ones(7,1) xa xa.*xa./2]\fa;
+                gg(i)=x(i)*b(3)+b(2);
+                hh(i)=1/b(3);
+                [ff2, xx2, ~, ~] = csminit1(func0,x,penalty,f0,gg,0,diag(hh),Verbose,varargin{:});
+                if ff2<ff
+                    ff=ff2;
+                    xx=xx2;
+                end
+                if min(fa)<ff
+                    [ff, im]=min(fa);
+                    xx(i)=xa(im);
+                end
+            end
             ig(i)=1;
+            if robust
+            if not(isequal(xx , check_bounds(xx,bounds)))
+                xx = check_bounds(xx,bounds);
+                if xx(i)<x(i)   
+                    % lower bound
+                    xx(i) = min(xx(i)+h1(i), 0.5*(xx(i)+x(i)));
+                else
+                    % upper bound
+                    xx(i) = max(xx(i)-h1(i), 0.5*(xx(i)+x(i)));
+                end
+                [ff,exit_flag]=penalty_objective_function(xx,func0,penalty,varargin{:});
+                if exit_flag~=1
+                    disp_verbose('last step exited with bad status!',Verbose)
+                elseif ff<f0
+                    f0=ff;
+                    x=xx;
+                end
+            else
+                % check improvement wrt predicted one
+                if abs(f0-ff) < abs(gg(i)*(hh(i)*gg(i))/2/100) || abs(x(i)-xx(i))<1.e-10
+                    [ff1, xx1] = csminit1(func0,x,penalty,f0,-gg,0,diag(hh),Verbose,varargin{:});
+                    if not(isequal(xx1 , check_bounds(xx1,bounds)))
+                        xx1 = check_bounds(xx1,bounds);
+                        if xx1(i)<x(i)
+                            % lower bound
+                            xx1(i) = min(xx1(i)+h1(i), 0.5*(xx1(i)+x(i)));
+                        else
+                            % upper bound
+                            xx1(i) = max(xx1(i)-h1(i), 0.5*(xx1(i)+x(i)));
+                        end
+                        [ff1,exit_flag]=penalty_objective_function(xx1,func0,penalty,varargin{:});
+                        if exit_flag~=1
+                            disp_verbose('last step exited with bad status!',Verbose)
+                        end
+                    end
+                    if ff1<ff
+                        ff=ff1;
+                        xx=xx1;
+                    end
+                end
+                f0=ff;
+                x=xx;
+            end
+            else
+                f0=ff;
+                x=xx;
+                x = check_bounds(x,bounds);
+            end
             if Verbose
-                fprintf(['Done for param %s = %8.4f\n'],parameter_names{i},x(i))
+                fprintf(['Done for param %s = %8.4f; f = %8.4f\n'],parameter_names{i},x(i),f0)
             end
         end
         xh1=x;
     end
-    x = check_bounds(x,bounds);
     if Save_files
         save('gstep.mat','x','h1','f0')
     end
@@ -97,10 +168,10 @@ function x = check_bounds(x,bounds)
 
 inx = find(x>=bounds(:,2));
 if ~isempty(inx)
-    x(inx) = bounds(inx,2)-eps;
+    x(inx) = bounds(inx,2)-1.e-10;
 end
 
 inx = find(x<=bounds(:,1));
 if ~isempty(inx)
-    x(inx) = bounds(inx,1)+eps;
+    x(inx) = bounds(inx,1)+1.e-10;
 end
