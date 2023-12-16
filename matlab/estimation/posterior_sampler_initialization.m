@@ -217,7 +217,6 @@ if ~options_.load_mh_file && ~options_.mh_recover
                             fprintf(fidlog,['      params:' int2str(i) ': ' num2str(ix2(j,i)) '\n']);
                         end
                         fprintf(fidlog,['      logpo2: ' num2str(ilogpo2(j)) '\n']);
-                        j = j+1;
                         validate = 1;
                     end
                 end
