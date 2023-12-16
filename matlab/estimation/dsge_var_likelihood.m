@@ -303,7 +303,7 @@ if imag(fval)~=0
     return
 end
 
-if isinf(fval)~=0
+if isinf(fval)
     fval = Inf;
     info(1) = 50;
     info(4) = 0.1;

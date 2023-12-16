@@ -789,7 +789,7 @@ if imag(LIK)~=0
     return
 end
 
-if isinf(LIK)~=0
+if isinf(LIK)
     fval = Inf;
     info(1) = 50;
     info(4) = 0.1;

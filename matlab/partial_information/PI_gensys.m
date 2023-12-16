@@ -77,7 +77,7 @@ try
         warning('off','MATLAB:singularMatrix');
         UAVinv=inv(C2); % i.e. inv(U02'*a1*V02)
         [LastWarningTxt, LastWarningID]=lastwarn;
-        if any(any(isinf(UAVinv)))==1
+        if any(any(isinf(UAVinv)))
             singular=1;
         end
     end

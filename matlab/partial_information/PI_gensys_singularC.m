@@ -72,7 +72,7 @@ try
     else
         UAVinv=inv(C2);
         [LastWarningTxt, LastWarningID]=lastwarn;
-        if any(any(isinf(UAVinv)))==1
+        if any(any(isinf(UAVinv)))
             singular=1;
         end
     end
