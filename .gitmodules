@@ -11,7 +11,7 @@
 	path = matlab/utilities/tests
 	url = ../../Dynare/m-unit-tests.git
 [submodule "matlab/modules/dseries"]
-	path = matlab/modules/dseries
+	path = matlab/dseries
 	url = ../../Dynare/dseries.git
 	branch = master
 [submodule "preprocessor"]
