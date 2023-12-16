@@ -19,7 +19,7 @@ function initial_distribution = auxiliary_initialization(ReducedForm,Y,start,Par
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-persistent init_flag mf0 mf1 number_of_particles
+persistent init_flag mf1 number_of_particles
 persistent number_of_observed_variables number_of_structural_innovations
 
 % Set default
@@ -38,7 +38,6 @@ state_variables_steady_state = ReducedForm.state_variables_steady_state;
 
 % Set persistent variables.
 if isempty(init_flag)
-    mf0 = ReducedForm.mf0;
     mf1 = ReducedForm.mf1;
     number_of_observed_variables = length(mf1);
     number_of_structural_innovations = length(ReducedForm.Q);
