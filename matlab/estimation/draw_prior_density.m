@@ -80,7 +80,7 @@ switch pshape(indx)
     abscissa = linspace(infbound,supbound,steps);
     dens = density(abscissa,p6(indx),p7(indx),p3(indx));
   otherwise
-    error(sprintf('draw_prior_density: unknown distribution shape (index %d, type %d)', indx, pshape(indx)));
+    error('draw_prior_density: unknown distribution shape (index %d, type %d)', indx, pshape(indx));
 end
 
 if pshape(indx) ~= 5
@@ -88,8 +88,8 @@ if pshape(indx) ~= 5
     if k1 == 1 || k1 == length(dens)
         k = find(dens > 10);
         dens(k) = NaN;
+        end
     end
-end
 binf = abscissa(1);
 bsup = abscissa(end);
 x = abscissa;

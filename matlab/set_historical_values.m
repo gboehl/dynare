@@ -48,7 +48,7 @@ for i = 1:M_.endo_nbr
                 M_.endo_histval(i, M_.maximum_endo_lag) = ...
                     ds{M_.endo_names{i}}(initialperiod).data;
             else
-                error(sprintf('Can''t find %s in dseries', M_.endo_names{i}))
+                error('Can''t find %s in dseries', M_.endo_names{i})
             end
         end
     else
@@ -58,7 +58,7 @@ for i = 1:M_.endo_nbr
                 M_.endo_histval(i,M_.maximum_endo_lag) = ...
                     ds{M_.endo_names{a.orig_index}}(initialperiod+a.orig_lead_lag).data;
             else
-                error(sprintf('Can''t find %s in dseries', M_.endo_names{a.orig_index}))
+                error('Can''t find %s in dseries', M_.endo_names{a.orig_index})
             end
         end
         k = k + 1;

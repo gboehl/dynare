@@ -33,7 +33,7 @@ global M_
 i = strmatch(pname,M_.param_names,'exact');
 
 if isempty(i)
-    error(sprintf('Can''t find parameter %s', pname))
+    error('Can''t find parameter %s', pname)
 end
 
 x = M_.params(i);

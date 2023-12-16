@@ -69,10 +69,10 @@ elseif isempty(options_.datafile) && ~isempty(options_.dataset.series)
     try
         dseriesobjectforuserdataset = evalin('base', options_.dataset.series);
     catch
-        error(sprintf('makedataset: %s is unknown!', options_.dataset.series))
+        error('makedataset: %s is unknown!', options_.dataset.series)
     end
     if ~isdseries(dseriesobjectforuserdataset)
-        error(sprintf('makedataset: %s has to be a dseries object!', options_.dataset.series))
+        error('makedataset: %s has to be a dseries object!', options_.dataset.series)
     end
     datafile = [];
     newdatainterface = 1;
@@ -103,7 +103,7 @@ if ~isempty(datafile)
             end
         end
         if isempty(available_extensions)
-            error(['makedataset: I can''t find a datafile (with allowed extension m, mat, csv, xls or xlsx)!'])
+            error('makedataset: I can''t find a datafile (with allowed extension m, mat, csv, xls or xlsx)!')
         end
         if length(available_extensions)>1
             error(sprintf(['makedataset: You did not specify an extension for the datafile, but more than one candidate ' ...
@@ -203,7 +203,7 @@ if newdatainterface
         else
             % last_obs and nobs were used in the data command. Check that they are consistent (with firstobs).
             if ~isequal(lastobs,firstobs+(nobs-1))
-                error(sprintf('makedataset: Options last_obs (%s), first_obs (%s) and nobs (%s) are not consistent!',char(lastobs),char(firstobs),num2str(nobs)));
+                error('makedataset: Options last_obs (%s), first_obs (%s) and nobs (%s) are not consistent!',char(lastobs),char(firstobs),num2str(nobs));
             end
         end
     end
@@ -227,23 +227,23 @@ FIRSTOBS = firstobs-initialconditions;
 
 % Check that firstobs belongs to dataset_.dates
 if firstobs<dataset_.init
-    error(sprintf('makedataset: first_obs (%s) cannot be less than the first date in the dataset (%s)!',char(firstobs),char(dataset_.init)))
+    error('makedataset: first_obs (%s) cannot be less than the first date in the dataset (%s)!',char(firstobs),char(dataset_.init))
 end
 
 % Check that FIRSTOBS belongs to dataset_.dates
 if initialconditions && FIRSTOBS<dataset_.init
-    error(sprintf('makedataset: first_obs (%s) - %i cannot be less than the first date in the dataset (%s)!\nReduce the number of lags in the VAR model or increase the value of first_obs\nto at least first_obs=%i.', char(firstobs), initialconditions, char(dataset_.init),initialconditions+1));
+    error('makedataset: first_obs (%s) - %i cannot be less than the first date in the dataset (%s)!\nReduce the number of lags in the VAR model or increase the value of first_obs\nto at least first_obs=%i.', char(firstobs), initialconditions, char(dataset_.init),initialconditions+1);
 end
 
 % Check that lastobs belongs to dataset_.dates...
 if newdatainterface
     if lastobs>dataset_.dates(end)
-        error(sprintf('makedataset: last_obs (%s) cannot be greater than the last date in the dataset (%s)!',char(lastobs),char(dataset_.dates(end))))
+        error('makedataset: last_obs (%s) cannot be greater than the last date in the dataset (%s)!',char(lastobs),char(dataset_.dates(end)))
     end
 else
     % ...  or check that nobs is smaller than the number of observations in dataset_.
     if nobs>dataset_.nobs
-        error(sprintf('makedataset: nobs (%s) cannot be greater than the last date in the dataset (%s)!', num2str(nobs), num2str(dataset_.nobs)))
+        error('makedataset: nobs (%s) cannot be greater than the last date in the dataset (%s)!', num2str(nobs), num2str(dataset_.nobs))
     end
 end
 
