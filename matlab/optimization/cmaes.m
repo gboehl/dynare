@@ -1863,17 +1863,17 @@ opts = defopts; % start from defopts
 defnames = fieldnames(defopts);
 idxmatched = []; % indices of defopts that already matched
 for name = fieldnames(inopts)'
-    name = name{1}; % name of i-th inopts-field
+    %NAME = name{1}; % name of i-th inopts-field
     if isoctave
         for i = 1:size(defnames, 1)
-            idx(i) = strncmp(lower(defnames(i)), lower(name), length(name));
+            idx(i) = strncmp(lower(defnames(i)), lower(name{1}), length(name{1}));
         end
     else
-        idx = strncmpi(defnames, name, length(name));
+        idx = strncmpi(defnames, name{1}, length(name{1}));
     end
     if sum(idx) > 1
-        error(['option "' name '" is not an unambigous abbreviation. ' ...
-               'Use opts=RMFIELD(opts, ''' name, ...
+        error(['option "' name{1} '" is not an unambigous abbreviation. ' ...
+               'Use opts=RMFIELD(opts, ''' name{1}, ...
                ''') to remove the field from the struct.']);
     end
     if sum(idx) == 1
@@ -1881,30 +1881,30 @@ for name = fieldnames(inopts)'
         if ismember(find(idx), idxmatched)
             error(['input options match more than ones with "' ...
                    defname '". ' ...
-                   'Use opts=RMFIELD(opts, ''' name, ...
+                   'Use opts=RMFIELD(opts, ''' name{1}, ...
                    ''') to remove the field from the struct.']);
         end
         idxmatched = [idxmatched find(idx)];
-        val = getfield(inopts, name);
+        val = getfield(inopts, name{1});
         % next line can replace previous line from MATLAB version 6.5.0 on and in octave
-        % val = inopts.(name);
+        % val = inopts.(name{1});
         if isstruct(val) % valid syntax only from version 6.5.0
             opts = setfield(opts, defname, ...
-                                  getoptions(val, getfield(defopts, defname)));
+                            getoptions(val, getfield(defopts, defname)));
         elseif isstruct(getfield(defopts, defname))
             % next three lines can replace previous three lines from MATLAB
             % version 6.5.0 on
             %   opts.(defname) = ...
             %      getoptions(val, defopts.(defname));
             % elseif isstruct(defopts.(defname))
-            warning(['option "' name '" disregarded (must be struct)']);
+            warning(['option "' name{1} '" disregarded (must be struct)']);
         elseif ~isempty(val) % empty value: do nothing, i.e. stick to default
             opts = setfield(opts, defnames{find(idx)}, val);
             % next line can replace previous line from MATLAB version 6.5.0 on
-            % opts.(defname) = inopts.(name);
+            % opts.(defname) = inopts.(name{1});
         end
     else
-        warning(['option "' name '" disregarded (unknown field name)']);
+        warning(['option "' name{1} '" disregarded (unknown field name)']);
     end
 end
 
