@@ -83,7 +83,7 @@ switch type
   case 'conditional decomposition'
     generic_prior_data_file_name = 'PriorConditionalVarianceDecomposition';
   otherwise
-    disp(['This feature is not yet implemented!'])
+    disp('This feature is not yet implemented!')
 end
 CheckPath('prior/moments',M_.dname);
 pdfinfo = dir([ M_.dname '/prior/' generic_prior_data_file_name '*']);
@@ -95,8 +95,7 @@ if isempty(pdfinfo)
     return
 else
     number_of_the_last_prior_data_file = length(pdfinfo);
-    name_of_the_last_prior_data_file = pdinfo(end).name;
-    pdfdate = pdinfo(end).datenum;
+    pdfdate = pdinfo(number_of_the_last_prior_data_file).datenum;
     % /!\ REMARK /!\
     % The user can change the model or the value of a calibrated
     % parameter without changing the prior. In this case the (prior)
