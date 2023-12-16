@@ -189,10 +189,10 @@ if ~options_.load_mh_file && ~options_.mh_recover
             ilogpo2 = zeros(NumberOfBlocks,1);
         end
         for j=1:NumberOfBlocks
-            validate    = 0;
+            validate    = false;
             init_iter   = 0;
             trial = 1;
-            while validate == 0 && trial <= 10
+            while ~validate && trial <= 10
                 if isempty(d)
                     candidate = Prior.draw();
                 else
@@ -208,20 +208,17 @@ if ~options_.load_mh_file && ~options_.mh_recover
                 if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
                     ix2(j,new_estimated_parameters) = candidate(new_estimated_parameters);
                     ilogpo2(j) = - feval(TargetFun,ix2(j,:)',dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,mh_bounds,oo_.dr, oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
-                    if ~isfinite(ilogpo2(j)) % if returned log-density is
-                                             % Inf or Nan (penalized value)
-                        validate = 0;
-                    else
+                    if isfinite(ilogpo2(j)) % log density is finite
                         fprintf(fidlog,['    Blck ' int2str(j) ':\n']);
                         for i=1:length(ix2(1,:))
                             fprintf(fidlog,['      params:' int2str(i) ': ' num2str(ix2(j,i)) '\n']);
                         end
                         fprintf(fidlog,['      logpo2: ' num2str(ilogpo2(j)) '\n']);
-                        validate = 1;
+                        validate = true;
                     end
                 end
                 init_iter = init_iter + 1;
-                if init_iter > 100 && validate == 0
+                if  ~validate && init_iter>100
                     fprintf('%s: I couldn''t get a valid initial value in 100 trials.\n', dispString);
                     if options_.nointeractive
                         fprintf('%s: I reduce ''mh_init_scale_factor'' by 10 percent:\n', dispString);
@@ -247,8 +244,8 @@ if ~options_.load_mh_file && ~options_.mh_recover
                     trial = trial+1;
                 end
             end
-            if trial > 10 && ~validate
-                fprintf('%s: I''m unable to find a starting value for block %u.', dispString,j);
+            if ~validate && trial>10
+                fprintf('%s: I''m unable to find a starting value for block %u.', dispString, j);
                 fclose(fidlog);
                 return
             end
