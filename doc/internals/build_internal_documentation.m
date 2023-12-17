@@ -2,7 +2,6 @@ function build_internal_documentation()
 % The name of the function should be explicit...
 
 datafiles  = [];
-datafiles = [ datafiles ; {'../../matlab/utilities/dataset'}, {'initialize_dataset'}];
 datafiles = [ datafiles ; {'../../matlab/utilities/dataset'}, {'descriptive_statistics'}];
 datafiles = [ datafiles ; {'../../matlab/utilities/dataset'}, {'compute_stdv'}];
 datafiles = [ datafiles ; {'../../matlab/utilities/dataset'}, {'compute_cova'}];

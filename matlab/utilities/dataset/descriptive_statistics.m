@@ -10,7 +10,7 @@ function dataset_ = descriptive_statistics(dataset_,statistic,varagin)
 %! @strong{Inputs}
 %! @table @var
 %! @item dataset_
-%! Dynare structure describing the dataset, built by @ref{initialize_dataset}
+%! Dynare structure describing the dataset, built by @ref{makedataset}
 %! @item statistic
 %! String. The name of the statistic to be computed. Admissible values are:
 %!   @table @var
@@ -31,7 +31,7 @@ function dataset_ = descriptive_statistics(dataset_,statistic,varagin)
 %! @strong{Outputs}
 %! @table @var
 %! @item dataset_
-%! Dynare structure describing the dataset, built by @ref{initialize_dataset}
+%! Dynare structure describing the dataset, built by @ref{makedataset}
 %! @end table
 %!
 %! @strong{This function is called by:}
