@@ -529,7 +529,7 @@ switch minimizer_algorithm
     % Set objective function.
     objfun = @(x) objective_function(x, varargin{:});
     if ischar(particleswarmOptions.SwarmSize)
-        eval(['particleswarmOptions.SwarmSize = ' particleswarmOptions.SwarmSize ';'])
+        particleswarmOptions.SwarmSize = str2num(particleswarmOptions.SwarmSize);
     end
     if isempty(particleswarmOptions.InitialSwarmMatrix)
         particleswarmOptions.InitialSwarmMatrix = zeros(particleswarmOptions.SwarmSize, numberofvariables);
