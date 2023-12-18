@@ -1,6 +1,7 @@
 function [fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, bounds)
-% function [fval,info,exit_flag]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, bounds)
-% Checks whether parameter vector satisfies 
+% [fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, bounds)
+% Checks whether parameter vector satisfies bounds and the positive
+% definiteness of covariance matrices
 %
 % INPUTS
 % - xparam1                 [double]              n by 1 vector, estimated parameters.
@@ -15,7 +16,7 @@ function [fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xpar
 % - Q                       [matrix]              Covariance matrix of structural shocks
 % - H                       [matrix]              Covariance matrix of measurement errors
 
-% Copyright © 2020-2021 Dynare Team
+% Copyright © 2020-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
