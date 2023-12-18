@@ -55,7 +55,6 @@ options_.solve_tolx = eps^(2/3);
 options_.solve_randomize_initial_guess = true;
 options_.trust_region_initial_step_bound_factor = 1;
 options_.dr_display_tol=1e-6;
-options_.minimal_workspace = false;
 options_.dp.maxit = 3000;
 options_.steady.maxit = 50;
 options_.simul.maxit = 50;
