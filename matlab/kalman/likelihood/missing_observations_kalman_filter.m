@@ -109,8 +109,8 @@ if occbin_.status
     M_=occbin_.info{6};
     occbin_options=occbin_.info{7};
     occbin_options.opts_simul.SHOCKS = [];
-    opts_regime.regime_history = occbin_options.opts_simul.init_regime;
-    opts_regime.binding_indicator = occbin_options.opts_simul.init_binding_indicator;
+    opts_regime.regime_history = occbin_options.opts_regime.init_regime_history;
+    opts_regime.binding_indicator = occbin_options.opts_regime.init_binding_indicator;
     if t>1
         first_period_occbin_update = max(t+1,options_.occbin.likelihood.first_period_occbin_update);
     else

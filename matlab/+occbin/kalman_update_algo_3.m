@@ -85,7 +85,7 @@ if isempty(nk)
 end
 nk=max(nk,1);
 
-opts_simul = occbin_options.opts_regime;
+opts_simul = occbin_options.opts_simul;
 options_.occbin.simul=opts_simul;
 base_regime = struct();
 if M_.occbin.constraint_nbr==1

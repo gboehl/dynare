@@ -119,9 +119,9 @@ opts_simul.piecewise_only = options_.occbin.smoother.piecewise_only;
 occbin_options = struct();
 
 occbin_options.first_period_occbin_update = options_.occbin.smoother.first_period_occbin_update;
-occbin_options.opts_regime = opts_simul; % this builds the opts_simul options field needed by occbin.solver
-occbin_options.opts_regime.binding_indicator = options_.occbin.likelihood.init_binding_indicator;
-occbin_options.opts_regime.regime_history=options_.occbin.likelihood.init_regime_history;
+occbin_options.opts_simul = opts_simul; % this builds the opts_simul options field needed by occbin.solver
+occbin_options.opts_regime.binding_indicator = options_.occbin.smoother.init_binding_indicator;
+occbin_options.opts_regime.regime_history=options_.occbin.smoother.init_regime_history;
 
 error_indicator=false;
 try
@@ -133,7 +133,7 @@ catch ME
     for iter = 1:numel(ME.stack)
         ME.stack(iter)
     end
-end
+    end
 if error_indicator || isempty(alphahat0)
     etahat= oo_.occbin.linear_smoother.etahat;
     alphahat0= oo_.occbin.linear_smoother.alphahat0;
@@ -299,13 +299,13 @@ while is_changed && maxiter>iter && ~is_periodic
             eee(:,k) = eig(TT(:,:,k));
         end
         if options_.debug
-            err_eig(iter-1) = max(max(abs(sort(eee)-sort(sto_eee))));
-            err_alphahat(iter-1) = max(max(max(abs(alphahat-sto_alphahat))));
-            err_etahat(iter-1) = max(max(max(abs(etahat-sto_etahat{iter-1}))));
-            err_CC(iter-1) = max(max(max(abs(CC-sto_CC))));
-            err_RR(iter-1) = max(max(max(abs(RR-sto_RR))));
-            err_TT(iter-1) = max(max(max(abs(TT-sto_TT))));
-        end
+        err_eig(iter-1) = max(max(abs(sort(eee)-sort(sto_eee))));
+        err_alphahat(iter-1) = max(max(max(abs(alphahat-sto_alphahat))));
+        err_etahat(iter-1) = max(max(max(abs(etahat-sto_etahat{iter-1}))));
+        err_CC(iter-1) = max(max(max(abs(CC-sto_CC))));
+        err_RR(iter-1) = max(max(max(abs(RR-sto_RR))));
+        err_TT(iter-1) = max(max(max(abs(TT-sto_TT))));
+    end
     end
 
     if occbin_smoother_debug || is_periodic
@@ -483,15 +483,15 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
                         fprintf(fidTeX,'\\label{Fig:smoothedshocks_occbin:%s}\n',int2str(ifig));
                         fprintf(fidTeX,'\\end{figure}\n');
                         fprintf(fidTeX,' \n');
-                    end
                 end
+            end
             end
         end
 
-        if mod(j1,9)~=0 && j==M_.exo_nbr
-            annotation('textbox', [0.1,0,0.35,0.05],'String', 'Linear','Color','Blue','horizontalalignment','center','interpreter','none');
-            annotation('textbox', [0.55,0,0.35,0.05],'String', 'Piecewise','Color','Red','horizontalalignment','center','interpreter','none');
-            dyn_saveas(hh_fig,[GraphDirectoryName filesep M_.fname,'_smoothedshocks_occbin',int2str(ifig)],options_.nodisplay,options_.graph_format);
+            if mod(j1,9)~=0 && j==M_.exo_nbr
+                annotation('textbox', [0.1,0,0.35,0.05],'String', 'Linear','Color','Blue','horizontalalignment','center','interpreter','none');
+                annotation('textbox', [0.55,0,0.35,0.05],'String', 'Piecewise','Color','Red','horizontalalignment','center','interpreter','none');
+                dyn_saveas(hh_fig,[GraphDirectoryName filesep M_.fname,'_smoothedshocks_occbin',int2str(ifig)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 % TeX eps loader file
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
@@ -505,6 +505,6 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
         end
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fclose(fidTeX);
-        end
     end
+end
 end

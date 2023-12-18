@@ -906,7 +906,5 @@ occbin_options.opts_simul.restrict_state_space = options_.occbin.likelihood.rest
 
 occbin_options.opts_simul.full_output = options_.occbin.likelihood.full_output;
 occbin_options.opts_simul.piecewise_only = options_.occbin.likelihood.piecewise_only;
-if ~isempty(options_.occbin.smoother.init_binding_indicator)
-    occbin_options.opts_simul.init_binding_indicator = options_.occbin.likelihood.init_binding_indicator;
-    occbin_options.opts_simul.init_regime_history=options_.occbin.likelihood.init_regime_history;
-end
+occbin_options.opts_regime.init_binding_indicator = options_.occbin.likelihood.init_binding_indicator;
+occbin_options.opts_regime.init_regime_history=options_.occbin.likelihood.init_regime_history;

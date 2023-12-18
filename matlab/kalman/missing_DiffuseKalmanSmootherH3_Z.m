@@ -348,7 +348,7 @@ if isoccbin
         first_period_occbin_update = max(t+2,occbin_options.first_period_occbin_update);
         % kalman update is not yet robust to accommodate diffuse steps
     end
-    if occbin_options.opts_regime.waitbar && first_period_occbin_update<smpl
+    if occbin_options.opts_simul.waitbar && first_period_occbin_update<smpl
         hh_fig = dyn_waitbar(0,'Occbin: Piecewise Kalman Filter');
         set(hh_fig,'Name','Occbin: Piecewise Kalman Filter.');
         waitbar_indicator=1;
@@ -381,7 +381,7 @@ while notsteady && t<smpl
         if waitbar_indicator
             dyn_waitbar(t/smpl, hh_fig, sprintf('Period %u of %u', t,smpl));
         end
-        occbin_options.opts_regime.waitbar=0;
+        occbin_options.opts_simul.waitbar=0;
         if t==1
             if isqvec
                 Qt = cat(3,Q,Qvec(:,:,t:t+1));
@@ -532,7 +532,7 @@ while notsteady && t<smpl
         end
         aK(1,:,t+1) = a1(:,t+1);
         if ~isempty(nk) && nk>1 && isoccbin && (t>=first_period_occbin_update || isinf(first_period_occbin_update))
-            opts_simul = occbin_options.opts_regime;
+            opts_simul = occbin_options.opts_simul;
             opts_simul.SHOCKS = zeros(nk,M_.exo_nbr);
             if smoother_redux
                 tmp=zeros(M_.endo_nbr,1);
