@@ -699,7 +699,7 @@ if isfield(M_,'filter_initial_state') && ~isempty(M_.filter_initial_state)
             elseif ~options_.loglinear && ~options_.logged_steady_state
                 a(oo_.dr.restrict_columns(ii)) = eval(M_.filter_initial_state{state_indices(ii),2}) - oo_.dr.ys(state_indices(ii));
             else
-                error(['The steady state is logged. This should not happen. Please contact the developers'])
+                error('The steady state is logged. This should not happen. Please contact the developers')
             end
         end
     end

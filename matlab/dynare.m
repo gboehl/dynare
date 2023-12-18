@@ -83,7 +83,7 @@ if isoctave
         skipline()
     elseif octave_ver_less_than('7.1.0') % Should match the test in meson.build, and also the one in matlab/modules/dseries/src/initialize_dseries_class.m
         skipline()
-        warning(['This version of Dynare has only been tested on Octave 7.1.0 and above. Dynare may fail to run or give unexpected result. Consider upgrading your version of Octave.'])
+        warning('This version of Dynare has only been tested on Octave 7.1.0 and above. Dynare may fail to run or give unexpected result. Consider upgrading your version of Octave.')
         skipline()
     end
 else

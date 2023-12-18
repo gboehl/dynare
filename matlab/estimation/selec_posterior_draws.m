@@ -63,7 +63,7 @@ switch nargin
     end
     drawsize = drsize+npar*8/1048576;
   otherwise
-    error(['selec_posterior_draws:: Unexpected number of input arguments!'])
+    error('selec_posterior_draws:: Unexpected number of input arguments!')
 end
 
 MetropolisFolder = CheckPath('metropolis',M_.dname);

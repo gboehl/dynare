@@ -53,7 +53,7 @@ end
 nx = size(dr.ghu,2);
 y_ = zeros(size(y0,1),iter+ykmin);
 y_(:,1:ykmin) = y0;
-k1 = [ykmin:-1:1];
+k1 = ykmin:-1:1;
 k2 = dr.kstate(find(dr.kstate(:,2) <= ykmin+1),[1 2]);
 k2 = k2(:,1)+(ykmin+1-k2(:,2))*endo_nbr;
 k3 = M_.lead_lag_incidence(1:ykmin,:)';
@@ -64,14 +64,14 @@ k4 = k4(:,1)+(ykmin+1-k4(:,2))*endo_nbr;
 nvar = length(var_list);
 if nvar == 0
     nvar = endo_nbr;
-    ivar = [1:nvar];
+    ivar = 1:nvar;
 else
     ivar=zeros(nvar,1);
     for i=1:nvar
         i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
         if isempty(i_tmp)
             disp(var_list{i})
-            error (['One of the variable specified does not exist']) ;
+            error ('One of the variable specified does not exist') ;
         else
             ivar(i) = i_tmp;
         end

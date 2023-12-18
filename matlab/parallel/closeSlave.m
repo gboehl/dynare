@@ -68,7 +68,7 @@ for indPC=1:length(Parallel)
     delete( 'slaveParallel_input*.mat');
     delete( 'slaveJob*.mat');
     pause(1)
-    delete(['slaveParallel_*.log']);
+    delete('slaveParallel_*.log');
     delete ConcurrentCommand1.bat;
 
 end

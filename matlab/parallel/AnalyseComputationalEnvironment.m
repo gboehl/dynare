@@ -315,7 +315,7 @@ for Node=1:length(DataInput) % To obtain a recursive function remove the 'for'
         % Build a command file to test the matlab execution and dynare path ...
 
         fid = fopen('Tracing.m', 'w+');
-        s1=(['fT = fopen(''MatlabOctaveIsOk.txt'',''w+'');\n']);
+        s1=('fT = fopen(''MatlabOctaveIsOk.txt'',''w+'');\n');
         s2='fclose(fT);\n';
         SBS=strfind(DataInput(Node).DynarePath,'\');
         DPStr=DataInput(Node).DynarePath;
@@ -329,17 +329,17 @@ for Node=1:length(DataInput) % To obtain a recursive function remove the 'for'
             DPStrNew=[DPStrNew,DPStr(SBS(end)+1:end)];
         end
         s3=['addpath(''',DPStrNew,'''),\n'];
-        s4=['try,\n  dynareroot = dynare_config();\n'];
-        s41=(['  fT = fopen(''DynareIsOk.txt'',''w+'');\n']);
+        s4='try,\n  dynareroot = dynare_config();\n';
+        s41=('  fT = fopen(''DynareIsOk.txt'',''w+'');\n');
         s42='  fclose(fT);\n';
-        s5=['catch,\n'];
-        s51=(['  fT = fopen(''DynareFailed.txt'',''w+'');\n']);
+        s5='catch,\n';
+        s51=('  fT = fopen(''DynareFailed.txt'',''w+'');\n');
         s52='  fclose(fT);\n';
-        s6=['end,\n'];
-        s7=['if ismac,\n'];
-        s71=(['  fT = fopen(''IsMac.txt'',''w+'');\n']);
+        s6='end,\n';
+        s7='if ismac,\n';
+        s71=('  fT = fopen(''IsMac.txt'',''w+'');\n');
         s72='  fclose(fT);\n';
-        s8=['end,\n'];
+        s8='end,\n';
         send='exit';
         StrCommand=([s1,s2,s3,s4,s41,s42,s5,s51,s52,s6,s7,s71,s72,s8,send]);
 
@@ -530,7 +530,7 @@ for Node=1:length(DataInput) % To obtain a recursive function remove the 'for'
                 Environment1 = 2;
             end
         else
-            command_string = ['psinfo \\'];
+            command_string = 'psinfo \\';
             [si0, de0] = system(command_string);
         end
     else

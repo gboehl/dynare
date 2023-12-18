@@ -236,7 +236,7 @@ if strcmp(options_mom_.mom.mom_method,'SMM')
     % remove burn-in and focus on observables (note that y_sim is in declaration order)
     y_sim = y_sim(oo_.dr.order_var(oo_.mom.obs_var) , end-options_mom_.mom.long+1:end)';
     if ~all(diag(M_.H)==0)
-        i_ME = setdiff([1:size(M_.H,1)],find(diag(M_.H) == 0)); % find ME with 0 variance
+        i_ME = setdiff(1:size(M_.H,1),find(diag(M_.H) == 0)); % find ME with 0 variance
         chol_S = chol(M_.H(i_ME,i_ME)); % decompose rest
         shock_mat=zeros(size(options_mom_.mom.ME_shock_series)); % initialize
         shock_mat(:,i_ME)=options_mom_.mom.ME_shock_series(:,i_ME)*chol_S;

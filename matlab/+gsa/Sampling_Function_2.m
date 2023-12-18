@@ -147,7 +147,7 @@ for i=1:r
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % a --> Define the random vector x0 for the factors. Note that x0 takes value in the hypercube
     % [0,...,1-Delta]*[0,...,1-Delta]*[0,...,1-Delta]*[0,...,1-Delta]
-    MyInt = repmat([0:(1/(p-1)):(1-Delta)],NumFact,1);     % Construct all possible values of the factors
+    MyInt = repmat(0:(1/(p-1)):(1-Delta),NumFact,1);     % Construct all possible values of the factors
 
     % OLD VERSION - it needs communication toolbox
     % w = randint(NumFact,1,[1,size(MyInt,2)]);

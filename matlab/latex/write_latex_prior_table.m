@@ -175,7 +175,7 @@ fprintf(fidTeX,'%% End of TeX file.\n');
 fclose(fidTeX);
 
 function format_string = build_format_string(PriorMode,PriorStandardDeviation,LowerBound,UpperBound)
-format_string = ['%s & %s & %6.4f &'];
+format_string = '%s & %s & %6.4f &';
 if isnan(PriorMode)
     format_string = [ format_string , ' %s &'];
 else

@@ -102,7 +102,7 @@ if nargin>8 && initialize==1
         evalin('base','clear PRCDirTmp,')
     else
         % Delete the traces (if existing) of last local session of computations.
-        mydelete(['slaveParallel_input*.mat']);
+        mydelete('slaveParallel_input*.mat');
     end
     return
 end
@@ -183,11 +183,11 @@ if parallel_recover ==0
 
       case 1
         if exist('fGlobalVar','var')
-            save(['temp_input.mat'],'fInputVar','fGlobalVar')
+            save('temp_input.mat','fInputVar','fGlobalVar')
         else
-            save(['temp_input.mat'],'fInputVar')
+            save('temp_input.mat','fInputVar')
         end
-        save(['temp_input.mat'],'Parallel','-append')
+        save('temp_input.mat','Parallel','-append')
         closeSlave(Parallel,PRCDir,-1);
     end
 
@@ -608,7 +608,7 @@ if parallel_recover ==0
             hstatus(j) = axes('position',[0.05/ncol+(jcol-1)/ncol vstart-vspace*(jrow-1) 0.9/ncol 0.3*vspace], ...
                               'box','on','xtick',[],'ytick',[],'xlim',[0 1],'ylim',[0 1]);
             hpat(j) = patch([0 0 0 0],[0 1 1 0],'r','EdgeColor','r');
-            htit(j) = title(['Initialize ...']);
+            htit(j) = title('Initialize ...');
 
         end
 
@@ -902,13 +902,13 @@ switch Strategy
         catch
         end
 
-        mydelete(['*_core*_input*.mat']);
+        mydelete('*_core*_input*.mat');
 
     end
 
     delete ConcurrentCommand1.bat
   case 1
-    delete(['temp_input.mat'])
+    delete('temp_input.mat')
     if newInstance
         if isempty(dir('dynareParallelLogFiles'))
             rmdir('dynareParallelLogFiles');

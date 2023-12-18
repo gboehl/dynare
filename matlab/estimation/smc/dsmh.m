@@ -99,7 +99,7 @@ for l=1:npar
     name = get_the_name(l,TeX,M_,estim_params_,options_.varobs);
     str = sprintf('%s\n %s \t\t %5.4f \t\t %7.5f \t\t %5.4f', str, name, lb95_xparam(l), mean_xparam(l), ub95_xparam(l));
 end
-disp([str])
+disp(str)
 disp('')
 
 %% Plot parameters densities

@@ -109,7 +109,7 @@ for fig = 1:nbplt
             if ndim==2
                 legend([h1,h2],legend_list,'box','off')
             else
-                legend([h1],legend_list,'box','off')
+                legend(h1,legend_list,'box','off')
             end        
         end
         if options_.TeX

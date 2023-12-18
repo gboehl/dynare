@@ -142,7 +142,7 @@ skipline(2)
 
 
 function format_string = build_format_string(PriorMode,PriorStandardDeviation,LowerBound,UpperBound)
-format_string = ['%s \t %6.4f \t'];
+format_string = '%s \t %6.4f \t';
 if isnan(PriorMode)
     format_string = [ format_string , ' %s \t'];
 else

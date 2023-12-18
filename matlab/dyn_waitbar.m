@@ -69,7 +69,7 @@ else
         running_text = varargin{2};
     end
     if Parallel.Local
-        waitbarTitle=['Local '];
+        waitbarTitle='Local ';
     else
         waitbarTitle=[Parallel.ComputerName];
     end

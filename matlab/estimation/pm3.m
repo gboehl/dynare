@@ -155,7 +155,7 @@ elseif filter_covar_indicator
         hpd_interval=NaN([size_matrix(1:3),2]);
     end
     if size(stock1_filter_covar,draw_dimension)>9
-        post_deciles =quantile(stock1_filter_covar,[0.1:0.1:0.9],draw_dimension);
+        post_deciles =quantile(stock1_filter_covar,0.1:0.1:0.9,draw_dimension);
     else
         size_matrix=size(stock1_filter_covar);
         post_deciles=NaN([size_matrix(1:3),9]);
@@ -177,7 +177,7 @@ elseif state_uncert_indicator
         hpd_interval=NaN([size_matrix(1:3),2]);
     end
     if size(stock1_state_uncert,draw_dimension)>9
-        post_deciles =quantile(stock1_state_uncert,[0.1:0.1:0.9],draw_dimension);
+        post_deciles =quantile(stock1_state_uncert,0.1:0.1:0.9,draw_dimension);
     else
         size_matrix=size(stock1_state_uncert);
         post_deciles=NaN([size_matrix(1:3),9]);

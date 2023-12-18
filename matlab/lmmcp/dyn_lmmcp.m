@@ -35,12 +35,12 @@ iyf = find(lead_lag_incidence(3,:)>0) ;
 
 nd = nyp+ny0+nyf;
 nrc = nyf+1 ;
-isp = [1:nyp] ;
-is = [nyp+1:ny+nyp] ;
+isp = 1:nyp ;
+is = nyp+1:ny+nyp ;
 isf = iyf+nyp ;
-isf1 = [nyp+ny+1:nyf+nyp+ny+1] ;
+isf1 = nyp+ny+1:nyf+nyp+ny+1 ;
 stop = 0 ;
-iz = [1:ny+nyp+nyf];
+iz = 1:ny+nyp+nyf;
 
 periods = options.periods;
 steady_state = oo_.steady_state;

@@ -761,7 +761,7 @@ while 1
             nsteps(2:kg)=nsteps(1:kg-1);
         end
         nsteps(1)=dx/(abs(h)*norm(g0));
-        kk=sum(nsteps(1:kg).*[kg:-1:1])/sum([kg:-1:1]);
+        kk=sum(nsteps(1:kg).*[kg:-1:1])/sum(kg:-1:1);
         if     kk>des
             if kg==1
                 h=h*(kk-des+1);

@@ -38,7 +38,7 @@ switch info
     nvar = length(ivar);
     oo_ = job(type,SampleSize,arg1,arg2,arg3,options_,M_,oo_,nvar,vartan);
   otherwise
-    error(['posterior_analysis:: Check_posterior_analysis_data gave a meaningless output!'])
+    error('posterior_analysis:: Check_posterior_analysis_data gave a meaningless output!')
 end
 
 

@@ -121,7 +121,7 @@ vlog_a0_Yao = zeros(nvar,1);
 vlog=zeros(ndraws2,1);
 for k=1:nvar
     bk = Uiconst{k}'*A0xhat(:,k);
-    indx_ks=[k:nvar];  % the columns that exclude 1-(k-1)th columns
+    indx_ks=k:nvar;  % the columns that exclude 1-(k-1)th columns
     A0gbs0 = A0hat;   % starting at some point such as the peak
     nk = n0(k);
 

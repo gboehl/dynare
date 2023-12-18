@@ -49,9 +49,9 @@ for indPC=1:length(Parallel)
 
             for i=1:length(NewFilesFromSlaves)
                 SlashNumberAndPosition=[];
-                PRCDirPosition=findstr(NewFilesFromSlaves{i}, ([PRCDir]));
+                PRCDirPosition=findstr(NewFilesFromSlaves{i}, (PRCDir));
                 sT=NewFilesFromSlaves{i};
-                sT(1:(PRCDirPosition+length([PRCDir]))-2)=[];
+                sT(1:(PRCDirPosition+length(PRCDir))-2)=[];
                 sT(1)='.';
                 SlashNumberAndPosition=findstr(sT,fS);
                 fileaddress={sT(1:SlashNumberAndPosition(end)),sT(SlashNumberAndPosition(end)+1:end)};

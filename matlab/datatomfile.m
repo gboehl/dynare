@@ -63,7 +63,7 @@ ivar=zeros(n, 1);
 for i=1:n
     i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
     if isempty(i_tmp)
-        error (['One of the specified variables does not exist']) ;
+        error ('One of the specified variables does not exist') ;
     else
         ivar(i) = i_tmp;
     end

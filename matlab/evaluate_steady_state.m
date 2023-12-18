@@ -53,7 +53,7 @@ if ~options_.bytecode && options_.block && options_.solve_algo == 5
 end
 
 if isoctave && options_.solve_algo == 11
-    error(['STEADY: you can''t use solve_algo = %u under Octave'],options_.solve_algo)
+    error('STEADY: you can''t use solve_algo = %u under Octave',options_.solve_algo)
 end
 
 % To ensure that the z and zx matrices constructed by repmat and passed to bytecode

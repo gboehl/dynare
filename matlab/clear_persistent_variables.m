@@ -79,7 +79,7 @@ if isempty(ext)
     fname = [pathstr, name, '.m'];
 else
     if ~isequal(ext, '.m')
-        error(['The first argument needs to be the name of a matlab script (with an .m extension)!'])
+        error('The first argument needs to be the name of a matlab script (with an .m extension)!')
     end
 end
 
@@ -88,13 +88,13 @@ if ~iscell(c)
 end
 
 if ndims(c)>2
-    error(['The cell passed has a second argument cannot have more than two dimensions!'])
+    error('The cell passed has a second argument cannot have more than two dimensions!')
 end
 
 variablename = inputname(2);
 
 if isempty(variablename) && nargin<3
-    error(['You must pass the name of the cell (second input argument) as a string in the third input argument!'])
+    error('You must pass the name of the cell (second input argument) as a string in the third input argument!')
 end
 
 if nargin>2

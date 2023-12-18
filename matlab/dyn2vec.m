@@ -36,9 +36,9 @@ if ~(nargin >= 3)
 end
 
 if options_.smpl == 0
-    k = [1:size(oo_.endo_simul,2)];
+    k = 1:size(oo_.endo_simul,2);
 else
-    k = [M_.maximum_lag+options_.smpl(1):M_.maximum_lag+options_.smpl(2)];
+    k = M_.maximum_lag+options_.smpl(1):M_.maximum_lag+options_.smpl(2);
 end
 
 if nargin == 3

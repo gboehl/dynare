@@ -49,11 +49,11 @@ else
 end
 pfm.nd = pfm.nyp+pfm.ny0+pfm.nyf;
 pfm.nrc = pfm.nyf+1;
-pfm.isp = [1:pfm.nyp];
-pfm.is = [pfm.nyp+1:pfm.ny+pfm.nyp];
+pfm.isp = 1:pfm.nyp;
+pfm.is = pfm.nyp+1:pfm.ny+pfm.nyp;
 pfm.isf = pfm.iyf+pfm.nyp;
-pfm.isf1 = [pfm.nyp+pfm.ny+1:pfm.nyf+pfm.nyp+pfm.ny+1];
-pfm.iz = [1:pfm.ny+pfm.nyp+pfm.nyf];
+pfm.isf1 = pfm.nyp+pfm.ny+1:pfm.nyf+pfm.nyp+pfm.ny+1;
+pfm.iz = 1:pfm.ny+pfm.nyp+pfm.nyf;
 pfm.periods = options_.ep.periods;
 pfm.steady_state = oo_.steady_state;
 pfm.params = M_.params;

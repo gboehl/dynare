@@ -48,7 +48,7 @@ if Long_names_present==1
 else
     fprintf(fid, '\\begin{longtable}{cc}\n');
 end
-fprintf(fid, ['\\caption{Parameter Values}\\\\%%\n']);
+fprintf(fid, '\\caption{Parameter Values}\\\\%%\n');
 
 fprintf(fid, '\\toprule%%\n');
 fprintf(fid, '\\multicolumn{1}{c}{\\textbf{Parameter}} &\n');

@@ -394,7 +394,7 @@ while (func_count < max_func_calls) && (iter_count < max_iterations) && (simplex
             end
         else
             if isfinite(fv(1))
-                dprintf(['%s  %s  %12.7E                                 %12.7E  %s'], iter_, fval_, fv(1) , critX, move)
+                dprintf('%s  %s  %12.7E                                 %12.7E  %s', iter_, fval_, fv(1) , critX, move)
             else
                 dprintf('%s  %s                                         %12.7E  %s', iter_, fval_, critX, move)
             end

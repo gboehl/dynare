@@ -60,7 +60,7 @@ end
 
 if nargin == 6
     indx = restrict_columns;
-    indx0=find(~ismember([1:np],indx));
+    indx0=find(~ismember(1:np,indx));
 else
     indx=(find(max(abs(T))>=1.e-10));
     indx0=(find(max(abs(T))<1.e-10));

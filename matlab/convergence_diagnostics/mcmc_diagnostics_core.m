@@ -81,7 +81,7 @@ UDIAG = zeros(NumberOfLines,6,npar-fpar+1);
 if whoiam
     waitbarString = ['Please wait... MCMC diagnostics (' int2str(fpar) 'of' int2str(npar) ')...'];
     if Parallel(ThisMatlab).Local
-        waitbarTitle=['Local '];
+        waitbarTitle='Local ';
     else
         waitbarTitle=[Parallel(ThisMatlab).ComputerName];
     end

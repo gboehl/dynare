@@ -134,7 +134,7 @@ while rank(Pinf,diffuse_kalman_tol) && (t<=last)
 end
 
 if t==(last+1)
-    warning(['kalman_filter_d: There isn''t enough information to estimate the initial conditions of the nonstationary variables. The diffuse Kalman filter never left the diffuse stage.']);
+    warning('kalman_filter_d: There isn''t enough information to estimate the initial conditions of the nonstationary variables. The diffuse Kalman filter never left the diffuse stage.');
     dLIK = NaN;
     return
 end

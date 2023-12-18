@@ -132,7 +132,7 @@ if ~isempty(endo_prior_restrictions.moment)
     for i=1:nvar
         i_tmp = strmatch(var_list_(i,:), M_.endo_names, 'exact');
         if isempty(i_tmp)
-            error (['One of the variable specified does not exist'])
+            error ('One of the variable specified does not exist')
         else
             ivar(i) = i_tmp;
         end

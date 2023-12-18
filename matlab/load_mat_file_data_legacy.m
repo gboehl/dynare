@@ -34,7 +34,7 @@ else
         try
             data_mat=[data_mat vec(data_file.(varobs{var_iter}))];
         catch
-            error(['makedataset: The variable %s does not have dimensions conformable with the previous one'], varobs{var_iter});
+            error('makedataset: The variable %s does not have dimensions conformable with the previous one', varobs{var_iter});
         end
     end
 end

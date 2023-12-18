@@ -76,7 +76,7 @@ end
 % parallel computations with Strategy == 1 delete the traces (if exists) of
 % previous computations.
 
-delete(['P_slave_*End.txt']);
+delete('P_slave_*End.txt');
 masterParallel(options_.parallel,[],[],[],[],[],[],options_.parallel_info,1);
 
 

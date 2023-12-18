@@ -76,8 +76,8 @@ if odd
    end
    y = y*rho;
 end
-y = prod([1:2:s1])*prod([1:2:s2])*y;
+y = prod(1:2:s1)*prod(1:2:s2)*y;
 if nargout > 1
-    dy = prod([1:2:s1])*prod([1:2:s2])*dy;
+    dy = prod(1:2:s1)*prod(1:2:s2)*dy;
 end
 

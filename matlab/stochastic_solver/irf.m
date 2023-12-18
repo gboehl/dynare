@@ -60,7 +60,7 @@ if local_order == 1
     y = y2(:,M_.maximum_lag+1:end)-y1;
 else
     % eliminate shocks with 0 variance
-    i_exo_var = setdiff([1:M_.exo_nbr],find(diag(M_.Sigma_e) == 0 ));
+    i_exo_var = setdiff(1:M_.exo_nbr,find(diag(M_.Sigma_e) == 0 ));
     nxs = length(i_exo_var);
     ex1 = zeros(long+drop,M_.exo_nbr);
     chol_S = chol(M_.Sigma_e(i_exo_var,i_exo_var));

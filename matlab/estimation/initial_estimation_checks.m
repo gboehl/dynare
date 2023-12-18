@@ -125,30 +125,30 @@ non_zero_ME=length(estim_params_.H_entries_to_check_for_positive_definiteness);
 
 print_init_check_warning=false;
 if maximum_number_non_missing_observations>M_.exo_nbr+non_zero_ME
-    error(['initial_estimation_checks:: Estimation can''t take place because there are less declared shocks than observed variables!'])
+    error('initial_estimation_checks:: Estimation can''t take place because there are less declared shocks than observed variables!')
 end
 if init_number_non_missing_observations>M_.exo_nbr+non_zero_ME
     if options_.no_init_estimation_check_first_obs
         print_init_check_warning=true;
     else
-        error(['initial_estimation_checks:: Estimation can''t take place because there are less declared shocks than observed variables in first period!'])
+        error('initial_estimation_checks:: Estimation can''t take place because there are less declared shocks than observed variables in first period!')
     end
 end
 
 if options_.heteroskedastic_filter
     if any(observations_by_period>(non_zero_shocks_by_period+non_zero_ME))
-        error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance: Check heteroskedastic block and shocks calibration!'])
+        error('initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance: Check heteroskedastic block and shocks calibration!')
     end
 else
     if maximum_number_non_missing_observations>length(find(diag(M_.Sigma_e)))+non_zero_ME
-        error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance!'])
+        error('initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance!')
     end
 end
 if init_number_non_missing_observations>length(find(diag(M_.Sigma_e)))+non_zero_ME
     if options_.no_init_estimation_check_first_obs
         print_init_check_warning=true;
     else
-        error(['initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance in first period!'])
+        error('initial_estimation_checks:: Estimation can''t take place because too many shocks have been calibrated with a zero variance in first period!')
     end
 end
 if print_init_check_warning
@@ -158,7 +158,7 @@ if print_init_check_warning
 end
 
 if (any(bayestopt_.pshape  >0 ) && options_.mh_replic) && options_.mh_nblck<1
-    error(['initial_estimation_checks:: Bayesian estimation cannot be conducted with mh_nblocks=0.'])
+    error('initial_estimation_checks:: Bayesian estimation cannot be conducted with mh_nblocks=0.')
 end
 
 % check and display warnings if steady-state solves static model (except if diffuse_filter == 1) and if steady-state changes estimated parameters
@@ -251,8 +251,8 @@ end
 
 if options_.prefilter==1
     if (~options_.loglinear && any(abs(oo_.steady_state(bayestopt_.mfys))>1e-9)) || (options_.loglinear && any(abs(log(oo_.steady_state(bayestopt_.mfys)))>1e-9))
-        disp(['You are trying to estimate a model with a non zero steady state for the observed endogenous'])
-        disp(['variables using demeaned data!'])
+        disp('You are trying to estimate a model with a non zero steady state for the observed endogenous')
+        disp('variables using demeaned data!')
         error('You should change something in your mod file...')
     end
 end

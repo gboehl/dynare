@@ -43,7 +43,7 @@ function oo_=disp_th_moments_pruned_state_space(dr,M_,options_,i_var,oo_)
 
 
 if options_.one_sided_hp_filter || options_.hp_filter || options_.bandpass.indicator
-    error(['disp_th_moments:: theoretical moments incompatible with filtering. Use simulated moments instead'])
+    error('disp_th_moments:: theoretical moments incompatible with filtering. Use simulated moments instead')
 end
 
 nvars=length(i_var);

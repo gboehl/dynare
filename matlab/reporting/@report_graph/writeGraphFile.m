@@ -97,7 +97,7 @@ elseif iscell(o.xTickLabels)
     x = o.xTicks;
     xTickLabels = o.xTickLabels;
 else
-    x = [1:dd.ndat];
+    x = 1:dd.ndat;
     xTickLabels = strings(dd);
 end
 fprintf(fid, 'xticklabels={');

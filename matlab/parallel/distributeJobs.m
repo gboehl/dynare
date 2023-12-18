@@ -53,8 +53,8 @@ for j=1:lP
         skipline()
         disp(['PARALLEL_ERROR:: NumberOfThreadsPerJob = ',int2str(Parallel(j).NumberOfThreadsPerJob),' is not an exact divisor of number of CPUs = ',int2str(length(Parallel(j).CPUnbr)),'!'])
         disp(['                 You must re-set properly NumberOfThreadsPerJob of node ' int2str(j) ' ' Parallel(j).ComputerName])
-        disp(['                 in your configuration file'])
-        error(['PARALLEL_ERROR:: NumberOfThreadsPerJob is not an exact divisor of CPUnbr'])
+        disp('                 in your configuration file')
+        error('PARALLEL_ERROR:: NumberOfThreadsPerJob is not an exact divisor of CPUnbr')
     end
     nCPU(j)=length(Parallel(j).CPUnbr)/Parallel(j).NumberOfThreadsPerJob;
     totCPU=totCPU+nCPU(j);

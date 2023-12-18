@@ -219,7 +219,7 @@ if outer_product_gradient
         hessian_mat = zeros(size(f0,1),n*n);
         for i=1:n
             if i > 1
-                k=[i:n:n*(i-1)];
+                k=i:n:n*(i-1);
                 hessian_mat(:,(i-1)*n+1:(i-1)*n+i-1)=hessian_mat(:,k);
             end
             hessian_mat(:,(i-1)*n+i)=(f1(:,i)+f_1(:,i)-2*f0)./(hess_info.h1(i)*h_1(i));

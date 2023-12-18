@@ -352,7 +352,7 @@ for b=fpar:B
             stock_forcst_point(:,:,irun(7)) = yf1(maxlag+1:end,:)';
             if ~isequal(M_.H,0)
                 ME_shocks=zeros(length(varobs),horizon);
-                i_exo_var = setdiff([1:length(varobs)],find(diag(M_.H) == 0));
+                i_exo_var = setdiff(1:length(varobs),find(diag(M_.H) == 0));
                 nxs = length(i_exo_var);
                 chol_H = chol(M_.H(i_exo_var,i_exo_var));
                 if ~isempty(M_.H)

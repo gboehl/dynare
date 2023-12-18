@@ -47,7 +47,7 @@ else
 end
 
 if mu<lb
-    error(['The prior expectation (%f) %scannot be smaller than the lower bound of the Beta distribution (%f)!'], mu, name1, lb)
+    error('The prior expectation (%f) %scannot be smaller than the lower bound of the Beta distribution (%f)!', mu, name1, lb)
 end
 
 if mu>ub

@@ -58,7 +58,7 @@ ivar=zeros(nvar,1);
 for i=1:nvar
     i_tmp = strmatch(var_list{i}, M_.endo_names, 'exact');
     if isempty(i_tmp)
-        error (['One of the variables specified does not exist']) ;
+        error ('One of the variables specified does not exist') ;
     else
         ivar(i) = i_tmp;
     end
@@ -70,9 +70,9 @@ nspred = M_.nspred;
 nstatic = M_.nstatic;
 kstate = oo_.dr.kstate;
 order = oo_.dr.order_var;
-iv(order) = [1:length(order)];
+iv(order) = 1:length(order);
 nx = size(ghx,2);
-ikx = [nstatic+1:nstatic+nspred];
+ikx = nstatic+1:nstatic+nspred;
 k0 = kstate(find(kstate(:,2) <= M_.maximum_lag+1),:);
 i0 = find(k0(:,2) == M_.maximum_lag+1);
 i00 = i0;

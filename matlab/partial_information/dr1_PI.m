@@ -194,7 +194,7 @@ if(options_.ACES_solver)
             for i=1:num_inst
                 i_tmp = strmatch(deblank(lq_instruments.names(i,:)), M_.endo_names,'exact');
                 if isempty(i_tmp)
-                    error (['One of the specified instrument variables does not exist']) ;
+                    error ('One of the specified instrument variables does not exist') ;
                 else
                     i_var(i) = i_tmp;
                 end
@@ -303,7 +303,7 @@ if ( M_.maximum_lag <= 1) && (M_.maximum_lead <= 1)
         if num_exp_0>0
             AA3(:,exp_0)=AA1(:,exp_0);
             XX0=zeros(nendo,num_exp_0);
-            AA1(:,exp_0)=XX0(:,[1:num_exp_0])
+            AA1(:,exp_0)=XX0(:,1:num_exp_0)
         end
     end
 end

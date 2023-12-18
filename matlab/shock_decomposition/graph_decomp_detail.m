@@ -269,7 +269,7 @@ for j=1:nvar
         if nfigs>1
             suffix = ['_detail_' int2str(jf)];
         else
-            suffix = ['_detail'];
+            suffix = '_detail';
         end
         if ~options_.plot_shock_decomp.expand
             dyn_saveas(fhandle,[GraphDirectoryName, filesep, M_.fname, ...

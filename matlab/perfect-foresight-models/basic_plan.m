@@ -32,7 +32,7 @@ function plan = basic_plan(plan, exogenous, expectation_type, date, value)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if ~ischar(expectation_type) || size(expectation_type,1) ~= 1
-    error(['in basic_plan the third argument should be a string containing the simulation type (''perfect_foresight'' or ''surprise'')']);
+    error('in basic_plan the third argument should be a string containing the simulation type (''perfect_foresight'' or ''surprise'')');
 end
 exogenous = strtrim(exogenous);
 ix = find(strcmp(exogenous, plan.exo_names));

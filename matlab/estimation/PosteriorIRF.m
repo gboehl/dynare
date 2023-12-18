@@ -400,7 +400,7 @@ if ~options_.nograph && ~options_.no_graph.posterior
                     fprintf(fidTeX,'\\centering \n');
                     fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s/%s_Bayesian_IRF_%s_%d}\n',options_.figures.textwidth*min(subplotnum/nn,1),DirectoryName,M_.fname,tit{ii},figunumber);
                     if options_.relative_irf
-                        fprintf(fidTeX,['\\caption{Bayesian relative IRF.}']);
+                        fprintf(fidTeX,'\\caption{Bayesian relative IRF.}');
                     else
                         fprintf(fidTeX,'\\caption{Bayesian IRF: Orthogonalized shock to $%s$.}\n',titTeX{ii});
                     end

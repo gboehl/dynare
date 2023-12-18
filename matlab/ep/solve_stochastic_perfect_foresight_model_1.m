@@ -70,8 +70,8 @@ else
 end
 
 if verbose
-    disp ([' -----------------------------------------------------']);
-    disp (['MODEL SIMULATION :']);
+    disp (' -----------------------------------------------------');
+    disp ('MODEL SIMULATION :');
     fprintf('\n');
 end
 

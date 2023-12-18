@@ -337,7 +337,7 @@ fprintf(fidTeX, '  & \\multicolumn{3}{c}{Prior}  &  \\multicolumn{4}{c}{Posterio
 fprintf(fidTeX, '  \\cmidrule(r{.75em}){2-4} \\cmidrule(r{.75em}){5-8}\n');
 fprintf(fidTeX, '  & Dist. & Mean  & Stdev. & Mean & Stdev. & HPD inf & HPD sup\\\\\n');
 fprintf(fidTeX, '\\midrule \\endfirsthead \n');
-fprintf(fidTeX, ['\\caption{(continued)}\\\\']);
+fprintf(fidTeX, '\\caption{(continued)}\\\\');
 fprintf(fidTeX, '\\toprule \n');
 fprintf(fidTeX, '  & \\multicolumn{3}{c}{Prior}  &  \\multicolumn{4}{c}{Posterior} \\\\\n');
 fprintf(fidTeX, '  \\cmidrule(r{.75em}){2-4} \\cmidrule(r{.75em}){5-8}\n');
@@ -349,7 +349,7 @@ fid = fidTeX;
 
 
 function TeXCore(fid, name, shape, priormean, priorstd, postmean, poststd, hpd)
-fprintf(fid,['$%s$ & %s & %7.3f & %6.4f & %7.3f& %6.4f & %7.4f & %7.4f \\\\ \n'],...
+fprintf(fid,'$%s$ & %s & %7.3f & %6.4f & %7.3f& %6.4f & %7.4f & %7.4f \\\\ \n',...
         name, ...
         shape, ...
         priormean, ...

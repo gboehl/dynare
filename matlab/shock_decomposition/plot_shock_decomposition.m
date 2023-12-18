@@ -605,7 +605,7 @@ for i=1:ngroups
 end
 zothers = sum(z(:,1:nshocks,:),2);
 shock_groups.(['group' int2str(ngroups+1)]).label =  'Others';
-shock_groups.(['group' int2str(ngroups+1)]).shocks =  cellstr(M_.exo_names(find(~ismember([1:M_.exo_nbr],kcum)),:))';
+shock_groups.(['group' int2str(ngroups+1)]).shocks =  cellstr(M_.exo_names(find(~ismember(1:M_.exo_nbr,kcum)),:))';
 M_.shock_groups.(options_.plot_shock_decomp.use_shock_groups)=shock_groups;
 if any(any(zothers))
     shock_names = [shock_names; {'Others + Initial Values'}];

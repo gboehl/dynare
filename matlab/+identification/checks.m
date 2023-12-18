@@ -94,7 +94,7 @@ if param_nbr > 0 && (rankX<rankrequired)
     % search for singular values associated to ONE individual parameter
     % Compute an orthonormal basis for the null space using the columns of ee1 that correspond
     % to singular values equal to zero and associated to an individual parameter
-    ee0 = [rankX+1:size([Xparnonzero Xrest],2)]; %look into last columns with singular values of problematic parameter sets (except single parameters)
+    ee0 = rankX+1:size([Xparnonzero Xrest],2); %look into last columns with singular values of problematic parameter sets (except single parameters)
     ind11 = ones(length(ind1),1); %initialize
     for j=1:length(ee0)
         % check if nullspace is spanned by only one parameter
@@ -151,9 +151,9 @@ if param_nbr>0 && (rankX<rankrequired || min(1-Mco)<tol_rank)
     if length(ind1)<param_nbr
         % single parameters with zero columns
         ixno = ixno + 1;
-        indno(ixno,:) = (~ismember([1:param_nbr],ind1));
+        indno(ixno,:) = (~ismember(1:param_nbr,ind1));
     end
-    ee0 = [rankX+1:size([Xparnonzero Xrest],2)]; %look into last columns with singular values of problematic parameter sets (except single parameters)
+    ee0 = rankX+1:size([Xparnonzero Xrest],2); %look into last columns with singular values of problematic parameter sets (except single parameters)
     for j=1:length(ee0)
         % linearly dependent parameters
         ixno = ixno + 1;

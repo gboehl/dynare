@@ -298,7 +298,7 @@ input.fitfun = fitfun; % record used input
 if isempty(fitfun)
     % fitfun = definput.fitfun;
     % warning(['Objective function not determined, ''' fitfun ''' used']);
-    error(['Objective function not determined']);
+    error('Objective function not determined');
 end
 if ~ischar(fitfun)
     error('first argument FUN must be a string');
@@ -328,7 +328,7 @@ if isempty(insigma)
     if all(size(myeval(xstart)) > 1)
         insigma = std(xstart, 0, 2);
         if any(insigma == 0)
-            error(['Initial search volume is zero, choose SIGMA or X0 appropriate']);
+            error('Initial search volume is zero, choose SIGMA or X0 appropriate');
         end
     else
         % will be captured later
@@ -510,7 +510,7 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
                 stopTolX = myeval(opts.TolX);  % reevaluate these
                 stopTolUpX = myeval(opts.TolUpX);
             else
-                error(['Initial step sizes (SIGMA) not determined']);
+                error('Initial step sizes (SIGMA) not determined');
             end
         end
 
@@ -543,10 +543,10 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
 
         % Initialize dynamic internal state parameters
         if any(insigma <= 0)
-            error(['Initial search volume (SIGMA) must be greater than zero']);
+            error('Initial search volume (SIGMA) must be greater than zero');
         end
         if max(insigma)/min(insigma) > 1e6
-            error(['Initial search volume (SIGMA) badly conditioned']);
+            error('Initial search volume (SIGMA) badly conditioned');
         end
         sigma = max(insigma);              % overall standard deviation
         pc = zeros(N,1); ps = zeros(N,1);  % evolution paths for C and sigma

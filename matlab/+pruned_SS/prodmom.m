@@ -61,7 +61,7 @@ s2 = s/2;
 %  Use univariate normal results
 %
 if m==1
-   y = V^s2*prod([1:2:s-1]);
+   y = V^s2*prod(1:2:s-1);
    return
 end
 %
@@ -104,4 +104,4 @@ for i=1:fix(prod(nu+1)/2)
         end
     end
 end
-y = y/prod([1:s2]);
+y = y/prod(1:s2);

@@ -149,7 +149,7 @@ while norm(gg)>gtol && check==0 && jit<nit
     tic1 = tic;
     icount=icount+1;
     penalty = fval0(icount);
-    disp_verbose([' '],Verbose)
+    disp_verbose(' ',Verbose)
     disp_verbose(['Iteration ',num2str(icount)],Verbose)
     [fval,x0] = csminit1(func0,xparam1,penalty,fval0(icount),gg,0,H,Verbose,varargin{:});
     if igrad
@@ -335,11 +335,11 @@ if jit==nit
 end
 
 if norm(gg)<=gtol
-    disp_verbose(['Estimation ended:'],Verbose)
+    disp_verbose('Estimation ended:',Verbose)
     disp_verbose(['Gradient norm < ', num2str(gtol)],Verbose)
 end
 if check==1
-    disp_verbose(['Estimation successful.'],Verbose)
+    disp_verbose('Estimation successful.',Verbose)
 end
 
 return

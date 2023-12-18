@@ -58,7 +58,7 @@ if ~all(M_.H==0)
     end
     if ~isempty(observable_pos_requested_vars)
         ME_present=1;
-        i_ME = setdiff([1:size(M_.H,1)],find(diag(M_.H) == 0)); % find ME with 0 variance
+        i_ME = setdiff(1:size(M_.H,1),find(diag(M_.H) == 0)); % find ME with 0 variance
         chol_S = chol(M_.H(i_ME,i_ME)); %decompose rest
         shock_mat=zeros(options_.periods,size(M_.H,1)); %initialize
         shock_mat(:,i_ME)=randn(length(i_ME),options_.periods)'*chol_S;
@@ -173,7 +173,7 @@ if ~options_.nodecomposition
             end
         end
         %back out shock matrix used for generating y
-        i_exo_var = setdiff([1:M_.exo_nbr],find(diag(M_.Sigma_e) == 0)); % find shocks with 0 variance
+        i_exo_var = setdiff(1:M_.exo_nbr,find(diag(M_.Sigma_e) == 0)); % find shocks with 0 variance
         chol_S = chol(M_.Sigma_e(i_exo_var,i_exo_var)); %decompose rest
         shock_mat=zeros(options_.periods,M_.exo_nbr); %initialize
         shock_mat(:,i_exo_var)=oo_.exo_simul(:,i_exo_var)/chol_S; %invert construction of oo_.exo_simul from simult.m

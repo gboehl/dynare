@@ -83,7 +83,7 @@ for i=1:nvars
     series_names{i} = endo_names{i};
 end
 
-x = [1:T];
+x = 1:T;
 plot_dates = 0;
 data = 0;
 steady = 0;

@@ -96,7 +96,7 @@ end
 
 if p > 0
     skipline()
-    disp(['Some of the VAR models sampled from the posterior distribution'])
+    disp('Some of the VAR models sampled from the posterior distribution')
     disp(['were found to be explosive (' int2str(p) ' samples).'])
     skipline()
 end

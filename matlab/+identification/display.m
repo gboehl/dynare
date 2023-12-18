@@ -54,7 +54,7 @@ tol_rank           = options_ident.tol_rank;
 checks_via_subsets = options_ident.checks_via_subsets;
 
 %% Display settings
-disp(['  ']),
+disp('  '),
 fprintf('Note that differences in the criteria could be due to numerical settings,\n')
 fprintf('numerical errors or the method used to find problematic parameter sets.\n')
 fprintf('Settings:\n')
@@ -157,7 +157,7 @@ for jide = 1:4
                 disp('    !!!WARNING!!!');
                 if SampleSize>1
                     if non_minimal_state_space_error
-                        fprintf(['\n    The minimal state space could not be computed for %u out of %u cases.\n'],SampleSize-EffectiveSampleSize,SampleSize);
+                        fprintf('\n    The minimal state space could not be computed for %u out of %u cases.\n',SampleSize-EffectiveSampleSize,SampleSize);
                     end
                     if jide==2
                         if sum(ide.ino & ide.minimal_state_space)>0

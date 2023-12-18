@@ -48,7 +48,7 @@ end
 %1    CBO output gap --  log(x_t)-log(x_t potential)
 %2    GDP deflator -- (P_t/P_{t-1})^4-1.0
 %2    FFR/100.
-options_.ms.vlist = [1:length(options_.varobs)];    % 1: U; 4: PCE inflation.
+options_.ms.vlist = 1:length(options_.varobs);    % 1: U; 4: PCE inflation.
 options_.ms.varlist=cellstr(options_.varobs');
 options_.ms.log_var = sort(varlist_indices(options_.ms.vlistlog,char(options_.varobs)));   % subset of "options_.ms.vlist.  Variables in log level so that differences are in **monthly** growth, unlike R and U which are in annual percent (divided by 100 already).
 options_.ms.percent_var =setdiff(options_.ms.vlist,options_.ms.log_var);

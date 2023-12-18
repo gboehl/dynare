@@ -73,7 +73,7 @@ if M_.maximum_endo_lag == 0
         fprintf('\nSTOCHASTIC_SOLVER: Dynare does not solve purely forward models with var_exo_det.\n')
         fprintf('STOCHASTIC_SOLVER: To circumvent this restriction, you can add a backward-looking dummy equation of the form:\n')
         fprintf('STOCHASTIC_SOLVER: junk=0.9*junk(-1);\n')
-        error(['var_exo_det not implemented for purely forward models'])
+        error('var_exo_det not implemented for purely forward models')
     end
 end
 
@@ -81,7 +81,7 @@ if M_.maximum_endo_lead==0 && M_.exo_det_nbr~=0
     fprintf('\nSTOCHASTIC_SOLVER: Dynare does not solve purely backward models with var_exo_det.\n')
     fprintf('STOCHASTIC_SOLVER: To circumvent this restriction, you can add a foward-looking dummy equation of the form:\n')
     fprintf('STOCHASTIC_SOLVER: junk=0.9*junk(+1);\n')
-    error(['var_exo_det not implemented for purely backwards models'])
+    error('var_exo_det not implemented for purely backwards models')
 end
 
 if options_.k_order_solver
@@ -261,7 +261,7 @@ else
         k1 = nonzeros(M_.lead_lag_incidence(:,order_var)');
         kk = [k1; length(k1)+(1:M_.exo_nbr+M_.exo_det_nbr)'];
         nk = size(kk,1);
-        kk1 = reshape([1:nk^2],nk,nk);
+        kk1 = reshape(1:nk^2,nk,nk);
         kk1 = kk1(kk,kk);
         hessian1 = hessian1(:,kk1(:));
     end
@@ -295,7 +295,7 @@ if M_.exo_det_nbr > 0
         zud=[zeros(nspred,M_.exo_det_nbr);dr.ghud{1};gx(:,1:nspred)*hud;zeros(M_.exo_nbr,M_.exo_det_nbr);eye(M_.exo_det_nbr)];
         R1 = hessian1*kron(zx,zud);
         dr.ghxud = cell(M_.exo_det_length,1);
-        kf = [M_.endo_nbr-nfwrd-nboth+1:M_.endo_nbr];
+        kf = M_.endo_nbr-nfwrd-nboth+1:M_.endo_nbr;
         kp = nstatic+[1:nspred];
         dr.ghxud{1} = -M1*(R1+f1*dr.ghxx(kf,:)*kron(dr.ghx(kp,:),dr.ghud{1}(kp,:)));
         Eud = eye(M_.exo_det_nbr);

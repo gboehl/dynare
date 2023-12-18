@@ -227,23 +227,23 @@ for curr_block = fblck:nblck
             end
             save([BaseName '_mh' int2str(NewFile(curr_block)) '_blck' int2str(curr_block) '.mat'],'x2','logpo2','LastSeeds','accepted_draws_this_chain','accepted_draws_this_file','feval_this_chain','feval_this_file');
             fidlog = fopen([MetropolisFolder '/metropolis.log'],'a');
-            fprintf(fidlog,['\n']);
+            fprintf(fidlog,'\n');
             fprintf(fidlog,['%% Mh' int2str(NewFile(curr_block)) 'Blck' int2str(curr_block) ' (' datestr(now,0) ')\n']);
             fprintf(fidlog,' \n');
             fprintf(fidlog,['  Number of simulations.: ' int2str(length(logpo2)) '\n']);
             fprintf(fidlog,['  Acceptance ratio......: ' num2str(accepted_draws_this_file/length(logpo2)) '\n']);
             fprintf(fidlog,['  Feval per iteration...: ' num2str(feval_this_file/length(logpo2)) '\n']);
-            fprintf(fidlog,['  Posterior mean........:\n']);
+            fprintf(fidlog,'  Posterior mean........:\n');
             for i=1:length(x2(1,:))
                 fprintf(fidlog,['    params:' int2str(i) ': ' num2str(mean(x2(:,i))) '\n']);
             end
             fprintf(fidlog,['    log2po:' num2str(mean(logpo2)) '\n']);
-            fprintf(fidlog,['  Minimum value.........:\n']);
+            fprintf(fidlog,'  Minimum value.........:\n');
             for i=1:length(x2(1,:))
                 fprintf(fidlog,['    params:' int2str(i) ': ' num2str(min(x2(:,i))) '\n']);
             end
             fprintf(fidlog,['    log2po:' num2str(min(logpo2)) '\n']);
-            fprintf(fidlog,['  Maximum value.........:\n']);
+            fprintf(fidlog,'  Maximum value.........:\n');
             for i=1:length(x2(1,:))
                 fprintf(fidlog,['    params:' int2str(i) ': ' num2str(max(x2(:,i))) '\n']);
             end

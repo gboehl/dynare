@@ -182,7 +182,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
     % Find initial values for the NumberOfBlocks chains...
     if NumberOfBlocks > 1 || options_.mh_initialize_from_previous_mcmc.status% Case 1: multiple chains
         options_=set_dynare_seed_local_options(options_,'default');
-        fprintf(fidlog,['  Initial values of the parameters:\n']);
+        fprintf(fidlog,'  Initial values of the parameters:\n');
         fprintf('%s: Searching for initial values...\n', dispString);
         if ~options_.mh_initialize_from_previous_mcmc.status
             ix2 = zeros(NumberOfBlocks,npar);
@@ -253,7 +253,7 @@ if ~options_.load_mh_file && ~options_.mh_recover
         fprintf(fidlog,' \n');
         fprintf('%s: Initial values found!\n\n',dispString);
     else% Case 2: one chain (we start from the posterior mode)
-        fprintf(fidlog,['  Initial values of the parameters:\n']);
+        fprintf(fidlog,'  Initial values of the parameters:\n');
         candidate = transpose(xparam1(:));%
         if all(candidate(:) >= mh_bounds.lb) && all(candidate(:) <= mh_bounds.ub)
             ix2 = candidate;
@@ -313,10 +313,10 @@ if ~options_.load_mh_file && ~options_.mh_recover
     fprintf('Ok!\n');
     id = write_mh_history_file(MetropolisFolder, ModelName, record);
     fprintf('%s: Details about the MCMC are available in %s_mh_history_%u.mat\n\n', dispString,BaseName,id);
-    fprintf(fidlog,['  CREATION OF THE MH HISTORY FILE!\n\n']);
+    fprintf(fidlog,'  CREATION OF THE MH HISTORY FILE!\n\n');
     fprintf(fidlog,['    Expected number of files per block.......: ' int2str(AnticipatedNumberOfFiles) '.\n']);
     fprintf(fidlog,['    Expected number of lines in the last file: ' int2str(AnticipatedNumberOfLinesInTheLastFile) '.\n']);
-    fprintf(fidlog,['\n']);
+    fprintf(fidlog,'\n');
     for j = 1:NumberOfBlocks
         fprintf(fidlog,['    Initial state of the Gaussian random number generator for chain number ',int2str(j),':\n']);
         for i=1:length(record.InitialSeeds(j).Normal)

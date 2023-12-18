@@ -64,7 +64,7 @@ for i_chain = 1:n_chains
     %//== column of the transition matrix.  Each element must be positive.  For each column,
     %//== the relative size of the prior elements determine the relative size of the elements
     %//== of the transition matrix and overall larger sizes implies a tighter prior.
-    fprintf(fh,['//== Transition matrix prior for state_variable[%d] ==//\n'], ...
+    fprintf(fh,'//== Transition matrix prior for state_variable[%d] ==//\n', ...
             i_chain);
     Alpha = ones(n_states,n_states);
     for i_state = 1:n_states

@@ -111,7 +111,7 @@ end
 % Set options_.lik_init equal to 3 if diffuse filter is used or kalman_algo refers to a diffuse filter algorithm.
 if isequal(options_.diffuse_filter,1) || (options_.kalman_algo>2)
     if isequal(options_.lik_init,2)
-        error(['options diffuse_filter, lik_init and/or kalman_algo have contradictory settings'])
+        error('options diffuse_filter, lik_init and/or kalman_algo have contradictory settings')
     else
         options_.lik_init = 3;
     end
@@ -428,7 +428,7 @@ if info(1)
         M_local.params=params;
         plist = list_of_parameters_calibrated_as_NaN(M_local);
         if ~isempty(plist)
-            message = ['dynare_estimation_init:: Some of the parameters are NaN (' ];
+            message = 'dynare_estimation_init:: Some of the parameters are NaN (' ;
             for i=1:length(plist)
                 if i<length(plist)
                     message = [message, plist{i} ', '];
@@ -440,7 +440,7 @@ if info(1)
         fprintf('%s\n',message)
         plist = list_of_parameters_calibrated_as_Inf(M_local);
         if ~isempty(plist)
-            message = ['dynare_estimation_init:: Some of the parameters are Inf (' ];
+            message = 'dynare_estimation_init:: Some of the parameters are Inf (' ;
             for i=1:length(plist)
                 if i<size(plist)
                     message = [message, plist{i} ', '];

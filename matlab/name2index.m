@@ -80,7 +80,7 @@ if strcmpi(type,'StructuralShock')
                 end
             end
         catch
-            disp(['Off diagonal terms of the covariance matrix are not estimated (state equation)'])
+            disp('Off diagonal terms of the covariance matrix are not estimated (state equation)')
         end
     end
 end

@@ -289,7 +289,7 @@ if options_.ms.indxestima
             % - 0.01 (or any number < 1)  is used so that qmStart+options_.ms.nlags -options_.ms.dummy_obs ==-?*options_.ms.freq give us an extra year back.
         end
     end
-    dateswd = fn_dataext([yrStartEsti qmStartEsti],[yrEnd qmEnd],xdatae(:,[1:2]));  % dates with dummies
+    dateswd = fn_dataext([yrStartEsti qmStartEsti],[yrEnd qmEnd],xdatae(:,1:2));  % dates with dummies
     phie = [dateswd phi];
     ye = [dateswd y];
 
@@ -484,8 +484,8 @@ if options_.ms.indxestima
     % only actual growth rates
     yafyrghate
     if options_.ms.indxgforhat
-        keyindx = [1:nvar];
-        conlab=['unconditional'];
+        keyindx = 1:nvar;
+        conlab='unconditional';
 
         figure
         yafyrghate(:,3:end) = yafyrghate(:,3:end)/100;
@@ -680,9 +680,9 @@ if options_.ms.indxestima
     [yacyrghate,yacyrhate,yacqmyghate] = fn_datana(yachate,options_.ms.freq,options_.ms.log_var(1:nlogeno),options_.ms.percent_var(1:npereno));
     % actual and conditional forecast growth rates
     if options_.ms.indxgdls && nconstr
-        keyindx = [1:nvar];
+        keyindx = 1:nvar;
         %  conlab=['conditional on' ylab{PorR(1)}];
-        conlab=['v-conditions'];
+        conlab='v-conditions';
 
         figure
         fn_foregraph(yafyrghate,yact2yrge,keyindx,rnum,cnum,options_.ms.freq,ylab,forelabel,conlab)
@@ -713,9 +713,9 @@ if options_.ms.indxestima
         disp([sprintf('%4.0f %2.0f %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f\n',yacEyrghate')])
 
         if 1
-            keyindx = [1:nvar];
+            keyindx = 1:nvar;
             %  conlab=['conditional on' ylab{PorR(1)}];
-            conlab=['shock-conditions'];
+            conlab='shock-conditions';
 
             figure
             gyrfore(yacEyrghate,yact2yrge,keyindx,rnum,cnum,ylab,forelabel,conlab)
@@ -733,7 +733,7 @@ if options_.ms.indxestima
         qmStartWod = options_.ms.freq;
     end
     yrStartWod = yrStart + floor((qmStart+options_.ms.nlags -1)/options_.ms.freq);
-    dateswod = fn_dataext([yrStartWod qmStartWod],[yrEnd qmEnd],xdatae(:,[1:2]));
+    dateswod = fn_dataext([yrStartWod qmStartWod],[yrEnd qmEnd],xdatae(:,1:2));
     eplhate = [dateswod eplhat];
 
     Aphat = Fhat;

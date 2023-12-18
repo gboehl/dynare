@@ -309,7 +309,7 @@ else
         ysteady = [ys(oo_.dr.order_var); U/(1-beta)];
 
         % Generates the sequence of shocks to compute unconditional welfare
-        i_exo_var = setdiff([1:M_.exo_nbr],find(diag(M_.Sigma_e) == 0));
+        i_exo_var = setdiff(1:M_.exo_nbr,find(diag(M_.Sigma_e) == 0));
         nxs = length(i_exo_var);
         chol_S = chol(M_.Sigma_e(i_exo_var,i_exo_var));
         exo_simul = zeros(M_.exo_nbr,options_.ramsey.periods);
@@ -397,7 +397,7 @@ if ~isempty(M_.det_shocks)
     end
     shock_indices=find(periods==1);
     if any(cellfun(@(x) ~strcmp(x, 'level'), { M_.det_shocks(shock_indices).type }))
-        fprintf(['\nevaluate_planner_objective: Shock values need to be specified in level.\n'])
+        fprintf('\nevaluate_planner_objective: Shock values need to be specified in level.\n')
     end
     u([M_.det_shocks(shock_indices).exo_id])=[M_.det_shocks(shock_indices).value];
 else

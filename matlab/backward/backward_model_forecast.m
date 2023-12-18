@@ -31,7 +31,7 @@ global M_ options_ oo_
 
 % Check that the model is actually backward
 if M_.maximum_lead
-    error(['backward_model_forecast:: The specified model is not backward looking!'])
+    error('backward_model_forecast:: The specified model is not backward looking!')
 end
 
 % Initialize returned argument.

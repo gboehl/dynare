@@ -129,7 +129,7 @@ else
     running_text = 'Fast realtime shock decomposition ';
 end
 newString=sprintf(running_text);
-fprintf(['%s'],newString);
+fprintf('%s',newString);
 
 for j=presample+1:nobs
     %    evalin('base',['options_.nobs=' int2str(j) ';'])

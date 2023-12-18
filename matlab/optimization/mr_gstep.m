@@ -148,7 +148,7 @@ while i<n
                 x = check_bounds(x,bounds);
             end
             if Verbose
-                fprintf(['Done for param %s = %8.4f; f = %8.4f\n'],parameter_names{i},x(i),f0)
+                fprintf('Done for param %s = %8.4f; f = %8.4f\n',parameter_names{i},x(i),f0)
             end
         end
         xh1=x;

@@ -59,19 +59,19 @@ problem_dummy=0;
 %naming conflict in steady state file
 if options_.steadystate_flag == 1
     if strmatch('ys',M_.endo_names,'exact') 
-        disp(['MODEL_DIAGNOSTICS: using the name ys for an endogenous variable will typically conflict with the internal naming in user-defined steady state files.'])
+        disp('MODEL_DIAGNOSTICS: using the name ys for an endogenous variable will typically conflict with the internal naming in user-defined steady state files.')
         problem_dummy=1;
     end
     if strmatch('ys',M_.param_names,'exact')
-        disp(['MODEL_DIAGNOSTICS: using the name ys for a parameter will typically conflict with the internal naming in user-defined steady state files.'])
+        disp('MODEL_DIAGNOSTICS: using the name ys for a parameter will typically conflict with the internal naming in user-defined steady state files.')
         problem_dummy=1;
     end
     if strmatch('M_',M_.endo_names,'exact') 
-        disp(['MODEL_DIAGNOSTICS: using the name M_ for an endogenous variable will typically conflict with the internal naming in user-defined steady state files.'])
+        disp('MODEL_DIAGNOSTICS: using the name M_ for an endogenous variable will typically conflict with the internal naming in user-defined steady state files.')
         problem_dummy=1;
     end
     if strmatch('M_',M_.param_names,'exact')
-        disp(['MODEL_DIAGNOSTICS: using the name M_ for a parameter will typically conflict with the internal naming in user-defined steady state files.'])
+        disp('MODEL_DIAGNOSTICS: using the name M_ for a parameter will typically conflict with the internal naming in user-defined steady state files.')
         problem_dummy=1;
     end
 end
@@ -124,10 +124,10 @@ if check1(1)
     problem_dummy=1;
     disp('MODEL_DIAGNOSTICS: The steady state cannot be computed')
     if any(isnan(dr.ys))
-        disp(['MODEL_DIAGNOSTICS: Steady state contains NaNs'])
+        disp('MODEL_DIAGNOSTICS: Steady state contains NaNs')
     end
     if any(isinf(dr.ys))
-        disp(['MODEL_DIAGNOSTICS: Steady state contains Inf'])
+        disp('MODEL_DIAGNOSTICS: Steady state contains Inf')
     end
     return
 end

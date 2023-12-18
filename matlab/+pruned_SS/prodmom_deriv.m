@@ -82,9 +82,9 @@ s2 = s/2;
 %  Use univariate normal results
 %
 if m==1
-    y = V^s2*prod([1:2:s-1]);
+    y = V^s2*prod(1:2:s-1);
     if nargout > 1
-        dy = s2*V^(s2-1)*dV*prod([1:2:s-1]);
+        dy = s2*V^(s2-1)*dV*prod(1:2:s-1);
         dy = reshape(dy,1,size(dV,3));
     end
    return
@@ -169,8 +169,8 @@ for i=1:fix(prod(nu+1)/2)
         end
     end
 end
-y = y/prod([1:s2]);
+y = y/prod(1:s2);
 if nargout > 1
-    dy = dy/prod([1:s2]);
+    dy = dy/prod(1:s2);
     dy = reshape(dy,1,size(dV,3));
 end

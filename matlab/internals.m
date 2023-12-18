@@ -130,7 +130,7 @@ if strcmpi(flag,'--load-mh-history') || strcmpi(flag,'--display-mh-history')
             disp([' o Acceptance ratio in the current chain is ' num2str(oar(b)*100,'%5.2f') '%']);
             disp([' o Initial value of the posterior kernel is: ' num2str(oo.InitialLogPost(b),'%10.5f')])
             disp([' o Last value of the posterior kernel is: ' num2str(o.LastLogPost(b),'%10.5f')])
-            disp([' o State of the chain:'])
+            disp(' o State of the chain:')
             skipline()
             d1 = num2str(transpose(oo.InitialParameters(b,:)),'%10.5f\n');
             d2 = num2str(transpose(o.LastParameters(b,:)),'%10.5f\n');

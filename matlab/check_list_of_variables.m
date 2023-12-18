@@ -72,7 +72,7 @@ elseif isempty(varlist) && ~isempty(options_.endo_vars_for_moment_computations_i
     end
 elseif isempty(varlist) && isempty(options_.endo_vars_for_moment_computations_in_estimation)
     skipline()
-    disp(['You did not declare endogenous variables after the estimation/calib_smoother command.'])
+    disp('You did not declare endogenous variables after the estimation/calib_smoother command.')
     cas = '';
     if options_.bayesian_irf
         cas = 'Posterior IRFs';

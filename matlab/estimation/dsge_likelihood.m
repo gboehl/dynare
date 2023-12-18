@@ -394,7 +394,7 @@ switch options_.lik_init
         end
     catch ME
         disp(ME.message)
-        disp(['dsge_likelihood:: I am not able to solve the Riccati equation, so I switch to lik_init=1!']);
+        disp('dsge_likelihood:: I am not able to solve the Riccati equation, so I switch to lik_init=1!');
         options_.lik_init = 1;
         Pstar=lyapunov_solver(T,R,Q,options_);
     end
@@ -886,7 +886,7 @@ if isfield(M_,'filter_initial_state') && ~isempty(M_.filter_initial_state)
             elseif ~options_.loglinear && ~options_.logged_steady_state
                 a(bayestopt_.mf0(ii)) = eval(M_.filter_initial_state{state_indices(ii),2}) - dr.ys(state_indices(ii));
             else
-                error(['The steady state is logged. This should not happen. Please contact the developers'])
+                error('The steady state is logged. This should not happen. Please contact the developers')
             end
         end
     end
