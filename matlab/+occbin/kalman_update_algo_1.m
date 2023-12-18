@@ -1,4 +1,4 @@
-function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat] = kalman_update_algo_1(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_,occbin_options)
+function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat, alphahat, V] = kalman_update_algo_1(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_,occbin_options)
 % function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat] = kalman_update_algo_1(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,T0,R0,TT,RR,CC,regimes0,M_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,options_,occbin_options)
 % INPUTS
 % - a               [N by 1]                t-1's state estimate
@@ -86,6 +86,8 @@ else
     base_regime.regimestart2 = 1;
 end
 regimes_ = [base_regime base_regime base_regime];
+opts_simul = occbin_options.opts_simul;
+options_.occbin.simul=opts_simul;
 
 mm=size(a,1);
 %% store info in t=1
@@ -103,16 +105,46 @@ PZI         = P1(:,:,t)*ZZ'*iF(di,di,t);
 % L(:,:,t)    = T-K(:,di,t)*ZZ;
 L(:,:,t)    = eye(mm)-PZI*ZZ;
 
-if ~options_.occbin.filter.use_relaxation
-    [a, a1, P, P1, v, alphahat, etahat, lik, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
+if ~isempty(fieldnames(regimes0))
+    if options_.occbin.filter.guess_regime
+        [~,~,~,~,~,~, TTx, RRx, CCx] ...
+            = occbin.dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state, regimes0(1),'reduced_state_space',T0,R0);
+        if M_.occbin.constraint_nbr==1
+            bindx = occbin.backward_map_regime(regimes0(1).regime, regimes0(1).regimestart);
+            bindx = bindx(2:end);
+            [regimes0(2).regime, regimes0(2).regimestart, error_flag]=occbin.map_regime(bindx);
+            bindx = bindx(2:end);
+            [regimes0(3).regime, regimes0(3).regimestart, error_flag]=occbin.map_regime(bindx);
+        else
+            bindx1 = occbin.backward_map_regime(regimes0(1).regime1, regimes0(1).regimestart1);
+            bindx2 = occbin.backward_map_regime(regimes0(1).regime2, regimes0(1).regimestart2);
+            bindx1 = bindx1(2:end);
+            bindx2 = bindx2(2:end);
+            [regimes0(2).regime1, regimes0(2).regimestart1, error_flag]=occbin.map_regime(bindx1);
+            [regimes0(2).regime2, regimes0(2).regimestart2, error_flag]=occbin.map_regime(bindx2);
+            bindx1 = bindx1(2:end);
+            bindx2 = bindx2(2:end);
+            [regimes0(3).regime1, regimes0(3).regimestart1, error_flag]=occbin.map_regime(bindx1);
+            [regimes0(3).regime2, regimes0(3).regimestart2, error_flag]=occbin.map_regime(bindx2);
+        end
+%     regimes0=[regimes0 base_regime base_regime];
+        TT(:,:,2) = TTx(:,:,end);
+        RR(:,:,2) = RRx(:,:,end);
+        CC(:,2) = CCx(:,end);
+    end
+    [a, a1, P, P1, v, alphahat, etahat, lik, V, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood, options_.occbin.filter.state_covariance);
 else
     [~,~,~,~,~,~, TTx, RRx, CCx] ...
         = occbin.dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state, base_regime,'reduced_state_space',T0,R0);
-    regimes0(1)=base_regime;
+    if isempty(fieldnames(regimes0))
+        regimes0 = regimes_;
+    else
+        regimes0(1)=base_regime;
+    end
     TT(:,:,2) = TTx(:,:,end);
     RR(:,:,2) = RRx(:,:,end);
     CC(:,2) = CCx(:,end);
-    [a, a1, P, P1, v, alphahat, etahat, lik, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
+    [a, a1, P, P1, v, alphahat, etahat, lik, V, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood, options_.occbin.filter.state_covariance);
 end
 if error_flag
     etahat=NaN(size(QQQ,1),1);
@@ -120,7 +152,6 @@ if error_flag
 end
 
 %% run here the occbin simul
-opts_simul = occbin_options.opts_simul;
 opts_simul.SHOCKS = zeros(3,M_.exo_nbr);
 opts_simul.exo_pos=1:M_.exo_nbr;
 opts_simul.SHOCKS(1,:) = etahat(:,2)';
@@ -134,14 +165,24 @@ else
     my_order_var = dr.order_var;
 end
 options_.occbin.simul=opts_simul;
-[~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
-if out.error_flag
+if options_.occbin.filter.guess_regime
     options_.occbin.simul.init_regime=regimes0;
     [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
+    if out.error_flag
+        options_.occbin.simul=opts_simul;
+        [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
+    end
+else
+    [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
+    if out.error_flag
+        options_.occbin.simul.init_regime=regimes0;
+        [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
+    end
 end
 if out.error_flag
     error_flag = out.error_flag;
     etahat=etahat(:,2);
+    lik=inf;
     return;
 end
 
@@ -159,53 +200,18 @@ end
 lik_hist=lik;
 niter=1;
 is_periodic=0;
-if options_.occbin.filter.use_relaxation || isequal(regimes0(1),base_regime)
-    nguess=1;
-else
-    nguess=0;
-end
-newguess=0;
 
 if any(myregime) || ~isequal(regimes_(1),regimes0(1))
     while ~isequal(regimes_(1),regimes0(1)) && ~is_periodic && ~out.error_flag && niter<=options_.occbin.likelihood.max_number_of_iterations
         niter=niter+1;
-        oldstart=1;
-        if M_.occbin.constraint_nbr==1 && length(regimes0(1).regimestart)>1
-            oldstart = regimes0(1).regimestart(end);
-        end
-        newstart=1;
-        if M_.occbin.constraint_nbr==1 && length(regimes_(1).regimestart)>1
-            newstart = regimes_(1).regimestart(end);
-        end
-        if M_.occbin.constraint_nbr==1 && (newstart-oldstart)>2 && options_.occbin.filter.use_relaxation
-            regimestart = max(oldstart+2,round(0.5*(newstart+oldstart)));
-            regimestart = min(regimestart,oldstart+4);
-            if regimestart<=regimes_(1).regimestart(end-1)
-                if length(regimes_(1).regimestart)<=3    
-                    regimestart = max(regimestart, min(regimes_(1).regimestart(end-1)+2,newstart));
-                else
-                    regimes_(1).regime =  regimes_(1).regime(1:end-2);
-                    regimes_(1).regimestart =  regimes_(1).regimestart(1:end-2);
-                    regimestart = max(regimestart, regimes_(1).regimestart(end-1)+1);
-                end
-            end
-            regimes_(1).regimestart(end)=regimestart;
-            [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                = occbin.dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state, [base_regime regimes_(1)],'reduced_state_space', T0, R0);
-            TT(:,:,2) = TTx(:,:,end);
-            RR(:,:,2) = RRx(:,:,end);
-            CC(:,2) = CCx(:,end);
-        elseif newguess==0
-            TT(:,:,2)=ss.T(my_order_var,my_order_var,1);
-            RR(:,:,2)=ss.R(my_order_var,:,1);
-            CC(:,2)=ss.C(my_order_var,1);
-        end
-        newguess=0;
+        TT(:,:,2)=ss.T(my_order_var,my_order_var,1);
+        RR(:,:,2)=ss.R(my_order_var,:,1);
+        CC(:,2)=ss.C(my_order_var,1);
         regime_hist(niter) = {regimes_(1)};
         if M_.occbin.constraint_nbr==1
             regime_end(niter) = regimes_(1).regimestart(end);
         end
-        [a, a1, P, P1, v, alphahat, etahat, lik] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
+        [a, a1, P, P1, v, alphahat, etahat, lik, V] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood, options_.occbin.filter.state_covariance);
         etahat_hist(niter) = {etahat};
         lik_hist(niter) = lik;
         opts_simul.SHOCKS(1,:) = etahat(:,2)';
@@ -216,9 +222,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         else
             opts_simul.endo_init = alphahat(dr.inv_order_var,1);
         end
-        if not(options_.occbin.filter.use_relaxation)
-            opts_simul.init_regime=regimes_(1);
-        end
+        opts_simul.init_regime=regimes_(1);
         if M_.occbin.constraint_nbr==1
             myregimestart = [regimes_.regimestart];
         else
@@ -228,8 +232,13 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
         options_.occbin.simul=opts_simul;
         [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
         if out.error_flag
+            options_.occbin.simul.init_regime=[];
+            [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
+        end
+        if out.error_flag
             error_flag = out.error_flag;
             etahat=etahat(:,2);
+            lik=inf;
             return;
         end
         regimes0=regimes_;
@@ -238,36 +247,14 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             for kiter=1:niter-1
                 is_periodic(kiter) = isequal(regime_hist{kiter}, regimes_(1));
             end
+            is_periodic_iter = find(is_periodic);
             is_periodic =  any(is_periodic);
             if is_periodic
-                if nguess<3 && M_.occbin.constraint_nbr==1
-                    newguess=1;
-                    is_periodic=0;
-                    nguess=nguess+1;
-                    if nguess==1
-                        % change starting regime
-                        regimes_(1).regime=0;
-                        regimes_(1).regimestart=1;
-                    elseif nguess==2
-                        % change starting regime
-                        regimes_(1).regime=[0 1 0];
-                        regimes_(1).regimestart=[1 2 3];
-                    else
-                        regimes_(1).regime=[1 0];
-                        regimes_(1).regimestart=[1 2];
-                    end
-                    [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                        = occbin.dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state, [base_regime regimes_(1)],'reduced_state_space',T0,R0);
-                    TT(:,:,2) = TTx(:,:,end);
-                    RR(:,:,2) = RRx(:,:,end);
-                    CC(:,2) = CCx(:,end);
-                    regime_hist = regime_hist(1);
-                    niter=1;
-                else
-                    % re-set to previous regime
-                    regimes_ = regimes0;
-                    % force projection conditional on previous regime
-                    opts_simul.init_regime=regimes0(1);
+                % re-set to previous regime
+                if options_.occbin.filter.periodic_solution
+                    % force projection conditional on most likely regime
+                    [m, im]=min(lik_hist(is_periodic_iter:end));
+                    opts_simul.init_regime=regime_hist{is_periodic_iter+im-1};
                     if M_.occbin.constraint_nbr==1
                         myregimestart = [regimes0.regimestart];
                     else
@@ -280,8 +267,20 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     if out.error_flag
                         error_flag = out.error_flag;
                         etahat=etahat(:,2);
+                        lik=inf;
                         return;
+                    else
+                        regimes_ = out.regime_history;
+                        TT(:,:,2)=ss.T(my_order_var,my_order_var,1);
+                        RR(:,:,2)=ss.R(my_order_var,:,1);
+                        CC(:,2)=ss.C(my_order_var,1);
+                        [a, a1, P, P1, v, alphahat, etahat, lik, V] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood, options_.occbin.filter.state_covariance);
                     end
+                else
+                    error_flag = 330;
+                    etahat=etahat(:,2);
+                    lik=inf;
+                    return;
                 end
             end
         end
@@ -291,61 +290,6 @@ end
 error_flag = out.error_flag;
 if ~error_flag && niter>options_.occbin.likelihood.max_number_of_iterations && ~isequal(regimes_(1),regimes0(1))
     error_flag = 1;
-    if M_.occbin.constraint_nbr==1 % try some other regime
-        [~, il]=sort(regime_end);
-        rr=regime_hist(il(2:3));
-        newstart=1;
-        if length(rr{1}.regimestart)>1
-            newstart = rr{1}.regimestart(end)-rr{1}.regimestart(end-1)+1;
-        end
-        oldstart=1;
-        if length(rr{2}.regimestart)>1
-            oldstart = rr{2}.regimestart(end)-rr{2}.regimestart(end-1)+1;
-        end
-        nstart=sort([newstart oldstart]);
-        regimes_=rr{1}(1);
-        for k=(nstart(1)+1):(nstart(2)-1)
-            niter=niter+1;
-            regimes_(1).regimestart(end)=k;
-            
-            [~,~,~,~,~,~, TTx, RRx, CCx] ...
-                = occbin.dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state, [base_regime regimes_(1)],'reduced_state_space',T0,R0);
-            TT(:,:,2) = TTx(:,:,end);
-            RR(:,:,2) = RRx(:,:,end);
-            CC(:,2) = CCx(:,end);
-            [a, a1, P, P1, v, alphahat, etahat, lik] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, options_.rescale_prediction_error_covariance, options_.occbin.likelihood.IF_likelihood);
-            etahat_hist(niter) = {etahat};
-            lik_hist(niter) = lik;
-            regime_hist(niter) = {regimes_(1)};
-            opts_simul.SHOCKS(1,:) = etahat(:,2)';
-            if opts_simul.restrict_state_space
-                tmp=zeros(M_.endo_nbr,1);
-                tmp(dr.restrict_var_list,1)=alphahat(:,1);
-                opts_simul.endo_init = tmp(dr.inv_order_var,1);
-            else
-                opts_simul.endo_init = alphahat(dr.inv_order_var,1);
-            end
-            %         opts_simul.init_regime=regimes_(1);
-            if M_.occbin.constraint_nbr==1
-                myregimestart = [regimes_.regimestart];
-            else
-                myregimestart = [regimes_.regimestart1 regimes_.regimestart2];
-            end
-            opts_simul.periods = max(opts_simul.periods,max(myregimestart));
-            options_.occbin.simul=opts_simul;
-            [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
-            if out.error_flag
-                error_flag = out.error_flag;
-                etahat=etahat(:,2);
-                return;
-            end
-            if isequal(out.regime_history(1),regimes_(1))
-                error_flag=0;
-                break
-            end
-        end
-        regimes_ = out.regime_history;
-    end
 end
 
 if ~error_flag
@@ -358,16 +302,25 @@ C = ss.C(my_order_var,1:2);
 QQ = R(:,:,2)*QQQ(:,:,3)*transpose(R(:,:,2));
 P(:,:,1) = P(:,:,2);
 P(:,:,2) = T(:,:,2)*P(:,:,1)*transpose(T(:,:,2))+QQ;
-etahat=etahat(:,2);
+if nargout>=13
+    etahat=etahat(:,2);
+end
 
 warning_config;
 end
 
-function [a, a1, P, P1, v, alphahat, etahat, lik, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, rescale_prediction_error_covariance, IF_likelihood)
+function [a, a1, P, P1, v, alphahat, etahat, lik, V, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, rescale_prediction_error_covariance, IF_likelihood, state_uncertainty_flag)
 alphahat=NaN(size(a));
 etahat=NaN(size(QQQ,1),2);
 lik=Inf; 
 error_flag=0;
+
+if state_uncertainty_flag
+    V               = zeros(mm,mm,2);
+    N               = zeros(mm,mm,3);
+else
+    V=[];
+end
 
 warning off
 if nargin<18
@@ -444,9 +397,15 @@ while t > 1
     if isempty(di)
         % in this case, L is simply T due to Z=0, so that DK (2012), eq. 4.93 obtains
         r(:,t) = L(:,:,t)'*r(:,t+1);                                        %compute r_{t-1}, DK (2012), eq. 4.38 with Z=0
+        if state_uncertainty_flag
+            N(:,:,t)=L(:,:,t)'*N(:,:,t+1)*L(:,:,t);                         %compute N_{t-1}, DK (2012), eq. 4.42 with Z=0
+        end
     else
         ZZ = Z(di,:);
         r(:,t) = ZZ'*iF(di,di,t)*v(di,t) + L(:,:,t)'*r(:,t+1);              %compute r_{t-1}, DK (2012), eq. 4.38
+        if state_uncertainty_flag
+            N(:,:,t)=ZZ'*iF(di,di,t)*ZZ+L(:,:,t)'*N(:,:,t+1)*L(:,:,t);      %compute N_{t-1}, DK (2012), eq. 4.42
+        end
     end
     Q=QQQ(:,:,t);
     QRt = Q*transpose(RR(:,:,t));
@@ -454,6 +413,10 @@ while t > 1
     alphahat(:,t)       = a1(:,t) + P1(:,:,t)*r(:,t);                         %DK (2012), eq. 4.35
     etahat(:,t) = QRt*r(:,t);                                               %DK (2012), eq. 4.63
     r(:,t) = T'*r(:,t);                                                             % KD (2003), eq. (23), equation for r_{t-1,p_{t-1}}
+    if state_uncertainty_flag
+        V(:,:,t)    = P1(:,:,t)-P1(:,:,t)*N(:,:,t)*P1(:,:,t);                      %DK (2012), eq. 4.43
+        N(:,:,t)    = T'*N(:,:,t)*T;                                         %DK (2012), eq. 4.43
+    end
 
     if IF_likelihood && t==2 && not(isempty(di))
         ishocks = any(ZZ*RR(:,:,t));

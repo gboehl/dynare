@@ -89,6 +89,9 @@ occbin_graph(noconstant) c erra lambdak k i a k;
     occbin_solver(simul_periods=200,simul_maxit=200,simul_curb_retrench,simul_check_ahead_periods=200);
     occbin_setup(smoother_periods=200,smoother_maxit=200,smoother_curb_retrench,smoother_check_ahead_periods=200);
     calib_smoother(datafile=datasim);
+    oo0=oo_;
+    occbin_setup(filter_use_relaxation);
+    calib_smoother(datafile=datasim);
     oo_= occbin.unpack_simulations(M_,oo_,options_);
 
     titlelist = char('c','lambdak','k','i','a','erra');

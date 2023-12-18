@@ -93,6 +93,7 @@ F_singular  = true;
 s = 0;
 rescale_prediction_error_covariance0=rescale_prediction_error_covariance;
 if occbin_.status
+    base_regime = struct();
     Qt = repmat(Q,[1 1 3]);
     a0 = zeros(mm,last);
     a1 = zeros(mm,last);
@@ -107,8 +108,9 @@ if occbin_.status
     exo_det_steady_state=occbin_.info{5};
     M_=occbin_.info{6};
     occbin_options=occbin_.info{7};
-    opts_regime.regime_history = occbin_options.opts_simul.init_regime;
-    opts_regime.binding_indicator = occbin_options.opts_simul.init_binding_indicator;
+    occbin_options.opts_simul.SHOCKS = [];
+    opts_regime.regime_history = occbin_options.opts_regime.init_regime_history;
+    opts_regime.binding_indicator = occbin_options.opts_regime.init_binding_indicator;
     if t>1
         first_period_occbin_update = max(t+1,options_.occbin.likelihood.first_period_occbin_update);
     else
@@ -133,6 +135,15 @@ if occbin_.status
             CC=repmat(zeros(mm,1),1,last+1);
         end
 
+    end
+    if M_.occbin.constraint_nbr==1
+        base_regime.regime = 0;
+        base_regime.regimestart = 1;
+    else
+        base_regime.regime1 = 0;
+        base_regime.regimestart1 = 1;
+        base_regime.regime2 = 0;
+        base_regime.regimestart2 = 1;
     end
 else
     first_period_occbin_update = inf;
@@ -254,12 +265,16 @@ while notsteady && t<=last
             RR01 = cat(3,R,RR(:,:,1));
             CC01 = zeros(size(CC,1),2);
             CC01(:,2) = CC(:,1);
-            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a00, a10, P00, P10, data_index0, Z, v0, Y0, H, Qt, T0, R0, TT01, RR01, CC01, regimes_(t:t+1), M_, dr, endo_steady_state,exo_steady_state,exo_det_steady_state, options_, occbin_options);
+            % insert here kalman update engine
+            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regx, info, M_, likx] = occbin.kalman_update_engine(a00, a10, P00, P10, t, data_index0, Z, v0, Y0, H, Qt, T0, R0, TT01, RR01, CC01, regimes_(t:t+1), base_regime, d_index, M_, dr, endo_steady_state,exo_steady_state,exo_det_steady_state, options_, occbin_options);
+%            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a00, a10, P00, P10, data_index0, Z, v0, Y0, H, Qt, T0, R0, TT01, RR01, CC01, regimes_(t:t+1), M_, dr, endo_steady_state,exo_steady_state,exo_det_steady_state, options_, occbin_options);
         else
             if isqvec
                 Qt = Qvec(:,:,t-1:t+1);
             end
-            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a0(:,t-1),a1(:,t-1:t),P0(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,vv(:,t-1:t),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options);
+            % insert here kalman update engine
+            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regx, info, M_, likx] = occbin.kalman_update_engine(a0(:,t-1),a1(:,t-1:t),P0(:,:,t-1),P1(:,:,t-1:t),t,data_index(t-1:t),Z,vv(:,t-1:t),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),base_regime,d_index,M_,dr, endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options);
+%            [ax, a1x, Px, P1x, vx, Tx, Rx, Cx, regimes_(t:t+2), info, M_, likx] = occbin.kalman_update_algo_1(a0(:,t-1),a1(:,t-1:t),P0(:,:,t-1),P1(:,:,t-1:t),data_index(t-1:t),Z,vv(:,t-1:t),Y(:,t-1:t),H,Qt,T0,R0,TT(:,:,t-1:t),RR(:,:,t-1:t),CC(:,t-1:t),regimes_(t:t+1),M_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state,options_,occbin_options);
         end
         if info
             if options_.debug
@@ -270,6 +285,7 @@ while notsteady && t<=last
         if options_.occbin.likelihood.use_updated_regime
             lik(s) = likx;
         end
+        regimes_(t:t+2) = regx;
         a0(:,t) = ax(:,1);
         a1(:,t) = a1x(:,2);
         a = ax(:,2);

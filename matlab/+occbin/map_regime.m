@@ -26,6 +26,9 @@ function [regime, regime_start, error_flag]=map_regime(binding_indicator,debug_s
 % Journal of Monetary Economics 70, 22-38
 
 error_flag=0;
+if isempty(binding_indicator)
+    binding_indicator = false;
+end
 % analyse violvec and isolate contiguous periods in the other regime.
 regime(1) = binding_indicator(1);
 regime_index = 1;

@@ -65,8 +65,10 @@ regime_history=[];
 if  options_.occbin.smoother.linear_smoother && nargin==12
     %% linear smoother
     options_.occbin.smoother.status=false;
-    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
-    tmp_smoother=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
+    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = ...
+        DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
+    tmp_smoother=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,...
+        aK,P,PK,decomp,Trend,state_uncertainty);
     for jf=1:length(smoother_field_list)
         oo_.occbin.linear_smoother.(smoother_field_list{jf}) = tmp_smoother.(smoother_field_list{jf});
     end
@@ -80,7 +82,9 @@ if  options_.occbin.smoother.linear_smoother && nargin==12
     oo_.occbin.linear_smoother.T0=T0;
     oo_.occbin.linear_smoother.R0=R0;
     oo_.occbin.linear_smoother.decomp=decomp;
-    
+    oo_.occbin.linear_smoother.alphahat0=alphahat0;
+    oo_.occbin.linear_smoother.state_uncertainty0=state_uncertainty0;
+
     fprintf('\nOccbin: linear smoother done.\n')
     options_.occbin.smoother.status=true;
 end
@@ -115,10 +119,43 @@ opts_simul.piecewise_only = options_.occbin.smoother.piecewise_only;
 occbin_options = struct();
 
 occbin_options.first_period_occbin_update = options_.occbin.smoother.first_period_occbin_update;
-occbin_options.opts_regime = opts_simul; % this builds the opts_simul options field needed by occbin.solver
-occbin_options.opts_regime.binding_indicator = options_.occbin.likelihood.init_binding_indicator;
-occbin_options.opts_regime.regime_history=options_.occbin.likelihood.init_regime_history;
-[alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
+occbin_options.opts_simul = opts_simul; % this builds the opts_simul options field needed by occbin.solver
+occbin_options.opts_regime.binding_indicator = options_.occbin.smoother.init_binding_indicator;
+occbin_options.opts_regime.regime_history=options_.occbin.smoother.init_regime_history;
+
+error_indicator=false;
+try
+    %blanket try-catch should be replaced be proper error handling, see https://git.dynare.org/Dynare/dynare/-/merge_requests/2226#note_20318
+    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
+catch ME
+    error_indicator=true;
+    disp(ME.message)
+    for iter = 1:numel(ME.stack)
+        ME.stack(iter)
+    end
+    end
+if error_indicator || isempty(alphahat0)
+    etahat= oo_.occbin.linear_smoother.etahat;
+    alphahat0= oo_.occbin.linear_smoother.alphahat0;
+    base_regime = struct();
+    if M_.occbin.constraint_nbr==1
+        base_regime.regime = 0;
+        base_regime.regimestart = 1;
+    else
+        base_regime.regime1 = 0;
+        base_regime.regimestart1 = 1;
+        base_regime.regime2 = 0;
+        base_regime.regimestart2 = 1;
+    end
+    oo_.occbin.smoother.regime_history = [];
+    for jper=1:size(alphahat,2)+1
+        if jper == 1
+            oo_.occbin.smoother.regime_history = base_regime;
+        else
+            oo_.occbin.smoother.regime_history(jper) = base_regime;
+        end
+    end
+end
 
 oo_.occbin.smoother.realtime_regime_history = oo_.occbin.smoother.regime_history;
 regime_history = oo_.occbin.smoother.regime_history;
@@ -139,6 +176,7 @@ opts_simul.SHOCKS = [etahat(:,1:end)'; zeros(1,M_.exo_nbr)];
 opts_simul.exo_pos = 1:M_.exo_nbr;
 opts_simul.endo_init = alphahat0(oo_.dr.inv_order_var,1);
 opts_simul.init_regime=regime_history; % use realtime regime for guess, to avoid multiple solution issues!
+opts_simul.periods = size(opts_simul.SHOCKS,1);
 options_.occbin.simul=opts_simul;
 options_.noprint = true;
 [~, out, ss] = occbin.solver(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
@@ -261,13 +299,13 @@ while is_changed && maxiter>iter && ~is_periodic
             eee(:,k) = eig(TT(:,:,k));
         end
         if options_.debug
-            err_eig(iter-1) = max(max(abs(sort(eee)-sort(sto_eee))));
-            err_alphahat(iter-1) = max(max(max(abs(alphahat-sto_alphahat))));
-            err_etahat(iter-1) = max(max(max(abs(etahat-sto_etahat{iter-1}))));
-            err_CC(iter-1) = max(max(max(abs(CC-sto_CC))));
-            err_RR(iter-1) = max(max(max(abs(RR-sto_RR))));
-            err_TT(iter-1) = max(max(max(abs(TT-sto_TT))));
-        end
+        err_eig(iter-1) = max(max(abs(sort(eee)-sort(sto_eee))));
+        err_alphahat(iter-1) = max(max(max(abs(alphahat-sto_alphahat))));
+        err_etahat(iter-1) = max(max(max(abs(etahat-sto_etahat{iter-1}))));
+        err_CC(iter-1) = max(max(max(abs(CC-sto_CC))));
+        err_RR(iter-1) = max(max(max(abs(RR-sto_RR))));
+        err_TT(iter-1) = max(max(max(abs(TT-sto_TT))));
+    end
     end
 
     if occbin_smoother_debug || is_periodic
@@ -391,6 +429,10 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
     oo_.occbin.smoother.T0=TT;
     oo_.occbin.smoother.R0=RR;
     oo_.occbin.smoother.C0=CC;
+    oo_.occbin.smoother.simul.piecewise = out.piecewise(1:end-1,:);
+    if ~options_.occbin.simul.piecewise_only
+        oo_.occbin.smoother.simul.linear = out.linear(1:end-1,:);
+    end        
     if options_.occbin.smoother.plot
         GraphDirectoryName = CheckPath('graphs',M_.fname);
         latexFolder = CheckPath('latex',M_.dname);
@@ -404,7 +446,7 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
         j1=0;
         ifig=0;
         for j=1:M_.exo_nbr
-            if M_.Sigma_e(j,j)
+            if max(abs(oo_.occbin.smoother.etahat(j,:)))>1.e-8
                 j1=j1+1;
                 if mod(j1,9)==1
                     hh_fig = dyn_figure(options_.nodisplay,'name','Occbin smoothed shocks');
@@ -441,15 +483,15 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
                         fprintf(fidTeX,'\\label{Fig:smoothedshocks_occbin:%s}\n',int2str(ifig));
                         fprintf(fidTeX,'\\end{figure}\n');
                         fprintf(fidTeX,' \n');
-                    end
                 end
+            end
             end
         end
 
-        if mod(j1,9)~=0 && j==M_.exo_nbr
-            annotation('textbox', [0.1,0,0.35,0.05],'String', 'Linear','Color','Blue','horizontalalignment','center','interpreter','none');
-            annotation('textbox', [0.55,0,0.35,0.05],'String', 'Piecewise','Color','Red','horizontalalignment','center','interpreter','none');
-            dyn_saveas(hh_fig,[GraphDirectoryName filesep M_.fname,'_smoothedshocks_occbin',int2str(ifig)],options_.nodisplay,options_.graph_format);
+            if mod(j1,9)~=0 && j==M_.exo_nbr
+                annotation('textbox', [0.1,0,0.35,0.05],'String', 'Linear','Color','Blue','horizontalalignment','center','interpreter','none');
+                annotation('textbox', [0.55,0,0.35,0.05],'String', 'Piecewise','Color','Red','horizontalalignment','center','interpreter','none');
+                dyn_saveas(hh_fig,[GraphDirectoryName filesep M_.fname,'_smoothedshocks_occbin',int2str(ifig)],options_.nodisplay,options_.graph_format);
             if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
                 % TeX eps loader file
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
@@ -463,6 +505,6 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
         end
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fclose(fidTeX);
-        end
     end
+end
 end
