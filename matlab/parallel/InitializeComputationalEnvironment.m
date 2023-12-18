@@ -94,7 +94,7 @@ CPUWeightTemp=ones(1,lP)*(-1);
 CPUWeightTemp=CPUWeight;
 
 for i=1:lP
-    [NoNServes, mP]=max(CPUWeightTemp);
+    [~, mP]=max(CPUWeightTemp);
     NewPosition(i)=mP;
     CPUWeightTemp(mP)=-1;
 end

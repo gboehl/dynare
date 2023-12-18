@@ -78,7 +78,7 @@ elseif options_.steadystate_flag
         end
     end
     ys_init(k_inst) = inst_val;
-    [xx,params] = evaluate_steady_state_file(ys_init,exo_ss,M_,options_,~options_.steadystate.nocheck); %run steady state file again to update parameters
+    [~,params] = evaluate_steady_state_file(ys_init,exo_ss,M_,options_,~options_.steadystate.nocheck); %run steady state file again to update parameters
     [~,~,steady_state] = nl_func(inst_val); %compute and return steady state
 else
     xx = ys_init(1:M_.orig_endo_nbr);
@@ -149,7 +149,7 @@ resids1 = y+A*mult;
 if inst_nbr == 1
     r1 = sqrt(resids1'*resids1);
 else
-    [q,r,e] = qr([A y]');
+    [~,r] = qr([A y]');
     k = size(A,1)+(1-inst_nbr:0);
     r1 = r(end,k)';
 end
@@ -167,7 +167,7 @@ end
 function result = check_static_model(ys,exo_ss,M_,options_)
 result = false;
 if (options_.bytecode)
-    [res, ~] = bytecode('static', M_, options, ys, exo_ss, M_.params, 'evaluate');
+    res = bytecode('static', M_, options, ys, exo_ss, M_.params, 'evaluate');
 else
     res = feval([M_.fname '.sparse.static_resid'], ys, exo_ss, M_.params);
 end

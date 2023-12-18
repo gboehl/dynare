@@ -89,7 +89,7 @@ switch (extension)
         dyn_data_01(:,dyn_i_01) = dyn_tmp_01;
     end
   case { '.xls', '.xlsx' }
-    [freq,init,data,varlist] = load_xls_file_data(fullname,xls_sheet,xls_range);
+    [~,~,data,varlist] = load_xls_file_data(fullname,xls_sheet,xls_range);
     for dyn_i_01=1:var_size_01
         iv = strmatch(strtrim(var_names_01{dyn_i_01}),varlist,'exact');
         if ~isempty(iv)
@@ -105,7 +105,7 @@ switch (extension)
         end
     end
   case '.csv'
-    [freq,init,data,varlist] = load_csv_file_data(fullname);
+    [~,~,data,varlist] = load_csv_file_data(fullname);
     for dyn_i_01=1:var_size_01
         iv = strmatch(var_names_01{dyn_i_01},varlist,'exact');
         if ~isempty(iv)

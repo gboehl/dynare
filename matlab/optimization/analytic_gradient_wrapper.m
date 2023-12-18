@@ -31,7 +31,7 @@ function [fval, grad, hess, exit_flag]=analytic_gradient_wrapper(x, fcn, varargi
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[fval, info, exit_flag, grad, hess] = fcn(x, varargin{:});
+[fval, ~, exit_flag, grad, hess] = fcn(x, varargin{:});
 if size(grad,2)==1
     grad=grad'; %should be row vector for Matlab; exception lsqnonlin where Jacobian is required
 end

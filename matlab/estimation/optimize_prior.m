@@ -37,7 +37,7 @@ while look_for_admissible_initial_condition
     xinit = xparam1+scale*randn(size(xparam1));
     if all(xinit>Prior.p3) && all(xinit<Prior.p4)
         M_ = set_all_parameters(xinit, estim_params_, M_);
-        [dr, INFO, M_, oo_] = resol(0, M_, options_, oo_);
+        [~, INFO, M_, oo_] = resol(0, M_, options_, oo_);
         if ~INFO(1)
             look_for_admissible_initial_condition = false;
         end
@@ -52,8 +52,7 @@ while look_for_admissible_initial_condition
 end
 
 % Maximization of the prior density
-[xparams, lpd, hessian_mat] = ...
-    maximize_prior_density(xinit, pnames, options_, M_, Prior, estim_params_, oo_);
+xparams = maximize_prior_density(xinit, pnames, options_, M_, Prior, estim_params_, oo_);
 
 % Display results.
 skipline(2)

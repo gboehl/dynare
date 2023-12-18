@@ -40,7 +40,7 @@ end
 errorcode = 0;
 
 % Get the original equation to be estimated
-[LHS, RHS] = get_lhs_and_rhs(eqname, M_, true);
+[~, RHS] = get_lhs_and_rhs(eqname, M_, true);
 
 % Check that the equation has a PAC expectation term.
 if ~contains(RHS, 'pac_expectation', 'IgnoreCase', true)

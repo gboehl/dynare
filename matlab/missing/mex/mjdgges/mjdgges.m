@@ -60,7 +60,7 @@ try
     eigval = ordeig(ss, tt);
     select = abs(eigval) < qz_criterium;
     sdim = sum(select);
-    [ss, tt, qq, zz] = ordqz(ss, tt, qq, zz, select);
+    [ss, tt, ~, zz] = ordqz(ss, tt, qq, zz, select);
     eigval = ordeig(ss, tt);
 catch
     info = 1; % Not as precise as lapack's info!

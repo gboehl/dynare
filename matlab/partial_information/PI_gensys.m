@@ -76,7 +76,7 @@ try
         warning('off','MATLAB:nearlySingularMatrix');
         warning('off','MATLAB:singularMatrix');
         UAVinv=inv(C2); % i.e. inv(U02'*a1*V02)
-        [LastWarningTxt, LastWarningID]=lastwarn;
+        [~, LastWarningID]=lastwarn;
         if any(any(isinf(UAVinv)))
             singular=1;
         end
@@ -84,7 +84,7 @@ try
     if singular == 1 || strcmp('MATLAB:nearlySingularMatrix',LastWarningID) == 1 || ...
                  strcmp('MATLAB:illConditionedMatrix',LastWarningID)==1 || ...
                  strcmp('MATLAB:singularMatrix',LastWarningID)==1
-        [C1,C2,C3,C4, C5, F1, F2, F3, F4, F5, M1, M2, UAVinv, FL_RANK, V01, V02] = PI_gensys_singularC(C1,C2,C3,C4, C5, F1, F2, F3, F4, F5, V01, V02, 0);
+        [C1,~,C3,C4, C5, F1, F2, F3, F4, F5, ~, ~, UAVinv, FL_RANK, V01, V02] = PI_gensys_singularC(C1,C2,C3,C4, C5, F1, F2, F3, F4, F5, V01, V02, 0);
     end
     warning('on','MATLAB:singularMatrix');
     warning('on','MATLAB:nearlySingularMatrix');
@@ -239,7 +239,7 @@ for i=1:nn
 end
 div ;
 if ~zxz
-    [a, b, q, z]=qzdiv(div,a,b,q,z);
+    [a, b, ~, z]=qzdiv(div,a,b,q,z);
 end
 
 gev=[diag(a) diag(b)];

@@ -509,7 +509,7 @@ while notsteady && t<smpl
             opts_simul.init_regime = []; %regimes_(t);
             opts_simul.waitbar=0;
             options_.occbin.simul=opts_simul;
-            [~, out, ss] = occbin.solver(M_,options_,dr,steady_state,exo_steady_state,exo_det_steady_state);
+            [~, out] = occbin.solver(M_,options_,dr,steady_state,exo_steady_state,exo_det_steady_state);
         end
         for jnk=1:nk
             if filter_covariance_flag

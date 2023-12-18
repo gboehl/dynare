@@ -52,7 +52,7 @@ for indPC=1:length(Parallel)
         if ~isempty(directory)
             directory = [directory '/'];
         end
-        [~, ~] = system(['ssh ',ssh_token,username,Parallel(indPC).ComputerName,' ''/bin/bash --norc -c "rm -f ',directory,pname,fname,'"''']);
+        system(['ssh ',ssh_token,username,Parallel(indPC).ComputerName,' ''/bin/bash --norc -c "rm -f ',directory,pname,fname,'"''']);
     else
         fname_temp=['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',pname,fname];
         if exist(fname_temp,'file')

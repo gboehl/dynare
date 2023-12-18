@@ -464,7 +464,7 @@ if analytic_derivation
     AHess = [];
     iv = dr.restrict_var_list;
     if nargin<13 || isempty(derivatives_info)
-        [A,B,nou,nou,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+        [~,~,~,~,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
         if ~isempty(estim_params_.var_exo)
             indexo=estim_params_.var_exo(:,1);
         else

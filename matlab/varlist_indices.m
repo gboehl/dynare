@@ -56,7 +56,7 @@ if ~all(check)
 end
 
 nvar_present = length(i_var(check));
-[~, index_unique, ~] = unique(i_var, 'first');
+[~, index_unique] = unique(i_var, 'first');
 index_unique_present = index_unique(~ismember(index_unique,indices_not_present));
 index_unique_present = sort(index_unique_present);
 i_var_unique_present = i_var(index_unique_present);

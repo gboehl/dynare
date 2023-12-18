@@ -58,7 +58,7 @@ function T = reduced_rank_cholesky(X)
 if X_is_not_positive_definite
     n = length(X);
     [U,D] = eig(X);
-    [tmp,max_elements_indices] = max(abs(U),[],1);
+    [~,max_elements_indices] = max(abs(U),[],1);
     negloc = (U(max_elements_indices+(0:n:(n-1)*n))<0);
     U(:,negloc) = -U(:,negloc);
     D = diag(D);

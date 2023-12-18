@@ -121,7 +121,7 @@ if (distribution==3)% Inverted Gamma 1 distribution
         nu = 2;
         s  = 3*(m*m);
     else
-        [mu, parameters] = mode_and_variance_to_mean(m,s2,2);
+        [~, parameters] = mode_and_variance_to_mean(m,s2,2);
         nu = sqrt(parameters(1));
         nu2 = 2*nu;
         nu1 = 2;

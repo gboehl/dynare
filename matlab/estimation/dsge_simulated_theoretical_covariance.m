@@ -127,7 +127,7 @@ for file = 1:NumberOfDrawsFiles
             dr = temp.pdraws{linee,2};
         else
             M_=set_parameters_locally(M_,temp.pdraws{linee,1});
-            [dr,info,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+            [dr,~,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
         end
         if ~options_.pruning
             tmp = th_autocovariances(dr,ivar,M_,options_,nodecomposition);

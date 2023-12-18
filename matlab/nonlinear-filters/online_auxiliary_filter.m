@@ -172,11 +172,11 @@ for t=1:sample_size
                 if pruning
                     yhat_ = bsxfun(@minus,StateVectors_(:,i),state_variables_steady_state_);
                     if order == 2
-                        [tmp, ~] = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, options_.threads.local_state_space_iteration_2);
+                        tmp = local_state_space_iteration_2(yhat, zeros(number_of_structural_innovations, 1), ghx, ghu, constant, ghxx, ghuu, ghxu, yhat_, steadystate, options_.threads.local_state_space_iteration_2);
                     elseif order == 3
-                        [tmp, tmp_] = local_state_space_iteration_3(yhat_, zeros(number_of_structural_innovations, 1), ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, options_.threads.local_state_space_iteration_3, pruning);
+                        tmp = local_state_space_iteration_3(yhat_, zeros(number_of_structural_innovations, 1), ghx, ghu, ghxx, ghuu, ghxu, ghs2, ghxxx, ghuuu, ghxxu, ghxuu, ghxss, ghuss, steadystate, options_.threads.local_state_space_iteration_3, pruning);
                     else
-                        error('Pruning is not available for orders > 3');
+                    error('Pruning is not available for orders > 3');
                     end
                 else
                     if order == 2

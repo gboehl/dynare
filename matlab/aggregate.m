@@ -84,7 +84,7 @@ for i=1:length(varargin)
             end
             % Ensure that the equation tag name matches the LHS variable.
             eqtagname = regexp(model{j}, 'name=''(\w*)''', 'match');
-            [lhs, ~] = getequation(model{j+1});
+            lhs = getequation(model{j+1});
             endovar = getendovar(lhs);
             eqtagname_ = strcat('name=''', endovar{1}, '''');
             if ~isempty(eqtagname)

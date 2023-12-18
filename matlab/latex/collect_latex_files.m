@@ -43,7 +43,7 @@ fprintf(fid,'%s \n','\begin{document}');
 %% Include LaTeX files from <fname>/latex/ directory, except the standalone ones
 TeX_Files=dir([M_.dname filesep 'latex' filesep '*.tex']);
 for ii=1:length(TeX_Files)
-    [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
+    [~,f_name] = fileparts(TeX_Files(ii).name);
     if ~strcmp(f_name, 'dynamic') && ...
             ~strcmp(f_name, 'static') && ...
             ~strcmp(f_name, 'original') && ...
@@ -55,7 +55,7 @@ end
 %% Output directory
 TeX_Files=dir([M_.dname filesep 'Output' filesep  M_.fname '*.tex']);
 for ii=1:length(TeX_Files)
-    [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
+    [~,f_name] = fileparts(TeX_Files(ii).name);
     if ~strcmp(TeX_Files(ii).name,f_name_binder)
         fprintf(fid,'%s \n',['\include{', M_.dname '/Output' '/',f_name,'}']);
     end
@@ -64,7 +64,7 @@ end
 %% graphs directory
 TeX_Files=dir([M_.dname filesep 'graphs' filesep  M_.fname '*.tex']);
 for ii=1:length(TeX_Files)
-    [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
+    [~,f_name] = fileparts(TeX_Files(ii).name);
     if ~strcmp(TeX_Files(ii).name,f_name_binder)
         fprintf(fid,'%s \n',['\include{', M_.dname '/graphs' '/',f_name,'}']);
     end
@@ -73,7 +73,7 @@ end
 %% Identification directory
 TeX_Files=dir([M_.dname filesep 'identification' filesep  M_.fname '*.tex']);
 for ii=1:length(TeX_Files)
-    [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
+    [~,f_name] = fileparts(TeX_Files(ii).name);
     if ~strcmp(TeX_Files(ii).name,f_name_binder)
         fprintf(fid,'%s \n',['\include{', M_.dname '/identification' '/',f_name,'}']);
     end
@@ -83,7 +83,7 @@ end
 %% Identification/Output directory
 TeX_Files=dir([M_.dname filesep 'identification' filesep 'Output' filesep M_.fname '*.tex']);
 for ii=1:length(TeX_Files)
-    [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
+    [~,f_name] = fileparts(TeX_Files(ii).name);
     if ~strcmp(TeX_Files(ii).name,f_name_binder)
         fprintf(fid,'%s \n',['\include{', M_.dname '/identification/Output' '/',f_name,'}']);
     end
@@ -92,7 +92,7 @@ end
 %% GSA directory
 TeX_Files=dir([M_.dname filesep 'gsa' filesep  M_.fname '*.tex']);
 for ii=1:length(TeX_Files)
-    [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
+    [~,f_name] = fileparts(TeX_Files(ii).name);
     if ~strcmp(TeX_Files(ii).name,f_name_binder)
         fprintf(fid,'%s \n',['\include{', M_.dname '/gsa' '/',f_name,'}']);
     end
@@ -101,7 +101,7 @@ end
 %% GSA/Output directory
 TeX_Files=dir([M_.dname filesep 'gsa' filesep 'Output' filesep  M_.fname '*.tex']);
 for ii=1:length(TeX_Files)
-    [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
+    [~,f_name] = fileparts(TeX_Files(ii).name);
     if ~strcmp(TeX_Files(ii).name,f_name_binder)
         fprintf(fid,'%s \n',['\include{', M_.dname '/gsa/Output' '/',f_name,'}']);
     end
@@ -122,14 +122,14 @@ for level1_iter = 1:numsubdir_level1
     for level2_iter = 1:numsubdir_level2
         TeX_Files=dir([M_.dname filesep 'gsa' filesep dirinfo_parent(level1_iter).name filesep  dirinfo_subfolder(level2_iter).name filesep M_.fname '*.tex']);
         for ii=1:length(TeX_Files)
-            [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
+            [~,f_name] = fileparts(TeX_Files(ii).name);
             if ~strcmp(TeX_Files(ii).name,f_name_binder)
                 fprintf(fid,'%s \n',['\include{', M_.dname '/gsa/',dirinfo_parent(level1_iter).name '/'  dirinfo_subfolder(level2_iter).name ,'/',f_name,'}']);
             end
         end
         TeX_Files=dir([M_.dname filesep 'gsa' filesep dirinfo_parent(level1_iter).name filesep  dirinfo_subfolder(level2_iter).name filesep 'Output' filesep  M_.fname '*.tex']);
         for ii=1:length(TeX_Files)
-            [pathstr,f_name,ext] = fileparts(TeX_Files(ii).name);
+            [~,f_name] = fileparts(TeX_Files(ii).name);
             if ~strcmp(TeX_Files(ii).name,f_name_binder)
                 fprintf(fid,'%s \n',['\include{', M_.dname '/gsa/', dirinfo_parent(level1_iter).name '/'  dirinfo_subfolder(level2_iter).name, '/Output' '/',f_name,'}']);
             end

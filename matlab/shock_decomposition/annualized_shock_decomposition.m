@@ -129,7 +129,7 @@ if realtime_==0
         myopts=options_;
         myopts.plot_shock_decomp.type='qoq';
         myopts.plot_shock_decomp.realtime=0;
-        [z, ~] = plot_shock_decomposition(M_,oo_,myopts,[]);
+        z = plot_shock_decomposition(M_,oo_,myopts,[]);
     else
         z = oo_;
     end
@@ -158,7 +158,7 @@ if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
         myopts.plot_shock_decomp.realtime=1;
         myopts.plot_shock_decomp.vintage=i;
         % retrieve quarterly shock decomp
-        [z, ~] = plot_shock_decomposition(M_,oo_,myopts,[]);
+        z = plot_shock_decomposition(M_,oo_,myopts,[]);
         zdim = size(z);
         z = z(i_var,:,:);
         if isstruct(aux)
@@ -185,7 +185,7 @@ if realtime_ && isstruct(oo_) && isfield(oo_, 'realtime_shock_decomposition')
             if qvintage_>i-4 && qvintage_<i
                 myopts.plot_shock_decomp.vintage=qvintage_;
                 % retrieve quarterly shock decomp
-                [z, ~] = plot_shock_decomposition(M_,oo_,myopts,[]);
+                z = plot_shock_decomposition(M_,oo_,myopts,[]);
                 z(:,:,end+1:zdim(3))=nan; % fill with nan's remaining time points to reach Q4
                 z = z(i_var,:,:);
                 if isstruct(aux)

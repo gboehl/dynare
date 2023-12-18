@@ -131,7 +131,7 @@ identification(order=@{ORDER},nograph,no_identification_strength);
 indpmodel  = estim_params_.param_vals(:,1);
 indpstderr = estim_params_.var_exo(:,1);
 indpcorr   = estim_params_.corrx(:,1:2);
-[I,~]      = find(M_.lead_lag_incidence');
+[I, ~] = find(M_.lead_lag_incidence');
 
 %% Parameter derivatives of perturbation 
 @#if CREATE_SYMBOLIC == 1

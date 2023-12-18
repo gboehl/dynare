@@ -93,7 +93,7 @@ for nv = 1:n_vars % big loop over variables
     % Find thinning factor for which first-order Markov Chain is preferred to second-order one
     while(bic > 0)
         thinned_chain=work(1:k_thin_current_var:n_runs,1);
-        [g2, bic] = first_vs_second_order_MC_test(thinned_chain);
+        [~, bic] = first_vs_second_order_MC_test(thinned_chain);
         k_thin_current_var = k_thin_current_var+1;
     end
 
@@ -108,11 +108,11 @@ for nv = 1:n_vars % big loop over variables
     beta = transition_matrix(2,1)/(transition_matrix(2,1)+transition_matrix(2,2));  %prob of going from 2 to 1
 
     kmind=k_thin_current_var;
-    [g2, bic]=independence_chain_test(thinned_chain);
+    [~, bic]=independence_chain_test(thinned_chain);
 
     while(bic > 0)
         thinned_chain=work(1:kmind:n_runs,1);
-        [g2, bic] = independence_chain_test(thinned_chain);
+        [~, bic] = independence_chain_test(thinned_chain);
         kmind = kmind+1;
     end
 

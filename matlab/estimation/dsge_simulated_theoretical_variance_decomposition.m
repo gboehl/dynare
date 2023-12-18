@@ -137,10 +137,10 @@ for file = 1:NumberOfDrawsFiles
             dr = temp.pdraws{linee,2};
         else
             M_=set_parameters_locally(M_,temp.pdraws{linee,1});
-            [dr,info,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+            [dr,~,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
         end
         if file==1 && linee==1
-            [tmp, stationary_vars] = th_autocovariances(dr,ivar,M_,options_,nodecomposition);
+            [~, stationary_vars] = th_autocovariances(dr,ivar,M_,options_,nodecomposition);
             if isempty(stationary_vars)
                 fprintf('\ndsge_simulated_theoretical_variance_decomposition:: All requested endogenous variables have a unit root and thus infinite variance.\n')
                 fprintf('dsge_simulated_theoretical_variance_decomposition:: No decomposition is performed.\n')

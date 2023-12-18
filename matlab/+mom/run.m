@@ -403,7 +403,7 @@ end
 % Build dataset
 if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_method,'SMM')
     % Check if datafile has same name as mod file
-    [~,name,~] = fileparts(options_mom_.datafile);
+    [~,name] = fileparts(options_mom_.datafile);
     if strcmp(name,M_.fname)
         error('method_of_moments: ''datafile'' and mod file are not allowed to have the same name; change the name of the ''datafile''!')
     end

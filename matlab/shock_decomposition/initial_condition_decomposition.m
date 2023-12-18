@@ -64,7 +64,7 @@ if isempty(varlist)
 end
 
 if ~isequal(varlist,0)
-    [i_var, nvar, index_uniques] = varlist_indices(varlist, M_.endo_names);
+    [~, ~, index_uniques] = varlist_indices(varlist, M_.endo_names);
     varlist = varlist(index_uniques);
 end
 
@@ -99,7 +99,7 @@ if ~isfield(oo_,'initval_decomposition') || isequal(varlist,0)
     with_epilogue = options_.initial_condition_decomp.with_epilogue;
     options_.selected_variables_only = 0; %make sure all variables are stored
     options_.plot_priors=0;
-    [oo_local,M,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
+    [oo_local,~,~,~,Smoothed_Variables_deviation_from_mean] = evaluate_smoother(parameter_set,varlist,M_,oo_,options_,bayestopt_,estim_params_);
 
     % reduced form
     dr = oo_local.dr;

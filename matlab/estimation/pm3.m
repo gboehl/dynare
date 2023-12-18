@@ -336,7 +336,7 @@ if ~options_.nograph && ~options_.no_graph.posterior
                 fout = pm3_core(localVars,1,nvar,0);
             else
                 globalVars = [];
-                [fout, nvar0, totCPU] = masterParallel(options_.parallel, 1, nvar, [],'pm3_core', localVars,globalVars, options_.parallel_info);
+                [~, nvar0] = masterParallel(options_.parallel, 1, nvar, [],'pm3_core', localVars,globalVars, options_.parallel_info);
             end
         end
     else

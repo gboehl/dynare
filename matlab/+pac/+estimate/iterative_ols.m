@@ -41,7 +41,7 @@ function iterative_ols(eqname, params, data, range)
 
 global M_ oo_ options_
 
-[pacmodl, ~, rhs, ~, ~, ~, rname, ~, ~, ~, ~, ipnames_, params, data, ~] = ...
+[pacmodl, ~, rhs, ~, ~, ~, rname, ~, ~, ~, ~, ipnames_, params, data] = ...
     pac.estimate.init(M_, oo_, eqname, params, data, range);
 
 % Set initial condition.

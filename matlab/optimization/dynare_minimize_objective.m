@@ -107,23 +107,23 @@ switch minimizer_algorithm
     if options_.analytic_derivation || (isfield(options_,'mom') && options_.mom.analytic_jacobian==1) %use wrapper
         func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
         if ~isoctave
-            [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
+            [opt_par_values,fval,exitflag,~,~,~,hessian_mat] = ...
                 fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
         else
             % Under Octave, use a wrapper, since fmincon() does not have an 11th
             % arg. Also, only the first 4 output arguments are available.
-            [opt_par_values,fval,exitflag,output] = ...
+            [opt_par_values,fval,exitflag] = ...
                 fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
         end
     else
         if ~isoctave
-            [opt_par_values,fval,exitflag,output,lamdba,grad,hessian_mat] = ...
+            [opt_par_values,fval,exitflag,~,~,~,hessian_mat] = ...
                 fmincon(objective_function,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options,varargin{:});
         else
             % Under Octave, use a wrapper, since fmincon() does not have an 11th
             % arg. Also, only the first 4 output arguments are available.
             func = @(x) objective_function(x,varargin{:});
-            [opt_par_values,fval,exitflag,output] = ...
+            [opt_par_values,fval,exitflag] = ...
                 fmincon(func,start_par_value,[],[],[],[],bounds(:,1),bounds(:,2),[],optim_options);
         end    
     end
@@ -177,7 +177,7 @@ switch minimizer_algorithm
     end
     sa_options.initial_step_length= sa_options.initial_step_length*ones(npar,1); %bring step length to correct vector size
     sa_options.step_length_c= sa_options.step_length_c*ones(npar,1); %bring step_length_c to correct vector size
-    [opt_par_values, fval,exitflag, n_accepted_draws, n_total_draws, n_out_of_bounds_draws, t, vm] =...
+    [opt_par_values, fval,exitflag] =...
         simulated_annealing(objective_function,start_par_value,sa_options,LB,UB,varargin{:});
   case 3
     if isoctave && ~user_has_octave_forge_package('optim')
@@ -269,7 +269,7 @@ switch minimizer_algorithm
         analytic_grad=[];
     end
     % Call csminwell.
-    [fval,opt_par_values,grad,inverse_hessian_mat,itct,fcount,exitflag] = ...
+    [fval,opt_par_values,~,inverse_hessian_mat,~,~,exitflag] = ...
         csminwel1(objective_function, start_par_value, H0, analytic_grad, crit, nit, numgrad, epsilon, Verbose, Save_files, varargin{:});
     hessian_mat=inv(inverse_hessian_mat);
   case 5
@@ -337,7 +337,7 @@ switch minimizer_algorithm
     hess_info.robust=robust;
     % here we force 7th input argument (flagg) to be 0, since outer product
     % gradient Hessian is handled in dynare_estimation_1
-    [opt_par_values,hessian_mat,gg,fval,invhess,new_rat_hess_info] = newrat(objective_function,start_par_value,bounds,analytic_grad,crit,nit,0,Verbose,Save_files,hess_info,prior_information.p2,options_.gradient_epsilon,parameter_names,varargin{:});    %hessian_mat is the plain outer product gradient Hessian
+    [opt_par_values,hessian_mat,~,fval,~,new_rat_hess_info] = newrat(objective_function,start_par_value,bounds,analytic_grad,crit,nit,0,Verbose,Save_files,hess_info,prior_information.p2,options_.gradient_epsilon,parameter_names,varargin{:});    %hessian_mat is the plain outer product gradient Hessian
     new_rat_hess_info.new_rat_hess_info = new_rat_hess_info;
     new_rat_hess_info.newratflag = newratflag;
     if options_.analytic_derivation 
@@ -453,7 +453,7 @@ switch minimizer_algorithm
     end
     warning('off','CMAES:NonfinitenessRange');
     warning('off','CMAES:InitialSigma');
-    [x, fval, COUNTEVAL, STOPFLAG, OUT, BESTEVER] = cmaes(func2str(objective_function),start_par_value,H0,cmaesOptions,varargin{:});
+    [~, ~, ~, ~, ~, BESTEVER] = cmaes(func2str(objective_function),start_par_value,H0,cmaesOptions,varargin{:});
     opt_par_values=BESTEVER.x;
     fval=BESTEVER.f;
   case 10
@@ -498,7 +498,7 @@ switch minimizer_algorithm
   case 11
     options_.cova_compute = 0;
     subvarargin = [varargin(1), varargin(3:6), varargin(8)];
-    [opt_par_values, stdh, lb_95, ub_95, med_param] = online_auxiliary_filter(start_par_value, subvarargin{:});
+    opt_par_values = online_auxiliary_filter(start_par_value, subvarargin{:});
   case 12
     if isoctave
         error('Option mode_compute=12 is not available under Octave')
@@ -512,10 +512,10 @@ switch minimizer_algorithm
     if ~isempty(options_.optim_opt)
         options_list = read_key_value_string(options_.optim_opt);
         SupportedListOfOptions = {'CreationFcn', 'Display', 'DisplayInterval', 'FunctionTolerance', ...
-                            'FunValCheck', 'HybridFcn', 'InertiaRange', 'InitialSwarmMatrix', 'InitialSwarmSpan', ...
-                            'MaxIterations', 'MaxStallIterations', 'MaxStallTime', 'MaxTime', ...
-                            'MinNeighborsFraction', 'ObjectiveLimit', 'OutputFcn', 'PlotFcn', 'SelfAdjustmentWeight', ...
-                            'SocialAdjustmentWeight', 'SwarmSize', 'UseParallel', 'UseVectorized'};
+                                  'FunValCheck', 'HybridFcn', 'InertiaRange', 'InitialSwarmMatrix', 'InitialSwarmSpan', ...
+                                  'MaxIterations', 'MaxStallIterations', 'MaxStallTime', 'MaxTime', ...
+                                  'MinNeighborsFraction', 'ObjectiveLimit', 'OutputFcn', 'PlotFcn', 'SelfAdjustmentWeight', ...
+                                  'SocialAdjustmentWeight', 'SwarmSize', 'UseParallel', 'UseVectorized'};
         for i=1:rows(options_list)
             if ismember(options_list{i,1}, SupportedListOfOptions)
                 particleswarmOptions = optimoptions(particleswarmOptions, options_list{i,1}, options_list{i,2});
@@ -537,7 +537,7 @@ switch minimizer_algorithm
         FVALS = zeros(particleswarmOptions.SwarmSize, 1);
         while p<=particleswarmOptions.SwarmSize
             candidate = rand(numberofvariables, 1).*(UB-LB)+LB;
-            [fval, info, exit_flag] = objfun(candidate);
+            [fval, ~, exit_flag] = objfun(candidate);
             if exit_flag
                 particleswarmOptions.InitialSwarmMatrix(p,:) = transpose(candidate);
                 FVALS(p) = fval;
@@ -552,7 +552,7 @@ switch minimizer_algorithm
     % Define penalized objective.
     objfun = @(x) penalty_objective_function(x, objective_function, penalty, varargin{:});
     % Minimize the penalized objective (note that the penalty is not updated).
-    [opt_par_values, fval, exitflag, output] = particleswarm(objfun, length(start_par_value), LB, UB, particleswarmOptions);
+    [opt_par_values, fval, exitflag] = particleswarm(objfun, length(start_par_value), LB, UB, particleswarmOptions);
     opt_par_values = opt_par_values(:);
   case 13
     % Matlab's lsqnonlin (Optimization toolbox needed).
@@ -586,15 +586,15 @@ switch minimizer_algorithm
             optim_options.SpecifyObjectiveGradient = true;
         end
         func = @(x) analytic_gradient_wrapper(x,objective_function,varargin{:});
-        [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = ...
+        [opt_par_values,~,fval,exitflag] = ...
             lsqnonlin(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
     else
         if ~isoctave
-            [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(objective_function,start_par_value,bounds(:,1),bounds(:,2),optim_options,varargin{:});
+            [opt_par_values,~,fval,exitflag] = lsqnonlin(objective_function,start_par_value,bounds(:,1),bounds(:,2),optim_options,varargin{:});
         else
             % Under Octave, use a wrapper, since lsqnonlin() does not have a 6th arg
             func = @(x)objective_function(x,varargin{:});
-            [opt_par_values,Resnorm,fval,exitflag,OUTPUT,LAMBDA,JACOB] = lsqnonlin(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
+            [opt_par_values,~,fval,exitflag] = lsqnonlin(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
         end
     end    
   case 101
@@ -656,7 +656,7 @@ switch minimizer_algorithm
         end
     end
     func = @(x)objective_function(x,varargin{:});
-    [opt_par_values,fval,exitflag,output] = simulannealbnd(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
+    [opt_par_values,fval,exitflag] = simulannealbnd(func,start_par_value,bounds(:,1),bounds(:,2),optim_options);
   otherwise
     if ischar(minimizer_algorithm)
         if exist(minimizer_algorithm)

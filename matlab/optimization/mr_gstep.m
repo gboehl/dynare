@@ -88,7 +88,7 @@ while i<n
                 b=[ones(7,1) xa xa.*xa./2]\fa;
                 gg(i)=x(i)*b(3)+b(2);
                 hh(i)=1/b(3);
-                [ff2, xx2, ~, ~] = csminit1(func0,x,penalty,f0,gg,0,diag(hh),Verbose,varargin{:});
+                [ff2, xx2] = csminit1(func0,x,penalty,f0,gg,0,diag(hh),Verbose,varargin{:});
                 if ff2<ff
                     ff=ff2;
                     xx=xx2;

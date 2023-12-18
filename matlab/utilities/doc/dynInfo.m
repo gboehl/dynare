@@ -51,7 +51,7 @@ function dynInfo(fun)
 % Original author: stephane DOT adjemian AT univ DASH lemans DOT fr
 
 if isempty(strfind(fun,'@')) & (~isempty(strfind(fun,'/')) || ~isempty(strfind(fun,'\')) )
-    [pathstr1, name, ext] = fileparts(fun);
+    pathstr1 = fileparts(fun);
     addpath(pathstr1);
     rm_path = 1;
 else

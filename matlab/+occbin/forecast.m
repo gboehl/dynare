@@ -28,7 +28,7 @@ if opts.replic
     effective_exo_nbr=  length(ishock);
     effective_exo_names = M_.exo_names(ishock);
     effective_Sigma_e = M_.Sigma_e(ishock,ishock);
-    [U,S,V] = svd(effective_Sigma_e);
+    [U,S] = svd(effective_Sigma_e);
     if opts.qmc
         opts.replic =2^(round(log2(opts.replic+1)))-1;
         SHOCKS_ant =   qmc_sequence(forecast*effective_exo_nbr, int64(1), 1, opts.replic)';

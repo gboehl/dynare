@@ -31,7 +31,7 @@ function sigma = long_run_variance(data,band)
 verbose = 1;
 
 if nargin<2
-    [T,m] = size(data);
+    [T,~] = size(data);
     band = ceil(T^(1/4));
     if verbose
         disp(['Bandwidth parameter is equal to ' num2str(band) '.'])

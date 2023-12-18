@@ -684,7 +684,7 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
                 for namecell = filenames(:)'
                     name = namecell{:};
 
-                    [fid, err] = fopen(['./' filenameprefix name '.dat'], 'w');
+                    fid = fopen(['./' filenameprefix name '.dat'], 'w');
                     if fid < 1 % err ~= 0
                         warning(['could not open ' filenameprefix name '.dat']);
                         filenames(find(strcmp(filenames,name))) = [];
@@ -1151,7 +1151,7 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
                     % TODO: this is not in compliance with the paper Hansen&Ros2010,
                     %       where simply arnorms = arnorms(end:-1:1) ?
                     [arnorms, idxnorms] = sort(sqrt(sum(arzneg.^2, 1)));
-                    [ignore, idxnorms] = sort(idxnorms);  % inverse index
+                    [~, idxnorms] = sort(idxnorms);  % inverse index
                     arnormfacs = arnorms(end:-1:1) ./ arnorms;
                     % arnormfacs = arnorms(randperm(neg.mu)) ./ arnorms;
                     arnorms = arnorms(end:-1:1); % for the record
@@ -1596,7 +1596,7 @@ while irun <= myeval(opts.Restarts) % for-loop does not work with resume
             for namecell = filenames(:)'
                 name = namecell{:};
 
-                [fid, err] = fopen(['./' filenameprefix name '.dat'], 'a');
+                fid = fopen(['./' filenameprefix name '.dat'], 'a');
                 if fid < 1 % err ~= 0
                     warning(['could not open ' filenameprefix name '.dat']);
                 else
@@ -1981,7 +1981,7 @@ end
 
 % sort inar
 if nargin < 3 || isempty(idx)
-    [sar, idx] = sort(inar);
+    sar = sort(inar);
 else
     sar = inar(idx);
 end
@@ -2070,8 +2070,8 @@ end
 
 %%% compute rank changes into rankDelta
 % compute ranks
-[ignore, idx] = sort([arf1 arf2]);
-[ignore, ranks] = sort(idx);
+[~, idx] = sort([arf1 arf2]);
+[~, ranks] = sort(idx);
 ranks = reshape(ranks, lam, 2)';
 
 rankDelta = ranks(1,:) - ranks(2,:) - sign(ranks(1,:) - ranks(2,:));
@@ -2199,7 +2199,7 @@ end
 % plot fitness etc
 foffset = 1e-99;
 dfit = d.f(:,6)-min(d.f(:,6));
-[ignore, idxbest] = min(dfit);
+[~, idxbest] = min(dfit);
 dfit(dfit<1e-98) = NaN;
 subplot(2,2,1); hold off;
 dd = abs(d.f(:,7:8)) + foffset;
@@ -2256,7 +2256,7 @@ ax(2) = max(minxend, ax(2));
 axis(ax);
 
 % add some annotation lines
-[ignore, idx] = sort(d.x(end,6:end));
+[~, idx] = sort(d.x(end,6:end));
 % choose no more than 25 indices
 idxs = round(linspace(1, size(d.x,2)-5, min(size(d.x,2)-5, 25)));
 yy = repmat(NaN, 2, size(d.x,2)-5);
@@ -2300,7 +2300,7 @@ ax = axis;
 ax(2) = max(minxend, ax(2));
 axis(ax);
 % add some annotation lines
-[ignore, idx] = sort(d.std(end,6:end));
+[~, idx] = sort(d.std(end,6:end));
 % choose no more than 25 indices
 idxs = round(linspace(1, size(d.x,2)-5, min(size(d.x,2)-5, 25)));
 yy = repmat(NaN, 2, size(d.std,2)-5);
@@ -2380,15 +2380,14 @@ function f=fmixranks(x)
 N = size(x,1);
 f=(10.^(0*(0:(N-1))/(N-1))*x.^2).^0.5;
 if size(x, 2) > 1 % compute ranks, if it is a population
-    [ignore, idx] = sort(f);
-    [ignore, ranks] = sort(idx);
+    [~, idx] = sort(f);
     k = 9; % number of solutions randomly permuted, lambda/2-1
            % works still quite well (two time slower)
     for i = k+1:k-0:size(x,2)
         idx(i-k+(1:k)) = idx(i-k+randperm(k));
     end
     %disp([ranks' f'])
-    [ignore, ranks] = sort(idx);
+    [~, ranks] = sort(idx);
     %disp([ranks' f'])
     %pause
     f = ranks+1e-9*randn(1,1);

@@ -206,7 +206,7 @@ if info(1) == 0 %no errors in solution
                 options_ident_local.no_identification_spectrum = 1; %do not recompute dSPECTRUM
                 options_ident_local.ar = nlags;     %store new lag number
                 options_.ar      = nlags;           %store new lag number
-                [~, ~, ~, ~, ~, ~, MOMENTS, dMOMENTS, ~, ~, ~, ~] = identification.get_jacobians(estim_params_, M_, options_, options_ident_local, indpmodel, indpstderr, indpcorr, indvobs, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+                [~, ~, ~, ~, ~, ~, MOMENTS, dMOMENTS] = identification.get_jacobians(estim_params_, M_, options_, options_ident_local, indpmodel, indpstderr, indpcorr, indvobs, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
                 ind_dMOMENTS = (find(max(abs(dMOMENTS'),[],1) > tol_deriv)); %new index with non-zero rows
             end

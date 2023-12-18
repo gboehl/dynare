@@ -120,7 +120,7 @@ elseif local_order == 2
     [~,jacobia_,hessian1] = feval([M_.fname '.dynamic'],z(iyr0),...
                                   exo_simul, ...
                                   M_.params, dr.ys, it_);
-    [infrow,infcol]=find(isinf(hessian1));
+    [infrow, ~] = find(isinf(hessian1));
     if options_.debug
         if ~isempty(infrow)
             fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains Inf.\n')
@@ -132,7 +132,7 @@ elseif local_order == 2
         info(1)=11;
         return
     end
-    [nanrow,nancol]=find(isnan(hessian1));
+    [nanrow, ~] = find(isnan(hessian1));
     if options_.debug
         if ~isempty(nanrow)
             fprintf('\nSTOCHASTIC_SOLVER: The Hessian of the dynamic model contains NaN.\n')
@@ -343,8 +343,8 @@ end
 
 if options_.loglinear
     % this needs to be extended for order=2,3
-    [il,il1,ik,k1] = indices_lagged_leaded_exogenous_variables(dr.order_var,M_);
-    [illag,illag1,iklag,klag1] = indices_lagged_leaded_exogenous_variables(dr.order_var(M_.nstatic+(1:M_.nspred)),M_);
+    [il,~,ik,k1] = indices_lagged_leaded_exogenous_variables(dr.order_var,M_);
+    [illag,~,iklag,klag1] = indices_lagged_leaded_exogenous_variables(dr.order_var(M_.nstatic+(1:M_.nspred)),M_);
     if ~isempty(ik)
         if M_.nspred > 0
             dr.ghx(ik,iklag) = repmat(1./dr.ys(k1),1,length(klag1)).*dr.ghx(ik,iklag).* ...

@@ -47,7 +47,7 @@ if ~isfield(oo_,'dr') || ~isfield(oo_.dr,'ghx')
     dr = struct();
     oo_.dr=set_state_space(dr,M_);
     options_.order = 1;
-    [oo_.dr,Info,M_.params] = resol(0,M_,options_,oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+    [oo_.dr,~,M_.params] = resol(0,M_,options_,oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
     fprintf('done\n');
 end
 b_surprise = 0;

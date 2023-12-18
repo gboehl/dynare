@@ -18,7 +18,7 @@ function [pacmodl, lhs, rhs, pnames, enames, xnames, rname, pid, eid, xid, pname
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 % Get the original equation to be estimated
-[LHS, RHS] = get_lhs_and_rhs(eqname, M_, true);
+[~, RHS] = get_lhs_and_rhs(eqname, M_, true);
 
 % Check that the equation has a PAC expectation term.
 if ~contains(RHS, 'pac_expectation', 'IgnoreCase', true)

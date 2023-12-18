@@ -49,7 +49,7 @@ else
 end
 params=M_.params;
 
-[U,Uy,W] = feval([M_.fname,'.objective.static'],zeros(M_.endo_nbr,1),[], M_.params);
+[~,Uy,W] = feval([M_.fname,'.objective.static'],zeros(M_.endo_nbr,1),[], M_.params);
 if any(any(isnan(Uy)))
     info = 64 ; %the derivatives of the objective function contain NaN
     return;

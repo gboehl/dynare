@@ -51,7 +51,7 @@ if ~isempty(endo_prior_restrictions.irf)
     end
     varlist = M_.endo_names(dr.order_var);
     if isempty(T)
-        [T,R,SteadyState,infox,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+        [T,R,~,~,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
     else % check if T and R are given in the restricted form!!!
         if size(T,1)<length(varlist)
             varlist = varlist(dr.restrict_var_list);
@@ -65,7 +65,7 @@ if ~isempty(endo_prior_restrictions.irf)
         end
         if ~varlistok
             varlist = M_.endo_names(dr.order_var);
-            [T,R,SteadyState,infox,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+            [T,R,~,~,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
         end
     end
     NT=1;
@@ -138,7 +138,7 @@ if ~isempty(endo_prior_restrictions.moment)
         end
     end
     options_.ar = max(abs(NTmin),NTmax);
-    [gamma_y,stationary_vars] = th_autocovariances(dr, ivar, M_, options_,1);
+    gamma_y = th_autocovariances(dr, ivar, M_, options_,1);
     for t=NTmin:NTmax
         RR = gamma_y{abs(t)+1};
         if t==0

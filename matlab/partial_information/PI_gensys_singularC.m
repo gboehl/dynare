@@ -34,7 +34,7 @@ M1=[];M2=[]; UAVinv=[];
 % Find SVD of a0, and create partitions of U, S and V
 %
 
-[J0,K0,L0] = svd(C2in);
+[J0,K0] = svd(C2in);
 n=size(C2in,1);
 K_RANK=rank(K0);
 J2=J0(1:n,K_RANK+1:n);
@@ -71,7 +71,7 @@ try
         singular=1;
     else
         UAVinv=inv(C2);
-        [LastWarningTxt, LastWarningID]=lastwarn;
+        [~, LastWarningID]=lastwarn;
         if any(any(isinf(UAVinv)))
             singular=1;
         end
@@ -83,7 +83,7 @@ try
         [C1,C2,C3,C4, C5, F1, F2, F3, F4, F5, M1, M2, UAVinv, FL_RANK, V01, V02] = PI_gensys_singularC(C1,C2,C3,C4, C5, F1, F2, F3, F4, F5, V01, V02, level);
     end
 catch
-    [errmsg, errcode]=lasterr;
+    errmsg = lasterr;
     warning(['error callig PI_gensys_singularC: ' errmsg ],'errcode');
     error('errcode',['error callig PI_gensys_singularC: ' errmsg ]);
 end

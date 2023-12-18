@@ -34,7 +34,7 @@ global oo_
 oo_.bvar.log_marginal_data_density=NaN(maxnlags,1);
 
 for nlags = 1:maxnlags
-    [ny, nx, posterior, prior] = bvar.toolbox(nlags);
+    [ny, ~, posterior, prior] = bvar.toolbox(nlags);
     oo_.bvar.posterior{nlags}=posterior;
     oo_.bvar.prior{nlags}=prior;
 
@@ -75,8 +75,8 @@ function w = matrictint(S, df, XXi)
 
 k=size(XXi,1);
 ny=size(S,1);
-[cx,p]=chol(XXi);
-[cs,q]=chol(S);
+cx = chol(XXi);
+cs = chol(S);
 
 if any(diag(cx)<100*eps)
     error('singular XXi')

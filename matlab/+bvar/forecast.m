@@ -33,7 +33,7 @@ global options_ oo_ M_
 if options_.forecast == 0
     error('bvar.forecast: you must specify "forecast" option')
 end
-[ny, nx, posterior, prior, forecast_data] = bvar.toolbox(nlags);
+[ny, nx, posterior, ~, forecast_data] = bvar.toolbox(nlags);
 
 sims_no_shock = NaN(options_.forecast, ny, options_.bvar_replic);
 sims_with_shocks = NaN(options_.forecast, ny, options_.bvar_replic);

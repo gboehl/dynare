@@ -86,7 +86,7 @@ else
     Xparnonzero = Xpar(:,ind1); % focus on non-zero columns
 end
 
-[eu, ee2, ee1] = svd( [Xparnonzero Xrest], 0 );
+[~, ~, ee1] = svd( [Xparnonzero Xrest], 0 );
 condX = cond([Xparnonzero Xrest]);
 rankX = rank(X, tol_rank);
 icheck = 0; %initialize flag which is equal to 0 if we already found all single parameters that are not identified
@@ -118,7 +118,7 @@ if icheck
     else
         Xparnonzero = Xpar(:,ind1); % focus on non-zero columns
     end
-    [eu, ee2, ee1] = svd( [Xparnonzero Xrest], 0 );
+    [~, ~, ee1] = svd( [Xparnonzero Xrest], 0 );
     condX = cond([Xparnonzero Xrest]);
     rankX = rank(X,tol_rank);
 end

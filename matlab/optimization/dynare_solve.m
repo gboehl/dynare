@@ -318,7 +318,7 @@ elseif options.solve_algo == 11
     mcp_data.func = f;
     mcp_data.args = varargin;
     try
-        [x, fval, jac, mu] = pathmcp(x,omcppath.lb,omcppath.ub,'mcp_func',omcppath.A,omcppath.b,omcppath.t,omcppath.mu0);
+        x = pathmcp(x,omcppath.lb,omcppath.ub,'mcp_func',omcppath.A,omcppath.b,omcppath.t,omcppath.mu0);
     catch
         errorflag = true;
     end

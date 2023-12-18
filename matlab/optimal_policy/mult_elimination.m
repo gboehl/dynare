@@ -53,7 +53,7 @@ A22 = A2(il,:);
 B1 = B(nil,:);
 B2 = B(il,:);
 
-[Q1,R1,E1] = qr([A12; A22]);
+[Q1,R1] = qr([A12; A22]);
 n1 = sum(abs(diag(R1)) > 1e-8);
 
 Q1_12 = Q1(1:nm_nbr,n1+1:end);

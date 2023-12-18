@@ -209,7 +209,7 @@ nexo=1;
 % Arranged data information, WITHOUT dummy obs when 0 after mu is used.
 % See fn_rnrprior_covres_dobs.m for using the dummy observations as part of
 % an explicit prior.
-[xtx,xty,yty,fss,phi,y,ncoef,xr,Bh] = fn_dataxy(nvar,options_.ms.nlags,xdgel,mu,0,nexo);
+[xtx,xty,yty,fss,phi,y,ncoef] = fn_dataxy(nvar,options_.ms.nlags,xdgel,mu,0,nexo);
 
 
 %======================================================================
@@ -239,7 +239,7 @@ if indxPrior
     %*** Obtains asymmetric prior (with no linear restrictions) with dummy observations as part of an explicit prior (i.e,
     %      reflected in Hpmulti and Hpinvmulti).  See Forecast II, pp.69a-69b for details.
     if 1  % Liquidity effect prior on both MS and MD equations.
-        [Pi,H0multi,Hpmulti,H0invmulti,Hpinvmulti] = fn_rnrprior_covres_dobs(nvar,q_m,options_.ms.nlags,xdgel,mu,indxDummy,hpmsmd,indxmsmdeqn);
+        [Pi,H0multi,Hpmulti] = fn_rnrprior_covres_dobs(nvar,q_m,options_.ms.nlags,xdgel,mu,indxDummy,hpmsmd,indxmsmdeqn);
     else
         [Pi,H0multi,Hpmulti,H0invmulti,Hpinvmulti] = fn_rnrprior(nvar,q_m,options_.ms.nlags,xdgel,mu);
     end
@@ -268,12 +268,12 @@ else
     crit = 1.0e-9;
     nit = 10000;
     %
-    [fhat,xhat,grad,Hhat,itct,fcount,retcodehat] = csminwel('fn_a0freefun',x,H0,'fn_a0freegrad',crit,nit,Ui,nvar,n0,fss,H0inv);
+    [~,xhat] = csminwel('fn_a0freefun',x,H0,'fn_a0freegrad',crit,nit,Ui,nvar,n0,fss,H0inv);
 
     A0hat = fn_tran_b2a(xhat,Ui,nvar,n0);
 
     xhat = fn_tran_a2b(A0hat,Ui,nvar,n0);
-    [Aphat,ghat] = fn_gfmean(xhat,Pmat,Vi,nvar,ncoef,n0,np);
+    Aphat = fn_gfmean(xhat,Pmat,Vi,nvar,ncoef,n0,np);
     if indxC0Pres
         Fhatur0P = Fhat;  % ur: unrestriced across A0 and A+
         for ki = 1:size(ixmC0Pres,1)   % loop through the number of equations in which

@@ -292,8 +292,7 @@ error_flag = out.error_flag;
 if ~error_flag && niter>options_.occbin.likelihood.max_number_of_iterations && ~isequal(regimes_(1),regimes0(1))
     error_flag = 1;
     if M_.occbin.constraint_nbr==1 % try some other regime
-        [ll, il]=sort(lik_hist);
-        [ll, il]=sort(regime_end);
+        [~, il]=sort(regime_end);
         rr=regime_hist(il(2:3));
         newstart=1;
         if length(rr{1}.regimestart)>1

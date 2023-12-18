@@ -58,7 +58,7 @@ if isfield(options, 'datafile')
 end
 
 if datafile
-    [directory,basename,extension] = fileparts(datafile);
+    [~,basename,extension] = fileparts(datafile);
     % Auto-detect extension if not provided
     if isempty(extension)
         if exist([basename '.m'],'file')

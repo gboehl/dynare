@@ -34,7 +34,7 @@ function oo_=execute_prior_posterior_function(posterior_function_name,M_,options
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[directory,basename,extension] = fileparts(posterior_function_name);
+[~,basename,extension] = fileparts(posterior_function_name);
 if isempty(extension)
     extension = '.m';
 end
@@ -64,7 +64,7 @@ elseif strcmpi(type,'prior')
     % Get informations about the prior distribution.
     if isempty(bayestopt_)
         if ~isempty(estim_params_) && ~(isfield(estim_params_,'nvx') && (size(estim_params_.var_exo,1)+size(estim_params_.var_endo,1)+size(estim_params_.corrx,1)+size(estim_params_.corrn,1)+size(estim_params_.param_vals,1))==0)
-            [xparam1,estim_params_,bayestopt_,lb,ub,M_] = set_prior(estim_params_,M_,options_);
+            [~,estim_params_,bayestopt_,~,~,M_] = set_prior(estim_params_,M_,options_);
         else
             error('The prior distributions are not properly set up.')
         end

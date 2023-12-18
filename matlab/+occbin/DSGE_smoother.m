@@ -118,7 +118,7 @@ occbin_options.first_period_occbin_update = options_.occbin.smoother.first_perio
 occbin_options.opts_regime = opts_simul; % this builds the opts_simul options field needed by occbin.solver
 occbin_options.opts_regime.binding_indicator = options_.occbin.likelihood.init_binding_indicator;
 occbin_options.opts_regime.regime_history=options_.occbin.likelihood.init_regime_history;
-[alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0, diffuse_steps] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
+[alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
 
 oo_.occbin.smoother.realtime_regime_history = oo_.occbin.smoother.regime_history;
 regime_history = oo_.occbin.smoother.regime_history;

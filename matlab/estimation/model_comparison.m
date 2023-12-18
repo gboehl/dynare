@@ -110,7 +110,7 @@ end
 % In order to avoid overflow, we divide the numerator and the denominator
 % of the Posterior Odds Ratio by the largest Marginal Posterior Density
 lmpd = log(ModelPriors)+MarginalLogDensity;
-[maxval,k] = max(lmpd);
+maxval = max(lmpd);
 elmpd = exp(lmpd-maxval);
 
 % Now I display the posterior probabilities.

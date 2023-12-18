@@ -89,7 +89,7 @@ lpmat0=zeros(Nsam,0);
 xparam1=[];
 
 %% prepare prior bounds
-[~,~,~,lb,ub,~] = set_prior(estim_params_,M_,options_); %Prepare bounds
+[~,~,~,lb,ub] = set_prior(estim_params_,M_,options_); %Prepare bounds
 if ~isempty(bayestopt_) && any(bayestopt_.pshape > 0)
     % Set prior bounds
     bounds = prior_bounds(bayestopt_, options_.prior_trunc);

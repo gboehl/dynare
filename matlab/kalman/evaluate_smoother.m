@@ -118,11 +118,11 @@ if options_.occbin.smoother.status
             bayestopt_.mf = bayestopt_.smoother_var_list(bayestopt_.smoother_mf);
         end
     else
-        [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_] = ...
+        [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,~,~,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_] = ...
             occbin.DSGE_smoother(parameters,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_,dataset_,dataset_info);
     end
 else
-    [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,T,R,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_] = ...
+    [atT,innov,measurement_error,updated_variables,ys,trend_coeff,aK,~,~,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_] = ...
         DsgeSmoother(parameters,dataset_.nobs,transpose(dataset_.data),dataset_info.missing.aindex,dataset_info.missing.state,M_,oo_,options_,bayestopt_,estim_params_);
 end
 if ~(options_.occbin.smoother.status && options_.occbin.smoother.inversion_filter)

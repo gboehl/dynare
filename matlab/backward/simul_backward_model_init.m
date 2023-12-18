@@ -57,7 +57,7 @@ if isempty(initialconditions)
                                 vertcat(M_.endo_names(1:M_.orig_endo_nbr), M_.exo_names));
 end
 
-[initialconditions, info] = checkdatabase(initialconditions, M_, false, true);
+initialconditions = checkdatabase(initialconditions, M_, false, true);
 
 % Test if the first argument contains all the lagged endogenous variables
 endonames = M_.endo_names;

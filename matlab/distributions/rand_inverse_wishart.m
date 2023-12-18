@@ -48,6 +48,6 @@ X = randn(v, m) * H_inv_upper_chol;
 % G = inv(X'*X);
 
 % Rather compute inv(X'*X) using the SVD
-[U,S,V] = svd(X, 0);
+[~,S,V] = svd(X, 0);
 SSi = 1 ./ (diag(S) .^ 2);
 G = (V .* repmat(SSi', m, 1)) * V';

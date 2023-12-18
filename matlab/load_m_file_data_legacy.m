@@ -18,7 +18,7 @@ function o2WysrOISH  = load_m_file_data_legacy(datafile, U7ORsJ0vy3)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 cXDHdrXnqo5KwwVpTRuc6OprAW = datafile(1:end-2);
-[pathtocXDHdrXnqo5KwwVpTRuc6OprAW,cXDHdrXnqo5KwwVpTRuc6OprAW,~] = fileparts(cXDHdrXnqo5KwwVpTRuc6OprAW);
+[pathtocXDHdrXnqo5KwwVpTRuc6OprAW,cXDHdrXnqo5KwwVpTRuc6OprAW] = fileparts(cXDHdrXnqo5KwwVpTRuc6OprAW);
 
 if ~isempty(pathtocXDHdrXnqo5KwwVpTRuc6OprAW)
     % We need to change directory, first we keep the current directory in memory...

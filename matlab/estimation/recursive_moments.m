@@ -36,7 +36,7 @@ function [mu,sigma,offset] = recursive_moments(m0,s0,data,offset)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[T,n] = size(data);
+[T,~] = size(data);
 
 for t = 1:T
     tt = t+offset;

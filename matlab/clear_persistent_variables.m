@@ -52,7 +52,7 @@ if writelistofroutinestobecleared
                 end
             end
         end
-        [~, list_of_functions, ~] = cellfun(@fileparts, list_of_files, 'UniformOutput',false);
+        [~, list_of_functions] = cellfun(@fileparts, list_of_files, 'UniformOutput',false);
         cellofchar2mfile(sprintf('%slist_of_functions_to_be_cleared.m', DYNARE_FOLDER), list_of_functions)
     end
     return

@@ -95,9 +95,9 @@ if tt1
         return
     end
     if nargout == 2
-        [tmp, dlprior(id1)]=lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1));
+        [~, dlprior(id1)]=lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1));
     elseif nargout == 3
-        [tmp, dlprior(id1), d2lprior(id1)]=lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1));
+        [~, dlprior(id1), d2lprior(id1)]=lpdfgbeta(x(id1),p6(id1),p7(id1),p3(id1),p4(id1));
     end
 end
 
@@ -110,18 +110,18 @@ if tt2
         return
     end
     if nargout == 2
-        [tmp, dlprior(id2)]=lpdfgam(x(id2)-p3(id2),p6(id2),p7(id2));
+        [~, dlprior(id2)]=lpdfgam(x(id2)-p3(id2),p6(id2),p7(id2));
     elseif nargout == 3
-        [tmp, dlprior(id2), d2lprior(id2)]=lpdfgam(x(id2)-p3(id2),p6(id2),p7(id2));
+        [~, dlprior(id2), d2lprior(id2)]=lpdfgam(x(id2)-p3(id2),p6(id2),p7(id2));
     end
 end
 
 if tt3
     logged_prior_density = logged_prior_density + sum(lpdfnorm(x(id3),p6(id3),p7(id3))) ;
     if nargout == 2
-        [tmp, dlprior(id3)]=lpdfnorm(x(id3),p6(id3),p7(id3));
+        [~, dlprior(id3)]=lpdfnorm(x(id3),p6(id3),p7(id3));
     elseif nargout == 3
-        [tmp, dlprior(id3), d2lprior(id3)]=lpdfnorm(x(id3),p6(id3),p7(id3));
+        [~, dlprior(id3), d2lprior(id3)]=lpdfnorm(x(id3),p6(id3),p7(id3));
     end
 end
 
@@ -134,9 +134,9 @@ if tt4
         return
     end
     if nargout == 2
-        [tmp, dlprior(id4)]=lpdfig1(x(id4)-p3(id4),p6(id4),p7(id4));
+        [~, dlprior(id4)]=lpdfig1(x(id4)-p3(id4),p6(id4),p7(id4));
     elseif nargout == 3
-        [tmp, dlprior(id4), d2lprior(id4)]=lpdfig1(x(id4)-p3(id4),p6(id4),p7(id4));
+        [~, dlprior(id4), d2lprior(id4)]=lpdfig1(x(id4)-p3(id4),p6(id4),p7(id4));
     end
 end
 
@@ -166,9 +166,9 @@ if tt6
         return
     end
     if nargout == 2
-        [tmp, dlprior(id6)]=lpdfig2(x(id6)-p3(id6),p6(id6),p7(id6));
+        [~, dlprior(id6)]=lpdfig2(x(id6)-p3(id6),p6(id6),p7(id6));
     elseif nargout == 3
-        [tmp, dlprior(id6), d2lprior(id6)]=lpdfig2(x(id6)-p3(id6),p6(id6),p7(id6));
+        [~, dlprior(id6), d2lprior(id6)]=lpdfig2(x(id6)-p3(id6),p6(id6),p7(id6));
     end
 end
 
@@ -181,9 +181,9 @@ if tt8
         return
     end
     if nargout==2
-        [tmp, dlprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8));
+        [~, dlprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8));
     elseif nargout==3
-        [tmp, dlprior(id8), d2lprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8));
+        [~, dlprior(id8), d2lprior(id8)] = lpdfgweibull(x(id8),p6(id8),p7(id8));
     end
 end
 

@@ -124,7 +124,7 @@ else
         lq_instruments.tct_ruleids=tct_ruleids;
         %if isfield(lq_instruments,'xsopt_SS') %% changed by BY
         [~, lq_instruments.xsopt_SS,lq_instruments.lmopt_SS,s2,check] = opt_steady_get;%% changed by BY
-        [qc, DYN_Q] = QPsolve(lq_instruments, s2, check); %% added by BY
+        [~, DYN_Q] = QPsolve(lq_instruments, s2, check); %% added by BY
         z = repmat(lq_instruments.xsopt_SS,1,klen);
     else
         z = repmat(dr.ys,1,klen);

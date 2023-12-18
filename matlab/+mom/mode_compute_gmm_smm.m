@@ -112,8 +112,8 @@ for stage_iter = 1:size(options_mom_.mom.weighting_matrix,1)
             else
                 options_mom_.mom.compute_derivs = false;
             end
-            [xparam1, fval, exitflag] = dynare_minimize_objective(objective_function, xparam0, options_mom_.optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_.name, bayestopt_, [],...
-                                                                  Bounds, oo_, estim_params_, M_, options_mom_);
+            [xparam1, fval] = dynare_minimize_objective(objective_function, xparam0, options_mom_.optimizer_vec{optim_iter}, options_mom_, [Bounds.lb Bounds.ub], bayestopt_.name, bayestopt_, [],...
+                                                        Bounds, oo_, estim_params_, M_, options_mom_);
             if options_mom_.mom.vector_output
                 fval = fval'*fval;
             end

@@ -27,7 +27,7 @@ function [A,B,Q,Z] = qzdiv(stake,A,B,Q,Z)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[n, jnk] = size(A);
+[n, ~] = size(A);
 root = abs([diag(A) diag(B)]);
 root(:,1) = root(:,1)-(root(:,1)<1.e-13).*(root(:,1)+root(:,2));
 root(:,2) = root(:,2)./root(:,1);

@@ -36,7 +36,7 @@ function [nvar,vartan,CorrFileNumber] = dsge_simulated_theoretical_correlation(S
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 nvar = length(ivar);
-[ivar,vartan, options_] = get_variables_list(options_, M_);
+[~,vartan] = get_variables_list(options_, M_);
 
 % Get informations about the _posterior_draws files.
 if strcmpi(type,'posterior')

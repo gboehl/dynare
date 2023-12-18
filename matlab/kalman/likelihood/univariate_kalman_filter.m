@@ -260,7 +260,7 @@ if t <= last
             Hess = Hess + tmp{3};
         end
     else
-        [tmp, lik(s+1:end,:)] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag);
+        [~, lik(s+1:end,:)] = univariate_kalman_filter_ss(Y,t,last,a,P,kalman_tol,T,H,Z,pp,Zflag);
     end
 end
 

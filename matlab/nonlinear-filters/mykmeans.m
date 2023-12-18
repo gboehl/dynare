@@ -32,7 +32,7 @@ for iter=1:300
     for i=1:g
         dist(i,:) = sum(bsxfun(@power,bsxfun(@minus,x,c(:,i)),2));
     end
-    [rien,ind] = min(dist) ;
+    [~,ind] = min(dist) ;
     if isequal(ind,indold)
         break ;
     end

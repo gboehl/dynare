@@ -63,7 +63,7 @@ for i=1:M_.exo_nbr
 end
 
 % Set up initial conditions
-[initialcondition, periods, innovations, options_local, M_local, oo_local, endonames, exonames, dynamic_resid, dynamic_g1, y] = ...
+[initialcondition, periods, innovations, options_local, M_local, oo_local, endonames, ~, dynamic_resid, dynamic_g1] = ...
     simul_backward_model_init(initialcondition, periods, options_, M_, oo_, zeros(periods, M_.exo_nbr));
 
 % Get vector of indices for the selected endogenous variables.
@@ -110,9 +110,9 @@ if withuncertainty
     for i=1:B
         innovations = transpose(sigma*randn(M_.exo_nbr, periods));
         if options_.linear
-            [ysim__, xsim__, errorflag] = simul_backward_linear_model_(initialcondition, periods, options_local, M_local, oo_local, innovations, dynamic_resid, dynamic_g1);
+            [ysim__, ~, errorflag] = simul_backward_linear_model_(initialcondition, periods, options_local, M_local, oo_local, innovations, dynamic_resid, dynamic_g1);
         else
-            [ysim__, xsim__, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, options_local, M_local, oo_local, innovations, dynamic_resid, dynamic_g1);
+            [ysim__, ~, errorflag] = simul_backward_nonlinear_model_(initialcondition, periods, options_local, M_local, oo_local, innovations, dynamic_resid, dynamic_g1);
         end
         if errorflag
             error('Simulation failed.')

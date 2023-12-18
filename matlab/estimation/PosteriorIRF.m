@@ -200,7 +200,7 @@ if isnumeric(options_.parallel)
     nosaddle = fout.nosaddle;
 else
     % Parallel execution!
-    [nCPU, totCPU, nBlockPerCPU] = distributeJobs(options_.parallel, 1, B);
+    [~, totCPU, nBlockPerCPU] = distributeJobs(options_.parallel, 1, B);
     for j=1:totCPU-1
         nfiles = ceil(nBlockPerCPU(j)/MAX_nirfs_dsge);
         NumberOfIRFfiles_dsge(j+1) =NumberOfIRFfiles_dsge(j)+nfiles;

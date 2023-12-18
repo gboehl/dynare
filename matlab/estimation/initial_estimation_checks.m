@@ -172,7 +172,7 @@ end
 % display warning if some parameters are still NaN
 test_for_deep_parameters_calibration(M_);
 
-[lnprior,~,~,info]= priordens(xparam1,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
+[~,~,~,info]= priordens(xparam1,bayestopt_.pshape,bayestopt_.p6,bayestopt_.p7,bayestopt_.p3,bayestopt_.p4);
 if any(info)
     fprintf('The prior density evaluated at the initial values is Inf for the following parameters: %s\n',bayestopt_.name{info,1})
     error('The initial value of the prior is -Inf')

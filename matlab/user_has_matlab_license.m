@@ -28,7 +28,7 @@ function [hasLicense] = user_has_matlab_license(toolbox)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[hasLicense, ~] = license('checkout',toolbox);
+hasLicense = license('checkout',toolbox);
 
 if ~hasLicense
     return

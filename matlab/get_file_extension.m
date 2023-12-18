@@ -28,7 +28,7 @@ function ext = get_file_extension(file)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[dir, fname, ext] = fileparts(file);
+[~, ~, ext] = fileparts(file);
 
 if ~isempty(ext)
     % Removes the leading dot.

@@ -48,7 +48,7 @@ end
 nvar = length(options_.varobs);   % number of endogenous variables
 nexo = 1;
 
-[Uiconst,Viconst,n0,np,ixmC0Pres,Qi,Ri] = exclusions(nvar,nexo,options_.ms );
+[~,~,~,~,~,Qi,Ri] = exclusions(nvar,nexo,options_.ms );
 
 % order column constraints by rank
 QQranks = zeros(nvar,2);

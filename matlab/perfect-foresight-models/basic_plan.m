@@ -57,7 +57,7 @@ if ~isempty(plan.options_cond_fcst_.controlled_varexo)
     if ~isempty(common_var)
         common_date = intersect(date, plan.constrained_date_{common_var});
         if ~isempty(common_date)
-            [date_, i_date] = setdiff(date, common_date);
+            [~, i_date] = setdiff(date, common_date);
             value = value(i_date);
             if common_date.length > 1
                 the_dates = [cell2mat(strings(common_date(1))) ':' cell2mat(strings(common_date(end)))];

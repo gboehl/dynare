@@ -91,7 +91,7 @@ if ~isempty(datafile)
     datafile_extension = get_file_extension(datafile);
     if isempty(datafile_extension)
         available_extensions = {}; j = 1;
-        [datafilepath,datafilename,datafileext] = fileparts(datafile);
+        [datafilepath, datafilename] = fileparts(datafile);
         if isempty(datafilepath)
             datafilepath = '.';
         end

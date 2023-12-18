@@ -262,7 +262,7 @@ while ~(cvg || iter > options_.simul.maxit)
             g = (ra'*g1a)';
             f = 0.5*ra'*ra;
             p = -g1a\ra;
-            [yn,f,ra,check]=lnsrch1(ya,f,g,p,stpmax,@lnsrch1_wrapper_two_boundaries,nn,nn, options_.solve_tolx, fh, Block_Num, y, y_index,x, M_.params, steady_state, T, periods, Blck_size, M_);
+            yn = lnsrch1(ya,f,g,p,stpmax,@lnsrch1_wrapper_two_boundaries,nn,nn, options_.solve_tolx, fh, Block_Num, y, y_index,x, M_.params, steady_state, T, periods, Blck_size, M_);
             dx = ya - yn;
             y(y_index, y_kmin+(1:periods))=reshape(yn',length(y_index),periods);
         end

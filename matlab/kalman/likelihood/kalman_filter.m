@@ -273,7 +273,7 @@ if t <= last
             Hess = Hess + tmp{3};
         end
     else
-        [tmp, likk(s+1:end)] = kalman_filter_ss(Y, t, last, a, T, K, iF, log_dF, Z, pp, Zflag);
+        [~, likk(s+1:end)] = kalman_filter_ss(Y, t, last, a, T, K, iF, log_dF, Z, pp, Zflag);
     end
 end
 

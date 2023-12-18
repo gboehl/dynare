@@ -89,7 +89,7 @@ vlog_Y_a = -0.5*nvar*fss*log(2*pi) + fss*log(abs(det(A0xhat))) + Yexpt
 logMarLHres = 0;   % Initialize log of the marginal likelihood (restricted or constant parameters).
 for ki=1:fss   %ndobs+1:fss     % Forward recursion to get the marginal likelihood.  See F on p.19 and pp. 48-49.
                %----  Restricted log marginal likelihood function (constant parameters).
-    [A0l,A0u] = lu(A0xhat);
+    [~,A0u] = lu(A0xhat);
     ada = sum(log(abs(diag(A0u))));   % log|A0|
     termexp = y(ki,:)*A0xhat - phi(ki,:)*Apxhat;   % 1-by-nvar
     logMarLHres = logMarLHres - (0.5*nvar)*log(2*pi) + ada - 0.5*termexp*termexp';  % log value
@@ -148,7 +148,7 @@ for k=1:nvar
             %------ Computing p(a0_k|Y,a_others) at some point such as the peak along the dimensions of indx_ks.
             Vk = Tinv{k}\Wcell{k};  %V_k on p.71 of Forecast (II).
             gbeta = Vk\bk;  % inv(V_k)*b_k on p.71 of Forecast (II) where alpha_k = b_k in our notation.
-            [Vtq,Vtr]=qr(Vk',0);  %To get inv(V_k)'*inv(V_k) in (*) on p.71 of Forecast (II).
+            [~,Vtr]=qr(Vk',0);  %To get inv(V_k)'*inv(V_k) in (*) on p.71 of Forecast (II).
                                   %
             vlog(draws) = 0.5*(fss+nk)*log(fss)-log(abs(det(Vk)))-0.5*(nk-1)*log(2*pi)-...
                 0.5*(fss+1)*log(2)-gammaln(0.5*(fss+1))+fss*log(abs(gbeta(1)))-...
@@ -164,12 +164,12 @@ for k=1:nvar
     else
         skipline()
         disp('The last(6th) column or equation in A0 with no Gibbs draws')
-        [A0gbs1, Wcell] = fn_gibbsrvar(A0gbs0,UT,nvar,fss,n0,indx_ks)
+        [~, Wcell] = fn_gibbsrvar(A0gbs0,UT,nvar,fss,n0,indx_ks)
         %------ See p.71, Forecast (II).
         %------ Computing p(a0_k|Y,a_others) at some point such as the peak along the dimensions of indx_ks.
         Vk = Tinv{k}\Wcell{k};  %V_k on p.71 of Forecast (II).
         gbeta = Vk\bk;  % inv(V_k)*b_k on p.71 of Forecast (II) where alpha_k = b_k in our notation.
-        [Vtq,Vtr]=qr(Vk',0);  %To get inv(V_k)'*inv(V_k) in (*) on p.71 of Forecast (II).
+        [~,Vtr]=qr(Vk',0);  %To get inv(V_k)'*inv(V_k) in (*) on p.71 of Forecast (II).
                               %
         vloglast = 0.5*(fss+nk)*log(fss)-log(abs(det(Vk)))-0.5*(nk-1)*log(2*pi)-...
             0.5*(fss+1)*log(2)-gammaln(0.5*(fss+1))+fss*log(abs(gbeta(1)))-...

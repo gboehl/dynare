@@ -21,7 +21,7 @@ a = dir('*.mod');
 
 
 for i = 1:length(a)
-    [~,basename,extension] = fileparts(a(i).name);
+    [~,basename] = fileparts(a(i).name);
     if exist([basename '.m'])
         delete([basename '.m']);
     end

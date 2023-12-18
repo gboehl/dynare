@@ -81,7 +81,7 @@ options_.ar = 0;
 NumberOfSavedElementsPerSimulation = nvar*M_.exo_nbr*length(Steps);
 MaXNumberOfConditionalDecompLines = ceil(options_.MaxNumberOfBytes/NumberOfSavedElementsPerSimulation/8);
 
-[ME_present,observable_pos_requested_vars,index_subset,index_observables]=check_measurement_error_requested_vars(M_,options_,ivar);
+[ME_present,observable_pos_requested_vars] = check_measurement_error_requested_vars(M_,options_,ivar);
 
 if ME_present && ~isempty(observable_pos_requested_vars)
     nobs_ME=length(observable_pos_requested_vars);
@@ -132,7 +132,7 @@ for file = 1:NumberOfDrawsFiles
             dr = temp.pdraws{linee,2};
         else
             M_=set_parameters_locally(M_,temp.pdraws{linee,1});
-			[dr,info,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+			[dr,~,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
         end
 
         M_ = set_measurement_errors(temp.pdraws{linee,1},temp.estim_params_,M_);

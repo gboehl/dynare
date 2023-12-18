@@ -368,7 +368,7 @@ for b=fpar:B
             stock_smoothed_uncert(dr.order_var,dr.order_var,:,irun(13)) = state_uncertainty;
         end
     else
-        [~,~,SteadyState,info] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+        [~,~,SteadyState] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
     end
     stock_param(irun(5),:) = deep;
     stock_logpo(irun(5),1) = logpo;

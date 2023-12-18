@@ -78,7 +78,7 @@ dr = struct();
 if ep.init
     options_.order = 1;
     oo_.dr=set_state_space(dr,M_);
-    [oo_.dr,Info,M_.params] = resol(0,M_,options_,oo_.dr,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+    [oo_.dr,~,M_.params] = resol(0,M_,options_,oo_.dr,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 end
 
 % Do not use a minimal number of perdiods for the perfect foresight solver (with bytecode and blocks)

@@ -71,7 +71,7 @@ end
 
 if ~isempty(xparam1)
     M_ = set_all_parameters(xparam1,estim_params_,M_);
-    [fval,info,exit_flag,Q,H]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, BoundsInfo);
+    [fval,info,exit_flag]=check_bounds_and_definiteness_estimation(xparam1, M_, estim_params_, BoundsInfo);
     if info(1)
         return
     end
@@ -81,7 +81,7 @@ err_index=options_.occbin.likelihood.IVF_shock_observable_mapping; % err_index= 
 COVMAT1 = M_.Sigma_e(err_index,err_index);
 
 % Linearize the model around the deterministic steady state and extract the matrices of the state equation (T and R).
-[T,R,SteadyState,info,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,'restrict');
+[~,~,SteadyState,info,dr, M_.params] = dynare_resolve(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,'restrict');
 
 % Return, with endogenous penalty when possible, if dynare_resolve issues an error code (defined in resol).
 if info(1)

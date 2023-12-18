@@ -89,7 +89,7 @@ if leads ==0
 end
 %disp('gensysToAMA:running ama');
 try % try to run AIM
-    [bb,rts,ia,nexact,nnumeric,lgroots,aimcode] =...
+    [bb,rts,~,~,~,~,aimcode] =...
         SPAmalg(theAIM_H,neq, lags,leads,condn,uprbnd);
 catch
     err = lasterror;

@@ -40,7 +40,7 @@ switch order
     if round(order)-order
         error('The second input argument (order) has to be an integer!')
     end
-    [T,n] = size(X);
+    [~,n] = size(X);
     c = mean(X);
     m = zeros(n,1);
     for i=1:n

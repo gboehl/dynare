@@ -35,4 +35,4 @@ end
 
 parameters = strrep(parameters, ' ', '_');
 
-[oo_, M_, options_, bayestopt_, Smoothed_variables_declaration_order_deviation_form] = evaluate_smoother(parameters, varlist, M_, oo_, options_, bayestopt_, estim_params_);
+[oo_, M_, options_, bayestopt_] = evaluate_smoother(parameters, varlist, M_, oo_, options_, bayestopt_, estim_params_);

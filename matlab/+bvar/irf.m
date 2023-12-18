@@ -35,7 +35,7 @@ if nargin==1
     identification = 'Cholesky';
 end
 
-[ny, nx, posterior, prior] = bvar.toolbox(nlags);
+[ny, nx, posterior] = bvar.toolbox(nlags);
 
 S_inv_upper_chol = chol(inv(posterior.S));
 

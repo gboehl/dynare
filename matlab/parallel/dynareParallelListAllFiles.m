@@ -44,7 +44,7 @@ if (~ispc || strcmpi('unix',Parallel.OperatingSystem))
     end
 
     % Get the data for the current remote directory.
-    [Flag, fL]=system(['ssh ',ssh_token,' ',' ',Parallel.UserName,'@',Parallel.ComputerName,' ls ',Parallel.RemoteDirectory,'/',PRCDir, ' -R -p -1']);
+    [~, fL]=system(['ssh ',ssh_token,' ',' ',Parallel.UserName,'@',Parallel.ComputerName,' ls ',Parallel.RemoteDirectory,'/',PRCDir, ' -R -p -1']);
 
     % Format the return value fL.
 

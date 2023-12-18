@@ -31,7 +31,7 @@ if nargin<4
     no_graph=0;
 end
 filename = get(gcf,'filename');
-[filepath, name, ext]=fileparts(filename);
+filepath = fileparts(filename);
 M_ = evalin('base','M_');
 oo_ = evalin('base','oo_');
 options_ = evalin('base','options_');

@@ -287,7 +287,7 @@ if error_flag==0 && niter>options_.occbin.likelihood.max_number_of_iterations &&
     
   if M_.occbin.constraint_nbr==1
     % try some other regime before giving up
-    [ll, il]=sort(regime_end);
+    [~, il]=sort(regime_end);
     rr=regime_hist(il(2:3));
     newstart=1;
     if length(rr{1}(1).regimestart)>1

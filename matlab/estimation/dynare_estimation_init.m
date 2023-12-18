@@ -345,7 +345,7 @@ if options_.analytic_derivation
         else
             steadystate_check_flag = 1;
         end
-        [tmp1, params] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_local,options_,steadystate_check_flag);
+        [~, params] = evaluate_steady_state(oo_.steady_state,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_local,options_,steadystate_check_flag);
         change_flag=any(find(params-M_local.params));
         if change_flag
             skipline()
@@ -374,7 +374,7 @@ bayestopt_.jscale(k) = options_.mh_jscale;
 
 % Build the dataset
 if ~isempty(options_.datafile)
-    [pathstr,name,ext] = fileparts(options_.datafile);
+    [~,name] = fileparts(options_.datafile);
     if strcmp(name,M_.fname)
         error('Data-file and mod-file are not allowed to have the same name. Please change the name of the data file.')
     end
@@ -383,7 +383,7 @@ end
 if isnan(options_.first_obs)
     options_.first_obs=1;
 end
-[dataset_, dataset_info, newdatainterfaceflag] = makedataset(options_, options_.dsge_var*options_.dsge_varlag, gsa_flag);
+[dataset_, dataset_info] = makedataset(options_, options_.dsge_var*options_.dsge_varlag, gsa_flag);
 
 %set options for old interface from the ones for new interface
 if ~isempty(dataset_)

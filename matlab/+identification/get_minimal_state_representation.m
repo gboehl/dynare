@@ -209,7 +209,7 @@ function [mSYS,U] = minrealold(SYS,tol)
     a = SYS.A;
     b = SYS.B;
     c = SYS.C;
-    [ns,nu] = size(b);
+    [ns,~] = size(b);
     [am,bm,cm,U,k] = ControllabilityStaircaseRosenbrock(a,b,c,tol);
     kk = sum(k);
     nu = ns - kk;
@@ -219,7 +219,7 @@ function [mSYS,U] = minrealold(SYS,tol)
     cm = cm(:,nu+1:ns);
     ns = ns - nu;
     if ns
-        [am,bm,cm,t,k] = ObservabilityStaircaseRosenbrock(am,bm,cm,tol);
+        [am,bm,cm,~,k] = ObservabilityStaircaseRosenbrock(am,bm,cm,tol);
         kk = sum(k);
         nu = ns - kk;
         nn = nn + nu;
@@ -242,8 +242,8 @@ end
 
 function [abar,bbar,cbar,t,k] = ControllabilityStaircaseRosenbrock(a, b, c, tol)
     % Controllability staircase algorithm of Rosenbrock, 1968
-    [ra,ca] = size(a);
-    [rb,cb] = size(b);
+    [ra,~] = size(a);
+    [~,cb] = size(b);
     ptjn1 = eye(ra);
     ajn1 = a;
     bjn1 = b;
@@ -255,8 +255,8 @@ function [abar,bbar,cbar,t,k] = ControllabilityStaircaseRosenbrock(a, b, c, tol)
         tol = ra*norm(a,1)*eps;
     end
     for jj = 1 : ra
-        [uj,sj,vj] = svd(bjn1);
-        [rsj,csj] = size(sj);
+        [uj,sj] = svd(bjn1);
+        [rsj,~] = size(sj);
         %p = flip(eye(rsj),2);
         p = eye(rsj);
         p = p(:,end:-1:1);
@@ -264,7 +264,7 @@ function [abar,bbar,cbar,t,k] = ControllabilityStaircaseRosenbrock(a, b, c, tol)
         uj = uj*p;
         bb = uj'*bjn1;
         roj = rank(bb,tol);
-        [rbb,cbb] = size(bb);
+        [rbb,~] = size(bb);
         sigmaj = rbb - roj;
         sigmajn1 = sigmaj;
         k(jj) = roj;

@@ -68,7 +68,7 @@ else
 end
 
 %% Call Dynamic Function
-[junk, g1] = feval([M_.fname '.dynamic'], ...
+[~, g1] = feval([M_.fname '.dynamic'], ...
     ones(max(max(M_.lead_lag_incidence)), 1), ...
     ones(1, M_.exo_nbr), ...
     M_.params, ...
@@ -159,12 +159,12 @@ for i = 1:length(lhs)
         if g1col ~= 0 && any(g1(:, g1col))
             if rhsvars{i}.arRhsIdxs(j) > 0
                 % Fill AR
-                [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, lhs);
+                lag = findLagForVar(var, -rhsvars{i}.lags(j), 0, lhs);
                 oo_.(model_type).(model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag) = ...
                     oo_.(model_type).(model_name).ar(i, rhsvars{i}.arRhsIdxs(j), lag) + g1(i, g1col);
             elseif rhsvars{i}.ecRhsIdxs(j) > 0
                 % Fill EC
-                [lag, ndiffs] = findLagForVar(var, -rhsvars{i}.lags(j), 0, ecRhsVars);
+                lag = findLagForVar(var, -rhsvars{i}.lags(j), 0, ecRhsVars);
                 if lag==1
                     if size(oo_.(model_type).(model_name).ec, 3) < lag
                         oo_.(model_type).(model_name).ec(i, rhsvars{i}.ecRhsIdxs(j), lag) = 0;

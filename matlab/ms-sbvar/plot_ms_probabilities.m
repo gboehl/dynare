@@ -28,7 +28,7 @@ function plot_ms_probabilities(computed_probabilities, options_)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-[T,num_grand_regimes] = size(computed_probabilities);
+[T,~] = size(computed_probabilities);
 num_chains = length(options_.ms.ms_chain);
 for i=1:num_chains
     chains(i).num_regimes = length(options_.ms.ms_chain(i).regime);

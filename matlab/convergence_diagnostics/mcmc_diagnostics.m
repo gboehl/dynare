@@ -272,7 +272,7 @@ else
     end
     NamFileInput={[M_.dname '/metropolis/'],[ModelName '_mh*_blck*.mat']};
 
-    [fout, nBlockPerCPU, totCPU] = masterParallel(options_.parallel, 1, npar,NamFileInput,'mcmc_diagnostics_core', localVars, [], options_.parallel_info);
+    [fout, ~, totCPU] = masterParallel(options_.parallel, 1, npar,NamFileInput,'mcmc_diagnostics_core', localVars, [], options_.parallel_info);
     UDIAG = fout(1).UDIAG;
     for j=2:totCPU
         UDIAG = cat(3,UDIAG ,fout(j).UDIAG);

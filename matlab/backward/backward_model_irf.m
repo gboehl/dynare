@@ -139,7 +139,7 @@ if ~isempty(innovationbaseline)
 end
 
 % Set up initial conditions
-[initialcondition, periods, Innovations, options_local, M_local, oo_local, endonames, exonames, dynamic_resid, dynamic_g1, y] = ...
+[initialcondition, periods, Innovations, options_local, M_local, oo_local, endonames, exonames, dynamic_resid, dynamic_g1] = ...
     simul_backward_model_init(initialcondition, periods, options_, M_, oo_, Innovations);
 
 % Get the covariance matrix of the shocks.

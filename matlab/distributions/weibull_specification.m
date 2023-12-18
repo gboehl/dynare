@@ -56,7 +56,7 @@ eqn = @(k) gammaln(1+2./k) - 2*gammaln(1+1./k) - log(1+sigma2/mu2);
 eqn2 = @(k) eqn(k).*eqn(k);
 
 kstar = fminbnd(eqn2, 1e-9, 100);
-[shape, fval, exitflag]  = fzero(eqn, kstar);
+[shape, ~, exitflag]  = fzero(eqn, kstar);
 
 if exitflag<1
     shape = NaN;

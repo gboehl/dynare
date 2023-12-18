@@ -61,7 +61,7 @@ if (size(estim_params_.var_endo,1) || size(estim_params_.corrn,1))
 end
 
 % Fill or update bayestopt_ structure
-[xparam1, estim_params_, BayesOptions, lb, ub, M_local] = set_prior(estim_params_, M_, options_);
+[~, estim_params_, ~, lb, ub, M_local] = set_prior(estim_params_, M_, options_);
 % Set restricted state space
 options_plot_priors_old=options_.plot_priors;
 options_.plot_priors=0;

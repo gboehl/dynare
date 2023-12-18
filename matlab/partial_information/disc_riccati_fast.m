@@ -84,7 +84,7 @@ clear X0 X1 Y0 Y1 P1 I INVPY;
 
 % Check that X is positive definite
 if flag_ch==1
-    [C,p]=chol(Z);
+    [~,p]=chol(Z);
     if p ~= 0
         error('Z is not positive definite')
     end

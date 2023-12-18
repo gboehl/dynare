@@ -54,9 +54,9 @@ for indPC=1:length(Parallel)
             end
             for jfil=1:size(NamFileInput,1)
                 if ~isempty(NamFileInput{jfil,1})
-                    [NonServeL, NonServeR]=system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' mkdir -p ',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',NamFileInput{jfil,1}]);
+                    system(['ssh ',ssh_token,' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,' mkdir -p ',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',NamFileInput{jfil,1}]);
                 end
-                [NonServeL, NonServeR]=system(['scp ',scp_token,' ',NamFileInput{jfil,1},NamFileInput{jfil,2},' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,':',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',NamFileInput{jfil,1}]);
+                system(['scp ',scp_token,' ',NamFileInput{jfil,1},NamFileInput{jfil,2},' ',Parallel(indPC).UserName,'@',Parallel(indPC).ComputerName,':',Parallel(indPC).RemoteDirectory,'/',PRCDir,'/',NamFileInput{jfil,1}]);
             end
         else
             for jfil=1:size(NamFileInput,1)
@@ -81,7 +81,7 @@ for indPC=1:length(Parallel)
                                 end
                             end
 
-                            [NonServeL, NonServeR]=system(['mkdir \\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInputTemp]);
+                            system(['mkdir \\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInputTemp]);
 
                         else
                             mkdir(['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInput{jfil,1}]);
@@ -107,7 +107,7 @@ for indPC=1:length(Parallel)
                         end
                     end
 
-                    [NonServeS, NonServeD]=system(['copy ',NamFileInputTemp, NamFileInput{jfil,2},' \\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInputTemp]);
+                    system(['copy ',NamFileInputTemp, NamFileInput{jfil,2},' \\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInputTemp]);
 
                 else
                     copyfile([NamFileInput{jfil,1},NamFileInput{jfil,2}],['\\',Parallel(indPC).ComputerName,'\',Parallel(indPC).RemoteDrive,'$\',Parallel(indPC).RemoteDirectory,'\',PRCDir,'\',NamFileInput{jfil,1}]);

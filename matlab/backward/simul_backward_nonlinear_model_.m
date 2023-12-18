@@ -143,7 +143,7 @@ for it = initialconditions.nobs+(1:samplesize)
         %
         % Evaluate and check the residuals
         %
-        [r, J] = dynamic_backward_model_for_simulation(ytm, dynamic_resid, dynamic_g1, ytm, x, M_.params, oo_.steady_state, M_.dynamic_g1_sparse_rowval, M_.dynamic_g1_sparse_colval, M_.dynamic_g1_sparse_colptr);
+        r = dynamic_backward_model_for_simulation(ytm, dynamic_resid, dynamic_g1, ytm, x, M_.params, oo_.steady_state, M_.dynamic_g1_sparse_rowval, M_.dynamic_g1_sparse_colval, M_.dynamic_g1_sparse_colptr);
         residuals_evaluating_to_nan = isnan(r);
         residuals_evaluating_to_inf = isinf(r);
         residuals_evaluating_to_complex = ~isreal(r);

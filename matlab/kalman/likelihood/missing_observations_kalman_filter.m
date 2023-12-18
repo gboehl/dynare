@@ -294,7 +294,7 @@ lik(1:s) = .5*lik(1:s);
 
 % Call steady state Kalman filter if needed.
 if t<=last
-    [tmp, lik(s+1:end)] = kalman_filter_ss(Y, t, last, a, T, K, iF, log_dF, Z, pp, Zflag);
+    [~, lik(s+1:end)] = kalman_filter_ss(Y, t, last, a, T, K, iF, log_dF, Z, pp, Zflag);
 end
 
 % Compute minus the log-likelihood.

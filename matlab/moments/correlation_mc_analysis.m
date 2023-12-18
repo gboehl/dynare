@@ -61,8 +61,6 @@ if isfield(oo_,[TYPE 'TheoreticalMoments'])
                         % INITIALIZATION:
                         oo_ = initialize_output_structure(var1,var2,nar,type,oo_);
                         delete([PATH fname '_' TYPE 'Correlations*'])
-                        [nvar,vartan,NumberOfFiles] = ...
-                            dsge_simulated_theoretical_correlation(SampleSize,nar,M_,options_,oo_,type);
                     else
                         if ~isnan(temporary_structure_2(nar))
                             %Nothing to do.

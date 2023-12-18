@@ -169,7 +169,7 @@ if parallel_recover ==0
     DyMo=pwd;
     % fInputVar.DyMo=DyMo;
     if ispc
-        [tempo, MasterName]=system('hostname');
+        [~, MasterName]=system('hostname');
         MasterName=deblank(MasterName);
     end
     % fInputVar.MasterName = MasterName;
@@ -893,7 +893,7 @@ switch Strategy
         end
 
         if isempty(dir('dynareParallelLogFiles'))
-            [A, B, C]=rmdir('dynareParallelLogFiles');
+            rmdir('dynareParallelLogFiles');
             mkdir('dynareParallelLogFiles');
         end
         try
@@ -911,7 +911,7 @@ switch Strategy
     delete(['temp_input.mat'])
     if newInstance
         if isempty(dir('dynareParallelLogFiles'))
-            [A, B, C]=rmdir('dynareParallelLogFiles');
+            rmdir('dynareParallelLogFiles');
             mkdir('dynareParallelLogFiles');
         end
     end
