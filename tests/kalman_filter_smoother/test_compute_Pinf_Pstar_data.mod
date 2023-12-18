@@ -85,5 +85,6 @@ shocks;
 end;
 
 stoch_simul(order=1,irf=20,periods=500);
+send_endogenous_variables_to_workspace;
 
 save data_Pinf_Pstar.mat v1 v2 v3;

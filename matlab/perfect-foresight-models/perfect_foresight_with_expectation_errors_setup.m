@@ -1,4 +1,11 @@
-function perfect_foresight_with_expectation_errors_setup
+function oo_=perfect_foresight_with_expectation_errors_setup(M_, options_, oo_)
+% INPUTS
+%   M_                  [structure] describing the model
+%   options_            [structure] describing the options
+%   oo_                 [structure] storing the results
+%
+% OUTPUTS
+%   oo_                 [structure] storing the results
 
 % Copyright © 2021-2023 Dynare Team
 %
@@ -16,8 +23,6 @@ function perfect_foresight_with_expectation_errors_setup
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
-global M_ oo_ options_
 
 if ~isempty(M_.endo_histval)
     error('perfect_foresight_with_expectation_errors_setup: cannot be used in conjunction with histval')

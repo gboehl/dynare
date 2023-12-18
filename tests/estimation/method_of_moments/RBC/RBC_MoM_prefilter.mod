@@ -35,6 +35,7 @@ varobs n c iv;
 
 % Simulate data
 stoch_simul(order=@{orderApp},pruning,nodisplay,nomoments,periods=250,TeX);
+send_endogenous_variables_to_workspace;
 save('RBC_MoM_data_@{orderApp}.mat', options_.varobs{:} );
 pause(1);
 

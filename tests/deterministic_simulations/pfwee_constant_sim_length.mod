@@ -45,7 +45,7 @@ verbatim;
 
 % Information arriving in period 1 (temp shock now)
 oo_.exo_simul(2,1) = 1.2;
-perfect_foresight_solver(true);
+oo_=perfect_foresight_solver(M_, options_, oo_, true);
 
 % Information arriving in period 2 (temp shock now + permanent shock in future)
 oo_.exo_simul(3,1) = 1.3;
@@ -57,7 +57,7 @@ saved_endo = oo_.endo_simul(:, 1);
 saved_exo = oo_.exo_simul(1, :);
 oo_.endo_simul = oo_.endo_simul(:, 2:end);
 oo_.exo_simul = oo_.exo_simul(2:end, :);
-perfect_foresight_solver(true);
+oo_=perfect_foresight_solver(M_, options_, oo_, true);
 oo_.endo_simul = [ saved_endo oo_.endo_simul ];
 oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 
@@ -71,7 +71,7 @@ saved_endo = oo_.endo_simul(:, 1:2);
 saved_exo = oo_.exo_simul(1:2, :);
 oo_.endo_simul = oo_.endo_simul(:, 3:end);
 oo_.exo_simul = oo_.exo_simul(3:end, :);
-perfect_foresight_solver(true);
+oo_=perfect_foresight_solver(M_, options_, oo_, true);
 oo_.endo_simul = [ saved_endo oo_.endo_simul ];
 oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 
@@ -87,7 +87,7 @@ saved_endo = oo_.endo_simul(:, 1:5);
 saved_exo = oo_.exo_simul(1:5, :);
 oo_.endo_simul = oo_.endo_simul(:, 6:end);
 oo_.exo_simul = oo_.exo_simul(6:end, :);
-perfect_foresight_solver(true);
+oo_=perfect_foresight_solver(M_, options_, oo_, true);
 oo_.endo_simul = [ saved_endo oo_.endo_simul ];
 oo_.exo_simul = [ saved_exo; oo_.exo_simul ];
 

@@ -679,8 +679,8 @@ else
             not_achieved = 1;
             alpha = 1;
             while not_achieved
-                perfect_foresight_setup;
-                perfect_foresight_solver;
+                oo_=perfect_foresight_setup(M_, options_, oo_);
+                oo_=perfect_foresight_solver(M_, options_, oo_);
                 result = sum(sum(isfinite(oo_.endo_simul(:,time_index_constraint)))) == ny * length(time_index_constraint);
                 if (~oo_.deterministic_simulation.status || ~result) && it > 1
                     not_achieved = 1;

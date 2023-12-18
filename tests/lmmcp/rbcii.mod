@@ -58,7 +58,7 @@ perfect_foresight_solver(lmmcp, maxit=200, no_homotopy);
 if ~oo_.deterministic_simulation.status
     error('Convergence not obtained')
 end
-
+send_endogenous_variables_to_workspace;
 n = 40;
 
 figure(2);

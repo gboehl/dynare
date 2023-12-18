@@ -20,6 +20,7 @@ options_.SpectralDensity.trigger=1;
 options_.bandpass.indicator=0;
 
 stoch_simul(order=1,nofunctions,hp_filter=0,irf=0,periods=1000000,filtered_theoretical_moments_grid=2048);
+send_endogenous_variables_to_workspace;
 
 white_noise_sample=white_noise;
 

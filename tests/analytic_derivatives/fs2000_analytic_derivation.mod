@@ -62,6 +62,7 @@ var e_m; stderr 0.005;
 end;
 
 stoch_simul(order=1,periods=200, irf=0,nomoments,noprint);
+send_endogenous_variables_to_workspace;
 save('my_data.mat','gp_obs','gy_obs');
 
 estimated_params;

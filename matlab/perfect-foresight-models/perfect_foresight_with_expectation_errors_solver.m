@@ -1,4 +1,11 @@
-function perfect_foresight_with_expectation_errors_solver
+function oo_=perfect_foresight_with_expectation_errors_solver(M_, options_, oo_)
+% INPUTS
+%   M_                  [structure] describing the model
+%   options_            [structure] describing the options
+%   oo_                 [structure] storing the results
+%
+% OUTPUTS
+%   oo_                 [structure] storing the results
 
 % Copyright © 2021-2023 Dynare Team
 %
@@ -17,14 +24,8 @@ function perfect_foresight_with_expectation_errors_solver
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ options_
-
 % Same for periods (it will be modified before calling perfect_foresight_solver if constants_simulation_length option is false)
 periods = options_.periods;
-
-% Save some options
-orig_homotopy_max_completion_share = options_.simul.homotopy_max_completion_share;
-orig_endval_steady = options_.simul.endval_steady;
 
 % Retrieve initial paths built by pfwee_setup
 % (the versions in oo_ will be truncated before calling perfect_foresight_solver)
@@ -78,7 +79,7 @@ while info_period <= periods
         marginal_linearization_previous_raw_sims = [];
     end
 
-    perfect_foresight_solver(true, marginal_linearization_previous_raw_sims);
+    oo_= perfect_foresight_solver(M_, options_, oo_, true, marginal_linearization_previous_raw_sims);
 
     if ~oo_.deterministic_simulation.status
         error('perfect_foresight_with_expectation_errors_solver: failed to compute solution for information available at period %d\n', info_period)
@@ -107,8 +108,3 @@ end
 % Set final paths
 oo_.endo_simul = endo_simul;
 oo_.exo_simul = exo_simul;
-
-% Restore some options
-options_.periods = periods;
-options_.simul.homotopy_max_completion_share = orig_homotopy_max_completion_share;
-options_.simul.endval_steady = orig_endval_steady;

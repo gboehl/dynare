@@ -11,6 +11,7 @@ var q = 0.01^2;
 end;
 
 stoch_simul(order=3,periods=200, irf=0);
+send_endogenous_variables_to_workspace;
 
 save('my_data.mat','q','ca');
 
