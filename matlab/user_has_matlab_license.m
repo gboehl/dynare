@@ -11,7 +11,7 @@ function [hasLicense] = user_has_matlab_license(toolbox)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2012-2020 Dynare Team
+% Copyright © 2012-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,7 +28,9 @@ function [hasLicense] = user_has_matlab_license(toolbox)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-hasLicense = license('checkout',toolbox);
+% NB: the second output argument should not be removed, otherwise MATLAB will
+% display an error message if the toolbox is not present.
+[hasLicense, ~] = license('checkout',toolbox);
 
 if ~hasLicense
     return
