@@ -1,6 +1,6 @@
 function oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, pnames)
-
-% This function prints and saves posterior estimates after the mcmc
+% oo_ = GetPosteriorParametersStatistics(estim_params_, M_, options_, bayestopt_, oo_, pnames)
+% This function prints and saves posterior estimates after the MCMC
 % (+updates of oo_ & TeX output).
 %
 % INPUTS
@@ -73,7 +73,7 @@ else
     if ~isfield(oo_,'MarginalDensity') || (issmc(options_) && ~isfield(oo_.MarginalDensity,'ModifiedHarmonicMean'))
         [~, oo_] = marginal_density(M_, options_, estim_params_, oo_, bayestopt_);
     end
-    fprintf('Log data density is %f.', oo_.MarginalDensity.ModifiedHarmonicMean);
+    fprintf('Log data density (Modified Harmonic Mean) is %f.', oo_.MarginalDensity.ModifiedHarmonicMean);
     % Set function handle for GetAllPosteriordraws
     getalldraws = @(i) GetAllPosteriorDraws(options_, M_.dname, M_.fname, i, FirstMhFile, FirstLine, TotalNumberOfMhFiles, NumberOfDraws, mh_nblck);
 end
