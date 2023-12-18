@@ -65,8 +65,10 @@ regime_history=[];
 if  options_.occbin.smoother.linear_smoother && nargin==12
     %% linear smoother
     options_.occbin.smoother.status=false;
-    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
-    tmp_smoother=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,P,PK,decomp,Trend,state_uncertainty);
+    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = ...
+        DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_);
+    tmp_smoother=store_smoother_results(M_,oo_,options_,bayestopt_,dataset_,dataset_info,alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,...
+        aK,P,PK,decomp,Trend,state_uncertainty);
     for jf=1:length(smoother_field_list)
         oo_.occbin.linear_smoother.(smoother_field_list{jf}) = tmp_smoother.(smoother_field_list{jf});
     end
@@ -118,8 +120,25 @@ occbin_options.first_period_occbin_update = options_.occbin.smoother.first_perio
 occbin_options.opts_regime = opts_simul; % this builds the opts_simul options field needed by occbin.solver
 occbin_options.opts_regime.binding_indicator = options_.occbin.likelihood.init_binding_indicator;
 occbin_options.opts_regime.regime_history=options_.occbin.likelihood.init_regime_history;
-[alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
-
+try
+    %blanket try-catch should be replaced be proper error handling, see https://git.dynare.org/Dynare/dynare/-/merge_requests/2226#note_20318
+    [alphahat,etahat,epsilonhat,ahat,SteadyState,trend_coeff,aK,T0,R0,P,PK,decomp,Trend,state_uncertainty,oo_,bayestopt_,alphahat0,state_uncertainty0] = DsgeSmoother(xparam1,gend,Y,data_index,missing_value,M_,oo_,options_,bayestopt_,estim_params_,occbin_options);%     T1=TT;
+catch
+    % realtime regimes could not converge, try guess shocks from linear smoother
+    base_regime = struct();
+    if M_.occbin.constraint_nbr==1
+        base_regime.regime = 0;
+        base_regime.regimestart = 1;
+    else
+        base_regime.regime1 = 0;
+        base_regime.regimestart1 = 1;
+        base_regime.regime2 = 0;
+        base_regime.regimestart2 = 1;
+    end
+    for jper=1:size(alphahat,2)+1
+        oo_.occbin.smoother.regime_history(jper) = base_regime;
+    end
+end
 oo_.occbin.smoother.realtime_regime_history = oo_.occbin.smoother.regime_history;
 regime_history = oo_.occbin.smoother.regime_history;
 opts_regime.regime_history = oo_.occbin.smoother.regime_history;
