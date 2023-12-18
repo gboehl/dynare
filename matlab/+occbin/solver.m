@@ -1,23 +1,26 @@
 function [dr, out, ss] = solver(M_, options_, dr ,steady_state, exo_steady_state, exo_det_steady_state)
-% function [oo_, out, ss] = solver(M_,oo_,options_, dr ,steady_state, exo_steady_state, exo_det_steady_state
+% [dr, out, ss] = solver(M_,oo_,options_, dr ,steady_state, exo_steady_state, exo_det_steady_state
 % Solves the model with an OBC and produces simulations/IRFs
 %
 % INPUT: 
-% - M_                  [structure]     Matlab's structure describing the model
-% - oo_                 [structure]     Matlab's structure containing the results
-% - options_            [structure]     Matlab's structure containing the options
+% - M_                      [structure]     Matlab's structure describing the model
+% - options_                [structure]     Matlab's structure containing the options
+% - dr                      [structure]     model information structure
+% - endo_steady_state       [vector]        steady state value for endogenous variables
+% - exo_steady_state        [vector]        steady state value for exogenous variables
+% - exo_det_steady_state    [vector]        steady state value for exogenous deterministic variables                                    
 %
 % OUTPUT: 
-% - oo_                 [structure]     Matlab's structure containing the results
-% - out                 [structure]     simulation result containing fields:
-%                                           - linear: paths for endogenous variables ignoring OBC (linear solution)
-%                                           - piecewise: paths for endogenous variables satisfying the OBC (occbin/piecewise solution)
-%                                           - ys: vector of steady state values
-%                                           - regime_history: information on number and time of regime transitions
-% - ss                  [structure]     State space solution
-%                                           - T: [n_vars by n_vars by n_shock_period] array of transition matrices
-%                                           - R: [n_vars by n_exo by n_shock_period] array of shock response matrices
-%                                           - C: [n_vars by n_shock_period] array of constants
+% - dr                      [structure]     decision rules
+% - out                     [structure]     simulation result containing fields:
+%                                               - linear: paths for endogenous variables ignoring OBC (linear solution)
+%                                               - piecewise: paths for endogenous variables satisfying the OBC (occbin/piecewise solution)
+%                                               - ys: vector of steady state values
+%                                               - regime_history: information on number and time of regime transitions
+% - ss                      [structure]     State space solution
+%                                               - T: [n_vars by n_vars by n_shock_period] array of transition matrices
+%                                               - R: [n_vars by n_exo by n_shock_period] array of shock response matrices
+%                                               - C: [n_vars by n_shock_period] array of constants
 
 % Copyright © 2021-2023 Dynare Team
 %
