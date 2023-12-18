@@ -1,5 +1,5 @@
 function o2WysrOISH  = load_m_file_data_legacy(datafile, U7ORsJ0vy3)
-
+% o2WysrOISH  = load_m_file_data_legacy(datafile, U7ORsJ0vy3)
 % Copyright © 2014-2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -68,7 +68,7 @@ end
 % Check that all the vectors have the same number of elements.
 RXZzmKFPFK = numel(eval(U7ORsJ0vy3{1}));
 for uAiwEPcc3Q=2:length(U7ORsJ0vy3)
-    if ~isequal(numel(eval(U7ORsJ0vy3{1})), RXZzmKFPFK)
+    if ~isequal(numel(eval(U7ORsJ0vy3{uAiwEPcc3Q})), RXZzmKFPFK)
         error('All vectors must have the same number of elements (%s has %i elements while %s has %i elements)!', U7ORsJ0vy3{1}, numel(eval(U7ORsJ0vy3{1})), U7ORsJ0vy3{uAiwEPcc3Q}, numel(eval(U7ORsJ0vy3{uAiwEPcc3Q})));
     end
 end
