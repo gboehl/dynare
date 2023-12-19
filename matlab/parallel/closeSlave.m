@@ -6,7 +6,7 @@ function closeSlave(Parallel,TmpFolder,partial)
 %
 % INPUTS
 %  o Parallel [struct vector]   copy of options_.parallel.
-%  o TmpFolder        string    if islocal==0, is the name of didectory devoted to remote computation.
+%  o TmpFolder        string    if islocal==0, is the name of directory devoted to remote computation.
 %                               This directory is named using current date
 %                               and is used only one time and then deleted.
 %                               If islocal==1, TmpFolder=''.
@@ -45,32 +45,19 @@ if partial==1
             dynareParallelSendFiles('slaveParallel_break.mat',TmpFolder,Parallel(indPC));
         end
     end
-    %     delete('slaveParallel_break')
-    return
-end
-if partial==-1
-    delete('slaveParallel_break.mat')
-    for indPC=1:length(Parallel)
-        if (Parallel(indPC).Local==0)
-            dynareParallelDelete( 'slaveParallel_break.mat',TmpFolder,Parallel(indPC));
-        end
-    end
-    %     delete('slaveParallel_break')
+    s=warning('on');
     return
 end
 
 for indPC=1:length(Parallel)
     if (Parallel(indPC).Local==0)
-        dynareParallelDelete( 'slaveParallel_input*.mat',TmpFolder,Parallel(indPC));
+        dynareParallelDelete(' slaveParallel_input*.mat',TmpFolder,Parallel(indPC));
     end
-
-
     delete( 'slaveParallel_input*.mat');
     delete( 'slaveJob*.mat');
     pause(1)
     delete('slaveParallel_*.log');
     delete ConcurrentCommand1.bat;
-
 end
 
 while(1)

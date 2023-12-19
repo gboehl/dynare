@@ -48,7 +48,7 @@ dynareroot = dynare_config();
 load( ['slaveParallel_input',int2str(whoiam)]);
 
 %Loads fGlobalVar Parallel.
-if exist('fGlobalVar')
+if exist('fGlobalVar','var')
     globalVars = fieldnames(fGlobalVar);
     for j=1:length(globalVars)
         eval(['global ',globalVars{j},';']);
@@ -70,7 +70,7 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
         t0=clock;
         delete(['stayalive',int2str(whoiam),'.txt']);
     end
-    % I wait for 20 min or while mater asks to exit (i.e. it cancels fslave file)
+    % I wait for 20 min or while master asks to exit (i.e. it cancels fslave file)
     pause(1)
 
     fjob = dir(['slaveJob',int2str(whoiam),'.mat']);
@@ -79,8 +79,6 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
         clear fGlobalVar fInputVar fblck nblck fname
 
         while(1)
-            Go=0;
-
             Go=fopen(['slaveJob',int2str(whoiam),'.mat']);
 
             if Go>0
@@ -104,7 +102,7 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
 
         funcName=fname;  % Update global job name.
 
-        if exist('fGlobalVar') && ~isempty (fGlobalVar)
+        if exist('fGlobalVar','var') && ~isempty (fGlobalVar)
             globalVars = fieldnames(fGlobalVar);
             for j=1:length(globalVars)
                 info_whos = whos(globalVars{j});
@@ -126,11 +124,6 @@ while (etime(clock,t0)<1200 && ~isempty(fslave)) || ~isempty(dir(['stayalive',in
             tic
             fOutputVar = feval(fname, fInputVar ,fblck, nblck, whoiam, ThisMatlab);
             toc
-            if isfield(fOutputVar,'OutputFileName')
-                OutputFileName = fOutputVar.OutputFileName;
-            else
-                OutputFileName = '';
-            end
 
             if(whoiam)
 
@@ -182,6 +175,5 @@ disp(['slaveParallel on CPU ',int2str(whoiam),' completed.']);
 diary off;
 
 delete(['P_slave_',int2str(whoiam),'End.txt']);
-
 
 exit;
