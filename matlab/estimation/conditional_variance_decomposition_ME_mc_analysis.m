@@ -1,7 +1,8 @@
 function oo_ = ...
-    conditional_variance_decomposition_mc_analysis(NumberOfSimulations, type, dname, fname, Steps, exonames, exo, var_list, endo, mh_conf_sig, oo_,options_)
+    conditional_variance_decomposition_ME_mc_analysis(NumberOfSimulations, type, dname, fname, Steps, exonames, exo, var_list, endo, mh_conf_sig, oo_,options_)
+%oo_ = conditional_variance_decomposition_ME_mc_analysis(NumberOfSimulations, type, dname, fname, Steps, exonames, exo, var_list, endo, mh_conf_sig, oo_,options_)
 % This function analyses the (posterior or prior) distribution of the
-% endogenous variables' conditional variance decomposition.
+% endogenous variables' conditional variance decomposition with measurement error.
 %
 % INPUTS
 %   NumberOfSimulations     [integer]           scalar, number of simulations.
@@ -14,8 +15,7 @@ function oo_ = ...
 %                                               variable
 %   var_list                [string]            (n_endo*char_length) character array with name
 %                                               of endogenous variables
-%   endogenous_variable_index [integer]         index of the current
-%                                               endogenous variable
+%   endo                    [integer]           Current endogenous variable
 %   mh_conf_sig             [double]            2 by 1 vector with upper
 %                                               and lower bound of HPD intervals
 %   oo_                     [structure]         Dynare structure where the results are saved.
@@ -23,7 +23,7 @@ function oo_ = ...
 % OUTPUTS
 %   oo_          [structure]        Dynare structure where the results are saved.
 
-% Copyright © 2009-2018 Dynare Team
+% Copyright © 2017-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -48,20 +48,29 @@ else
     PATH = [dname '/prior/moments/'];
 end
 
-exogenous_variable_index = check_name(exonames,exo);
-if isempty(exogenous_variable_index)
-    if ~isequal(exo,'ME')
-        disp([ type '_analysis:: ' exo ' is not a declared exogenous variable!'])
-    end
-    return
-end
-
 endogenous_variable_index = check_name(var_list, endo);
 if isempty(endogenous_variable_index)
     disp([ type '_analysis:: Can''t find ' endo '!'])
     return
 end
 
+exogenous_variable_index = check_name(exonames,exo);
+if isempty(exogenous_variable_index)
+    if isequal(exo,'ME')
+        exogenous_variable_index=length(exonames)+1;
+    else
+        disp([ type '_analysis:: ' exo ' is not a declared exogenous variable!'])
+        return
+    end
+end
+
+if isoctave && octave_ver_less_than('8.4') %Octave bug #60347
+    [~,index_subset]=intersect_stable(var_list,options_.varobs);
+else
+    [~,index_subset]=intersect(var_list,options_.varobs,'stable');
+end
+
+matrix_pos=strmatch(endo, var_list(index_subset),'exact');
 name_1 = endo;
 name_2 = exo;
 name = [ name_1 '.' name_2 ];
@@ -70,8 +79,8 @@ if isfield(oo_, [ TYPE 'TheoreticalMoments' ])
     temporary_structure = oo_.([TYPE 'TheoreticalMoments']);
     if isfield(temporary_structure,'dsge')
         temporary_structure = oo_.([TYPE 'TheoreticalMoments']).dsge;
-        if isfield(temporary_structure,'ConditionalVarianceDecomposition')
-            temporary_structure = oo_.([TYPE 'TheoreticalMoments']).dsge.ConditionalVarianceDecomposition.Mean;
+        if isfield(temporary_structure,'ConditionalVarianceDecompositionME')
+            temporary_structure = oo_.([TYPE 'TheoreticalMoments']).dsge.ConditionalVarianceDecompositionME.Mean;
             if isfield(temporary_structure,name)
                 if sum(Steps-temporary_structure.(name)(1,:)) == 0
                     % Nothing (new) to do here...
@@ -82,13 +91,13 @@ if isfield(oo_, [ TYPE 'TheoreticalMoments' ])
     end
 end
 
-ListOfFiles = dir([ PATH  fname '_' TYPE 'ConditionalVarianceDecomposition*.mat']);
+ListOfFiles = dir([ PATH  fname '_' TYPE 'ConditionalVarianceDecompME*.mat']);
 i1 = 1; tmp = zeros(NumberOfSimulations,length(Steps));
 for file = 1:length(ListOfFiles)
-    load([ PATH ListOfFiles(file).name ]);
+    load([ PATH ListOfFiles(file).name ],'Conditional_decomposition_array_ME');
     % 4D-array (endovar,time,exovar,simul)
-    i2 = i1 + size(Conditional_decomposition_array,4) - 1;
-    tmp(i1:i2,:) = transpose(dynare_squeeze(Conditional_decomposition_array(endogenous_variable_index,:,exogenous_variable_index,:)));
+    i2 = i1 + size(Conditional_decomposition_array_ME,4) - 1;
+    tmp(i1:i2,:) = transpose(dynare_squeeze(Conditional_decomposition_array_ME(matrix_pos,:,exogenous_variable_index,:)));
     i1 = i2+1;
 end
 
@@ -120,13 +129,13 @@ end
 
 FirstField = sprintf('%sTheoreticalMoments', TYPE);
 
-oo_.(FirstField).dsge.ConditionalVarianceDecomposition.Steps = Steps;
-oo_.(FirstField).dsge.ConditionalVarianceDecomposition.Mean.(name_1).(name_2) = p_mean;
-oo_.(FirstField).dsge.ConditionalVarianceDecomposition.Median.(name_1).(name_2) = p_median;
-oo_.(FirstField).dsge.ConditionalVarianceDecomposition.Variance.(name_1).(name_2) = p_variance;
-oo_.(FirstField).dsge.ConditionalVarianceDecomposition.HPDinf.(name_1).(name_2) = p_hpdinf;
-oo_.(FirstField).dsge.ConditionalVarianceDecomposition.HPDsup.(name_1).(name_2) = p_hpdsup;
-oo_.(FirstField).dsge.ConditionalVarianceDecomposition.deciles.(name_1).(name_2)  = p_deciles;
+oo_.(FirstField).dsge.ConditionalVarianceDecompositionME.Steps = Steps;
+oo_.(FirstField).dsge.ConditionalVarianceDecompositionME.Mean.(name_1).(name_2) = p_mean;
+oo_.(FirstField).dsge.ConditionalVarianceDecompositionME.Median.(name_1).(name_2) = p_median;
+oo_.(FirstField).dsge.ConditionalVarianceDecompositionME.Variance.(name_1).(name_2) = p_variance;
+oo_.(FirstField).dsge.ConditionalVarianceDecompositionME.HPDinf.(name_1).(name_2) = p_hpdinf;
+oo_.(FirstField).dsge.ConditionalVarianceDecompositionME.HPDsup.(name_1).(name_2) = p_hpdsup;
+oo_.(FirstField).dsge.ConditionalVarianceDecompositionME.deciles.(name_1).(name_2)  = p_deciles;
 if options_.estimation.moments_posterior_density.indicator
-    oo_.(FirstField).dsge.ConditionalVarianceDecomposition.density.(name_1).(name_2) = p_density;
+    oo_.(FirstField).dsge.ConditionalVarianceDecompositionME.density.(name_1).(name_2) = p_density;
 end

@@ -85,7 +85,7 @@ ListOfFiles = dir([ PATH  fname '_' TYPE 'VarianceDecomposition*.mat']);
 i1 = 1; tmp = zeros(NumberOfSimulations,1);
 indice = (indx-1)*rows(exonames)+jndx;
 for file = 1:length(ListOfFiles)
-    load([ PATH ListOfFiles(file).name ]);
+    load([ PATH ListOfFiles(file).name ],'Decomposition_array');
     i2 = i1 + rows(Decomposition_array) - 1;
     tmp(i1:i2) = Decomposition_array(:,indice);
     i1 = i2+1;

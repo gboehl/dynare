@@ -85,12 +85,11 @@ end
 ListOfFiles = dir([ PATH  fname '_' TYPE 'Correlations*.mat']);
 i1 = 1; tmp = zeros(SampleSize,1);
 for file = 1:length(ListOfFiles)
-    load([ PATH  ListOfFiles(file).name ]);
+    load([ PATH  ListOfFiles(file).name ],'Correlation_array');
     i2 = i1 + rows(Correlation_array) - 1;
     tmp(i1:i2) = Correlation_array(:,indx1,indx2,nar);
     i1 = i2+1;
 end
-name = [ var1 '.' var2 ];
 if options_.estimation.moments_posterior_density.indicator
     [p_mean, p_median, p_var, hpd_interval, p_deciles, density] = ...
         posterior_moments(tmp,1,mh_conf_sig);
