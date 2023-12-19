@@ -1,5 +1,5 @@
 function [mean, variance] = GetPosteriorMeanVariance(options_, M_)
-%function [mean,variance] = GetPosteriorMeanVariance(M,drop)
+% [mean,variance] = GetPosteriorMeanVariance(options_, M_)
 % Computes the posterior mean and variance
 % (+updates of oo_ & TeX output).
 %
