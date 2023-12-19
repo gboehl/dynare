@@ -386,7 +386,9 @@ elseif options_.load_mh_file && ~options_.mh_recover
     record.InitialSeeds = record.LastSeeds;
     write_mh_history_file(MetropolisFolder, ModelName, record);
     fprintf('Done.\n')
-    fprintf('%s: Ok. I have loaded %u simulations.\n\n', dispString,NumberOfPreviousSimulations);
+    if ~options_.use_mh_covariance_matrix
+        fprintf('%s: Ok. I have loaded %u simulations.\n\n', dispString,NumberOfPreviousSimulations);
+    end
     fclose(fidlog);
 elseif options_.mh_recover
     % The previous metropolis-hastings crashed before the end! I try to recover the saved draws...
