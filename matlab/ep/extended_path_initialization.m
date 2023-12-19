@@ -70,15 +70,14 @@ pfm.block = options_.block;
 options_.stack_solve_algo = ep.stack_solve_algo;
 
 % Compute the first order reduced form if needed.
-%
-% REMARK. It is assumed that the user did run the same mod file with stoch_simul(order=1) and save
-% all the globals in a mat file called linear_reduced_form.mat;
-
 dr = struct();
 if ep.init
     options_.order = 1;
     oo_.dr=set_state_space(dr,M_);
-    [oo_.dr,~,M_.params] = resol(0,M_,options_,oo_.dr,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+    [oo_.dr,info,M_.params] = resol(0,M_,options_,oo_.dr,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+    if info(1)
+        print_info(info,options_.noprint,options_);
+    end
 end
 
 % Do not use a minimal number of perdiods for the perfect foresight solver (with bytecode and blocks)
