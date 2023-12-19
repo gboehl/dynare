@@ -97,7 +97,7 @@ if options_.contemporaneous_correlation
     var_pos_2=symmetric_matrix_index(indx2,indx2,nvar);
 end
 for file = 1:length(ListOfFiles)
-    load([ PATH ListOfFiles(file).name ]);
+    load([ PATH ListOfFiles(file).name ],'Covariance_matrix');
     i2 = i1 + rows(Covariance_matrix) - 1;
     tmp(i1:i2) = Covariance_matrix(:,symmetric_matrix_index(indx1,indx2,nvar));
     if options_.contemporaneous_correlation

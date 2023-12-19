@@ -94,7 +94,7 @@ end
 ListOfFiles = dir([ PATH  fname '_' TYPE 'ConditionalVarianceDecompME*.mat']);
 i1 = 1; tmp = zeros(NumberOfSimulations,length(Steps));
 for file = 1:length(ListOfFiles)
-    load([ PATH ListOfFiles(file).name ]);
+    load([ PATH ListOfFiles(file).name ],'Conditional_decomposition_array_ME');
     % 4D-array (endovar,time,exovar,simul)
     i2 = i1 + size(Conditional_decomposition_array_ME,4) - 1;
     tmp(i1:i2,:) = transpose(dynare_squeeze(Conditional_decomposition_array_ME(matrix_pos,:,exogenous_variable_index,:)));
