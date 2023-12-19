@@ -75,8 +75,8 @@ function w = matrictint(S, df, XXi)
 
 k=size(XXi,1);
 ny=size(S,1);
-cx = chol(XXi);
-cs = chol(S);
+[cx,p] = chol(XXi); %second output required to prevent error
+[cs,p] = chol(S); %second output required to prevent error
 
 if any(diag(cx)<100*eps)
     error('singular XXi')

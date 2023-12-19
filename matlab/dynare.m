@@ -240,7 +240,7 @@ end
 % https://forum.dynare.org/t/issue-with-dynare-preprocessor-4-6-1/15448/1
 if ~fast
     if ispc && ~isoctave && exist(['+',fname(1:end-4)],'dir')
-        rmdir(['+', fname(1:end-4)],'s');
+        [~,~]=rmdir(['+', fname(1:end-4)],'s'); % output required to suppress triggering error
     end
 end
 
