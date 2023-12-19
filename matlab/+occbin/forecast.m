@@ -88,7 +88,7 @@ if opts.replic
 
     for i=1:M_.endo_nbr
         for j=1:forecast
-            [post_mean(j,1), post_median(j,1), post_var(j,1), hpd_interval(j,:), post_deciles(j,:)] = posterior_moments(squeeze(zlin0(j,i,:)),1,options_.forecasts.conf_sig);
+            [post_mean(j,1), post_median(j,1), post_var(j,1), hpd_interval(j,:), post_deciles(j,:)] = posterior_moments(squeeze(zlin0(j,i,:)),options_.forecasts.conf_sig);
         end
         oo_.occbin.linear_forecast.Mean.(M_.endo_names{i})=post_mean;
         oo_.occbin.linear_forecast.Median.(M_.endo_names{i})=post_median;
@@ -99,7 +99,7 @@ if opts.replic
         oo_.occbin.linear_forecast.Min.(M_.endo_names{i})=zlinmin(:,i);
         oo_.occbin.linear_forecast.Max.(M_.endo_names{i})=zlinmax(:,i);
         for j=1:forecast
-            [post_mean(j,1), post_median(j,1), post_var(j,1), hpd_interval(j,:), post_deciles(j,:)] = posterior_moments(squeeze(zpiece0(j,i,:)),1,options_.forecasts.conf_sig);
+            [post_mean(j,1), post_median(j,1), post_var(j,1), hpd_interval(j,:), post_deciles(j,:)] = posterior_moments(squeeze(zpiece0(j,i,:)),options_.forecasts.conf_sig);
         end
         oo_.occbin.forecast.Mean.(M_.endo_names{i})=post_mean;
         oo_.occbin.forecast.Median.(M_.endo_names{i})=post_median;

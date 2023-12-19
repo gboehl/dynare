@@ -493,7 +493,7 @@ else
             post_median=NaN(1,nparam);
             hpd_interval=NaN(nparam,2);
             for i=1:nparam
-                [~, post_median(:,i), ~, hpd_interval(i,:)] = posterior_moments(VVV(:,i),0,0.9);
+                [~, post_median(:,i), ~, hpd_interval(i,:)] = posterior_moments(VVV(:,i),0.9);
             end
             bar(post_median)
             hold on, plot(hpd_interval,'--*r'),

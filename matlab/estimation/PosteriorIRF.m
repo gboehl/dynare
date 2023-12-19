@@ -283,7 +283,7 @@ for file = 1:NumberOfIRFfiles_dsge
             for k = 1:size(temp.STOCK_IRF_DSGE,1)
                 kk = k+kdx;
                 [MeanIRF(kk,j,i),MedianIRF(kk,j,i),VarIRF(kk,j,i),HPDIRF(kk,:,j,i),...
-                 DistribIRF(kk,:,j,i)] = posterior_moments(squeeze(temp.STOCK_IRF_DSGE(k,j,i,:)),0,options_.mh_conf_sig);
+                 DistribIRF(kk,:,j,i)] = posterior_moments(squeeze(temp.STOCK_IRF_DSGE(k,j,i,:)),options_.mh_conf_sig);
             end
         end
     end
@@ -323,7 +323,7 @@ if MAX_nirfs_dsgevar
                     kk = k+kdx;
                     [MeanIRFdsgevar(kk,j,i),MedianIRFdsgevar(kk,j,i),VarIRFdsgevar(kk,j,i),...
                      HPDIRFdsgevar(kk,:,j,i),DistribIRFdsgevar(kk,:,j,i)] = ...
-                        posterior_moments(squeeze(temp.STOCK_IRF_BVARDSGE(k,j,i,:)),0,options_.mh_conf_sig);
+                        posterior_moments(squeeze(temp.STOCK_IRF_BVARDSGE(k,j,i,:)),options_.mh_conf_sig);
                 end
             end
         end

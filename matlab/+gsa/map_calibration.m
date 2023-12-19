@@ -212,7 +212,7 @@ if ~isempty(indx_irf)
         indx_irf_matrix(:,plot_indx(ij)) = indx_irf_matrix(:,plot_indx(ij)) + indx_irf(:,ij);
         for ik=1:size(mat_irf{ij},2)
             [Mean,Median,Var,HPD,Distrib] = ...
-                posterior_moments(mat_irf{ij}(:,ik),0,options_.mh_conf_sig);
+                posterior_moments(mat_irf{ij}(:,ik),options_.mh_conf_sig);
             irf_mean{plot_indx(ij)} = [irf_mean{plot_indx(ij)}; Mean];
             irf_median{plot_indx(ij)} = [irf_median{plot_indx(ij)}; Median];
             irf_var{plot_indx(ij)} = [irf_var{plot_indx(ij)}; Var];
@@ -417,7 +417,7 @@ if ~isempty(indx_moment)
         indx_moment_matrix(:,plot_indx(ij)) = indx_moment_matrix(:,plot_indx(ij)) + indx_moment(:,ij);
         for ik=1:size(mat_moment{ij},2)
             [Mean,Median,Var,HPD,Distrib] = ...
-                posterior_moments(mat_moment{ij}(:,ik),0,options_.mh_conf_sig);
+                posterior_moments(mat_moment{ij}(:,ik),options_.mh_conf_sig);
             moment_mean{plot_indx(ij)} = [moment_mean{plot_indx(ij)}; Mean];
             moment_median{plot_indx(ij)} = [moment_median{plot_indx(ij)}; Median];
             moment_var{plot_indx(ij)} = [moment_var{plot_indx(ij)}; Var];

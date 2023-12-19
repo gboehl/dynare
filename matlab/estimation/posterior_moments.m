@@ -1,10 +1,11 @@
-function [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(xx,info,mh_conf_sig,kernel_options)
+function [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(xx,mh_conf_sig,kernel_options)
+% [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(xx,mh_conf_sig,kernel_options)
 % Computes posterior mean, median, variance, HPD interval, deciles, and density from posterior draws.
 %
 % INPUTS
-%    xx            [double]    Vector of posterior draws (or prior draws ;-)
-%    info          [integer]   If equal to one the posterior density is estimated.
-%    mh_config_sig [double]    Scalar between 0 and 1 specifying the size of the HPD interval.
+%    xx                 [double]    Vector of posterior draws (or prior draws ;-)
+%    mh_config_sig      [double]    Scalar between 0 and 1 specifying the size of the HPD interval.
+%    kernel_options     [structure] options for kernel density estimate
 %
 %
 % OUTPUTS
@@ -21,7 +22,7 @@ function [post_mean, post_median, post_var, hpd_interval, post_deciles, density]
 %                                                   kernel_density_estimate.m.
 %
 
-% Copyright © 2005-2017 Dynare Team
+% Copyright © 2005-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -38,19 +39,8 @@ function [post_mean, post_median, post_var, hpd_interval, post_deciles, density]
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-if nargin<4
-    number_of_grid_points = 2^9;      % 2^9 = 512 !... Must be a power of two.
-    bandwidth = 0;                    % Rule of thumb optimal bandwidth parameter.
-    kernel_function = 'gaussian';     % Gaussian kernel for Fast Fourrier Transform approximaton.
-else
-    number_of_grid_points = kernel_options.gridpoints;
-    bandwidth = kernel_options.bandwidth;
-    kernel_function = kernel_options.kernel_function;
-end
-
 xx = xx(:);
 xx = sort(xx);
-
 
 post_mean = mean(xx);
 post_median = median(xx);
@@ -84,8 +74,18 @@ if length(xx)>9
 else
     post_deciles=NaN(9,1);
 end
+
 density = [];
-if info
+if nargout == 6
+    if nargin<3
+        number_of_grid_points = 2^9;      % 2^9 = 512 !... Must be a power of two.
+        bandwidth = 0;                    % Rule of thumb optimal bandwidth parameter.
+        kernel_function = 'gaussian';     % Gaussian kernel for Fast Fourrier Transform approximaton.
+    else
+        number_of_grid_points = kernel_options.gridpoints;
+        bandwidth = kernel_options.bandwidth;
+        kernel_function = kernel_options.kernel_function;
+    end
     if post_var > 1e-12
         optimal_bandwidth = mh_optimal_bandwidth(xx,number_of_draws,bandwidth,kernel_function);
         [density(:,1),density(:,2)] = kernel_density_estimate(xx,number_of_grid_points,...
