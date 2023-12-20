@@ -26,13 +26,17 @@
  * The model is written in the beginning of period stock notation. To make the model
  * conform with Dynare’s end of period stock notation, we use the
  * predetermined_variables-command.
- *
+ * 
+ * The model has been implemented in detrended form, i.e. the \mu_{i,t} are actually
+ * the the growth rates of the original \mu_{i,t}^{orig} in the paper, i.e. 
+ *  log(\mu_{i,t})=log(\mu_{i,t}^{orig}/\mu_{i,t-1}^{orig})
+ * 
  * Please note that the following copyright notice only applies to this Dynare
  * implementation of the model.
  */
 
 /*
- * Copyright © 2013-2020 Dynare Team
+ * Copyright © 2013-2023 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -151,12 +155,12 @@ gammmaPI =1.29;
 PIbar = 1.01;
 rhod  = 0.12;
 rhophi = 0.93;
-sigma_A = -3.97;
-sigma_d = -1.51;
+sigma_A =  exp(-3.97);
+sigma_d = exp(-1.51);
 
-sigma_phi =-2.36;
-sigma_mu =-5.43;
-sigma_m  =-5.85;
+sigma_phi =exp(-2.36);
+sigma_mu =exp(-5.43);
+sigma_m  =exp(-5.85);
 Lambdamu=3.4e-3;
 LambdaA = 2.8e-3;
 
@@ -214,7 +218,7 @@ mc=(1/(1-alppha))^(1-alppha)*(1/alppha)^alppha*w^(1-alppha)*r^alppha;
 1=thetap*(PI(-1)^chi/PI)^(1-epsilon)+(1-thetap)*PIstar^(1-epsilon);
 
 [name='Taylor Rule']
-R/Rbar=(R(-1)/Rbar)^gammmaR*((PI/PIbar)^gammmaPI*((yd/yd(-1)*mu_z)/exp(LambdaYd))^gammmay)^(1-gammmaR)*exp(epsm);
+R/Rbar=(R(-1)/Rbar)^gammmaR*((PI/PIbar)^gammmaPI*((yd/yd(-1)*mu_z)/exp(LambdaYd))^gammmay)^(1-gammmaR)*exp(sigma_m*epsm);
 
 [name='Resource constraint']
 yd=c+x+mu_z^(-1)*mu_I^(-1)*(gammma1*(u-1)+gammma2/2*(u-1)^2)*k;
@@ -235,24 +239,24 @@ PIstarw=wstar/w;
 
 //exogenous processes
 [name='Preference Shock']
-log(d)=rhod*log(d(-1))+epsd;
+log(d)=rhod*log(d(-1))+sigma_d*epsd;
 [name='Labor disutility Shock']
-log(phi)=rhophi*log(phi(-1))+epsphi;
+log(phi)=rhophi*log(phi(-1))+sigma_phi*epsphi;
 [name='Investment specific technology']
-log(mu_I)=Lambdamu+epsmu_I;
+log(mu_I)=Lambdamu+sigma_mu*epsmu_I;
 [name='Neutral technology']
-log(mu_A)=LambdaA+epsA;
+log(mu_A)=LambdaA+sigma_A*epsA;
 [name='Defininition composite technology']
 mu_z=mu_A^(1/(1-alppha))*mu_I^(alppha/(1-alppha));
 
 end;
 
 shocks;
-var epsd; stderr exp(sigma_d);
-var epsphi; stderr exp(sigma_phi);
-var epsmu_I; stderr exp(sigma_mu);
-var epsA; stderr exp(sigma_A);
-var epsm; stderr exp(sigma_m);
+var epsd; stderr 1;
+var epsphi; stderr 1;
+var epsmu_I; stderr 1;
+var epsA; stderr 1;
+var epsm; stderr 1;
 end;
 
 steady;
