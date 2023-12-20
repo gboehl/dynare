@@ -12,7 +12,7 @@ function storeGlobalVars(fname,append)
 % None
 %
 %
-% Copyright © 2009-2017 Dynare Team
+% Copyright © 2009-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -34,7 +34,7 @@ GlobalNames = who('global');
 
 for j=1:length(GlobalNames)
     eval(['global ',GlobalNames{j},';']);
-    fGlobalvar.(GlobalNames{j}) = GlobalNames{j};
+    fGlobalVar.(GlobalNames{j}) = eval(GlobalNames{j});
 end
 
 if nargin<2
