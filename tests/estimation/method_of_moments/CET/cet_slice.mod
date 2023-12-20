@@ -22,7 +22,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
+@#define LESSPARAMS=1
 @#include "cet_model.inc"
 
 options_.prior_interval= 0.95;
@@ -79,7 +79,7 @@ method_of_moments(mom_method = irf_matching
 , mh_nblocks = 1
 %, mh_posterior_mode_estimation
 %, mh_recover
-, mh_replic=80
+, mh_replic=40 % too few draws yield error due to non positive definite covariance in the following estimations
 %, mh_tune_guess = 0.5
 %, mh_tune_jscale = 0.33
 %, mom_burnin
@@ -95,7 +95,7 @@ method_of_moments(mom_method = irf_matching
 %, no_posterior_kernel_density
 %, nodiagnostic
 %, nodisplay
-%, nograph
+, nograph
 %, noprint
 %, optim
 %, order
@@ -173,8 +173,9 @@ close all;
 method_of_moments(mom_method = irf_matching
 , irf_matching_file = cet_irf_matching_file
 , mh_nblocks = 1
-, mh_replic=20
+, mh_replic=10
 , plot_priors = 0
+, nograph
 , load_mh_file
 , posterior_sampling_method = 'slice'
 , posterior_sampler_options = ('rotated',1
@@ -194,8 +195,9 @@ close all;
 method_of_moments(mom_method = irf_matching
 , irf_matching_file = cet_irf_matching_file
 , mh_nblocks = 1
-, mh_replic=20
+, mh_replic=10
 , plot_priors = 0
+, nograph
 , mode_compute = 1
 , posterior_sampling_method = 'slice'
 , posterior_sampler_options = ('rotated',1

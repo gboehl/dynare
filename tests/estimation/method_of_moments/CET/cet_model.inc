@@ -726,6 +726,7 @@ ry                 , 0.01,      , , gamma_pdf , 0.10, 0.050;
 b                  ,     ,      , , beta_pdf  , 0.50, 0.150;
 sigmaa             ,     ,      , , gamma_pdf , 0.50, 0.300;
 Spp                ,     ,      , , gamma_pdf , 8.00, 2.000;
+@#ifndef LESSPARAMS
 alfa               ,     ,      , , beta_pdf  , 0.33, 0.025;
 thetaG             , 0.10,      , , beta_pdf  , 0.50, 0.200;
 deltapercent       ,     ,      , , gamma_pdf , 0.50, 0.400;
@@ -737,6 +738,7 @@ sig_epsR           ,     ,      , , gamma_pdf , 0.65, 0.050;
 sig_muz            ,     ,      , , gamma_pdf , 0.10, 0.050;
 sig_mupsi          ,     ,      , , gamma_pdf , 0.10, 0.050;
 rhomupsi           ,     ,      , , beta_pdf  , 0.75, 0.100;
+@#endif
 end;
 @#endif
 

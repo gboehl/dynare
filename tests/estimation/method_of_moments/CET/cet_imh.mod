@@ -1,7 +1,7 @@
 % -------------------------------------------------------------------------
 % Functionality testing of Bayesian IRF matching with 
 % - independent Metropolis-Hastings
-% - >1 MCMC chains
+% - more than one MCMC chains
 % -------------------------------------------------------------------------
 
 % Copyright © 2023 Dynare Team

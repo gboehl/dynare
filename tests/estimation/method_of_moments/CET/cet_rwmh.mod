@@ -22,7 +22,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
+@#define LESSPARAMS=1
 @#include "cet_model.inc"
 
 options_.prior_interval= 0.95;
@@ -93,10 +93,10 @@ method_of_moments(mom_method = irf_matching
 , mode_file = cet_original_mode
 %, nobs
 %, no_posterior_kernel_density
-%, nodiagnostic
-%, nodisplay
-%, nograph
-%, noprint
+, nodiagnostic
+, nodisplay
+, nograph
+, noprint
 %, optim
 %, order
 %, penalized_estimator
@@ -178,7 +178,7 @@ method_of_moments(mom_method = irf_matching
 , mh_drop = 0.5
 , mh_jscale = 0.5
 , mh_nblocks = 1
-, mh_replic=2000
+, mh_replic=200
 , mode_compute = 0
 , mode_file = 'cet_rwmh_results_1/method_of_moments/cet_rwmh_mode'
 , plot_priors = 0
@@ -207,7 +207,7 @@ method_of_moments(mom_method = irf_matching
 , mh_drop = 0.5
 , mh_jscale = 0.5
 , mh_nblocks = 1
-, mh_replic=600
+, mh_replic=60
 , mode_compute = 0
 , plot_priors = 0
 , posterior_sampling_method = 'random_walk_metropolis_hastings'

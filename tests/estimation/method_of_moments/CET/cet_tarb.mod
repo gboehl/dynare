@@ -20,7 +20,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-
+@#define LESSPARAMS=1
 @#include "cet_model.inc"
 
 options_.prior_interval= 0.95;
@@ -74,7 +74,7 @@ method_of_moments(mom_method = irf_matching
 , mh_nblocks = 1
 %, mh_posterior_mode_estimation
 %, mh_recover
-, mh_replic=25
+, mh_replic=5
 %, mh_tune_guess = 0.5
 %, mh_tune_jscale = 0.33
 %, mom_burnin
@@ -84,13 +84,13 @@ method_of_moments(mom_method = irf_matching
 %, mode_check_neighbourhood_size
 %, mode_check_number_of_points
 %, mode_check_symmetric_plots = 0
-, mode_compute = 1
+, mode_compute = 0
 , mode_file = cet_original_mode
 %, nobs
 %, no_posterior_kernel_density
 %, nodiagnostic
 %, nodisplay
-%, nograph
+, nograph
 %, noprint
 %, optim
 %, order
@@ -172,6 +172,7 @@ method_of_moments(mom_method = irf_matching
 , mode_compute = 4
 , mode_file = 'cet_tarb_results/method_of_moments/cet_tarb_mh_mode'
 , plot_priors = 0
+, nograph
 );
 
 %%%%%%%%%%%
