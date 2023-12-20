@@ -720,7 +720,7 @@ function indmcf = redform_mcf(y0, x0, options_mcf, options_, fname, parnames, es
 
 hh_fig=dyn_figure(options_.nodisplay,'name',options_mcf.amcf_title);
 
-[~, ~, ~, ~, post_deciles] = posterior_moments(y0,1,0.9);
+[~, ~, ~, ~, post_deciles] = posterior_moments(y0,0.9);
 post_deciles = [-inf; post_deciles; inf];
 
 for jt=1:10

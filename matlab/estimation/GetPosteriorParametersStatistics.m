@@ -105,7 +105,7 @@ if np
     for i=1:np
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh) || ishssmc(options_)
             draws = getalldraws(ip);
-            [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, 1, options_.mh_conf_sig);
+            [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, options_.mh_conf_sig);
             name = bayestopt_.name{ip};
             oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
         else
@@ -114,7 +114,7 @@ if np
                 [post_mean, hpd_interval, post_var] = Extractoo(oo_, name, type);
             catch
                 draws = getalldraws(ip);
-                [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, 1, options_.mh_conf_sig);
+                [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, options_.mh_conf_sig);
                 name = bayestopt_.name{ip};
                 oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
             end
@@ -148,7 +148,7 @@ if nvx
     for i=1:nvx
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             draws = getalldraws(ip);
-            [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, 1, options_.mh_conf_sig);
+            [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, options_.mh_conf_sig);
             k = estim_params_.var_exo(i,1);
             name = M_.exo_names{k};
             oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
@@ -160,7 +160,7 @@ if nvx
                 [post_mean, hpd_interval, post_var] = Extractoo(oo_, name, type);
             catch
                 draws = getalldraws(ip);
-                [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, 1, options_.mh_conf_sig);
+                [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, options_.mh_conf_sig);
                 k = estim_params_.var_exo(i,1);
                 name = M_.exo_names{k};
                 oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
@@ -191,7 +191,7 @@ if nvn
     for i=1:nvn
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             draws = getalldraws(ip);
-            [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, 1, options_.mh_conf_sig);
+            [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, options_.mh_conf_sig);
             name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
             oo_ = Filloo(oo_, name, type, post_mean, hpd_interval, post_median, post_var, post_deciles, density);
         else
@@ -200,7 +200,7 @@ if nvn
                 [post_mean,hpd_interval,post_var] = Extractoo(oo_,name,type);
             catch
                 draws = getalldraws(ip);
-                [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws,1,options_.mh_conf_sig);
+                [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws,options_.mh_conf_sig);
                 name = options_.varobs{estim_params_.nvn_observable_correspondence(i,1)};
                 oo_ = Filloo(oo_,name,type,post_mean,hpd_interval,post_median,post_var,post_deciles,density);
             end
@@ -230,7 +230,7 @@ if ncx
     for i=1:ncx
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             draws = getalldraws(ip);
-            [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws,1,options_.mh_conf_sig);
+            [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws,options_.mh_conf_sig);
             k1 = estim_params_.corrx(i,1);
             k2 = estim_params_.corrx(i,2);
             name = sprintf('%s,%s', M_.exo_names{k1}, M_.exo_names{k2});
@@ -247,7 +247,7 @@ if ncx
                 [post_mean,hpd_interval,post_var] = Extractoo(oo_, NAME, type);
             catch
                 draws = getalldraws(ip);
-                [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, 1, options_.mh_conf_sig);
+                [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, options_.mh_conf_sig);
                 k1 = estim_params_.corrx(i,1);
                 k2 = estim_params_.corrx(i,2);
                 name = sprintf('%s,%s', M_.exo_names{k1}, M_.exo_names{k2});
@@ -281,7 +281,7 @@ if ncn
     for i=1:ncn
         if options_.mh_replic || (options_.load_mh_file && ~options_.load_results_after_load_mh)
             draws = getalldraws(ip);
-            [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, 1, options_.mh_conf_sig);
+            [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, options_.mh_conf_sig);
             k1 = estim_params_.corrn(i,1);
             k2 = estim_params_.corrn(i,2);
             name = sprintf('%s,%s', M_.endo_names{k1}, M_.endo_names{k2});
@@ -296,7 +296,7 @@ if ncn
                 [post_mean,hpd_interval,post_var] = Extractoo(oo_, NAME, type);
             catch
                 draws = getalldraws(ip);
-                [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, 1, options_.mh_conf_sig);
+                [post_mean, post_median, post_var, hpd_interval, post_deciles, density] = posterior_moments(draws, options_.mh_conf_sig);
                 k1 = estim_params_.corrn(i,1);
                 k2 = estim_params_.corrn(i,2);
                 name = sprintf('%s,%s', M_.endo_names{k1}, M_.endo_names{k2});

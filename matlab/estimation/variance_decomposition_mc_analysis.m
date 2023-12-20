@@ -93,10 +93,10 @@ end
 
 if options_.estimation.moments_posterior_density.indicator
     [p_mean, p_median, p_var, hpd_interval, p_deciles, density] = ...
-        posterior_moments(tmp,1,mh_conf_sig);
+        posterior_moments(tmp,mh_conf_sig);
 else
     [p_mean, p_median, p_var, hpd_interval, p_deciles] = ...
-        posterior_moments(tmp,0,mh_conf_sig);
+        posterior_moments(tmp,mh_conf_sig);
 end
 
 oo_.([TYPE, 'TheoreticalMoments']).dsge.VarianceDecomposition.Mean.(var).(exo) = p_mean;

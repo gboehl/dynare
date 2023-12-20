@@ -113,11 +113,11 @@ p_hpdsup = NaN(1,length(Steps));
 for i=1:length(Steps)
     if options_.estimation.moments_posterior_density.indicator
         [pp_mean, pp_median, pp_var, hpd_interval, pp_deciles, pp_density] = ...
-            posterior_moments(tmp(:,i),1,mh_conf_sig);
+            posterior_moments(tmp(:,i),mh_conf_sig);
         p_density(:,:,i) = pp_density;
     else
         [pp_mean, pp_median, pp_var, hpd_interval, pp_deciles] = ...
-            posterior_moments(tmp(:,i),0,mh_conf_sig);
+            posterior_moments(tmp(:,i),mh_conf_sig);
     end
     p_mean(i) = pp_mean;
     p_median(i) = pp_median;

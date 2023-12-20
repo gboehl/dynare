@@ -193,10 +193,10 @@ if strcmp(var_type,'_trend_coeff') %two dimensional arrays
     for i = 1:nvar
         if options_.estimation.moments_posterior_density.indicator
             [Mean(1,i),Median(1,i),Var(1,i),HPD(:,1,i),Distrib(:,1,i),Density(:,:,1,i)] = ...
-                posterior_moments(squeeze(stock1(SelecVariables(i),:)),1,options_.mh_conf_sig,options_.estimation.moments_posterior_density);
+                posterior_moments(squeeze(stock1(SelecVariables(i),:)),options_.mh_conf_sig,options_.estimation.moments_posterior_density);
         else
             [Mean(1,i),Median(1,i),Var(1,i),HPD(:,1,i),Distrib(:,1,i)] = ...
-                posterior_moments(squeeze(stock1(SelecVariables(i),:)),0,options_.mh_conf_sig);
+                posterior_moments(squeeze(stock1(SelecVariables(i),:)),options_.mh_conf_sig);
         end
     end
 else %three dimensional arrays
@@ -204,21 +204,21 @@ else %three dimensional arrays
         for j = 1:n2
             if options_.estimation.moments_posterior_density.indicator
                 [Mean(j,i),Median(j,i),Var(j,i),HPD(:,j,i),Distrib(:,j,i),Density(:,:,j,i)] = ...
-                    posterior_moments(squeeze(stock1(SelecVariables(i),j,:)),1,options_.mh_conf_sig,options_.estimation.moments_posterior_density);
+                    posterior_moments(squeeze(stock1(SelecVariables(i),j,:)),options_.mh_conf_sig,options_.estimation.moments_posterior_density);
             else
                 [Mean(j,i),Median(j,i),Var(j,i),HPD(:,j,i),Distrib(:,j,i)] = ...
-                    posterior_moments(squeeze(stock1(SelecVariables(i),j,:)),0,options_.mh_conf_sig);
+                    posterior_moments(squeeze(stock1(SelecVariables(i),j,:)),options_.mh_conf_sig);
             end
             if filter_step_ahead_indicator
                 if options_.estimation.moments_posterior_density.indicator
                     for K_step = 1:length(options_.filter_step_ahead)
                         [Mean_filter_step_ahead(K_step,i,j),Median_filter_step_ahead(K_step,i,j),Var_filter_step_ahead(K_step,i,j),HPD_filter_step_ahead(:,K_step,i,j),Distrib_filter_step_ahead(:,K_step,i,j),Density_filter_step_ahead(:,:,K_step,i,j) ] = ...
-                            posterior_moments(squeeze(stock1_filter_step_ahead(SelecVariables(i),j,:,K_step)),1,options_.mh_conf_sig,options_.estimation.moments_posterior_density);
+                            posterior_moments(squeeze(stock1_filter_step_ahead(SelecVariables(i),j,:,K_step)),options_.mh_conf_sig,options_.estimation.moments_posterior_density);
                     end
                 else
                     for K_step = 1:length(options_.filter_step_ahead)
                         [Mean_filter_step_ahead(K_step,i,j),Median_filter_step_ahead(K_step,i,j),Var_filter_step_ahead(K_step,i,j),HPD_filter_step_ahead(:,K_step,i,j),Distrib_filter_step_ahead(:,K_step,i,j)] = ...
-                            posterior_moments(squeeze(stock1_filter_step_ahead(SelecVariables(i),j,:,K_step)),0,options_.mh_conf_sig);
+                            posterior_moments(squeeze(stock1_filter_step_ahead(SelecVariables(i),j,:,K_step)),options_.mh_conf_sig);
                     end
                 end
             end
