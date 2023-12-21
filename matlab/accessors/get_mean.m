@@ -1,14 +1,15 @@
 function y0 = get_mean(varargin)
-% function x = get_mean(vname1, vname2, <order>)
-% returns the steady-state of a variable identified by its name
+% function y0 = get_mean(varargin)
+% returns the mean of a variable identified by its name
 %
 % INPUTS:
-%   vname1, vname2, ... :  list of variable names
-%   order: if integer 1 or 2, optionally last input can trigger the order
-%   at which steady state is computed
+%   vargargin           inputs containing
+%                       - vname1, vname2, ... :  list of variable names
+%                       - order: if integer 1 or 2, optionally last input can trigger the order
+%                           at which steady state is computed
 %
 % OUTPUTS
-%   x:      steady state values
+%   y0:      mean values
 %
 % SPECIAL REQUIREMENTS
 %   none
@@ -30,27 +31,6 @@ function y0 = get_mean(varargin)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-global M_ oo_ options_
+global M_ options_ oo_
 
-if ~isempty(regexp(varargin{end},'\d','ONCE')) && isempty(regexp(varargin{end},'\D','ONCE'))
-    order=eval(varargin{end});
-else
-    order=1;
-end
-if order==1
-    ys_ = oo_.steady_state;
-    ys_ = evaluate_steady_state(ys_,[oo_.exo_steady_state; oo_.exo_det_steady_state],M_,options_,true);
-elseif order==2
-    ys_ = oo_.dr.ys;
-    ys_(oo_.dr.order_var)=ys_(oo_.dr.order_var)+oo_.dr.ghs2./2;
-else
-    return
-end
-lgy_ = M_.endo_names;
-
-mfys=nan(length(varargin),1);
-for j=1:length(varargin)
-    mfys(j) = find(strcmp(varargin{j},lgy_));
-end
-
-y0 = ys_(mfys);
+y0=get_mean_no_globals(M_, oo_, options_, varargin{:});
