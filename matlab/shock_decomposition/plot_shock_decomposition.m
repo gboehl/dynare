@@ -347,7 +347,7 @@ if options_.plot_shock_decomp.use_shock_groups
         else
             % here we know we only have one variable to handle
             if isstruct(q2a.aux) && ischar(q2a.aux.y)
-                steady_state_aux  = get_mean(q2a.aux.y);
+                steady_state_aux  = get_mean_no_globals(M_, oo_, options_, q2a.aux.y);
                 q2a.aux.y=repmat(steady_state_aux,16,1);
                 q2a.aux.yss=steady_state_aux;
             end
