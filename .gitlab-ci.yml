@@ -11,12 +11,10 @@ variables:
 # - if VERSION was already set (when manually running a pipeline), use it
 # - if we are in the official Dynare repository:
 #   + if on a tag: use the tag
-#   + if on master: use 6-unstable-$TIMESTAMP-$COMMIT
 #   + on another branch: use $BRANCH-$TIMESTAMP-$COMMIT
 # - if in a personal repository: use $USER-$TIMESTAMP-$COMMIT
 before_script:
   - 'if [[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ -n $CI_COMMIT_TAG ]]; then export VERSION=$CI_COMMIT_TAG; fi'
-  - 'if [[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ $CI_COMMIT_REF_NAME == master ]]; then export VERSION=6-unstable-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA; fi'
   - 'if [[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]]; then export VERSION=$CI_COMMIT_REF_NAME-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA; fi'
   - 'if [[ -z $VERSION ]]; then export VERSION=$CI_PROJECT_NAMESPACE-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA; fi'
 
@@ -162,7 +160,6 @@ test_old_matlab:
     paths:
       - build-old-matlab/meson-logs/testlog.txt
     when: always
-  when: manual
 
 test_octave:
   stage: test
@@ -175,7 +172,6 @@ test_octave:
       - build-octave/meson-logs/testlog.txt
     when: always
   needs: [ "build_octave" ]
-  when: manual
 
 test_clang_format:
   stage: test
@@ -191,7 +187,7 @@ test_clang_format:
 sign_windows:
   stage: sign
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^6/'
       when: on_success
     - when: never
   tags:
@@ -205,10 +201,10 @@ sign_windows:
       - windows/exe-signed/*
     expire_in: 3 days
 
-deploy_manual_unstable:
+deploy_manual_stable:
   stage: deploy
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG == /^6\.[0-9]+$/'
       when: on_success
     - when: never
   tags:
@@ -216,12 +212,13 @@ deploy_manual_unstable:
   dependencies:
     - build_doc
   script:
-    - rsync --recursive --links --delete build-doc/dynare-manual.html/ /srv/www.dynare.org/manual-unstable/
+    - rsync --recursive --links --delete build-doc/dynare-manual.html/ /srv/www.dynare.org/manual/
+    - cp build-doc/dynare-manual.pdf /srv/www.dynare.org/manual.pdf
 
-deploy_snapshot_unstable:
+deploy_release_stable:
   stage: deploy
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_REF_NAME == "master"'
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^6\.[0-9]+$/'
       when: on_success
     - when: never
   tags:
@@ -233,11 +230,33 @@ deploy_snapshot_unstable:
     - pkg_macOS_arm64
     - pkg_macOS_x86_64
   script:
-    - cp build-src/meson-dist/*.tar.xz /srv/www.dynare.org/snapshot/source/ && ln -sf *.tar.xz /srv/www.dynare.org/snapshot/source/dynare-latest-src.tar.xz
-    - f=(windows/exe-signed/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows/dynare-latest-win.exe
-    - f=(windows/7z/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-7z/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-7z/dynare-latest-win.7z
-    - f=(windows/zip/*) && cp ${f[0]} /srv/www.dynare.org/snapshot/windows-zip/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/windows-zip/dynare-latest-win.zip
-    - f=(macOS/pkg/*-arm64.pkg) && cp ${f[0]} /srv/www.dynare.org/snapshot/macos-arm64/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/macos-arm64/dynare-latest-macos-arm64.pkg
-    - f=(macOS/pkg/*-x86_64.pkg) && cp ${f[0]} /srv/www.dynare.org/snapshot/macos-x86_64/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/macos-x86_64/dynare-latest-macos-x86_64.pkg
-    - ~/update-snapshot-list.sh
+    - cp build-src/meson-dist/*.tar.xz /srv/www.dynare.org/release/source/
+    - cp windows/exe-signed/* /srv/www.dynare.org/release/windows/
+    - cp windows/7z/* /srv/www.dynare.org/release/windows-7z/
+    - cp windows/zip/* /srv/www.dynare.org/release/windows-zip/
+    - cp macOS/pkg/*-arm64.pkg /srv/www.dynare.org/release/macos-arm64/
+    - cp macOS/pkg/*-x86_64.pkg /srv/www.dynare.org/release/macos-x86_64/
+    - ~/update-release-list.sh
     - curl -X POST -F token="$WEBSITE_PIPELINE_TRIGGER_TOKEN" -F ref=master https://git.dynare.org/api/v4/projects/40/trigger/pipeline
+
+deploy_beta_stable:
+  stage: deploy
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "Dynare" && $CI_COMMIT_TAG =~ /^6(\.[0-9]+)?-(beta|rc)[0-9]+$/'
+      when: on_success
+    - when: never
+  tags:
+    - deploy
+  dependencies:
+    - pkg_source
+    - pkg_windows
+    - sign_windows
+    - pkg_macOS_arm64
+    - pkg_macOS_x86_64
+  script:
+    - cp build-src/meson-dist/*.tar.xz /srv/www.dynare.org/beta/source/
+    - cp windows/exe-signed/* /srv/www.dynare.org/beta/windows/
+    - cp windows/7z/* /srv/www.dynare.org/beta/windows-7z/
+    - cp windows/zip/* /srv/www.dynare.org/beta/windows-zip/
+    - cp macOS/pkg/*-arm64.pkg /srv/www.dynare.org/beta/macos-arm64/
+    - cp macOS/pkg/*-x86_64.pkg /srv/www.dynare.org/beta/macos-x86_64/
