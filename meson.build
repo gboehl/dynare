@@ -1,6 +1,6 @@
 project('dynare',
         'cpp', 'fortran', 'c',
-        version : '6-unstable',
+        version : '6.0',
         # NB: update C++ standard in .clang-format whenever the following is modified
         default_options : [ 'cpp_std=gnu++20', 'fortran_std=f2018',
                             'c_std=gnu17', 'warning_level=2' ],
