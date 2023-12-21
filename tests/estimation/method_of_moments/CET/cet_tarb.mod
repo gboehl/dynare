@@ -156,14 +156,14 @@ method_of_moments(mom_method = irf_matching
 
 
 method_of_moments(mom_method = irf_matching
-, additional_optimizer_steps = [1]
+, additional_optimizer_steps = [4]
 , cova_compute=1
 , dirname=cet_tarb_results
 , irf_matching_file = cet_irf_matching_file
 , mh_conf_sig = 0.90
 , mh_replic=0
 %, mode_check
-, mode_compute = 4
+, mode_compute = 5
 , mode_file = 'cet_tarb_results/method_of_moments/cet_tarb_mh_mode'
 , plot_priors = 0
 , nograph
