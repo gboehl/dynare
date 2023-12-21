@@ -44,6 +44,7 @@ end
 if ismember(flag,{'filter','all'})
     options_occbin_.filter.state_covariance = false;
     options_occbin_.filter.guess_regime = false;
+    options_occbin_.filter.periodic_solution = true;
     options_occbin_.filter.use_relaxation = false;
 end
 
