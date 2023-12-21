@@ -88,7 +88,7 @@
   '("stderr" "values" "periods" "scales" "restriction" "exclusion"
     "upper_cholesky" "lower_cholesky" "equation" "bind" "relax" "error_bind"
     "error_relax" "add" "multiply" "target" "auxname_target_nonstationary"
-    "component" "growth" "auxname" "kind")
+    "component" "growth" "auxname" "kind" "weights")
   "Dynare statements-like keywords.")
 
 ;; Those keywords that makes the lexer enter the DYNARE_BLOCK start condition
@@ -105,7 +105,8 @@
       "deterministic_trends" "optim_weights" "homotopy_setup"
       "conditional_forecast_paths" "svar_identification" "moment_calibration"
       "irf_calibration" "ramsey_constraints" "generate_irfs" "matched_moments"
-      "occbin_constraints" "model_replace" "pac_target_info" "verbatim")
+      "occbin_constraints" "model_replace" "pac_target_info" "matched_irfs"
+      "matched_irfs_weights" "verbatim")
     "Dynare block keywords."))
 
 ;; Mathematical functions and operators used in model equations (see "hand_side" in Bison file)
