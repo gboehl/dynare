@@ -249,6 +249,15 @@ end
 
 
 if ~isempty(init2shocks) && ~expand
+    if not(isfield(oo_,'initval_decomposition'))
+        disp('computing initval shock decomposition ...')
+        bayestopt_ = evalin('base','bayestopt_');
+        estim_params_ = evalin('base','estim_params_');
+        M_= evalin('base','M_');
+        options_ = set_default_initial_condition_decomposition_options(options_);
+        oo_ = initial_condition_decomposition(M_,oo_,options_,0,bayestopt_,estim_params_);
+        out = oo_;
+    end
     n=size(init2shocks,1);
     M_.exo_names_init=M_.exo_names;
     for i=1:n
