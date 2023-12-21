@@ -346,10 +346,6 @@ shared_module('logarithmic_reduction', [ 'mex/sources/logarithmic_reduction/mexF
 shared_module('disclyap_fast', [ 'mex/sources/disclyap_fast/disclyap_fast.f08' ] + mex_blas_fortran_iface,
               kwargs : mex_kwargs, dependencies : [ blas_dep, lapack_dep ])
 
-# TODO: Same remark as A_times_B_kronecker_C
-shared_module('riccati_update', [ 'mex/sources/riccati_update/mexFunction.f08' ] + mex_blas_fortran_iface,
-              kwargs : mex_kwargs, dependencies : [ blas_dep, lapack_dep ])
-
 qmc_sequence_src = [ 'mex/sources/sobol/qmc_sequence.cc',
                      'mex/sources/sobol/sobol.f08' ]
 # Hack for statically linking libgfortran
@@ -1811,7 +1807,6 @@ mod_and_m_tests = [
                 'solver-test-functions/wood.m',] },
   { 'test' : [ 'cyclereduction.m' ] },
   { 'test' : [ 'logarithmicreduction.m' ] },
-  { 'test' : [ 'riccatiupdate.m' ] },
   { 'test' : [ 'kalman/likelihood/test_kalman_mex.m' ] },
   { 'test' : [ 'contribs.m' ],
     'extra' : [ 'sandbox.mod',
