@@ -83,7 +83,7 @@ method_of_moments(mom_method = irf_matching
 %, mode_check_neighbourhood_size
 %, mode_check_number_of_points
 , mode_check_symmetric_plots = 0
-, mode_compute = 1
+, mode_compute = 4
 , mode_file = cet_original_mode
 %, nobs
 %, no_posterior_kernel_density
