@@ -11,12 +11,12 @@ variables:
 # - if VERSION was already set (when manually running a pipeline), use it
 # - if we are in the official Dynare repository:
 #   + if on a tag: use the tag
-#   + if on master: use 6-unstable-$TIMESTAMP-$COMMIT
+#   + if on master: use 7-unstable-$TIMESTAMP-$COMMIT
 #   + on another branch: use $BRANCH-$TIMESTAMP-$COMMIT
 # - if in a personal repository: use $USER-$TIMESTAMP-$COMMIT
 before_script:
   - 'if [[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ -n $CI_COMMIT_TAG ]]; then export VERSION=$CI_COMMIT_TAG; fi'
-  - 'if [[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ $CI_COMMIT_REF_NAME == master ]]; then export VERSION=6-unstable-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA; fi'
+  - 'if [[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]] && [[ $CI_COMMIT_REF_NAME == master ]]; then export VERSION=7-unstable-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA; fi'
   - 'if [[ -z $VERSION ]] && [[ $CI_PROJECT_NAMESPACE == Dynare ]]; then export VERSION=$CI_COMMIT_REF_NAME-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA; fi'
   - 'if [[ -z $VERSION ]]; then export VERSION=$CI_PROJECT_NAMESPACE-$(date +%F-%H%M)-$CI_COMMIT_SHORT_SHA; fi'
 
