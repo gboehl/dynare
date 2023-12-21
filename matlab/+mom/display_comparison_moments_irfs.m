@@ -42,9 +42,21 @@ function display_comparison_moments_irfs(M_, options_mom_, data_moments, model_m
 if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
     titl = upper('Comparison of matched data IRFs and model IRFs');
     headers = {'IRF','Data','Model'};
-    for jm = 1:size(M_.matched_irfs,1)
-        labels{jm,1} = [M_.endo_names{M_.matched_irfs{jm,1}(1)} ' ' M_.exo_names{M_.matched_irfs{jm,1}(2)} ' (' num2str(M_.matched_irfs{jm,1}(3)) ')'];
-        labels_TeX{jm,1} = [M_.endo_names_tex{M_.matched_irfs{jm,1}(1)} ' ' M_.exo_names_tex{M_.matched_irfs{jm,1}(2)} ' (' num2str(M_.matched_irfs{jm,1}(3)) ')'];
+    idx = 1;
+    for jj = 1:size(M_.matched_irfs,1)
+        irf_varname = M_.matched_irfs{jj,1};
+        irf_shockname = M_.matched_irfs{jj,2};
+        % note that periods can span over multiple rows
+        IRF_PERIODS = [];
+        for kk = 1:size(M_.matched_irfs{jj,3},1)
+            irf_periods = M_.matched_irfs{jj,3}{kk,1};
+            IRF_PERIODS = [IRF_PERIODS; irf_periods(:)];
+        end
+        for hh = 1:length(IRF_PERIODS)
+            labels{idx,1} = sprintf('%s %s (%u)',irf_varname,irf_shockname,IRF_PERIODS(hh));
+            labels_TeX{idx,1} = sprintf('%s %s (%u)',M_.endo_names_tex{ismember(M_.endo_names,irf_varname)},M_.exo_names_tex{ismember(M_.exo_names,irf_shockname)},IRF_PERIODS(hh));
+            idx = idx+1;
+        end
     end
 else
     titl = ['Comparison of matched data moments and model moments (',options_mom_.mom.mom_method,')'];

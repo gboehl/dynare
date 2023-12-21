@@ -28,12 +28,6 @@
 options_.prior_interval= 0.95;
 
 
-%%%%%%%%%%%%%%%%%%%%%%
-%% NO INTERFACE YET %%
-%%%%%%%%%%%%%%%%%%%%%%
-[M_.matched_irfs, M_.matched_irfs_weights] = cet_matched_irfs_no_interface_workaround(M_.endo_names,M_.exo_names);
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% RUN 1: FIND POSTERIOR MODE USING MODEFILE %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

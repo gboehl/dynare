@@ -26,12 +26,6 @@
 options_.prior_interval= 0.95;
 
 
-%%%%%%%%%%%%%%%%%%%%%%
-%% NO INTERFACE YET %%
-%%%%%%%%%%%%%%%%%%%%%%
-[M_.matched_irfs, M_.matched_irfs_weights] = cet_matched_irfs_no_interface_workaround(M_.endo_names,M_.exo_names);
-
-
 method_of_moments(mom_method = irf_matching
 %, add_tiny_number_to_cholesky = 1e-14
 , additional_optimizer_steps = [4]
@@ -168,7 +162,7 @@ method_of_moments(mom_method = irf_matching
 , irf_matching_file = cet_irf_matching_file
 , mh_conf_sig = 0.90
 , mh_replic=0
-, mode_check
+%, mode_check
 , mode_compute = 4
 , mode_file = 'cet_tarb_results/method_of_moments/cet_tarb_mh_mode'
 , plot_priors = 0

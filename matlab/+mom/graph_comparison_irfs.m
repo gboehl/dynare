@@ -1,5 +1,5 @@
-function graph_comparison_irfs(matched_irfs,irf_model_varobs,varobs_id,irf_horizon,relative_irf,endo_names,exo_names,exo_names_tex,dname,fname,graph_format,TeX,nodisplay,figures_textwidth)
-% graph_comparison_irfs(matched_irfs,irf_model_varobs,varobs_id,irf_horizon,relative_irf,endo_names,exo_names,exo_names_tex,dname,fname,graph_format,TeX,nodisplay,figures_textwidth)
+function graph_comparison_irfs(matched_irfs,irf_model_varobs,varobs_id,irf_horizon,relative_irf,endo_names,endo_names_tex,exo_names,exo_names_tex,dname,fname,graph_format,TeX,nodisplay,figures_textwidth)
+% graph_comparison_irfs(matched_irfs,irf_model_varobs,varobs_id,irf_horizon,relative_irf,endo_names,endo_names_tex,exo_names,exo_names_tex,dname,fname,graph_format,TeX,nodisplay,figures_textwidth)
 % -------------------------------------------------------------------------
 % Plots and saves to disk the comparison of the selected data IRFs and corresponding model IRfs
 % -------------------------------------------------------------------------
@@ -10,6 +10,7 @@ function graph_comparison_irfs(matched_irfs,irf_model_varobs,varobs_id,irf_horiz
 % irf_horizon:       [scalar]   maximum horizon of IRFs
 % relative_irf:      [boolean]  if true, plots normalized IRFs
 % endo_names:        [cell]     names of endogenous variables
+% endo_names_tex:    [cell]     names of endogenous variables in latex
 % exo_names:         [cell]     names of exogenous variables
 % exo_names_tex:     [cell]     names of exogenous variables in latex
 % dname:             [string]   name of the directory where to save the graphs
@@ -59,40 +60,48 @@ if TeX && any(strcmp('eps',cellstr(graph_format)))
     fprintf(fid_TeX,['%% ' datestr(now,0) '\n']);
     fprintf(fid_TeX,' \n');
 end
-shock_entries = cellfun(@(x) x(2), matched_irfs(:, 1));
-unique_shock_entries = unique(shock_entries);
+unique_shock_entries = unique(matched_irfs(:, 2));
 colDarkGrey = [0.3, 0.3, 0.3]; % dark grey
-for jexo = unique_shock_entries'
-    entries_data_irfs = find(cellfun(@(x) x(2) == jexo, matched_irfs(:, 1)));
-    unique_variables = unique(cellfun(@(x) x(1), matched_irfs(entries_data_irfs,1)));
+for jexo = unique_shock_entries' % loop over cell with shock names
+    unique_variables = unique(matched_irfs(ismember(matched_irfs(:, 2),jexo), 1));
     [nbplt,nr,nc,lr,lc,nstar] = pltorg(length(unique_variables));
     fig = 0;
     for jvar = 1:length(unique_variables)
+        % get data points, note that periods and values can span over multiple rows 
+        jj = ismember(matched_irfs(:,1), unique_variables(jvar)) & ismember(matched_irfs(:,2), jexo);
+        IRF_PERIODS = []; IRF_VALUES = [];
+        for kk = 1:size(matched_irfs{jj,3},1)
+            irf_periods = matched_irfs{jj,3}{kk,1};            
+            irf_values = matched_irfs{jj,3}{kk,2};
+            if length(irf_values)==1
+                irf_values = repmat(irf_values,length(irf_periods),1);
+            end            
+            IRF_PERIODS = [IRF_PERIODS; irf_periods(:)];
+            IRF_VALUES = [IRF_VALUES; irf_values(:)];
+        end
+        
         if jvar==1 || ~( (fig-1)*nstar<jvar && jvar<=fig*nstar )
             fig = fig+1;
-            fig_irf = dyn_figure(nodisplay,'Name',['IRF matching shock to ' exo_names{jexo} ' figure ' int2str(fig)]);
+            fig_irf = dyn_figure(nodisplay,'Name',['IRF matching shock to ' jexo{:} ' figure ' int2str(fig)]);
         end
-        plt = jvar-(fig-1)*nstar;
-        data_irf_rows = find(cellfun(@(x) x(1) == unique_variables(jvar) && x(2) == jexo, matched_irfs(:, 1)));
-        data_irf_periods = cellfun(@(x) x(3), matched_irfs(data_irf_rows,1));
-        data_irf_values = cell2mat(matched_irfs(data_irf_rows,2));
+        plt = jvar-(fig-1)*nstar;        
         if nbplt>1 && fig==nbplt
             subplot(lr,lc,plt);
         else
             subplot(nr,nc,plt);
         end
-        plt_data = plot(data_irf_periods,data_irf_values,'h', 'MarkerEdgeColor',colDarkGrey,'MarkerFaceColor',colDarkGrey,'MarkerSize',8);
+        plt_data = plot(IRF_PERIODS,IRF_VALUES,'h', 'MarkerEdgeColor',colDarkGrey,'MarkerFaceColor',colDarkGrey,'MarkerSize',8);
         hold on
-        plt_model = plot(1:irf_horizon, irf_model_varobs(:,varobs_id==unique_variables(jvar),jexo),'-k','linewidth',2);
+        plt_model = plot(1:irf_horizon, irf_model_varobs(:,varobs_id==find(ismember(endo_names,unique_variables(jvar))) , ismember(exo_names,jexo)),'-k','linewidth',2);
         hold on
         plot([1 irf_horizon],[0 0],'-r','linewidth',1);
         hold off
         xlim([1 irf_horizon]);
         remove_fractional_xticks
         if TeX
-            title(['$' endo_names{unique_variables(jvar)} '$'],'Interpreter','latex');
+            title(['$' endo_names_tex{ismember(endo_names,unique_variables(jvar))} '$'],'Interpreter','latex');
         else
-            title(endo_names{unique_variables(jvar)},'Interpreter','none');
+            title(unique_variables{jvar},'Interpreter','none');
         end
         set(gca,'FontSize',12);
         if (plt==nstar) || jvar==length(unique_variables)
@@ -101,17 +110,17 @@ for jexo = unique_shock_entries'
             lgd = legend([plt_data,plt_model],{'Data', 'Model'}, 'Location', 'southeast','NumColumns',2,'FontSize',14);
             lgd.Position = [0.37 0.01 lgd.Position(3) lgd.Position(4)];
 
-            dyn_saveas(fig_irf,[graph_directory_name filesep fname '_matched_irf_' exo_names{jexo} int2str(fig)],nodisplay,graph_format);
+            dyn_saveas(fig_irf,[graph_directory_name filesep fname '_matched_irf_' jexo{:} int2str(fig)],nodisplay,graph_format);
             if TeX && any(strcmp('eps',cellstr(graph_format)))
                 fprintf(fid_TeX,'\\begin{figure}[H]\n');
                 fprintf(fid_TeX,'\\centering \n');
-                fprintf(fid_TeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_matched_irf_%s%s}\n',figures_textwidth*min(plt/nc,1),[graph_directory_name '/' fname],exo_names{jexo},int2str(fig));
+                fprintf(fid_TeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_matched_irf_%s%s}\n',figures_textwidth*min(plt/nc,1),[graph_directory_name '/' fname],jexo{:},int2str(fig));
                 if relative_irf
-                    fprintf(fid_TeX,'\\caption{Relative impulse response functions (orthogonalized shock to $%s$).}', exo_names_tex{jexo});
+                    fprintf(fid_TeX,'\\caption{Relative impulse response functions (orthogonalized shock to $%s$).}', jexo{:});
                 else
-                    fprintf(fid_TeX,'\\caption{Impulse response functions (orthogonalized shock to $%s$).}', exo_names_tex{jexo});
+                    fprintf(fid_TeX,'\\caption{Impulse response functions (orthogonalized shock to $%s$).}', jexo{:});
                 end
-                fprintf(fid_TeX,'\\label{Fig:MatchedIRF:%s:%s}\n', exo_names{jexo},int2str(fig));
+                fprintf(fid_TeX,'\\label{Fig:MatchedIRF:%s:%s}\n', jexo{:},int2str(fig));
                 fprintf(fid_TeX,'\\end{figure}\n');
                 fprintf(fid_TeX,' \n');
             end

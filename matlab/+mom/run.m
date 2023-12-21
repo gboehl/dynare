@@ -230,7 +230,7 @@ end
 % matched_irfs: checks and transformations
 % -------------------------------------------------------------------------
 if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
-    [oo_.mom.data_moments, oo_.mom.weighting_info.W, options_mom_.mom.irfIndex, options_mom_.irf] = mom.matched_irfs_blocks(M_.matched_irfs, M_.matched_irfs_weights, options_mom_.varobs_id, options_mom_.obs_nbr, M_.exo_nbr, M_.endo_names);
+    [oo_.mom.data_moments, oo_.mom.weighting_info.W, options_mom_.mom.irfIndex, options_mom_.irf] = mom.matched_irfs_blocks(M_.matched_irfs, M_.matched_irfs_weights, options_mom_.varobs_id, options_mom_.obs_nbr, M_.exo_nbr, M_.endo_names, M_.exo_names);
     % compute inverse of weighting matrix
     try
         oo_.mom.weighting_info.Winv = inv(oo_.mom.weighting_info.W);
@@ -799,7 +799,7 @@ if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_meth
     oo_.mom.J_test = mom.Jtest(xparam1, objective_function, oo_.mom.Q, oo_.mom.model_moments, oo_.mom.m_data, oo_.mom.data_moments, oo_.mom.weighting_info, options_mom_, M_, estim_params_, bayestopt_, BoundsInfo, oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 elseif strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
     if ~options_mom_.nograph
-        mom.graph_comparison_irfs(M_.matched_irfs,oo_.mom.irf_model_varobs,options_mom_.varobs_id,options_mom_.irf,options_mom_.relative_irf,M_.endo_names,M_.exo_names,M_.exo_names_tex,M_.dname,M_.fname,options_mom_.graph_format,options_mom_.TeX,options_mom_.nodisplay,options_mom_.figures.textwidth)
+        mom.graph_comparison_irfs(M_.matched_irfs,oo_.mom.irf_model_varobs,options_mom_.varobs_id,options_mom_.irf,options_mom_.relative_irf,M_.endo_names,M_.endo_names_tex,M_.exo_names,M_.exo_names_tex,M_.dname,M_.fname,options_mom_.graph_format,options_mom_.TeX,options_mom_.nodisplay,options_mom_.figures.textwidth)
     end
 end
 % display comparison of model moments/IRFs and data moments/IRFs

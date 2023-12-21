@@ -743,3 +743,102 @@ end;
 @#endif
 
 varobs GDPAGG piAGG RAGG ukAGG lAGG wAGG cAGG iAGG pinvestAGG unempAGG vTotAGG fAGG;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% IRF DATA TRANSFORMATIONS %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+load('cet_data','IRFz','IRFzSE','IRFFF','IRFFFSE','IRFu','IRFuSE');
+% IRFFF: impulse responses with respect to monetary policy shock
+% IRFFz: impulse responses with respect to neutral tech shock
+% IRFFu: impulse responses with respect to invest tech shock
+% IRFFFSE, IRFzSE, IRFuSE contain the corresponding estimated standard errors
+% dimensions: rows are periods, columns are variables:
+% - column  1: gdp                    corresponds to  GDPAGG + cumsum(muF)
+% - column  2: inflation              corresponds to  piAGG
+% - column  3: federal funds rate     corresponds to  RAGG
+% - column  4: capacity utilization   corresponds to  ukAGG
+% - column  5: total hours            corresponds to  lAGG
+% - column  6: real wage              corresponds to  wAGG + cumsum(muF)
+% - column  7: consumption            corresponds to  cAGG + cumsum(muF)
+% - column  7: investment             corresponds to  iAGG + cumsum(muF) + cumsum(mupsiF)
+% - column  8: rel. price investment  corresponds to  cumsum(pinvestAGG)
+% - column 10: unemployment rate      corresponds to  unempAGG
+% - column 11: vacancies              corresponds to  vTotAGG*u
+% - column 12: labor force
+% - column 13: separation rate
+% - column 14: job finding rate       corresponds to  fAGG*f
+% transformations will be done in cet_irf_matching_file.m
+
+% change sign of monetary policy shock irfs
+IRFFF = -1*IRFFF;
+% rescale some irfs
+IRFFF(:,[2 3]  ) = IRFFF(:,[2 3]  )./400;   IRFFFSE(:,[2 3]  ) = IRFFFSE(:,[2 3]  )./400;
+IRFFF(:,[10 14]) = IRFFF(:,[10 14])./100;   IRFFFSE(:,[10 14]) = IRFFFSE(:,[10 14])./100;
+IRFz( :,[2 3]  ) = IRFz( :,[2 3]  )./400;   IRFzSE( :,[2 3]  ) = IRFzSE( :,[2 3]  )./400;
+IRFz( :,[10 14]) = IRFz( :,[10 14])./100;   IRFzSE( :,[10 14]) = IRFzSE( :,[10 14])./100;
+IRFu( :,[2 3]  ) = IRFu( :,[2 3]  )./400;   IRFuSE( :,[2 3]  ) = IRFuSE( :,[2 3]  )./400;
+IRFu( :,[10 14]) = IRFu( :,[10 14])./100;   IRFuSE( :,[10 14]) = IRFuSE( :,[10 14])./100;
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%% MATCHED_IRFS BLOCK %%
+%%%%%%%%%%%%%%%%%%%%%%%%
+% use anonymous functions to quickly access variables in matrices
+irfs_epsR_eps  = @(j) IRFFF(2:15,j); % start in t=2 due to identification restrictions in SVAR
+irfs_muz_eps   = @(j) IRFz(1:15,j);
+irfs_mupsi_eps = @(j) IRFu(1:15,j);
+weights_epsR_eps  = @(j) 1./(IRFFFSE(2:15,j).^2); % start in t=2 due to identification restrictions in SVAR
+weights_muz_eps   = @(j) 1./(IRFzSE(1:15,j).^2);
+weights_mupsi_eps = @(j) 1./(IRFuSE(1:15,j).^2);
+% for RAGG we also include t=1
+  RAGG_epsR_eps = IRFFF(1:15,3);
+w_RAGG_epsR_eps = 1./(IRFFFSE(1:15,3).^2);
+
+matched_irfs;
+var GDPAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(1));  weights (weights_epsR_eps(1));
+var GDPAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(1));   weights (weights_muz_eps(1));
+var GDPAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(1)); weights (weights_mupsi_eps(1));
+
+var piAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(2));  weights (weights_epsR_eps(2));
+var piAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(2));   weights (weights_muz_eps(2));
+var piAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(2)); weights (weights_mupsi_eps(2));
+
+var RAGG; varexo epsR_eps;  periods 1:15; values (RAGG_epsR_eps);     weights (w_RAGG_epsR_eps);
+var RAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(3));   weights (weights_muz_eps(3));
+var RAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(3)); weights (weights_mupsi_eps(3));
+
+var ukAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(4));  weights (weights_epsR_eps(4));
+var ukAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(4));   weights (weights_muz_eps(4));
+var ukAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(4)); weights (weights_mupsi_eps(4));
+
+var lAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(5));  weights (weights_epsR_eps(5));
+var lAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(5));   weights (weights_muz_eps(5));
+var lAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(5)); weights (weights_mupsi_eps(5));
+
+var wAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(6));  weights (weights_epsR_eps(6));
+var wAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(6));   weights (weights_muz_eps(6));
+var wAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(6)); weights (weights_mupsi_eps(6));
+
+var cAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(7));  weights (weights_epsR_eps(7));
+var cAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(7));   weights (weights_muz_eps(7));
+var cAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(7)); weights (weights_mupsi_eps(7));
+
+var iAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(8));  weights (weights_epsR_eps(8));
+var iAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(8));   weights (weights_muz_eps(8));
+var iAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(8)); weights (weights_mupsi_eps(8));
+
+var pinvestAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(9));  weights (weights_epsR_eps(9));
+var pinvestAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(9));   weights (weights_muz_eps(9));
+var pinvestAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(9)); weights (weights_mupsi_eps(9));
+
+var unempAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(10));  weights (weights_epsR_eps(10));
+var unempAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(10));   weights (weights_muz_eps(10));
+var unempAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(10)); weights (weights_mupsi_eps(10));
+
+var vTotAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(11));  weights (weights_epsR_eps(11));
+var vTotAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(11));   weights (weights_muz_eps(11));
+var vTotAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(11)); weights (weights_mupsi_eps(11));
+
+var fAGG; varexo epsR_eps;  periods 2:15; values (irfs_epsR_eps(14));  weights (weights_epsR_eps(14));
+var fAGG; varexo muz_eps;   periods 1:15; values (irfs_muz_eps(14));   weights (weights_muz_eps(14));
+var fAGG; varexo mupsi_eps; periods 1:15; values (irfs_mupsi_eps(14)); weights (weights_mupsi_eps(14));
+end;
