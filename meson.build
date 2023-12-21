@@ -1,9 +1,4 @@
 # TODO:
-# - find a way to set GSL_BLAS_LIB to an empty value when querying pkg-config
-#   for gsl; otherwise there is a risk of overriding OpenBLAS/MKL (though
-#   probably not in our current setup); the pkgconfig_define option of
-#   dep.get_variable() is unfortunately not helpful
-#   Close to https://github.com/mesonbuild/meson/issues/3606
 # - See what to do with xvfb-run (see #1892). Maybe try to detect it from meson.build, and pass it optionally to the test driver script
 
 project('dynare',
@@ -75,6 +70,12 @@ else
 endif
 
 openmp_dep = dependency('openmp')
+
+# TODO: find a way to set GSL_BLAS_LIB to an empty value; otherwise there is a
+# risk of overriding OpenBLAS/MKL (though probably not in our current setup);
+# the pkgconfig_define option of dep.get_variable() is unfortunately not
+# helpful, since that latter method cannot query the “libs”. Reported as:
+# https://github.com/mesonbuild/meson/issues/12649
 gsl_dep = dependency('gsl')
 
 if get_option('build_for') == 'octave'
