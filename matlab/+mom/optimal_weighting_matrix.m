@@ -2,9 +2,10 @@ function W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
 % W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
 % -------------------------------------------------------------------------
 % This function computes the optimal weigthing matrix by a Bartlett kernel with maximum lag q_lag
-% Adapted from replication codes of
-%  o Andreasen, Fernández-Villaverde, Rubio-Ramírez (2018): "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications", Review of Economic Studies, 85(1):1-49.
-% =========================================================================
+% Adapted from replication codes of Andreasen, Fernández-Villaverde, Rubio-Ramírez (2018):
+% "The Pruned State-Space System for Non-Linear DSGE Models: Theory and Empirical Applications",
+% Review of Economic Studies, 85(1):1-49.
+% -------------------------------------------------------------------------
 % INPUTS
 %  o m_data                  [T x numMom]       selected data moments at each point in time
 %  o moments                 [numMom x 1]       selected estimated moments (either data_moments or estimated model_moments)
@@ -17,9 +18,10 @@ function W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
 %  o mom.run.m
 % -------------------------------------------------------------------------
 % This function calls:
-%  o CorrMatrix (embedded)
-% =========================================================================
-% Copyright © 2020-2021 Dynare Team
+%  o corr_matrix (embedded)
+% -------------------------------------------------------------------------
+
+% Copyright © 2020-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,46 +37,42 @@ function W_opt = optimal_weighting_matrix(m_data, moments, q_lag)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% -------------------------------------------------------------------------
-% Author(s): 
-% o Willi Mutschler (willi@mutschler.eu)
-% o Johannes Pfeifer (johannes.pfeifer@unibw.de)
-% =========================================================================
 
-% Initialize
-[T,num_Mom] = size(m_data); %note that in m_data NaN values (due to leads or lags in matched_moments and missing data) were replaced by the mean
+
+% initialize
+[T,num_Mom] = size(m_data); % note that in m_data NaN values (due to leads or lags in matched_moments and missing data) were replaced by the mean
 
 % center around moments (could be either data_moments or model_moments)
-h_Func = m_data - repmat(moments',T,1);
+h_func = m_data - repmat(moments',T,1);
 
-% The required correlation matrices
-GAMA_array = zeros(num_Mom,num_Mom,q_lag);
-GAMA0 = Corr_Matrix(h_Func,T,num_Mom,0);
+% the required correlation matrices
+gamma_array = zeros(num_Mom,num_Mom,q_lag);
+gamma0 = corr_matrix(h_func,T,num_Mom,0);
 if q_lag > 0
     for ii=1:q_lag
-        GAMA_array(:,:,ii) = Corr_Matrix(h_Func,T,num_Mom,ii);
+        gamma_array(:,:,ii) = corr_matrix(h_func,T,num_Mom,ii);
     end
 end
 
-% The estimate of S
-S = GAMA0;
+% the estimate of S
+S = gamma0;
 if q_lag > 0
     for ii=1:q_lag
-        S = S + (1-ii/(q_lag+1))*(GAMA_array(:,:,ii) + GAMA_array(:,:,ii)');
+        S = S + (1-ii/(q_lag+1))*(gamma_array(:,:,ii) + gamma_array(:,:,ii)');
     end
 end
 
-% The estimate of W
+% the estimate of W
 W_opt = S\eye(size(S,1));
 
-W_opt=(W_opt+W_opt')/2; %assure symmetry
-end
+W_opt = (W_opt+W_opt')/2; % ensure symmetry
+end % main function end
 
 % The correlation matrix
-function GAMA_corr = Corr_Matrix(h_Func,T,num_Mom,v)
-    GAMA_corr = zeros(num_Mom,num_Mom);
+function gamma_corr = corr_matrix(h_func,T,num_Mom,v)
+    gamma_corr = zeros(num_Mom,num_Mom);
     for t = 1+v:T
-        GAMA_corr = GAMA_corr + h_Func(t-v,:)'*h_Func(t,:);
+        gamma_corr = gamma_corr + h_func(t-v,:)'*h_func(t,:);
     end
-    GAMA_corr = GAMA_corr/T;
-end
+    gamma_corr = gamma_corr/T;
+end % corr_matrix end

@@ -9,8 +9,8 @@ function [ ix2, ilogpo2, ModelName, MetropolisFolder, FirstBlock, FirstLine, npa
 %   o xparam1    [double]   (p*1) vector of parameters to be estimated (initial values).
 %   o vv         [double]   (p*p) matrix, posterior covariance matrix (at the mode).
 %   o mh_bounds  [double]   (p*2) matrix defining lower and upper bounds for the parameters.
-%   o dataset_              data structure
-%   o dataset_info          dataset info structure
+%   o dataset_              data structure (likelihood based) or data moments/irfs (method of moments)
+%   o dataset_info          dataset info structure (likelihood based) or info on weighting matrix (method of moments)
 %   o options_              options structure
 %   o M_                    model structure
 %   o estim_params_         estimated parameters structure

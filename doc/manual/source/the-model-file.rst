@@ -6648,7 +6648,7 @@ observed variables.
     .. option:: mh_tune_guess = DOUBLE
 
        Specifies the initial value for the :opt:`mh_tune_jscale
-       <mh_tune_jscale [= DOUBLE]>` option. Default: ``2.39/sqrt(n)``. Must not
+       <mh_tune_jscale [= DOUBLE]>` option. Default: ``2.38/sqrt(n)``. Must not
        be set if :opt:`mh_tune_jscale <mh_tune_jscale [= DOUBLE]>` is
        not used.
 
@@ -9076,21 +9076,27 @@ Dynare also has the ability to estimate Bayesian VARs:
 
 Estimation based on moments
 ===========================
+Provided that you have observations on some endogenous variables
+or their dynamic behavior following structural shocks,
+Dynare provides a suite of tools for parameter estimation utilizing the method of moments approach.
+This includes the Simulated Method of Moments (SMM),
+the Generalized Method of Moments (GMM),
+and Impulse Response Function Matching (IRF matching).
+Each of these methods offers a distinct strategy for estimating some or all parameters
+by minimizing the distances between unconditional model objects (moments or impulse responses)
+and their empirical counterparts.
 
-Provided that you have observations on some endogenous variables, it
-is possible to use Dynare to estimate some or all parameters using a
-method of moments approach. Both the Simulated Method of Moments (SMM)
-and the Generalized Method of Moments (GMM) are available. The general
-idea is to minimize the distance between unconditional model moments
-and corresponding data moments (so called orthogonality or moment
-conditions). For SMM, Dynare computes model moments via stochastic
+
+**GMM and SMM estimation**
+
+For SMM Dynare computes model moments via stochastic
 simulations based on the perturbation approximation up to any order,
 whereas for GMM model moments are computed in closed-form based on the
-pruned state-space representation of the perturbation solution up to third
-order. The implementation of SMM is inspired by *Born and Pfeifer (2014)*
+pruned state-space representation of the perturbation solution up to third order.
+The implementation of SMM is inspired by *Born and Pfeifer (2014)*
 and *Ruge-Murcia (2012)*, whereas the one for GMM is adapted from
-*Andreasen, Fernández-Villaverde and Rubio-Ramírez (2018)* and *Mutschler
-(2018)*. Successful estimation heavily relies on the accuracy and efficiency of
+*Andreasen, Fernández-Villaverde and Rubio-Ramírez (2018)* and *Mutschler (2018)*.
+Successful estimation heavily relies on the accuracy and efficiency of
 the perturbation approximation, so it is advised to tune this as much as
 possible (see :ref:`stoch-sol-simul`). The method of moments estimator is consistent
 and asymptotically normally distributed given certain regularity conditions
@@ -9134,10 +9140,45 @@ to more plausible regions of the parameter space. Ideally, these regions are
 characterized by only slightly worse values of the objective function. Note that
 adding prior information comes at the cost of a loss in efficiency of the estimator.
 
+**IRF matching**
+
+Dynare employs a user-specified `simulation_method` to compute the impulse response function (IRF)
+for observable variables with respect to the structural shocks.
+Currently, only stochastic simulations based on the perturbation method are supported
+and it is advised to fine-tune the perturbation approximation as much as possible for optimal results
+(see :ref:`stoch-sol-simul` for guidance).
+
+The core idea of IRF matching is then to treat empirical impulse responses
+(e.g. given from a SVAR or local projection estimation) as data
+and select model parameters that align the model's IRFs closely with their empirical counterparts.
+Dynare supports both Frequentist and Bayesian IRF matching approaches,
+using the same optimization and sampling techniques as those applied in likelihood-based estimation
+(sharing many options with the :ref:`estimation command <estim-comm>`).
+The Frequentist approach to this is inspired by the work of *Christiano, Eichenbaum, and Evans (2005)*,
+while the Bayesian method adapts from *Christiano, Trabandt, and Walentin (2010)*.
+A crucial element in IRF matching is the choice of the weighting matrix,
+which influences how the distances between model-generated and empirical IRFs are weighted in the estimation process.
+It is common practice to employ a diagonal weighting matrix,
+with the diagonal elements set to the inverse of the estimated variance of the respective empirical impulse response,
+thereby prioritizing more precisely estimated IRFs.
+While it's possible to also specify weights using covariances between different IRF components (possibly with shrinking),
+this is less common due to the complex interpretation involved
+(cross effects of different variables or different shocks or both).
+
+Importantly, it is the user's responsibility to supply
+(1) the values of the empirical IRFs intended for matching
+and (2) their importance by choosing an appropriate weighting matrix.
+Dynare does not perform the SVAR or local projection estimation,
+it treats the empirical IRFs as given.
+
+Method of moments specific blocks
+---------------------------------
+
 .. command:: varobs VARIABLE_NAME...;
 
-    |br| Required. All variables used in the :bck:`matched_moments` block
-    need to be observable. See :ref:`varobs <varobs>` for more details.
+    |br| Required. All variables used in the :bck:`matched_moments`, :bck:`matched_irfs`,
+    or :bck:`matched_irfs_weights` block need to be observable.
+    See :ref:`varobs <varobs>` for more details.
 
 .. block:: matched_moments ;
 
@@ -9198,17 +9239,147 @@ adding prior information comes at the cost of a loss in efficiency of the estima
     last row, which is the same as the second-to-last one. The original block is
     saved in ``M_.matched_moments_orig``.
 
+.. block:: matched_irfs ;
+           matched_irfs(overwrite);
+
+    |br| This block specifies the values and diagonal weights of the empirical IRFs that are matched in estimation.
+    The ``overwrite`` option replaces the current ``matched_irfs`` block with the new one.
+    
+    Each line inside of the block should be of the form::
+
+        var ENDOGENOUS_NAME;
+        varexo EXOGENOUS_NAME;
+        periods INTEGER[:INTEGER] [[,] INTEGER[:INTEGER]]...;
+        values DOUBLE | (EXPRESSION)  [[,] DOUBLE | (EXPRESSION) ]...;
+        weights DOUBLE | (EXPRESSION)  [[,] DOUBLE | (EXPRESSION) ]...;
+
+    `ENDOGENOUS_NAME` is the name of a declared observable variable,
+    whereas `EXOGENOUS_NAME` is the name of an exogenous variable.
+    It is possible to specify individual horizons or a range of specified periods
+    as lists with the ``periods`` keyword.
+    Note that for each entry a corresponding entry in ``values`` needs to be provided;
+    that is ``values`` is a list of the same length as ``periods``.
+    If only one value is specified, it is used at all corresponding ``periods`` in the list.
+    ``weights`` are optional and specify the diagonal element of the corresponding
+    entry in the weighting matrix.
+    Typically, these are set to the inverse of the variance of the empirical IRF.
+    If only one weight is specified, it is used at all corresponding ``periods`` in the list.
+    If not specified, the weight defaults to 1.
+    For ``values``  and ``weights`` you can use expressions (e.g. variables or anonymous functions
+    in the workspace) by by putting paranthesis around them.
+    A new statement is started with either the ``var`` or ``varexo`` keyword.
+    
+    *Example*
+    You can either enter the values directly or load them from variables in the workspace.
+
+        ::
+            % MATLAB expressions that can be used
+            xx = [23,24,25];
+            ww = [51,52];
+            irfs_eR  = @(j) IRFFF(2:15,j); % gdp is the 3th column of IRFFF
+            weights_eR  = @(j) 1./(IRFFFSE(2:15,j).^2);
+            R_eR = IRFFF(1:15,3);
+            weight_R_eR = 1./(IRFFFSE(1:15,3).^2);
+
+            matched_irfs;
+            var gdp;  varexo eR;  periods 2:15; values (irfs_eR(3));  weights (weights_eR(3));
+            var R;    varexo eR;  periods 1:15; values (R_eR);        weights (weight_R_eR);
+            var y;    varexo eD;  periods 5;    values 7;             weights 25;
+            var r;    varexo eD;  periods 1,2;  values 17,18;         weights 37,38;
+            var c;    varexo eA;  periods 3:5;  values (xx);
+            var y;    varexo eA;  periods 1:2;  values 30;            weights (ww);
+
+            varexo eR;
+            var w;
+            periods 1, 13:15, 2:12;
+            values 2, (xx), 15;
+            weights 3, (xx), 4;
+            end;
+
+
+    *Limitations*
+
+    *Output*
+
+    Dynare translates the :bck:`matched_irfs` block into a cell array
+    where the rows correspond to the statements in the block
+    ``M_.matched_irfs`` where:
+
+    * the first column contains the names of the endogenous variables
+    * the second column contains the names of the exogenous variables
+    * the third column contains a nested cell array that contains
+    the list of horizons, values and weights.
+
+
+.. block:: matched_irfs_weights ;
+           matched_irfs_weights(overwrite) ;
+
+    |br| This optional block specifies elements of the weighting matrix used for IRF matching.
+    The ``overwrite`` option replaces the current ``matched_irfs_weights`` block with the new one.
+    
+    The weighting matrix is initialized as a diagonal matrix with ones on the diagonal.
+    Each line inside of the block should be of the form::
+
+        ENDOGENOUS_NAME_1(HORIZON_1), EXOGENOUS_NAME_1, ENDOGENOUS_NAME_2(HORIZON_2), EXOGENOUS_NAME_2, WEIGHT;
+
+    where `ENDOGENOUS_NAME_1` and `ENDOGENOUS_NAME_2` are the names of declared observable variables,
+    `EXOGENOUS_NAME_1` and `EXOGENOUS_NAME_2` are the names of exogenous variables,
+    `HORIZON_1` and `HORIZON_2` are integers indicating the horizon of the IRFs
+    and `WEIGHT` is a double value of the weight one wants to assign to the covariance between the two specified IRFs.
+    
+    *Example*
+    You can either enter the values directly or load them from variables in the workspace.
+
+        ::
+
+            matched_irfs_weights;
+            c(1), e_A, c(1), e_A, 20;
+            y(3), e_R, y(2), e_R, (empIRFsCovInv_yR3_yR2);
+            end;
+
+    *Limitations*
+
+    *Output*
+
+    Dynare translates the :bck:`matched_irfs_weigths` block into a cell array
+    ``M_.matched_irfs_weights`` where:
+
+    * the first column contains the names of the first endogenous variables
+    * the second column contains the names of the first exogenous variables
+    * the third column contains the horizons of the IRFs for the first endogneous variable
+    * the fourth column contains the names of the second endogenous variables
+    * the fifth column contains the names of the second exogenous variables
+    * the sixth column contains the horizons of IRFs for the second endogenous variable
+    * the seventh column contains the vector of weights
+
+    All values that are not specified will be either one (if they are on the diagonal)
+    or zero (if they are not on the diagonal).
+    Symmetry is respected, so one does not need to specify both
+    ``c(1), e_A, y(3), e_R, WEIGHT`` and ``y(3), e_R, c(1), e_A, WEIGHT``.
+    Default: empty cell.
+
 .. block:: estimated_params ;
 
-    |br| Required. See :bck:`estimated_params` for the meaning and syntax.
-
+    |br| Required.
+    This block lists all parameters to be estimated and specifies
+    bounds and priors as necessary.
+    See :bck:`estimated_params` for details and syntax.
+    
 .. block:: estimated_params_init ;
 
-    |br| See :bck:`estimated_params_init` for the meaning and syntax.
+    |br| Optional.
+    This block declares numerical initial values for the
+    optimizer when these ones are different from the prior mean.
+    See :bck:`estimated_params_init` for details and syntax.
 
 .. block:: estimated_params_bounds ;
 
-    |br| See :bck:`estimated_params_bounds` for the meaning and syntax.
+    |br| Optional.
+    This block declares lower and upper bounds for parameters in maximum likelihood estimation.
+    See :bck:`estimated_params_bounds` for details and syntax.
+
+method_of_moments command
+-------------------------
 
 .. command:: method_of_moments (OPTIONS...);
 
@@ -9218,27 +9389,32 @@ adding prior information comes at the cost of a loss in efficiency of the estima
     * Overview of options chosen by the user
     * Estimation results for each stage and iteration
     * Value of minimized moment distance objective function
-    * Result of the J-test
-    * Table of data moments and estimated model moments
+    * Result of the J-test (for SMM/GMM)
+    * Comparison plot of model IRFs and empirical IRFs (for IRF matching)
+    * Table of data moments/IRFs and estimated model moments/IRFs
 
-    *Necessary options*
+Necessary Options
+^^^^^^^^^^^^^^^^^^
 
-    .. option:: mom_method = SMM|GMM
+    .. option:: mom_method = SMM|GMM|IRF_MATCHING
 
-        "Simulated Method of Moments" is triggered by `SMM` and
-        "Generalized Method of Moments" by `GMM`.
+        "Simulated Method of Moments" is triggered by `SMM`,
+        "Generalized Method of Moments" by `GMM` and
+        "Impulse Response Function Matching" by `IRF_MATCHING`.
 
     .. option:: datafile = FILENAME
 
-        The name of the file containing the data. See
+        The name of the file containing the data (for GMM and SMM only). See
         :opt:`datafile <datafile = FILENAME>` for the meaning and syntax.
+        For IRF matching, the data is specified in the :bck:`matched_irfs` block.
 
-    *Options common for SMM and GMM*
-
+Common Options
+^^^^^^^^^^^^^^
+    
     .. option:: order = INTEGER
 
         Order of perturbation approximation. For GMM only orders 1|2|3 are
-        supported. For SMM, you can choose an arbitrary order. Note that the
+        supported. For SMM and IRF matching, you can choose an arbitrary order. Note that the
         order set in other functions will not overwrite the default.
         Default: ``1``.
 
@@ -9246,7 +9422,15 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
         Discard higher order terms when iteratively computing simulations
         of the solution. See :opt:`pruning <pruning>` for more details.
-        Default: not set for SMM, always set for GMM.
+        Default: not set for SMM and IRF matching, always set for GMM.
+    
+    .. option:: verbose
+
+        Display and store intermediate estimation results in ``oo_.mom``.
+        Default: not set.
+
+
+    *Common options for SMM and GMM*
 
     .. option:: penalized_estimator
 
@@ -9306,12 +9490,8 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         errors with a two-sided finite difference method.
         Default: ``1e-5``.
 
-    .. option:: verbose
-
-        Display and store intermediate estimation results in ``oo_.mom``.
-        Default: not set.
-
-    *SMM-specific options*
+SMM specific options
+^^^^^^^^^^^^^^^^^^^^
 
     .. option:: burnin = INTEGER
 
@@ -9333,7 +9513,8 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         Multiple of data length used for simulation.
         Default: ``7``.
 
-    *GMM-specific options*
+GMM specific options
+^^^^^^^^^^^^^^^^^^^^
 
     .. option:: analytic_standard_errors
 
@@ -9342,7 +9523,54 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         Default: not set, i.e. standard errors are computed using a two-sided
         finite difference method, see :opt:`se_tolx <se_tolx = DOUBLE>`.
 
-    *General options*
+IRF matching specific options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    .. option:: simulation_method = METHOD
+
+        Method to compute IRFs. Possible values for ``METHOD`` are:
+
+        ``STOCH_SIMUL``
+
+            Simulate the model with stochastic simulations and compute IRFs
+            as the difference between the simulated and steady state values.
+            See :opt:`stoch_simul` for more details.
+
+    .. option:: irf_matching_file = FILENAME
+
+        A MATLAB file containing additional transformations on the model IRFs.
+        This enables more flexibility in matching the model IRFs to the empirical IRFs,
+        e.g. by adding constants to model IRFs, multiplying them with factors,
+        taking the cumulative sum, creating ratios etc.
+        See ``NK_irf_matching_file.m`` in the examples directory for an example.
+        Default: empty, i.e. model IRFs exactly match empirical IRFs.
+    
+    .. option:: add_tiny_number_to_cholesky = DOUBLE
+
+        In case of a non-positive definite covariance matrix,
+        a tiny number is added to the Cholesky factor
+        to avoid numerical problems when computing IRFs.
+        Default: `1e-14`.
+    
+    .. option:: drop = INTEGER
+
+        Truncation when computing IRFs with perturbation at orders greater than 1.
+        Default: ``100``.
+    
+    .. option:: relative_irf
+
+        Requests the computation of normalized IRFs.
+        See :opt:`relative_irf` for more details.
+        Default: false.
+
+    .. option:: replic = INTEGER
+
+        Number of simulated series used to compute the IRFs.        
+        Default: ``1`` if ``order=1``, and ``50`` otherwise.
+
+
+General options
+^^^^^^^^^^^^^^^
 
     .. option:: dirname = FILENAME
 
@@ -9383,7 +9611,15 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
        See :opt:`tex`.  Default: not set.
 
-    *Data options*
+Data options
+^^^^^^^^^^^^
+
+    .. option:: prefilter = INTEGER
+
+        A value of 1 means that the estimation procedure will demean each data
+        series by its empirical mean and each model moment by its theoretical
+        mean. See :opt:`prefilter <prefilter = INTEGER>` for more details.
+        Default: ``0``, i.e. no prefiltering.
 
     .. option:: first_obs = INTEGER
 
@@ -9395,13 +9631,6 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         See :opt:`nobs <nobs = INTEGER>`.
         Default: all observations are considered.
 
-    .. option:: prefilter = INTEGER
-
-        A value of 1 means that the estimation procedure will demean each data
-        series by its empirical mean and each model moment by its theoretical
-        mean. See :opt:`prefilter <prefilter = INTEGER>` for more details.
-        Default: ``0``, i.e. no prefiltering.
-
     .. option:: logdata
 
         See :opt:`logdata <logdata>`. Default: not set.
@@ -9409,43 +9638,219 @@ adding prior information comes at the cost of a loss in efficiency of the estima
     .. option:: xls_sheet = QUOTED_STRING
 
         See :opt:`xls_sheet <xls_sheet = QUOTED_STRING>`.
+        Default: ``1``.
 
     .. option:: xls_range = RANGE
 
         See :opt:`xls_range <xls_range = RANGE>`.
+        Default: empty.
 
-    *Optimization options*
+Optimization options
+^^^^^^^^^^^^^^^^^^^^
+
+    .. option:: mode_file = FILENAME
+
+        Name of the file containing previous value for the mode.
+        See :opt:`mode_file <mode_file = FILENAME>`.
+        Default: empty.
+
+    .. option:: mode_compute = INTEGER | FUNCTION_NAME
+
+        See :opt:`mode_compute <mode_compute = INTEGER | FUNCTION_NAME>`.
+        Default: ``13`` for GMM and SMM and ``5`` for IRF matching.
+    
+    .. option:: additional_optimizer_steps = [INTEGER]
+                additional_optimizer_steps = [INTEGER1:INTEGER2]
+                additional_optimizer_steps = [INTEGER1 INTEGER2]
+
+        Vector of additional minimization algorithms run after ``mode_compute``.
+        If :opt:`verbose` option is set, then the additional estimation
+        results are saved into the ``oo_.mom`` structure prefixed with `verbose_`.
+        Default: empty, i.e. no additional optimization iterations.
+
+    .. option:: optim = (NAME, VALUE, ...)
+
+        See :opt:`optim <optim = (NAME, VALUE, ...)>`.
+        Default: empty.
+
+    .. option:: analytic_jacobian
+
+        Use analytic Jacobian in optimization, only available for GMM and gradient-based optimizers.
+        Default: not set.
 
     .. option:: huge_number = DOUBLE
 
         See :opt:`huge_number <huge_number = DOUBLE>`.
         Default: ``1e7``.
 
-    .. option:: mode_compute = INTEGER | FUNCTION_NAME
-
-        See :opt:`mode_compute <mode_compute = INTEGER | FUNCTION_NAME>`.
-        Default: ``13``, i.e. ``lsqnonlin`` if the MATLAB Optimization Toolbox or
-        the Octave optim-package are present, ``4``, i.e. ``csminwel`` otherwise.
-
-    .. option:: additional_optimizer_steps = [INTEGER]
-                additional_optimizer_steps = [INTEGER1:INTEGER2]
-                additional_optimizer_steps = [INTEGER1 INTEGER2]
-
-        Vector of additional minimization algorithms run after
-        ``mode_compute``. If :opt:`verbose` option is set, then the additional estimation
-        results are saved into the ``oo_.mom`` structure prefixed with `verbose_`.
-        Default: no additional optimization iterations.
-
-    .. option:: optim = (NAME, VALUE, ...)
-
-        See :opt:`optim <optim = (NAME, VALUE, ...)>`.
-
     .. option:: silent_optimizer
 
         See :opt:`silent_optimizer`.
         Default: not set.
+    
+    .. option:: use_penalized_objective_for_hessian
 
-    *Numerical algorithms options*
+        See :opt:`use_penalized_objective_for_hessian <use_penalized_objective_for_hessian>`.
+        Default: not set.
+    
+
+Bayesian estimation options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**General options**
+
+    .. option:: posterior_sampling_method = NAME
+
+        See :opt:`posterior_sampling_method <posterior_sampling_method = NAME>`.
+        Default: ``random_walk_metropolis_hastings``.
+
+    .. option:: posterior_sampler_options = (NAME, VALUE, ...)
+
+        See :opt:`posterior_sampler_options <posterior_sampler_options = (NAME, VALUE, ...)>`.
+        Default: not set.
+
+    .. option:: mh_posterior_mode_estimation
+
+        See :opt:`mh_posterior_mode_estimation`.
+        Default: not set.
+
+    .. option:: cova_compute = INTEGER
+
+        See :opt:`cova_compute <cova_compute = INTEGER>`.
+        Default: ``1``.
+
+    .. option:: mcmc_jumping_covariance = OPTION
+
+        See :opt:`mcmc_jumping_covariance <mcmc_jumping_covariance = OPTION>`.
+        Default: ``hessian``.
+
+    .. option:: mh_replic = INTEGER
+
+        See :opt:`mh_replic <mh_replic = INTEGER>`.
+        Default: ``0``.
+
+    .. option:: mh_nblocks = INTEGER
+
+        See :opt:`mh_nblocks <mh_nblocks = INTEGER>`.
+        Default: ``2``.
+
+    .. option:: mh_jscale = DOUBLE
+
+        See :opt:`mh_jscale <mh_jscale = DOUBLE>`.
+        Default: ``2.38`` divided by the square root of the number of estimated parameters.
+
+    .. option:: mh_tune_jscale [= DOUBLE]
+
+        See :opt:`mh_tune_jscale <mh_tune_jscale [= DOUBLE]>`.
+        Default: ``0.33``.
+
+    .. option:: mh_tune_guess = DOUBLE
+
+        See :opt:`mh_tune_guess <mh_tune_guess = DOUBLE>`.
+        Default: ``2.38`` divided by the square root of the number of estimated parameters.
+
+    .. option:: mh_conf_sig = DOUBLE
+
+        See :opt:`mh_conf_sig <mh_conf_sig = DOUBLE>`.
+        Default: ``0.9``.
+    
+    .. option:: mh_drop = DOUBLE
+
+        See :opt:`mh_drop <mh_drop = DOUBLE>`.
+        Default: ``0.5``.
+    
+    .. option:: mh_init_scale_factor = DOUBLE
+
+        See :opt:`mh_init_scale_factor <mh_init_scale_factor = DOUBLE>`.
+        Default: ``2``.
+
+    .. option:: no_posterior_kernel_density
+
+        See :opt:`no_posterior_kernel_density`.
+        Default: not set.
+
+    .. option:: posterior_max_subsample_draws = INTEGER
+
+        See :opt:`posterior_max_subsample_draws <posterior_max_subsample_draws = INTEGER>`.
+        Default: ``1200``.
+
+    .. option:: sub_draws = INTEGER
+
+        See :opt:`sub_draws <sub_draws = INTEGER>`.
+        Default: ``min(posterior_max_subsample_draws, (Total number of draws)*(number of chains) )``.
+
+**MCMC initialization and recovery**
+
+    .. option:: load_mh_file
+
+        See :opt:`load_mh_file`.
+        Default: not set.
+    
+    .. option:: load_results_after_load_mh
+
+        See :opt:`load_results_after_load_mh`.
+        Default: not set.
+    
+    .. option:: mh_initialize_from_previous_mcmc
+
+        See :opt:`mh_initialize_from_previous_mcmc`.
+        Default: not set.
+    
+    .. option:: mh_initialize_from_previous_mcmc_directory = FILENAME
+
+        See :opt:`mh_initialize_from_previous_mcmc_directory <mh_initialize_from_previous_mcmc_directory = FILENAME>`.
+        Default: empty.
+    
+    .. option:: mh_initialize_from_previous_mcmc_prior = FILENAME
+
+        See :opt:`mh_initialize_from_previous_mcmc_prior <mh_initialize_from_previous_mcmc_prior = FILENAME>`.
+        Default: empty.
+
+    .. option:: mh_initialize_from_previous_mcmc_record = FILENAME
+
+        See :opt:`mh_initialize_from_previous_mcmc_record <mh_initialize_from_previous_mcmc_record = FILENAME>`.
+        Default: empty.
+        
+    .. option:: mh_recover
+
+        See :opt:`mh_recover`.
+        Default: not set.
+
+**Convergence diagnostics**
+
+    .. option:: nodiagnostic
+
+        See :opt:`nodiagnostic`.
+        Default: not set.
+
+    .. option:: brooks_gelman_plotrows = INTEGER
+
+        See :opt:`brooks_gelman_plotrows <brooks_gelman_plotrows = INTEGER>`.
+        Default: ``3``.
+    
+    .. option:: geweke_interval = [DOUBLE DOUBLE]
+
+        See :opt:`geweke_interval <geweke_interval = [DOUBLE DOUBLE]>`.
+        Default: ``[0.2 0.5]``.
+
+    .. option:: taper_steps = [INTEGER1 INTEGER2 ...]
+
+        See :opt:`taper_steps <taper_steps = [INTEGER1 INTEGER2 ...]>`.
+        Default: ``[4 8 15]``.
+    
+    .. option:: raftery_lewis_diagnostics
+
+        See :opt:`raftery_lewis_diagnostics`.
+        Default: not set.
+
+    .. option:: raftery_lewis_qrs = [DOUBLE DOUBLE DOUBLE]
+
+       See :opt:`raftery_lewis_qrs <raftery_lewis_qrs = [DOUBLE DOUBLE DOUBLE]>`.
+       Default: ``[0.025 0.005 0.95]``.
+
+
+Numerical algorithms options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     .. option:: aim_solver
 
@@ -9495,10 +9900,11 @@ adding prior information comes at the cost of a loss in efficiency of the estima
 
         See :opt:`lyapunov_doubling_tol <lyapunov_doubling_tol = DOUBLE>`.
         Default: ``1e-16``.
-
+    
     .. option:: qz_criterium = DOUBLE
 
         See :opt:`qz_criterium <qz_criterium = DOUBLE>`.
+        For unit roots (only possible at order=1) set e.g. to 1.000001.
         Default: ``0.999999`` as it is assumed that the observables are weakly
         stationary.
 
@@ -9515,8 +9921,8 @@ adding prior information comes at the cost of a loss in efficiency of the estima
     .. option:: mode_check
 
        Plots univariate slices through the moments distance objective function around the
-       computed minimum for each estimated parameter. This is
-       helpful to diagnose problems with the optimizer.
+       computed minimum for each estimated parameter.
+       This is helpful to diagnose problems with the optimizer.
        Default: not set.
 
     .. option:: mode_check_neighbourhood_size = DOUBLE
@@ -9535,23 +9941,63 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         Default: ``20``.
 
 
-    *Output*
+Method of moments specific outputs
+----------------------------------
 
     ``method_of_moments`` stores user options in a structure called
     `options_mom_` in the global workspace. After running the estimation,
     the parameters ``M_.params`` and the covariance matrices of the shocks
     ``M_.Sigma_e`` and of the measurement errors ``M_.H`` are set to the
-    parameters that minimize the quadratic moments distance objective
-    function. The estimation results are stored in the ``oo_.mom`` structure
-    with the following fields:
+    parameters that either minimize the quadratic moments distance objective
+    function or at the posterior mean in case of Bayesian MCMC estimation.
+    The estimation results are stored in a subfolder of :opt:`dirname <dirname = FILENAME>`
+    called `method_of_moments`.
+    Moreover, output is stored in the ``oo_.mom`` structure with the following fields:
+
+**Common outputs**
 
     .. matvar:: oo_.mom.data_moments
 
         Variable set by the ``method_of_moments`` command. Stores the mean
-        of the selected empirical moments of data. NaN values due to leads/lags
-        or missing data are omitted when computing the mean. Vector of dimension
-        equal to the number of orthogonality conditions.
+        of the selected empirical moments/IRFs of data. NaN values due to leads/lags
+        or missing data are omitted when computing the mean for moments.
+        Vector of dimension equal to the number of orthogonality conditions or IRFs.
+    
+    .. matvar:: oo_.mom.model_moments
 
+        Variable set by the ``method_of_moments`` command. Stores the implied
+        selected model moments or IRFs given the current parameter guess. Model moments
+        are computed in closed-form from the pruned state-space system for GMM,
+        whereas for SMM these are based on averages of simulated data.
+        Model IRFs are computed from the specified `simulation_method`.
+        Vector of dimension equal to the number of orthogonality conditions.
+    
+    .. matvar:: oo_.mom.model_moments_params_derivs
+
+        Variable set by the ``method_of_moments`` command. Stores the analytically
+        computed Jacobian matrix of the derivatives of the model moments with
+        respect to the estimated parameters. Only for GMM with :opt:`analytic_standard_errors`.
+        Matrix with dimension equal to the number of orthogonality conditions
+        times number of estimated parameters.
+    
+    .. matvar:: oo_.mom.weighting_info
+
+        Variable set by the ``method_of_moments`` command.
+        Stores the currently used weighting matrix (`W`), its Cholesky factor (`Sw`),
+        and an indicator whether the weighting matrix is the optimal one (`Woptflag`).        
+        The inverse (`Winv`) and its log determinant (`Winv_logdet`) are also stored.
+    
+    .. matvar:: oo_.mom.Q
+
+        Variable set by the ``method_of_moments`` command. Stores the scalar
+        value of the quadratic moment's distance objective function.
+    
+    .. matvar:: oo_.mom.verbose
+
+        Structure that contains intermediate estimation results if ``verbose`` is used.
+
+
+**SMM and GMM specific outputs**
 
     .. matvar:: oo_.mom.m_data
 
@@ -9560,46 +10006,11 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         or missing data are replaced by the corresponding mean of the moment.
         Matrix of dimension time periods times number of orthogonality conditions.
 
-
-    .. matvar:: oo_.mom.Sw
-
-        Variable set by the ``method_of_moments`` command. Stores the
-        Cholesky decomposition of the currently used weighting matrix.
-        Square matrix of dimensions equal to the number of orthogonality
-        conditions.
-
-
-    .. matvar:: oo_.mom.model_moments
-
-        Variable set by the ``method_of_moments`` command. Stores the implied
-        selected model moments given the current parameter guess. Model moments
-        are computed in closed-form from the pruned state-space system for GMM,
-        whereas for SMM these are based on averages of simulated data. Vector of dimension equal
-        to the number of orthogonality conditions.
-
-
-    .. matvar:: oo_.mom.Q
-
-        Variable set by the ``method_of_moments`` command. Stores the scalar
-        value of the quadratic moment's distance objective function.
-
-
-    .. matvar:: oo_.mom.model_moments_params_derivs
-
-        Variable set by the ``method_of_moments`` command. Stores the analytically
-        computed Jacobian matrix of the derivatives of the model moments with
-        respect to the estimated parameters. Only for GMM with :opt:`analytic_standard_errors`.
-        Matrix with dimension equal to the number of orthogonality conditions
-        times number of estimated parameters.
-
-
-    .. matvar:: oo_.mom.gmm_stage_*_mode
-    .. matvar:: oo_.mom.smm_stage_*_mode
-    .. matvar:: oo_.mom.verbose_gmm_stage_*_mode
-    .. matvar:: oo_.mom.verbose_smm_stage_*_mode
-
+    .. matvar:: oo_.mom.gmm_mode
+    .. matvar:: oo_.mom.smm_mode
+    
         Variables set by the ``method_of_moments`` command when estimating
-        with GMM or SMM. Stores the estimated values at stages 1, 2,....
+        with GMM or SMM. Stores the estimated values of the final stage.
         The structures contain the following fields:
 
         - ``measurement_errors_corr``: estimated correlation between two measurement errors
@@ -9608,16 +10019,11 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         - ``shocks_corr``: estimated correlation between two structural shocks.
         - ``shocks_std``: estimated standard deviation of structural shocks.
 
-        If the :opt:`verbose` option is set, additional fields prefixed with
-        ``verbose_`` are saved for all :opt:`additional_optimizer_steps<additional_optimizer_steps = [INTEGER]>`.
-
-    .. matvar:: oo_.mom.gmm_stage_*_std_at_mode
-    .. matvar:: oo_.mom.smm_stage_*_std_at_mode
-    .. matvar:: oo_.mom.verbose_gmm_stage_*_std_at_mode
-    .. matvar:: oo_.mom.verbose_smm_stage_*_std_at_mode
-
+    .. matvar:: oo_.mom.gmm_std_at_mode
+    .. matvar:: oo_.mom.smm_std_at_mode
+    
         Variables set by the ``method_of_moments`` command when estimating
-        with GMM or SMM. Stores the estimated standard errors at stages 1, 2,....
+        with GMM or SMM. Stores the estimated standard errors of the final stage.
         The structures contain the following fields:
 
         - ``measurement_errors_corr``: standard error of estimated correlation between two measurement errors
@@ -9625,11 +10031,7 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         - ``parameters``: standard error of estimated model parameters
         - ``shocks_corr``: standard error of estimated correlation between two structural shocks.
         - ``shocks_std``: standard error of estimated standard deviation of structural shocks.
-
-        If the :opt:`verbose` option is set, additional fields prefixed with
-        ``verbose_`` are saved for all :opt:`additional_optimizer_steps<additional_optimizer_steps = [INTEGER]>`.
-
-
+        
     .. matvar:: oo_.mom.J_test
 
         Variable set by the ``method_of_moments`` command. Structure where the
@@ -9637,7 +10039,187 @@ adding prior information comes at the cost of a loss in efficiency of the estima
         degress of freedom into a field called ``degrees_freedom`` and the p-value
         of the test statistic into a field called ``p_val``.
 
+**IRF matching specific outputs**
 
+    .. matvar:: oo_.mom.irf_model_varobs
+
+        Variable set by the ``method_of_moments`` command. Stores all the implied
+        model impulse response functions (not only the matched ones)
+        and is used for the comparison plot.
+        Array of dimension equal to number of observables by number of shocks
+        by maximum horizon.
+
+
+**Bayesian specific outputs**
+
+    .. matvar:: oo_.mom.prior
+
+        Variable set by the ``method_of_moments`` command if Bayesian estimation is used.
+        Stores information of the joint prior. Fields are of the form::
+
+            oo_.mom.prior.OBJECT
+
+        where OBJECT is one of the following:
+
+           ``mean``
+
+               Prior mean parameter vector.
+            
+            ``mode``
+
+               Prior mode parameter vector.
+
+           ``variance``
+
+               Covariance matrix of joint prior.
+
+           ``hyperparameters``
+
+               Vectors of hyperparameters of the prior distributions stored in fields
+               ``first`` and ``second``.
+               
+        .. matvar:: oo_.mom.posterior.optimization
+
+        Variable set by the ``method_of_moments`` command if mode-finding is used.
+        Stores the results at the mode. Fields are of the form::
+
+            oo_.mom.posterior.optimization.OBJECT
+
+        where OBJECT is one of the following:
+
+           ``mode``
+
+               Parameter vector at the mode.
+
+           ``Variance``
+
+               Inverse Hessian matrix at the mode or MCMC jumping
+               covariance matrix when used with the
+               :opt:`MCMC_jumping_covariance <mcmc_jumping_covariance = OPTION>` option.
+
+           ``log_density``
+
+               Log likelihood (ML)/log posterior density (Bayesian) at the
+               mode when used with ``mode_compute>0``.
+
+
+    .. matvar:: oo_.mom.posterior.metropolis
+
+        Variable set by the ``method_of_moments`` command if ``mh_replic>0`` is used.
+        Fields are of the form::
+
+            oo_.mom.posterior.metropolis.OBJECT
+
+        where OBJECT is one of the following:
+
+            ``mean``
+
+                Mean parameter vector from the MCMC.
+
+            ``Variance``
+
+                Covariance matrix of the parameter draws in the MCMC.
+
+    .. matvar:: oo_.mom.prior_density
+
+        Variable set by the ``method_of_moments`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option.
+        Fields are of the form::
+
+            oo_.mom.prior_density.PARAMETER_NAME
+
+    .. matvar:: oo_.mom.posterior_density
+
+        Variable set by the ``method_of_moments`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option.
+        Fields are of the form::
+
+            oo_.mom.posterior_density.PARAMETER_NAME
+
+    .. matvar:: oo_.mom.posterior_hpdinf
+
+        Variable set by the ``method_of_moments`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option.
+        Fields are of the form::
+
+            oo_.mom.posterior_hpdinf.ESTIMATED_OBJECT.VARIABLE_NAME
+
+    .. matvar:: oo_.mom.posterior_hpdsup
+
+        Variable set by the ``method_of_moments`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option.
+        Fields are of the form::
+
+            oo_.mom.posterior_hpdsup.ESTIMATED_OBJECT.VARIABLE_NAME
+
+    .. matvar:: oo_.mom.posterior_mean
+
+        Variable set by the ``method_of_moments`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option.
+        Fields are of the form::
+
+            oo_.posterior_mean.ESTIMATED_OBJECT.VARIABLE_NAME
+
+    .. matvar:: oo_.mom.posterior_mode
+
+        Variable set by the ``method_of_moments`` command during mode-finding.
+        Fields are of the form::
+
+            oo_.mom.posterior_mode.ESTIMATED_OBJECT.VARIABLE_NAME
+
+    .. matvar:: oo_.mom.posterior_std_at_mode
+
+        Variable set by the ``method_of_moments`` command during mode-finding.
+        It is based on the inverse Hessian at ``oo_.mom.posterior_mode``.
+        Fields are of the form::
+
+            oo_.mom.posterior_std_at_mode.ESTIMATED_OBJECT.VARIABLE_NAME
+
+    .. matvar:: oo_.mom.posterior_std
+
+        Variable set by the ``method_of_moments`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option.
+        Fields are of the form::
+
+            oo_.mom.posterior_std.ESTIMATED_OBJECT.VARIABLE_NAME
+
+    .. matvar:: oo_.mom.posterior_variance
+
+        Variable set by the ``method_of_moments`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option.
+        Fields are of the form::
+
+            oo_.mom.posterior_variance.ESTIMATED_OBJECT.VARIABLE_NAME
+
+    .. matvar:: oo_.mom.posterior_median
+
+        Variable set by the ``method_of_moments`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option.
+        Fields are of the form::
+
+            oo_.mom.posterior_median.ESTIMATED_OBJECT.VARIABLE_NAME
+    
+    .. matvar:: oo_.mom.posterior_deciles
+
+        Variable set by the ``method_of_moments`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option.
+        Fields are of the form::
+
+            oo_.mom.posterior_deciles.ESTIMATED_OBJECT.VARIABLE_NAME
+    
+    .. matvar:: oo_.mom.MarginalDensity.LaplaceApproximation
+
+        Variable set by the ``method_of_moments`` command. Stores the marginal
+        data density based on the Laplace Approximation.
+
+    .. matvar:: oo_.mom.MarginalDensity.ModifiedHarmonicMean
+
+        Variable set by the ``method_of_moments`` command, if it is used with
+        ``mh_replic > 0`` or ``load_mh_file`` option. Stores the
+        marginal data density based on *Geweke (1999)* Modified
+        Harmonic Mean estimator.
+
+    
 
 Model Comparison
 ================

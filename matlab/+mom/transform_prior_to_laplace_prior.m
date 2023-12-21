@@ -1,10 +1,10 @@
 function bayestopt_ = transform_prior_to_laplace_prior(bayestopt_)
-% function bayestopt_ = transform_prior_to_laplace_prior(bayestopt_)
+% bayestopt_ = transform_prior_to_laplace_prior(bayestopt_)
 % -------------------------------------------------------------------------
 % Transforms the prior specification to a Laplace type of approximation:
 % only the prior mean and standard deviation are relevant, all other shape
 % information, except for the parameter bounds, is ignored.
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
 % bayestopt_    [structure] prior information
 % -------------------------------------------------------------------------
@@ -13,7 +13,8 @@ function bayestopt_ = transform_prior_to_laplace_prior(bayestopt_)
 % -------------------------------------------------------------------------
 % This function is called by
 %  o mom.run
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -30,7 +31,7 @@ function bayestopt_ = transform_prior_to_laplace_prior(bayestopt_)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
+
 if any(setdiff([0;bayestopt_.pshape],[0,3]))
     fprintf('\nNon-normal priors specified. Penalized estimation uses a Laplace type of approximation:');
     fprintf('\nOnly the prior mean and standard deviation are relevant, all other shape information, except for the parameter bounds, is ignored.\n\n');

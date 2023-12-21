@@ -1,11 +1,12 @@
-function print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters)
-% function print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters)
+function print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters, do_bayesian_estimation)
+% print_info_on_estimation_settings(options_mom_, number_of_estimated_parameters, do_bayesian_estimation)
 % -------------------------------------------------------------------------
 % Print information on the method of moments estimation settings to the console
-% =========================================================================
+% -------------------------------------------------------------------------
 % INPUTS
-% options_mom_                    [struct]   Options for the method of moments estimation
-% number_of_estimated_parameters  [integer]  Number of estimated parameters
+% options_mom_                    [struct]   options for the method of moments estimation
+% number_of_estimated_parameters  [integer]  number of estimated parameters
+% do_bayesian_estimation          [boolean]  true if the estimation is Bayesian
 % -------------------------------------------------------------------------
 % OUTPUT
 % No output, just displays the chosen settings
@@ -15,7 +16,8 @@ function print_info_on_estimation_settings(options_mom_, number_of_estimated_par
 % -------------------------------------------------------------------------
 % This function calls
 %  o skipline
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -32,7 +34,8 @@ function print_info_on_estimation_settings(options_mom_, number_of_estimated_par
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
+
+
 fprintf('\n---------------------------------------------------\n')
 if strcmp(options_mom_.mom.mom_method,'SMM')
     fprintf('Simulated method of moments with');
@@ -49,7 +52,16 @@ if strcmp(options_mom_.mom.mom_method,'SMM') || strcmp(options_mom_.mom.mom_meth
         fprintf('\n  - penalized estimation using deviation from prior mean and weighted with prior precision');
     end
 end
-
+if strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
+    if do_bayesian_estimation
+        fprintf('Bayesian Impulse Response Function Matching with');
+    else
+        fprintf('Frequentist Impulse Response Function Matching with');
+    end
+    if ~isempty(options_mom_.mom.irf_matching_file.name)
+        fprintf('\n  - irf_matching_file: %s',[options_mom_.mom.irf_matching_file.path filesep options_mom_.mom.irf_matching_file.name '.m']);
+    end    
+end
 for i = 1:length(options_mom_.optimizer_vec)
     if i == 1
         str = '- optimizer (mode_compute';
@@ -118,6 +130,8 @@ if strcmp(options_mom_.mom.mom_method,'GMM') || strcmp(options_mom_.mom.mom_meth
         fprintf('\n  - standard errors: numerical derivatives');
     end
     fprintf('\n  - number of matched moments: %d', options_mom_.mom.mom_nbr);
+elseif strcmp(options_mom_.mom.mom_method,'IRF_MATCHING')
+    fprintf('\n  - number of matched IRFs: %d', options_mom_.mom.mom_nbr);
 end
 fprintf('\n  - number of parameters: %d', number_of_estimated_parameters);
 fprintf('\n\n');

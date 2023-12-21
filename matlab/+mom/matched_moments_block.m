@@ -1,8 +1,8 @@
 function matched_moments = matched_moments_block(matched_moments, mom_method)
-% function matched_moments = matched_moments_block(matched_moments, mom_method)
+% matched_moments = matched_moments_block(matched_moments, mom_method)
 % -------------------------------------------------------------------------
-% Checks and transforms matched_moments bock for further use in the estimation
-% =========================================================================
+% Checks and transforms matched_moments block for further use in the estimation
+% -------------------------------------------------------------------------
 % INPUTS
 % matched_moments: [cell array] original matched_moments block
 % mom_method:      [string]     method of moments method (GMM or SMM)
@@ -12,7 +12,8 @@ function matched_moments = matched_moments_block(matched_moments, mom_method)
 % -------------------------------------------------------------------------
 % This function is called by
 %  o mom.run
-% =========================================================================
+% -------------------------------------------------------------------------
+
 % Copyright © 2023 Dynare Team
 %
 % This file is part of Dynare.
@@ -29,7 +30,7 @@ function matched_moments = matched_moments_block(matched_moments, mom_method)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
-% =========================================================================
+
 
 matched_moments_orig = matched_moments;
 % higher-order product moments not supported yet for GMM
@@ -59,22 +60,22 @@ for jm = 1:size(matched_moments,1)
 end
 % find duplicate rows in cell array by making groups according to powers as we can then use cell2mat for the unique function
 powers = cellfun(@sum,matched_moments(:,3))';
-UniqueMomIdx = [];
+unique_mom_idx = [];
 for jpow = unique(powers)
     idx1 = find(powers==jpow);
     [~,idx2] = unique(cell2mat(matched_moments(idx1,:)),'rows');
-    UniqueMomIdx = [UniqueMomIdx idx1(idx2)];
+    unique_mom_idx = [unique_mom_idx idx1(idx2)];
 end
 % remove duplicate elements
-DuplicateMoms = setdiff(1:size(matched_moments_orig,1),UniqueMomIdx);
-if ~isempty(DuplicateMoms)
-    fprintf('Duplicate declared moments found and removed in ''matched_moments'' block in rows:\n %s.\n',num2str(DuplicateMoms))
+duplicate_moms = setdiff(1:size(matched_moments_orig,1),unique_mom_idx);
+if ~isempty(duplicate_moms)
+    fprintf('Duplicate declared moments found and removed in ''matched_moments'' block in rows:\n %s.\n',num2str(duplicate_moms));
     fprintf('Dynare will continue with remaining moment conditions\n');
 end
 if strcmp(mom_method, 'SMM')
     % for SMM: keep the original structure, but get rid of duplicate moments
-    matched_moments = matched_moments_orig(sort(UniqueMomIdx),:);
+    matched_moments = matched_moments_orig(sort(unique_mom_idx),:);
 elseif strcmp(mom_method, 'GMM')
     % for GMM we use the transformed matched_moments structure
-    matched_moments = matched_moments(sort(UniqueMomIdx),:);
+    matched_moments = matched_moments(sort(unique_mom_idx),:);
 end

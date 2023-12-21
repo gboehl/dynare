@@ -168,6 +168,8 @@ switch info(1)
         message = 'Aim: Problem in SPEIG.';
     case 180
         message = 'SMM: simulation resulted in NaN/Inf. You may need to enable pruning.';
+    case 181
+        message = 'IRF Matching: simulated IRFs were explosive. Either reduce the shock size, use pruning, or set the approximation order to 1.';
     case 201
         message = 'Particle Filter: Initial covariance of the states is not positive definite. Try a different nonlinear_filter_initialization';
     case 202
