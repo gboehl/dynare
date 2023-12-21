@@ -108,8 +108,9 @@ for jexo = unique_shock_entries' % loop over cell with shock names
             % Adding a legend at the bottom
             axes('Position',[0, 0, 1, 1],'Visible','off');
             lgd = legend([plt_data,plt_model],{'Data', 'Model'}, 'Location', 'southeast','NumColumns',2,'FontSize',14);
-            lgd.Position = [0.37 0.01 lgd.Position(3) lgd.Position(4)];
-
+            if ~isoctave
+                lgd.Position = [0.37 0.01 lgd.Position(3) lgd.Position(4)];
+            end
             dyn_saveas(fig_irf,[graph_directory_name filesep fname '_matched_irf_' jexo{:} int2str(fig)],nodisplay,graph_format);
             if TeX && any(strcmp('eps',cellstr(graph_format)))
                 fprintf(fid_TeX,'\\begin{figure}[H]\n');
