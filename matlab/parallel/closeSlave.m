@@ -61,7 +61,7 @@ for indPC=1:length(Parallel)
 end
 
 while(1)
-    if isempty(dynareParallelDir(['P_slave_',int2str(j),'End.txt'],TmpFolder,Parallel))
+    if isempty(dynareParallelDir(['P_slave_*End.txt'],TmpFolder,Parallel))
         for indPC=1:length(Parallel)
             if (Parallel(indPC).Local==0)
                 dynareParallelRmDir(TmpFolder,Parallel(indPC))
