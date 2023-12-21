@@ -6,7 +6,7 @@ set -e
 shopt -s extglob
 
 if (($# < 7 )); then
-    echo "Usage: $0 build_for matlab_octave_exe matlab_octave_version matlab_arch source_root build_root test_file(s) [-- extra_file(s)]" 2>&1
+    echo "Usage: $0 build_for matlab_octave_exe matlab_octave_version matlab_arch xvfb_run_exe source_root build_root test_file(s) [-- extra_file(s)]" 2>&1
     exit 1
 fi
 
@@ -14,9 +14,10 @@ build_for=$1
 matlab_octave_exe=$2
 matlab_octave_version=$3
 matlab_arch=$4
-source_root=$5
-build_root=$6
-shift 6
+xvfb_run_exe=$5
+source_root=$6
+build_root=$7
+shift 7
 
 test_files=()
 while (($# > 0)); do
@@ -111,6 +112,11 @@ for test_file in "${test_files[@]}"; do
         # We cannot use the --no-window-system option, and we have to use xvfb
         # See the following Octave bug: https://savannah.gnu.org/bugs/?62101
         # (this affects at least tests/shock_decomposition/ls2003_plot.mod)
-        xvfb-run -a "$matlab_octave_exe" --no-init-file --silent --no-history "$test_arg"
+        test_cmd=("$matlab_octave_exe" --no-init-file --silent --no-history "$test_arg")
+        if [[ -n $xvfb_run_exe ]]; then
+            "$xvfb_run_exe" -a "${test_cmd[@]}"
+        else
+            "${test_cmd[@]}"
+        fi
     fi
 done

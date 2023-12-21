@@ -1,6 +1,3 @@
-# TODO:
-# - See what to do with xvfb-run (see #1892). Maybe try to detect it from meson.build, and pass it optionally to the test driver script
-
 project('dynare',
         'cpp', 'fortran', 'c',
         version : '6-unstable',
@@ -1837,9 +1834,15 @@ mod_and_m_tests = [
 
 base_test_driver_args = [ get_option('build_for') ]
 if get_option('build_for') == 'matlab'
-  base_test_driver_args += [ matlab_exe.full_path(), matlab_version, matlab_arch ]
+  base_test_driver_args += [ matlab_exe.full_path(), matlab_version, matlab_arch, '' ]
 else
   base_test_driver_args += [ octave_exe.full_path(), octave_version, '' ]
+  xvfb_run_exe = find_program('xvfb-run', required : false) # Debian-specific utility
+  if xvfb_run_exe.found()
+    base_test_driver_args += xvfb_run_exe.full_path()
+  else
+    base_test_driver_args += ''
+  endif
 endif
 base_test_driver_args += [ meson.current_source_dir(), meson.current_build_dir() ]
 
