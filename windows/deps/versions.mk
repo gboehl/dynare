@@ -18,7 +18,7 @@ MATLAB64_VERSION = 20231122
 ## Build dependencies
 
 # pacman -Ss mingw-w64-x86_64-boost
-MINGW64_BOOST_VERSION = 1.83.0-2
+MINGW64_BOOST_VERSION = 1.84.0-1
 
 # pacman -Ss mingw-w64-x86_64-gsl
 MINGW64_GSL_VERSION = 2.7.1-2
