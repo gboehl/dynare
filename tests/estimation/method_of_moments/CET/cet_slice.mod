@@ -192,7 +192,7 @@ method_of_moments(mom_method = irf_matching
 , mh_replic=10
 , plot_priors = 0
 , nograph
-, mode_compute = 1
+, mode_compute = 5
 , posterior_sampling_method = 'slice'
 , posterior_sampler_options = ('rotated',1
 %                              ,'mode_files'
