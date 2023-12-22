@@ -7471,11 +7471,6 @@ observed variables.
                version of the Sequential Monte-Carlo sampler instead of the
                standard Random-Walk Metropolis-Hastings.
 
-           ``'dsmh'``
-
-               Instructs Dynare to use the Dynamic Striated Metropolis Hastings
-               sampler proposed by *Waggoner, Wu and Zha (2016)* instead of the
-               standard Random-Walk Metropolis-Hastings.
 
     .. option:: posterior_sampler_options = (NAME, VALUE, ...)
 
