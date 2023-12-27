@@ -119,7 +119,7 @@ OutputDirectoryName = CheckPath('graphs',M_.dname);
 dyn_graph=bvar.graph_init(sprintf('BVAR forecasts (nlags = %d)', nlags), ny, {'b-' 'g-' 'g-' 'r-' 'r-'});
 
 for i = 1:ny
-    dyn_graph=dynare_graph(dyn_graph,[ sims_no_shock_median(:, i) ...
+    dyn_graph=plot_graph(dyn_graph,[ sims_no_shock_median(:, i) ...
                         sims_no_shock_up_conf(:, i) sims_no_shock_down_conf(:, i) ...
                         sims_with_shocks_up_conf(:, i) sims_with_shocks_down_conf(:, i) ], ...
                            options_.varobs{i});
@@ -183,3 +183,31 @@ for i = 1:length(options_.varobs)
         oo_.bvar.forecast.rmse.(name) = rmse(i);
     end
 end
+
+
+function dyn_graph=plot_graph(dyn_graph,y,tit,x)
+% function plot_graph(dyn_graph, y,tit,x)
+
+if nargin < 4
+    x = (1:size(y,1))';
+end
+nplot = dyn_graph.plot_nbr + 1;
+if nplot > dyn_graph.max_nplot
+    figure('Name',dyn_graph.figure_name);
+    nplot = 1;
+end
+dyn_graph.plot_nbr = nplot;
+subplot(dyn_graph.nr,dyn_graph.nc,nplot);
+
+line_types = dyn_graph.line_types;
+line_type = line_types{1};
+for i=1:size(y,2)
+    if length(line_types) > 1
+        line_type = line_types{i};
+    end
+
+    plot(x,y(:,i),line_type);
+    hold on
+end
+title(tit);
+hold off
