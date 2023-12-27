@@ -242,8 +242,14 @@ if newdatainterface
     end
 else
     % ...  or check that nobs is smaller than the number of observations in dataset_.
-    if nobs>dataset_.nobs
-        error('makedataset: nobs (%s) cannot be greater than the last date in the dataset (%s)!', num2str(nobs), num2str(dataset_.nobs))
+    if FIRSTOBS>dataset_.dates(1)
+        if FIRSTOBS+nobs-1>dataset_.dates(end)
+            error('makedataset: Given first_obs=%u and %u total observations in the dataset, the current nobs of %s must not be greater than %s!', options_.first_obs, dataset_.nobs, num2str(nobs), num2str(dataset_.nobs-find(dataset_.dates==FIRSTOBS)+1))
+        end
+    else
+        if nobs>dataset_.nobs
+            error('makedataset: nobs (%s) cannot be greater than the last date in the dataset (%s)!', num2str(nobs), num2str(dataset_.nobs))
+        end
     end
 end
 
