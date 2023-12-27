@@ -122,7 +122,7 @@ if isempty(dot_location)
     fnamelength = length(fname);
     fname1 = [fname '.dyn'];
     d = dir(fname1);
-    if length(d) == 0
+    if isempty(d)
         fname1 = [fname '.mod'];
     end
     fname = fname1;
@@ -138,7 +138,7 @@ if fnamelength + length('.set_auxiliary_variables') > namelengthmax()
     error('Dynare: the name of your .mod file is too long, please shorten it')
 end
 
-if ~isempty(strfind(fname,filesep))
+if contains(fname,filesep)
     fprintf('\nIt seems you are trying to call a .mod file not located in the "Current Folder". This is not possible (the %s symbol is not allowed in the name of the .mod file).\n', filesep)
     [pathtomodfile,basename] = fileparts(fname);
     if exist(pathtomodfile,'dir')
