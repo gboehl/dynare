@@ -34,17 +34,12 @@ install_symlink('dynare_m' + (host_machine.system() == 'windows' ? '.exe' : ''),
 install_subdir('matlab', install_dir : 'lib/dynare',
                exclude_files : [ 'utilities/tests/.git' ,
                                  'utilities/tests/.gitignore',
-                                 'modules/reporting/.git',
-                                 'modules/reporting/.gitignore',
-                                 'modules/reporting/.gitlab-ci.yml',
-                                 'modules/dseries/.git',
-                                 'modules/dseries/.gitignore',
-                                 'modules/dseries/src/modules/matlab-fame-io/.git',
-                                 'modules/dseries/src/modules/matlab-fame-io/.gitignore',
-                                 'modules/dseries/src/modules/matlab-fame-io/doc/.gitignore',
-                                 'modules/dseries/src/modules/matlab-fame-io/tests/FameDatabases/.gitignore',
-                                 'modules/dseries/.gitmodules',
-                                 'modules/dseries/.gitlab-ci.yml' ])
+                                 'dseries/.git',
+                                 'dseries/.gitignore',
+                                 'dseries/src/modules/matlab-fame-io/.git',
+                                 'dseries/src/modules/matlab-fame-io/.gitignore',
+                                 'dseries/.gitmodules',
+                                 'dseries/.gitlab-ci.yml' ])
 
 sed_exe = find_program('sed')
 custom_target(output : 'dynare_version.m', input : 'matlab/dynare_version.m.in',
