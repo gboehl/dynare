@@ -158,7 +158,7 @@ mingw64: tarballs/mingw-w64-x86_64-gcc-$(MINGW64_GCC_VERSION)-any.pkg.tar.zst ta
 
 tarballs/mingw-w64-x86_64-%-any.pkg.tar.zst:
 	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ http://repo.msys2.org/mingw/x86_64/$(notdir $@)
+	wget $(WGET_OPTIONS) -O $@ https://www.dynare.org/windows-pkg-build/msys2/6.x/$(notdir $@)
 
 clean-msys2:
 	rm -rf lib64-msys2
