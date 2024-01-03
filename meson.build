@@ -1890,7 +1890,9 @@ endforeach
 git_exe = find_program('git', required : false)
 etags_exe = find_program('etags', required : false)
 
-if git_exe.found() and etags_exe.found()
+fs = import('fs')
+
+if fs.is_dir('.git') and git_exe.found() and etags_exe.found()
   all_files = run_command(git_exe,
                           [ '--git-dir=@0@/.git'.format(meson.project_source_root()),
                             'ls-files', '--recurse-submodules',
