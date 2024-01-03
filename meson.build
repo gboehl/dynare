@@ -21,9 +21,14 @@ c_compiler = meson.get_compiler('c')
 
 subdir('preprocessor/src')
 
-# Compatibility symlink
-# NB: the following my be improved if this wishlist item is done:
+# NB: the following two symlinks my be improved if this wishlist item is done:
 #  https://github.com/mesonbuild/meson/issues/11519
+
+install_symlink('dynare-preprocessor', install_dir : 'lib/dynare/preprocessor/',
+                pointing_to : '../../../bin/dynare-preprocessor'
+                              + (host_machine.system() == 'windows' ? '.exe' : ''))
+
+# Compatibility symlink
 install_symlink('dynare_m' + (host_machine.system() == 'windows' ? '.exe' : ''),
                 install_dir : 'lib/dynare/matlab/preprocessor64',
                 pointing_to : '../../../../bin/dynare-preprocessor'
