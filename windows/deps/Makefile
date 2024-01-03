@@ -157,6 +157,7 @@ mingw64: tarballs/mingw-w64-x86_64-gcc-$(MINGW64_GCC_VERSION)-any.pkg.tar.zst ta
 	touch $@
 
 tarballs/mingw-w64-x86_64-%-any.pkg.tar.zst:
+	mkdir -p tarballs
 	wget $(WGET_OPTIONS) -O $@ http://repo.msys2.org/mingw/x86_64/$(notdir $@)
 
 clean-msys2:
