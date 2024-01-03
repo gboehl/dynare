@@ -76,7 +76,7 @@ for j= 1:nvar
             fprintf(fidTeX,' \n');
         end
         n_fig =n_fig+1;
-        eval(['hh_fig=dyn_figure(options_.nodisplay,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
+        hh_fig=dyn_figure(options_.nodisplay,'Name',['Forecasts (' int2str(n_fig) ')']);
         m = 1;
     end
     subplot(nr, nc, m);
@@ -138,7 +138,7 @@ if isfield(oo_.forecast,'HPDinf_ME')
                 fprintf(fidTeX,' \n');
             end
             n_fig =n_fig+1;
-            eval(['hh_fig=dyn_figure(options_.nodisplay,''Name'',''Forecasts (' int2str(n_fig) ')'');']);
+            hh_fig=dyn_figure(options_.nodisplay,'Name',['Forecasts including ME (' int2str(n_fig) ')']);
             m = 1;
         end
         subplot(nr,nc,m);
