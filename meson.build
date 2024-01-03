@@ -48,6 +48,9 @@ custom_target(output : 'dynare_version.m', input : 'matlab/dynare_version.m.in',
               install : true,
               install_dir : 'lib/dynare/matlab')
 
+install_subdir('contrib/ms-sbvar/TZcode/MatlabFiles',
+               install_dir : 'lib/dynare/contrib/ms-sbvar/TZcode')
+
 ### MEX files
 
 mex_incdir = include_directories('mex/sources')
