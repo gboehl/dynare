@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Dynare
-Upstream-Contact: Dynare Team, whose members in 2023 are:
+Upstream-Contact: Dynare Team, whose members in 2024 are:
                   - Stéphane Adjemian <stephane.adjemian@univ-lemans.fr>
                   - Michel Juillard <michel.juillard@mjui.fr>
                   - Frédéric Karamé <frederic.karame@univ-lemans.fr>
@@ -23,7 +23,7 @@ Upstream-Contact: Dynare Team, whose members in 2023 are:
 Source: https://www.dynare.org
 
 Files: *
-Copyright: 1996-2023 Dynare Team
+Copyright: 1996-2024 Dynare Team
 License: GPL-3+
 
 Files: matlab/+occbin/IVF_core.m
