@@ -86,7 +86,7 @@ License: public-domain-aim
  Journal of Economic Dynamics and Control, 2010, vol. 34, issue 3,
  pages 472-489
 
-Files: matlab/optimization/bfgsi1.m matlab/csolve.m matlab/optimization/csminit1.m matlab/optimization/numgrad2.m
+Files: matlab/optimization/bfgsi1.m matlab/optimization/csolve.m matlab/optimization/csminit1.m matlab/optimization/numgrad2.m
  matlab/optimization/numgrad3.m matlab/optimization/numgrad3_.m matlab/optimization/numgrad5.m
  matlab/optimization/numgrad5_.m matlab/optimization/csminwel1.m matlab/+bvar/density.m
  matlab/+bvar/toolbox.m matlab/partial_information/PI_gensys.m matlab/partial_information/qzswitch.m
@@ -172,7 +172,7 @@ Comment: Written by Jessica Cariboni and Francesca Campolongo
 Files: matlab/+gsa/cumplot.m
        matlab/+gsa/monte_carlo_filtering.m
        matlab/+gsa/skewness.m
-       matlab/+gsa/log_trans_.m
+       matlab/+gsa/log_transform.m
        matlab/+gsa/map_calibration.m
        matlab/+gsa/map_identification.m
        matlab/+gsa/monte_carlo_filtering_analysis.m
@@ -247,7 +247,7 @@ License: BSD-2-clause
 
 Files: examples/fs2000_data.m
 Copyright: 2000-2022 Frank Schorfheide
-Copyright: 2023 Dynare Team
+           2023 Dynare Team
 License: CC-BY-SA-4.0
 
 Files: doc/*.rst doc/*.tex doc/*.svg doc/*.pdf doc/*.bib
@@ -291,28 +291,6 @@ License: CC-BY-SA-4.0
 Files: preprocessor/doc/preprocessor/*
 Copyright: 2007-2019 Dynare Team
 License: CC-BY-SA-4.0
-
-Files: contrib/jsonlab/*
-Copyright: 2011-2020 Qianqian Fang <q.fang at neu.edu>
-           2016 Bastian Bechtold
-License: GPL-3+ or BSD-3-clause
-
-Files: contrib/jsonlab/base64decode.m
-       contrib/jsonlab/base64encode.m
-       contrib/jsonlab/gzipdecode.m
-       contrib/jsonlab/gzipencode.m
-       contrib/jsonlab/zlibdecode.m
-       contrib/jsonlab/zlibencode.m
-Copyright: 2012 Kota Yamaguchi
-           2011-2020 Qianqian Fang <q.fang at neu.edu>
-License: GPL-3+ or BSD-2-clause
-
-Files: contrib/jsonlab/loadjson.m
-Copyright: 2011-2020 Qianqian Fang
-           2009 Nedialko Krouchev
-           2009 François Glineur
-           2008 Joel Feenstra
-License: GPL-3+ or BSD-2-clause or BSD-3-clause
 
 Files: contrib/ms-sbvar/utilities_dw/*
 Copyright: 1996-2011 Daniel Waggoner
@@ -419,32 +397,6 @@ License: BSD-2-clause
  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
-
-License: BSD-3-clause
- Redistribution and use in source and binary forms, with or without modification,
- are permitted provided that the following conditions are met:
- .
- * Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
- .
- * Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
- .
- * Neither the name of the copyright holder nor the names of its contributors
-   may be used to endorse or promote products derived from this software without
-   specific prior written permission.
- .
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 License: GFDL-NIV-1.3+
  Permission is granted to copy, distribute and/or modify this document
