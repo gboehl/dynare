@@ -21,5 +21,5 @@ function send_exogenous_variables_to_workspace()
 global M_ oo_
 
 for idx = 1:M_.exo_nbr
-    assignin('base', M_.exo_names{idx}, oo_.exo_simul(:,idx))
+    assignin('base', M_.exo_names{idx}, oo_.exo_simul(:,idx)')
 end
