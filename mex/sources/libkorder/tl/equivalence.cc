@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019-2023 Dynare Team
+ * Copyright © 2019-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -35,12 +35,14 @@ OrdSequence::operator[](int i) const
    orderings can be used for different problem sizes. We order them
    according to the average, and then according to the first item. */
 
-bool
-OrdSequence::operator<(const OrdSequence& s) const
+std::partial_ordering
+OrdSequence::operator<=>(const OrdSequence& s) const
 {
   double ta = average();
   double sa = s.average();
-  return (ta < sa || ((ta == sa) && (operator[](0) > s[0])));
+  if (auto cmp1 = ta <=> sa; cmp1 != 0)
+    return cmp1;
+  return operator[](0) <=> s[0];
 }
 
 bool

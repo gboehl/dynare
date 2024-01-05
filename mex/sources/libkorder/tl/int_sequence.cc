@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019-2023 Dynare Team
+ * Copyright © 2019-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -103,10 +103,10 @@ IntSequence::operator==(const IntSequence& s) const
   return std::equal(data, data + length, s.data, s.data + s.length);
 }
 
-bool
-IntSequence::operator<(const IntSequence& s) const
+std::strong_ordering
+IntSequence::operator<=>(const IntSequence& s) const
 {
-  return std::lexicographical_compare(data, data + length, s.data, s.data + s.length);
+  return std::lexicographical_compare_three_way(data, data + length, s.data, s.data + s.length);
 }
 
 bool

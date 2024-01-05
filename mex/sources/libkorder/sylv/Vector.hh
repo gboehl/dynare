@@ -25,6 +25,7 @@
    to avoid running virtual method invokation mechanism. Some
    members, and methods are thus duplicated */
 
+#include <compare>
 #include <complex>
 #include <utility>
 
@@ -220,22 +221,7 @@ public:
   // Exact equality
   bool operator==(const ConstVector& y) const;
   // Lexicographic ordering
-  bool operator<(const ConstVector& y) const;
-  bool
-  operator<=(const ConstVector& y) const
-  {
-    return operator<(y) || operator==(y);
-  }
-  bool
-  operator>(const ConstVector& y) const
-  {
-    return !operator<=(y);
-  }
-  bool
-  operator>=(const ConstVector& y) const
-  {
-    return !operator<(y);
-  }
+  [[nodiscard]] std::partial_ordering operator<=>(const ConstVector& y) const;
 
   [[nodiscard]] double getNorm() const;
   [[nodiscard]] double getMax() const;

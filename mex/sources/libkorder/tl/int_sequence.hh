@@ -43,6 +43,7 @@
 #define INT_SEQUENCE_HH
 
 #include <algorithm>
+#include <compare>
 #include <initializer_list>
 #include <utility>
 #include <vector>
@@ -136,15 +137,10 @@ public:
     return length;
   }
 
-  /* We provide two orderings. The first operator<() is the linear
+  /* We provide two orderings. The first operator<=>() is the linear
      lexicographic ordering, the second less() is the non-linear Cartesian
      ordering. */
-  bool operator<(const IntSequence& s) const;
-  bool
-  operator<=(const IntSequence& s) const
-  {
-    return (operator==(s) || operator<(s));
-  }
+  [[nodiscard]] std::strong_ordering operator<=>(const IntSequence& s) const;
   [[nodiscard]] bool lessEq(const IntSequence& s) const;
   [[nodiscard]] bool less(const IntSequence& s) const;
 

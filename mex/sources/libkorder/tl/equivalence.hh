@@ -55,6 +55,7 @@
 
 #include "int_sequence.hh"
 
+#include <compare>
 #include <list>
 #include <string>
 #include <vector>
@@ -62,7 +63,7 @@
 /* Here is the abstraction for an equivalence class. We implement it as
    vector<int>. We have a constructor for empty class, copy
    constructor. What is important here is the ordering operator
-   operator<() and methods for addition of an integer, and addition of
+   operator<=>() and methods for addition of an integer, and addition of
    another sequence. Also we provide method has() which returns true if a
    given integer is contained. */
 
@@ -76,7 +77,7 @@ public:
   }
   bool operator==(const OrdSequence& s) const;
   int operator[](int i) const;
-  bool operator<(const OrdSequence& s) const;
+  [[nodiscard]] std::partial_ordering operator<=>(const OrdSequence& s) const;
   [[nodiscard]] const std::vector<int>&
   getData() const
   {

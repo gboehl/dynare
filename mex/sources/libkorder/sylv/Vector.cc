@@ -317,17 +317,10 @@ ConstVector::operator==(const ConstVector& y) const
   return i == len;
 }
 
-bool
-ConstVector::operator<(const ConstVector& y) const
+std::partial_ordering
+ConstVector::operator<=>(const ConstVector& y) const
 {
-  int i = std::min(len, y.len);
-  int ii = 0;
-  while (ii < i && operator[](ii) == y[ii])
-    ii++;
-  if (ii < i)
-    return operator[](ii) < y[ii];
-  else
-    return len < y.len;
+  return std::lexicographical_compare_three_way(data, data + len, y.data, y.data + y.len);
 }
 
 double
