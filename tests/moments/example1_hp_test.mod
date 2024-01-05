@@ -77,12 +77,12 @@ send_endogenous_variables_to_workspace;
 options_.nomoments=0;
 oo_unfiltered_all_shocks=oo_;
 
-[junk, y_filtered]=sample_hp_filter(y',1600);
-[junk, c_filtered]=sample_hp_filter(c',1600);
-[junk, k_filtered]=sample_hp_filter(k',1600);
-[junk, a_filtered]=sample_hp_filter(a',1600);
-[junk, h_filtered]=sample_hp_filter(h',1600);
-[junk, b_filtered]=sample_hp_filter(b',1600);
+[junk, y_filtered]=sample_hp_filter(y,1600);
+[junk, c_filtered]=sample_hp_filter(c,1600);
+[junk, k_filtered]=sample_hp_filter(k,1600);
+[junk, a_filtered]=sample_hp_filter(a,1600);
+[junk, h_filtered]=sample_hp_filter(h,1600);
+[junk, b_filtered]=sample_hp_filter(b,1600);
 
 verbatim;
 total_std_all_shocks_filtered_sim=std([y_filtered c_filtered k_filtered a_filtered h_filtered b_filtered]);
@@ -112,12 +112,12 @@ stoch_simul(order=1,nofunctions,hp_filter=0,periods=2500000,nomoments);
 send_endogenous_variables_to_workspace;
 oo_unfiltered_one_shock=oo_;
 
-[junk, y_filtered]=sample_hp_filter(y',1600);
-[junk, c_filtered]=sample_hp_filter(c',1600);
-[junk, k_filtered]=sample_hp_filter(k',1600);
-[junk, a_filtered]=sample_hp_filter(a',1600);
-[junk, h_filtered]=sample_hp_filter(h',1600);
-[junk, b_filtered]=sample_hp_filter(b',1600);
+[junk, y_filtered]=sample_hp_filter(y,1600);
+[junk, c_filtered]=sample_hp_filter(c,1600);
+[junk, k_filtered]=sample_hp_filter(k,1600);
+[junk, a_filtered]=sample_hp_filter(a,1600);
+[junk, h_filtered]=sample_hp_filter(h,1600);
+[junk, b_filtered]=sample_hp_filter(b,1600);
 
 verbatim;
 total_std_one_shock_filtered_sim=std([y_filtered c_filtered k_filtered a_filtered h_filtered b_filtered]);

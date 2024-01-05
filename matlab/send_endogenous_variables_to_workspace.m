@@ -20,5 +20,5 @@ function send_endogenous_variables_to_workspace()
 global M_ oo_
 
 for idx = 1:M_.endo_nbr
-    assignin('base', M_.endo_names{idx}, oo_.endo_simul(idx,:))
+    assignin('base', M_.endo_names{idx}, oo_.endo_simul(idx,:)')
 end
