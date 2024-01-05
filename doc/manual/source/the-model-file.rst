@@ -2945,8 +2945,8 @@ Finding the steady state with Dynare nonlinear solver
 
            ``5``
 
-                Newton algorithm with a sparse Gaussian elimination
-                (SPE) (requires ``bytecode`` option, see
+                Newton algorithm with a sparse Gaussian elimination (SPE)
+                solver at each iteration (requires ``bytecode`` option, see
                 :ref:`model-decl`).
 
            ``6``
@@ -2964,7 +2964,7 @@ Finding the steady state with Dynare nonlinear solver
            ``8``
 
                 Newton algorithm with a Stabilized Bi-Conjugate
-                Gradient (BICGSTAB) solver at each iteration (requires
+                Gradient (BiCGStab) solver at each iteration (requires
                 bytecode and/or block option, see :ref:`model-decl`).
 
            ``9``
@@ -3680,60 +3680,64 @@ speed-up on large models.
            ``0``
 
                Use a Newton algorithm with a direct sparse LU solver at each
-               iteration, applied on the stacked system of all the equations at
-               every period (Default).
+               iteration, applied to the stacked system of all equations in all
+               periods (Default).
 
            ``1``
 
                Use the Laffargue-Boucekkine-Juillard (LBJ) algorithm proposed
-               in *Juillard (1996)*. It is slower than ``stack_solve_algo=0``,
-               but may be less memory consuming on big models. Note that if the
-               ``block`` option is used (see :ref:`model-decl`), a simple
-               Newton algorithm with sparse matrices is used for blocks which
-               are purely backward or forward (of type ``SOLVE BACKWARD`` or
-               ``SOLVE FORWARD``, see :comm:`model_info`), since LBJ only makes
-               sense on blocks with both leads and lags (of type ``SOLVE TWO
-               BOUNDARIES``).
+               in *Juillard (1996)* on top of a LU solver. It is slower
+               than ``stack_solve_algo=0``, but may be less memory consuming on
+               big models. Note that if the ``block`` option is used (see
+               :ref:`model-decl`), a simple Newton algorithm with sparse
+               matrices, applied to the stacked system of all block equations
+               in all periods, is used for blocks which are purely backward or
+               forward (of type ``SOLVE BACKWARD`` or ``SOLVE FORWARD``, see
+               :comm:`model_info`), since LBJ only makes sense on blocks with
+               both leads and lags (of type ``SOLVE TWO BOUNDARIES``).
 
            ``2``
 
-               Use a Newton algorithm with a Generalized Minimal
-               Residual (GMRES) solver at each iteration (requires
-               ``bytecode`` and/or ``block`` option, see
-               :ref:`model-decl`)
+               Use a Newton algorithm with a Generalized Minimal Residual
+               (GMRES) solver at each iteration, applied on the stacked system
+               of all equations in all periods (requires ``bytecode`` and/or
+               ``block`` option, see :ref:`model-decl`)
 
            ``3``
 
-               Use a Newton algorithm with a Stabilized Bi-Conjugate
-               Gradient (BICGSTAB) solver at each iteration (requires
-               ``bytecode`` and/or ``block`` option, see
-               :ref:`model-decl`).
+               Use a Newton algorithm with a Stabilized Bi-Conjugate Gradient
+               (BiCGStab) solver at each iteration, applied on the stacked
+               system of all equations in all periods (requires ``bytecode``
+               and/or ``block`` option, see :ref:`model-decl`).
 
            ``4``
 
-               Use a Newton algorithm with an optimal path length at
-               each iteration (requires ``bytecode`` and/or ``block``
-               option, see :ref:`model-decl`).
+               Use a Newton algorithm with a direct sparse LU solver and an
+               optimal path length at each iteration, applied on the stacked
+               system of all equations in all periods (requires ``bytecode``
+               and/or ``block`` option, see :ref:`model-decl`).
 
            ``5``
 
-               Use a Newton algorithm with a sparse Gaussian
-               elimination (SPE) solver at each iteration (requires
-               ``bytecode`` option, see :ref:`model-decl`).
+               Use the Laffargue-Boucekkine-Juillard (LBJ) algorithm proposed
+               in *Juillard (1996)* on top of a sparse Gaussian elimination
+               (SPE) solver. The latter takes advantage of the similarity of
+               the Jacobian across periods when searching for the pivots
+               (requires ``bytecode`` option, see :ref:`model-decl`).
 
            ``6``
 
-               Synonymous for ``stack_solve_algo=1``. Kept for historical
-               reasons.
+               Synonymous for ``stack_solve_algo=1``. Kept for backward
+               compatibility.
 
            ``7``
 
-               Allows the user to solve the perfect foresight model
-               with the solvers available through option
-               ``solve_algo`` (See :ref:`solve_algo <solvalg>` for a
-               list of possible values, note that values 5, 6, 7 and
-               8, which require ``bytecode`` and/or ``block`` options,
-               are not allowed). For instance, the following
+               Allows the user to solve the perfect foresight model with the
+               solvers available through option ``solve_algo``, applied on the
+               stacked system of all equations in all periods (See
+               :ref:`solve_algo <solvalg>` for a list of possible values, note
+               that values 5, 6, 7 and 8, which require ``bytecode`` and/or
+               ``block`` options, are not allowed). For instance, the following
                commands::
 
                     perfect_foresight_setup(periods=400);
