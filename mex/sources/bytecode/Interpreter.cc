@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2023 Dynare Team
+ * Copyright © 2007-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -4710,23 +4710,26 @@ Interpreter::Simulate_Newton_Two_Boundaries(
           switch (stack_solve_algo)
             {
             case 0:
-              mexPrintf("MODEL SIMULATION: (method=Sparse LU)\n");
+              mexPrintf("MODEL SIMULATION: (method=Sparse LU solver on stacked system)\n");
               break;
             case 2:
-              mexPrintf(preconditioner_print_out("MODEL SIMULATION: (method=GMRES)\n",
-                                                 preconditioner, false)
-                            .c_str());
+              mexPrintf(
+                  preconditioner_print_out("MODEL SIMULATION: (method=GMRES on stacked system)\n",
+                                           preconditioner, false)
+                      .c_str());
               break;
             case 3:
-              mexPrintf(preconditioner_print_out("MODEL SIMULATION: (method=BiCGStab)\n",
-                                                 preconditioner, false)
+              mexPrintf(preconditioner_print_out(
+                            "MODEL SIMULATION: (method=BiCGStab on stacked system)\n",
+                            preconditioner, false)
                             .c_str());
               break;
             case 4:
-              mexPrintf("MODEL SIMULATION: (method=Sparse LU & optimal path length)\n");
+              mexPrintf("MODEL SIMULATION: (method=Sparse LU solver with optimal path length on "
+                        "stacked system)\n");
               break;
             case 5:
-              mexPrintf("MODEL SIMULATION: (method=Sparse Gaussian Elimination)\n");
+              mexPrintf("MODEL SIMULATION: (method=LBJ with Sparse Gaussian Elimination)\n");
               break;
             }
         }

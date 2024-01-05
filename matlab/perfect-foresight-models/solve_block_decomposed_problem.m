@@ -14,7 +14,7 @@ function [y, success, maxerror, per_block_status] = solve_block_decomposed_probl
 %   maxerror         [double]    ∞-norm of the residual
 %   per_block_status [struct]    vector structure with per-block information about convergence
 
-% Copyright © 2020-2023 Dynare Team
+% Copyright © 2020-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -33,18 +33,21 @@ function [y, success, maxerror, per_block_status] = solve_block_decomposed_probl
 
 cutoff = 1e-15;
 
-if options_.stack_solve_algo==0
-    mthd='Sparse LU';
-elseif options_.stack_solve_algo==1 || options_.stack_solve_algo==6
-    mthd='LBJ';
-elseif options_.stack_solve_algo==2
-    mthd='GMRES';
-elseif options_.stack_solve_algo==3
-    mthd='BICGSTAB';
-elseif options_.stack_solve_algo==4
-    mthd='OPTIMPATH';
-else
-    mthd='UNKNOWN';
+switch options_.stack_solve_algo
+    case 0
+        mthd='Sparse LU on stacked system';
+    case {1,6}
+        mthd='LBJ with LU solver';
+    case 2
+        mthd='GMRES on stacked system';
+    case 3
+        mthd='BiCGStab on stacked system';
+    case 4
+        mthd='Sparse LU solver with optimal path length on stacked system';
+    case 7
+        mthd='Solver from solve_algo option on stacked system'
+    otherwise
+        error('Unsupported stack_solve_algo value')
 end
 if options_.verbosity
     printline(41)
