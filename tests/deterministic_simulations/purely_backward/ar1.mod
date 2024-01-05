@@ -33,6 +33,6 @@ if ~oo_.deterministic_simulation.status
 end
 send_endogenous_variables_to_workspace;
 
-if max(abs(y'-[1; exp(cumprod([1; rho*ones(9, 1)]))]))>options_.dynatol.x
+if max(abs(y-[1; exp(cumprod([1; rho*ones(9, 1)]))]))>options_.dynatol.x
     error('Wrong solution!')
 end
