@@ -52,7 +52,7 @@ Section "Dynare core (preprocessor and M-files)"
  File README.txt ..\NEWS.md ..\license.txt
 
  SetOutPath $INSTDIR\matlab
- File /r ..\matlab\*.m ..\build-win-matlab\dynare_version.m
+ File /r ..\matlab\*.m ..\matlab\*.json ..\build-win-matlab\dynare_version.m
 
  SetOutPath $INSTDIR\preprocessor
  File ..\build-win-matlab\preprocessor\src\dynare-preprocessor.exe
