@@ -1,7 +1,7 @@
 function [dr,info] = k_order_pert(dr,M_,options_)
 % Compute decision rules using the k-order DLL from Dynare++
 
-% Copyright © 2009-2023 Dynare Team
+% Copyright © 2009-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,6 +28,16 @@ end
 if M_.maximum_endo_lead == 0 && order>1
     error(['2nd and 3rd order approximation not implemented for purely ' ...
            'backward models'])
+end
+
+if options_.aim_solver
+    error('Option aim_solver is not compatible with k_order_solver')
+end
+if options_.dr_cycle_reduction
+    error('Option dr=cycle_reduction is not compatible with k_order_solver')
+end
+if options_.dr_logarithmic_reduction
+    error('Option dr=logarithmic_reduction is not compatible with k_order_solver')
 end
 
 try
