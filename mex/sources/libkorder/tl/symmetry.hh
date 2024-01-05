@@ -131,11 +131,6 @@ public:
   {
     return dim == it.dim && run == it.run;
   }
-  bool
-  operator!=(const symiterator& it)
-  {
-    return !operator==(it);
-  }
 };
 
 /* The class SymmetrySet defines a set of symmetries of the given length

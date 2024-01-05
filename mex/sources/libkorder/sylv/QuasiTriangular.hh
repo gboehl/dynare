@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019-2023 Dynare Team
+ * Copyright © 2019-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -244,11 +244,6 @@ public:
   operator==(const _Self& it) const
   {
     return ptr == it.ptr;
-  }
-  bool
-  operator!=(const _Self& it) const
-  {
-    return ptr != it.ptr;
   }
   _TRef
   operator*() const

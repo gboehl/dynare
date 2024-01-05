@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019-2023 Dynare Team
+ * Copyright © 2019-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -120,11 +120,6 @@ public:
       delete[] data;
   }
   bool operator==(const IntSequence& s) const;
-  bool
-  operator!=(const IntSequence& s) const
-  {
-    return !operator==(s);
-  }
   int&
   operator[](int i)
   {

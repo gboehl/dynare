@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019-2023 Dynare Team
+ * Copyright © 2019-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -121,11 +121,6 @@ public:
   Equivalence(const Equivalence& e, int i1, int i2);
 
   bool operator==(const Equivalence& e) const;
-  bool
-  operator!=(const Equivalence& e) const
-  {
-    return !operator==(e);
-  }
   [[nodiscard]] int
   getN() const
   {

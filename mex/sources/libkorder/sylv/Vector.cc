@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004-2011 Ondra Kamenik
- * Copyright © 2019-2023 Dynare Team
+ * Copyright © 2019-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -118,12 +118,6 @@ bool
 Vector::operator==(const Vector& y) const
 {
   return ConstVector(*this) == y;
-}
-
-bool
-Vector::operator!=(const Vector& y) const
-{
-  return ConstVector(*this) != y;
 }
 
 bool
