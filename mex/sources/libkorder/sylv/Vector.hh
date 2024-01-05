@@ -109,14 +109,6 @@ public:
     return s;
   }
 
-  // Exact equality.
-  bool operator==(const Vector& y) const;
-  // Lexicographic ordering.
-  bool operator<(const Vector& y) const;
-  bool operator<=(const Vector& y) const;
-  bool operator>(const Vector& y) const;
-  bool operator>=(const Vector& y) const;
-
   virtual ~Vector()
   {
     if (destroy)

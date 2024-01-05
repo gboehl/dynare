@@ -114,36 +114,6 @@ Vector::Vector(mxArray* p) :
     throw SYLV_MES_EXCEPTION("This is not a dense array of real doubles.");
 }
 
-bool
-Vector::operator==(const Vector& y) const
-{
-  return ConstVector(*this) == y;
-}
-
-bool
-Vector::operator<(const Vector& y) const
-{
-  return ConstVector(*this) < y;
-}
-
-bool
-Vector::operator<=(const Vector& y) const
-{
-  return ConstVector(*this) <= y;
-}
-
-bool
-Vector::operator>(const Vector& y) const
-{
-  return ConstVector(*this) > y;
-}
-
-bool
-Vector::operator>=(const Vector& y) const
-{
-  return ConstVector(*this) >= y;
-}
-
 void
 Vector::zeros()
 {
