@@ -56,7 +56,7 @@ else
         var_decomp(stationary_vars,i) = vx2;
         variance_sum_loop = variance_sum_loop +vx2; %track overall variance over shocks
     end
-    if ~options_.pruning && max(abs(variance_sum_loop-var_stationary)./var_stationary) > 1e-4
+    if ~options_.pruning && max(abs(variance_sum_loop-var_stationary)./var_stationary) > 1e-4 && max(abs(variance_sum_loop-var_stationary))>1e-7
         warning(['Aggregate variance and sum of variances by shocks ' ...
             'differ by more than 0.01 %'])
     end
