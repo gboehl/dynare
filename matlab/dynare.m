@@ -122,7 +122,7 @@ if isempty(dot_location)
     fnamelength = length(fname);
     fname1 = [fname '.dyn'];
     d = dir(fname1);
-    if length(d) == 0
+    if isempty(d)
         fname1 = [fname '.mod'];
     end
     fname = fname1;
@@ -138,7 +138,7 @@ if fnamelength + length('.set_auxiliary_variables') > namelengthmax()
     error('Dynare: the name of your .mod file is too long, please shorten it')
 end
 
-if ~isempty(strfind(fname,filesep))
+if contains(fname,filesep)
     fprintf('\nIt seems you are trying to call a .mod file not located in the "Current Folder". This is not possible (the %s symbol is not allowed in the name of the .mod file).\n', filesep)
     [pathtomodfile,basename] = fileparts(fname);
     if exist(pathtomodfile,'dir')
@@ -297,17 +297,13 @@ if status
     error('Dynare: preprocessing failed')
 end
 
-if ~ isempty(find(abs(fname) == 46))
-    fname = fname(:,1:find(abs(fname) == 46)-1) ;
-end
-
 % We need to clear the driver (and only the driver, because the "clear all"
 % within the driver will clean the rest)
-clear(['+' fname '/driver'])
+clear(['+' fname(1:end-4) '/driver'])
 
 try
     cTic = tic;
-    evalin('base',[fname '.driver']);
+    evalin('base',[fname(1:end-4) '.driver']);
     cToc = toc(cTic);
     if nargout
         DynareInfo.time.compute = cToc;
@@ -315,7 +311,7 @@ try
 catch ME
     W = evalin('caller','whos');
     diary off
-    if ismember(fname,{W(:).name})
+    if ismember(fname(1:end-4),{W(:).name})
         error('Your workspace already contains a variable with the same name as the mod-file. You need to delete it or rename the mod-file.')
     else
         rethrow(ME)
