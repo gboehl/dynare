@@ -280,20 +280,10 @@ function print_line(names,var_index,lead_lag,M_)
     else
         aux_index=find([M_.aux_vars(:).endo_index]==var_index);
         aux_type=M_.aux_vars(aux_index).type;
-        if ~isfield(M_.aux_vars(aux_index),'orig_lead_lag') || isempty(M_.aux_vars(aux_index).orig_lead_lag)
-            if ismember(aux_type,[1,3])
-                str = subst_auxvar(var_index, -1, M_);
-            elseif ismember(aux_type,[0,2])
-                str = subst_auxvar(var_index, 1, M_);
-            else
-                if lead_lag==0
-                    str = subst_auxvar(var_index, [], M_);
-                else
-                    str = subst_auxvar(var_index, lead_lag, M_);
-                end
-            end
+        if lead_lag==0
+            str = subst_auxvar(var_index, [], M_);
         else
-            str = subst_auxvar(var_index, M_.aux_vars(aux_index).orig_lead_lag, M_);
+            str = subst_auxvar(var_index, lead_lag, M_);
         end
         aux_orig_expression=M_.aux_vars(aux_index).orig_expr;
         if isempty(aux_orig_expression)
