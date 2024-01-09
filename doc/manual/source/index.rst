@@ -11,7 +11,7 @@ Currently the development team of Dynare is composed of:
 * Willi Mutschler (University of Tübingen)
 * Johannes Pfeifer (University of the Bundeswehr Munich)
 * Marco Ratto (European Commission, Joint Research Centre - JRC)
-* Normann Rion (CY Cergy Paris Université and CEPREMAP)
+* Normann Rion (CEPREMAP)
 * Sébastien Villemot (CEPREMAP)
 
 The following people used to be members of the team:
