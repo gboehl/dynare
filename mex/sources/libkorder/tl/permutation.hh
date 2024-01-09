@@ -1,6 +1,6 @@
 /*
  * Copyright © 2004 Ondra Kamenik
- * Copyright © 2019-2023 Dynare Team
+ * Copyright © 2019-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -95,7 +95,7 @@ public:
   Permutation(const Permutation& p, int i) : permap(p.permap.insert(p.size(), i))
   {
   }
-  bool
+  [[nodiscard]] bool
   operator==(const Permutation& p) const
   {
     return permap == p.permap;

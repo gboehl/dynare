@@ -240,7 +240,7 @@ public:
     real = r;
   }
   virtual ~_matrix_iter() = default;
-  bool
+  [[nodiscard]] bool
   operator==(const _Self& it) const
   {
     return ptr == it.ptr;

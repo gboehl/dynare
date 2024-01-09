@@ -76,7 +76,7 @@ public:
   // Constructs the tensor dimensions for slicing (see the implementation for details)
   TensorDimens(const IntSequence& ss, const IntSequence& coor);
 
-  bool
+  [[nodiscard]] bool
   operator==(const TensorDimens& td) const
   {
     return nvs == td.nvs && sym == td.sym;

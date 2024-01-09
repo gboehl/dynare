@@ -126,7 +126,7 @@ public:
   {
     return run;
   }
-  bool
+  [[nodiscard]] bool
   operator==(const symiterator& it)
   {
     return dim == it.dim && run == it.run;

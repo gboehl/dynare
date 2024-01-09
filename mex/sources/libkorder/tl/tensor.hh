@@ -150,7 +150,7 @@ public:
     {
       return offset;
     }
-    bool
+    [[nodiscard]] bool
     operator==(const index& n) const
     {
       return offset == n.offset;

@@ -75,7 +75,7 @@ public:
   OrdSequence() : data()
   {
   }
-  bool operator==(const OrdSequence& s) const;
+  [[nodiscard]] bool operator==(const OrdSequence& s) const;
   int operator[](int i) const;
   [[nodiscard]] std::partial_ordering operator<=>(const OrdSequence& s) const;
   [[nodiscard]] const std::vector<int>&
@@ -121,7 +121,7 @@ public:
   // Copy constructor plus gluing i1 and i2 in one class
   Equivalence(const Equivalence& e, int i1, int i2);
 
-  bool operator==(const Equivalence& e) const;
+  [[nodiscard]] bool operator==(const Equivalence& e) const;
   [[nodiscard]] int
   getN() const
   {

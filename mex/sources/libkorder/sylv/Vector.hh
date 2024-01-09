@@ -211,7 +211,7 @@ public:
     return s;
   }
   // Exact equality
-  bool operator==(const ConstVector& y) const;
+  [[nodiscard]] bool operator==(const ConstVector& y) const;
   // Lexicographic ordering
   [[nodiscard]] std::partial_ordering operator<=>(const ConstVector& y) const;
 

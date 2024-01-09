@@ -120,7 +120,7 @@ public:
     if (destroy)
       delete[] data;
   }
-  bool operator==(const IntSequence& s) const;
+  [[nodiscard]] bool operator==(const IntSequence& s) const;
   int&
   operator[](int i)
   {
