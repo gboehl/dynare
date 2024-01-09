@@ -272,80 +272,8 @@ elseif opt_gsa.morris==3
     return
 elseif opt_gsa.morris==2   % ISKREV stuff
     return
-else  % main effects analysis
-    if itrans==0
-        fsuffix = '';
-    elseif itrans==1
-        fsuffix = '_log';
-    else
-        fsuffix = '_rank';
-    end
-
-    imap=1:npT;
-
-    if isempty(lpmat0)
-        x0=lpmat(istable,:);
-    else
-        x0=[lpmat0(istable,:), lpmat(istable,:)];
-    end
-    nrun=length(istable);
-    nest=min(250,nrun);
-
-    if opt_gsa.load_ident_files==0
-        try
-            EET=load([OutputDirectoryName,'/SCREEN/',fname_,'_morris_IDE'],'SAcc','ir_cc','ic_cc');
-        catch
-            EET=[];
-        end
-        ccac = gsa.standardize_columns([mss cc ac]);
-        [pcc, dd] = eig(cov(ccac(istable,:)));
-        [latent, isort] = sort(-diag(dd));
-        latent = -latent;
-        figure, bar(latent)
-        title('Eigenvalues in PCA')
-        pcc=pcc(:,isort);
-        ccac = ccac*pcc;
-        npca = max(find(cumsum(latent)./length(latent)<0.99))+1;
-        siPCA = (EET.SAcc'*abs(pcc'))';
-        siPCA = siPCA./(max(siPCA,[],2)*ones(1,npT));
-        SAcc=zeros(size(ccac,2),npT);
-        gsa_=NaN(npca);
-        for j=1:npca %size(ccac,2),
-            if itrans==0
-                y0 = ccac(istable,j);
-            elseif itrans==1
-                y0 = gsa.log_transform(ccac(istable,j));
-            else
-                y0 = trank(ccac(istable,j));
-            end
-            if ~isempty(EET)
-                imap=find(siPCA(j,:) >= (0.1.*max(siPCA(j,:))) );
-            end
-            gsa_(j) = gsa_sdp(y0(1:nest), x0(1:nest,imap), ...
-                              2, [],[],[],0,[OutputDirectoryName,'/map_cc',fsuffix,int2str(j)], pnames);
-            SAcc(j,imap)=gsa_(j).si;
-            imap_cc{j}=imap;
-        end
-        save([OutputDirectoryName,'/map_cc',fsuffix,'.mat'],'gsa_')
-        save([OutputDirectoryName,'/',fname_,'_main_eff.mat'],'imap_cc','SAcc','ccac','-append')
-    else
-        load([OutputDirectoryName,'/',fname_,'_main_eff'],'SAcc')
-    end
-
-    hh_fig=dyn_figure(options_.nodisplay,'Name',['Identifiability indices in the ',fsuffix,' moments.']);
-    bar(sum(SAcc))
-    set(gca,'xticklabel',' ','fontsize',10,'xtick',1:npT)
-    set(gca,'xlim',[0.5 npT+0.5])
-    ydum = get(gca,'ylim');
-    set(gca,'ylim',[0 ydum(2)])
-    set(gca,'position',[0.13 0.2 0.775 0.7])
-    for ip=1:npT
-        text(ip,-0.02*(ydum(2)),bayestopt_.name{ip},'rotation',90,'HorizontalAlignment','right','interpreter','none')
-    end
-    xlabel(' ')
-    title(['Identifiability indices in the ',fsuffix,' moments.'],'interpreter','none')
-    dyn_saveas(hh_fig,[OutputDirectoryName,'/',fname_,'_ident_ALL',fsuffix],options_.nodisplay,options_.graph_format);
-    create_TeX_loader(options_,[OutputDirectoryName,'/',fname_,'_ident_ALL',fsuffix],1,['Identifiability indices in the ',fsuffix,' moments.'],['ident_ALL',fsuffix]',1)
+else  
+    error('gsa/map_identification: unsupported option morris=%u',opt_gsa.morris)
 end
 
 function []=create_TeX_loader(options_,figpath,ifig_number,caption,label_name,scale_factor)
