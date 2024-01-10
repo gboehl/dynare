@@ -479,7 +479,7 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
                         fprintf(fidTeX,'\\begin{figure}[H]\n');
                         fprintf(fidTeX,'\\centering \n');
                         fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_smoothedshocks_occbin%s}\n',options_.figures.textwidth*min(j1/3,1),[GraphDirectoryName '/' M_.fname],int2str(ifig)); % don't use filesep as it will create issues with LaTeX on Windows
-                        fprintf(fidTeX,'\\caption{Check plots.}');
+                        fprintf(fidTeX,'\\caption{OccBin smoothed shocks.}');
                         fprintf(fidTeX,'\\label{Fig:smoothedshocks_occbin:%s}\n',int2str(ifig));
                         fprintf(fidTeX,'\\end{figure}\n');
                         fprintf(fidTeX,' \n');
@@ -488,7 +488,7 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
             end
         end
 
-            if mod(j1,9)~=0 && j==M_.exo_nbr
+        if mod(j1,9)~=0 && j==M_.exo_nbr
                 annotation('textbox', [0.1,0,0.35,0.05],'String', 'Linear','Color','Blue','horizontalalignment','center','interpreter','none');
                 annotation('textbox', [0.55,0,0.35,0.05],'String', 'Piecewise','Color','Red','horizontalalignment','center','interpreter','none');
                 dyn_saveas(hh_fig,[GraphDirectoryName filesep M_.fname,'_smoothedshocks_occbin',int2str(ifig)],options_.nodisplay,options_.graph_format);
@@ -497,7 +497,7 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
                 fprintf(fidTeX,'\\begin{figure}[H]\n');
                 fprintf(fidTeX,'\\centering \n');
                 fprintf(fidTeX,'\\includegraphics[width=%2.2f\\textwidth]{%s_smoothedshocks_occbin%s}\n',options_.figures.textwidth*min(j1/3,1),[GraphDirectoryName '/' M_.fname],int2str(ifig)); % don't use filesep as it will create issues with LaTeX on Windows
-                fprintf(fidTeX,'\\caption{Check plots.}');
+                fprintf(fidTeX,'\\caption{OccBin smoothed shocks.}');
                 fprintf(fidTeX,'\\label{Fig:smoothedshocks_occbin:%s}\n',int2str(ifig));
                 fprintf(fidTeX,'\\end{figure}\n');
                 fprintf(fidTeX,' \n');
@@ -505,6 +505,6 @@ if (~is_changed || occbin_smoother_debug) && nargin==12
         end
         if options_.TeX && any(strcmp('eps',cellstr(options_.graph_format)))
             fclose(fidTeX);
+        end
     end
-end
 end
