@@ -12,7 +12,7 @@ function [cmm, mm] = simulated_moment_uncertainty(indx, periods, replic,options_
 %   - cmm:      [n_moments by n_moments] covariance matrix of simulated moments
 %   - mm:       [n_moments by replic] matrix of moments
 
-% Copyright © 2009-2018 Dynare Team
+% Copyright © 2009-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -60,15 +60,10 @@ end
 
 oo_.dr=set_state_space(oo_.dr,M_);
 
-
 if options_.logged_steady_state %if steady state was previously logged, undo this
     oo_.dr.ys=exp(oo_.dr.ys);
     oo_.steady_state=exp(oo_.steady_state);
     options_.logged_steady_state=0;
-    logged_steady_state_indicator=1;
-    evalin('base','options_.logged_steady_state=0;')
-else
-    logged_steady_state_indicator=0;
 end
 
 [oo_.dr,info,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
@@ -92,7 +87,6 @@ else
     end
 end
 
-
 for j=1:replic
     [ys, oo_.exo_simul] = simult(y0,oo_.dr,M_,options_);%do simulation
     oo_=disp_moments(ys, options_.varobs,M_,options_,oo_); %get moments
@@ -106,8 +100,5 @@ for j=1:replic
 end
 dyn_waitbar_close(h);
 
-if logged_steady_state_indicator
-    evalin('base','options_.logged_steady_state=1;') %reset base workspace option to conform to base oo_
-end
 cmm = cov(mm');
 disp('Simulated moment uncertainty ... done!')

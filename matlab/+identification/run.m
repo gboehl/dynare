@@ -736,7 +736,7 @@ if iload <=0
                 end
                 run_index = 0; % reset index
             end
-            if SampleSize > 1
+            if SampleSize > 1 && mod(iteration,3)
                 dyn_waitbar(iteration/SampleSize, h, ['MC identification checks ', int2str(iteration), '/', int2str(SampleSize)]);
             end
         end
