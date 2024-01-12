@@ -55,9 +55,7 @@ if ismember(flag,{'forecast','all'})
     options_occbin_.forecast.maxit=30;
     options_occbin_.forecast.qmc=0;
     options_occbin_.forecast.replic=0;
-    options_occbin_.forecast.sepath=0;    
     options_occbin_.forecast.SHOCKS0=[];
-    options_occbin_.forecast.treepath=1; % number of branches
 end
 
 if ismember(flag,{'irf','all'})    
@@ -98,17 +96,12 @@ end
 
 if ismember(flag,{'plot_irf','all'})
     options_occbin_.plot_irf.add_steadystate = 0;
-    options_occbin_.plot_irf.exo_names = [];
-    options_occbin_.plot_irf.endo_names = M_.endo_names;
-    options_occbin_.plot_irf.endo_names_long = [];
     options_occbin_.plot_irf.endo_scaling_factor = [];
     options_occbin_.plot_irf.grid            = true;
     options_occbin_.plot_irf.ncols            = 3;
     options_occbin_.plot_irf.nrows            = 3;
     options_occbin_.plot_irf.shocksigns = {'pos','neg'}; 
     options_occbin_.plot_irf.simulname='';
-    options_occbin_.plot_irf.threshold = 10^-6;
-    options_occbin_.plot_irf.tplot = [];
 end
 
 if ismember(flag,{'plot_shock_decomp','all'})
