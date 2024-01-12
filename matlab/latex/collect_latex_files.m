@@ -35,7 +35,7 @@ fprintf(fid,'%s \n','\usepackage{psfrag}');
 fprintf(fid,'%s \n','\usepackage{graphicx}');
 fprintf(fid,'%s \n','\usepackage{epstopdf}');
 fprintf(fid,'%s \n','\usepackage{longtable,booktabs}');
-fprintf(fid,'%s \n','\usepackage{amsmath,amsfonts}');
+fprintf(fid,'%s \n','\usepackage{amsmath,amsfonts,amssymb}');
 fprintf(fid,'%s \n','\usepackage{breqn}');
 fprintf(fid,'%s \n','\usepackage{float,morefloats,caption}');
 fprintf(fid,'%s \n','\begin{document}');
