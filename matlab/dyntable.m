@@ -63,7 +63,7 @@ end
 value_format  = sprintf('%%%d.%df', val_width, val_precis);
 header_string_format  = sprintf('%%%ds', val_width);
 
-if length(title) > 0
+if ~isempty(title)
     fprintf('\n\n%s\n',title);
 end
 
@@ -72,7 +72,7 @@ if nargin==9
     disp(optional_header)
 end
 
-if length(headers) > 0
+if ~isempty(headers)
     hh_tbl = sprintf(label_format_leftbound , headers{1});
     for i=2:length(headers)
         hh_tbl  = [hh_tbl sprintf(header_string_format, headers{i})];
