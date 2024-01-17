@@ -8,17 +8,17 @@
 Dynare misc commands
 ####################
 
-.. matcomm:: send_endogenous_variables_to_workspace
+.. matcomm:: send_endogenous_variables_to_workspace ;
 
     Puts the simulation results for the endogenous variables stored in ``oo_.endo_simul`` 
     into vectors with the same name as the respective variables into the base workspace.
 
-.. matcomm:: send_exogenous_variables_to_workspace
+.. matcomm:: send_exogenous_variables_to_workspace ;
 
     Puts the simulation results for the exogenous variables stored in ``oo_.exo_simul`` 
     into vectors with the same name as the respective variables into the base workspace.
 
-.. matcomm:: send_irfs_to_workspace
+.. matcomm:: send_irfs_to_workspace ;
 
     Puts the IRFs stored in ``oo_.irfs`` into vectors with the same name into the base workspace.
 
