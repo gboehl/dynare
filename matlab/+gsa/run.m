@@ -101,15 +101,15 @@ if ~isempty(options_gsa.datafile) || isempty(bayestopt_) || options_gsa.rmse
         disp('must be specified for RMSE analysis!');
         error('Sensitivity anaysis error!')
     end
+    if isfield(options_gsa,'nobs')
+        options_.nobs=options_gsa.nobs;
+    end
     if ~isempty(options_.nobs) && length(options_.nobs)~=1
         error('dynare_sensitivity does not support recursive estimation. Please specify nobs as a scalar, not a vector.')
     end
     options_.datafile = options_gsa.datafile;
     if isfield(options_gsa,'first_obs')
         options_.first_obs=options_gsa.first_obs;
-    end
-    if isfield(options_gsa,'nobs')
-        options_.nobs=options_gsa.nobs;
     end
     if isfield(options_gsa,'presample')
         options_.presample=options_gsa.presample;
