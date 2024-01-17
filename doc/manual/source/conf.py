@@ -71,7 +71,6 @@ latex_elements = {
                     warningBorderColor={RGB}{255,50,50},OuterLinkColor={RGB}{34,139,34}, \
                     InnerLinkColor={RGB}{51,51,255},TitleColor={RGB}{51,51,255}',
     'papersize': 'a4paper',
-    'preamble': r'\DeclareUnicodeCharacter{200B}{}', # Part of the workaround for #1707
 }
 
 latex_documents = [
