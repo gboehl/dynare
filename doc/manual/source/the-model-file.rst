@@ -15865,7 +15865,7 @@ Misc commands
     ``pdflatex`` and automatically tries to load all required
     packages. Requires the following LaTeX packages:
     ``breqn``, ``psfrag``, ``graphicx``, ``epstopdf``, ``longtable``,
-    ``booktabs``, ``caption``, ``float,`` ``amsmath``, ``amsfonts``,
+    ``booktabs``, ``caption``, ``float,`` ``amsmath``, ``amsfonts``, ``amssymb``, 
     and ``morefloats``.
 
 
