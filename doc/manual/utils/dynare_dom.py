@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright © 2018-2019 Dynare Team
+# Copyright © 2018-2024 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -80,9 +80,7 @@ class DynObject(ObjectDescription):
         signode += addnodes.desc_name(name, name)
 
         if self.has_arguments:
-            if not arglist:
-                signode += addnodes.desc_parameterlist()
-            else:
+            if arglist:
                 signode += addnodes.desc_addname(arglist,arglist)
         return fullname, prefix
 
