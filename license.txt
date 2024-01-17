@@ -123,6 +123,11 @@ Copyright: 2010-2015 Alexander Meyer-Gohde
            2015-2017 Dynare Team
 License: GPL-3+
 
+Files: matlab/collapse_figures_in_tabgroup.m
+Copyright: 2023 Eduard Benet Cerda
+           2024 Dynare Team
+License: GPL-3+
+
 Files: matlab/convergence_diagnostics/raftery_lewis.m
 Copyright: 2016 Benjamin Born and Johannes Pfeifer
            2016-2017 Dynare Team

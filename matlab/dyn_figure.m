@@ -12,7 +12,7 @@ function h = dyn_figure(nodisplay, varargin)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2012-2017 Dynare Team
+% Copyright © 2012-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -30,7 +30,7 @@ function h = dyn_figure(nodisplay, varargin)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 if nodisplay
-    h = figure(varargin{:},'visible','off');
+    h = figure(varargin{:},'visible','off','tag','dynare-figure');
 else
-    h = figure(varargin{:});
+    h = figure(varargin{:},'tag','dynare-figure');
 end
