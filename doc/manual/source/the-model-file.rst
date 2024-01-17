@@ -1259,7 +1259,8 @@ command, the list of transformed model equations using the
 ``write_latex_dynamic_model command``, and the list of static model
 equations using the ``write_latex_static_model`` command.
 
-.. command:: write_latex_original_model (OPTIONS);
+.. command:: write_latex_original_model ;
+             write_latex_original_model (OPTIONS);
 
     |br| This command creates two LaTeX files: one
     containing the model as defined in the model block and one
@@ -1334,7 +1335,8 @@ equations using the ``write_latex_static_model`` command.
         See :opt:`write_equation_tags`
 
 
-.. command:: write_latex_static_model (OPTIONS);
+.. command:: write_latex_static_model ;
+             write_latex_static_model (OPTIONS);
 
     |br| This command creates two LaTeX files: one
     containing the static model and one containing the LaTeX
@@ -1369,7 +1371,7 @@ equations using the ``write_latex_static_model`` command.
 
         See :opt:`write_equation_tags`.
 
-.. command:: write_latex_steady_state_model
+.. command:: write_latex_steady_state_model ;
 
     |br| This command creates two LaTeX files: one containing the steady
     state model and one containing the LaTeX document header
@@ -11743,7 +11745,7 @@ with ``discretionary_policy`` or for optimal simple rules with ``osr``
 
     With ``discretionary_policy``, the objective function must be quadratic.
 
-.. command:: evaluate_planner_objective;
+.. command:: evaluate_planner_objective ;
              evaluate_planner_objective (OPTIONS...);
 
     This command computes, displays, and stores the value of the
