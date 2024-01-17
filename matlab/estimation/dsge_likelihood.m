@@ -1,6 +1,6 @@
 function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,M_,options_,bayestopt_,dr] = dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,dr, endo_steady_state, exo_steady_state, exo_det_steady_state,derivatives_info)
 % [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,M_,options_,bayestopt_,oo_] = dsge_likelihood(xparam1,dataset_,dataset_info,options_,M_,estim_params_,bayestopt_,BoundsInfo,oo_,derivatives_info)
-% Evaluates the posterior kernel of a DSGE model using the specified
+% Evaluates the negative of the posterior kernel of a DSGE model using the specified
 % kalman_algo; the resulting posterior includes the 2*pi constant of the
 % likelihood function
 %
@@ -21,7 +21,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,M_,options_,baye
 % - derivatives_info    [structure]     derivative info for identification
 %
 % OUTPUTS
-% - fval                    [double]        scalar, value of the likelihood or posterior kernel.
+% - fval                    [double]        scalar, value of minus the likelihood or posterior kernel.
 % - info                    [integer]       4×1 vector, informations resolution of the model and evaluation of the likelihood.
 % - exit_flag               [integer]       scalar, equal to 1 (no issues when evaluating the likelihood) or 0 (not able to evaluate the likelihood).
 % - DLIK                    [double]        Vector with score of the likelihood
@@ -37,7 +37,7 @@ function [fval,info,exit_flag,DLIK,Hess,SteadyState,trend_coeff,M_,options_,baye
 % This function calls: dynare_resolve, lyapunov_symm, lyapunov_solver, compute_Pinf_Pstar, kalman_filter_d, missing_observations_kalman_filter_d,
 % univariate_kalman_filter_d, kalman_steady_state, get_perturbation_params_deriv, kalman_filter, missing_observations_kalman_filter, univariate_kalman_filter, priordens
 
-% Copyright © 2004-2023 Dynare Team
+% Copyright © 2004-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
