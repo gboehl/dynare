@@ -18,7 +18,7 @@ function [h, lrcp] = hVectors(params, H, auxmodel, kind, id)
 %    params(2:end-1) ⟶ Autoregressive parameters.
 %    params(end)     ⟶ Discount factor.
 
-% Copyright © 2018-2021 Dynare Team
+% Copyright © 2018-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,17 +52,17 @@ n = length(H);
 tmp = eye(n*m)-kron(G, transpose(H)); % inv(W2)
 
 switch kind
-  case 'll'
+  case 'll' % (A.84), page 28 in Brayton, Davis and Tulip (2000) ⟹ The target is stationary (level-level).
     h = A_1*A_b*((kron(iota(m, m), H))'*(tmp\kron(iota(m, m), iota(n, id))));
-  case 'dd'
+  case 'dd' % (A.79), page 26 in Brayton, Davis and Tulip (2000) ⟹ The target appears in first difference as a dependent variable in the auxiliary model.
     h = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), H')*(tmp\kron(iota(m, m), iota(n, id))));
-  case 'dl'
+  case 'dl' % (A.74), page 24 in Brayton, Davis and Tulip (2000) ⟹ The target appears in level as a dependent variable in the auxiliary model.
     h = A_1*A_b*(kron(iota(m, m)'*inv(eye(m)-G), (H'-eye(length(H))))*(tmp\kron(iota(m, m), iota(n, id))));
   otherwise
     error('Unknown kind value in PAC model.')
 end
 
-if nargin>1
+if nargout>1
     if isequal(kind, 'll')
         lrcp = NaN;
     else
