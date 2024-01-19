@@ -14299,7 +14299,7 @@ a trend target to which the endogenous variables may be attracted in the long-ru
    :math:`n\times 1` vector of parameters, :math:`A_i` (:math:`i=0,\ldots,p`)
    are :math:`n\times n` matrices of parameters, and :math:`A_0` is non
    singular square matrix. Vector :math:`\mathbf{c}` and matrices :math:`A_i`
-   (:math:`i=0,\ldots,p`) are set by Dynare by parsing the equations in the
+   (:math:`i=0,\ldots,p`) are set by parsing the equations in the
    ``model`` block. Then, Dynare builds a VAR(1)-companion form model for
    :math:`\mathcal{Y}_t = (1, Y_t, \ldots, Y_{t-p+1})'` as:
 
@@ -14510,7 +14510,7 @@ up to time :math:`t-\tau`, :math:`\mathcal{Y}_{\underline{t-\tau}}`) is:
 
 In a semi-structural model, variables appearing in :math:`t+h` (*e.g.*
 the expected output gap in a dynamic IS curve or expected inflation in a
-(New Keynesian) Phillips curve) will be replaced by the expectation implied by an auxiliary VAR
+New Keynesian Phillips curve) will be replaced by the expectation implied by an auxiliary VAR
 model. Another use case is for the computation of permanent
 incomes. Typically, consumption will depend on something like:
 
@@ -14518,13 +14518,13 @@ incomes. Typically, consumption will depend on something like:
 
       \sum_{h=0}^{\infty} \beta^h y_{t+h|t-\tau}
 
-Assuming that $0<\beta<1$ and knowing the limit of geometric series, the conditional expectation of this variable can be evaluated based on the same auxiliary model:
+Assuming that :math:`0<\beta<1` and knowing the limit of geometric series, the conditional expectation of this variable can be evaluated based on the same auxiliary model:
 
    .. math ::
 
       \mathbb E \left[\sum_{h=0}^{\infty} \beta^h y_{t+h}\Biggl| \mathcal{Y}_{\underline{t-\tau}}\right] = \alpha \mathcal{C}^\tau(I-\beta\mathcal{C})^{-1}\mathcal{Y}_{t-\tau}
 
-More generally, it is possible to consider finite discounted sums.
+Finite discounted sums can also be considered.
 
 .. command:: var_expectation_model (OPTIONS...);
 
