@@ -294,8 +294,11 @@ if get_option('prefer_static')
 
   # NB: constructing a dependency object with link_args : ['-Wl,-Bstatic', '-lgomp', '-Wl,-Bdynamic'] does not work,
   # because it reorders the three arguments and puts -lgomp at the end
-  openmp_dep_tmp = cpp_compiler.find_library('gomp', static : true)
-  openmp_dep = declare_dependency(dependencies : [ openmp_dep, openmp_dep_tmp ])
+  if host_machine.system() != 'linux'
+    # Under Debian 12, trying to link (static) libgomp.a in a MEX fails.
+    openmp_dep_tmp = cpp_compiler.find_library('gomp', static : true)
+    openmp_dep = declare_dependency(dependencies : [ openmp_dep, openmp_dep_tmp ])
+  endif
 endif
 
 # For use when creating intermediate static libraries to be incorporated in MEX files
