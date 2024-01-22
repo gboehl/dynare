@@ -160,7 +160,20 @@ if get_option('build_for') == 'matlab'
   umfpack_dep = declare_dependency(link_args : '-lmwumfpack', dependencies : blas_dep)
   ut_dep = declare_dependency(link_args : '-lut')
 
-  slicot_dep = declare_dependency(dependencies : [ fortran_compiler.find_library('slicot64_pic'), blas_dep, lapack_dep ])
+  # Workaround for Meson bug https://github.com/mesonbuild/meson/issues/12757
+  # Use the C compiler as a fallback for detecting SLICOT under Linux with
+  # prefer_static=true (but still try the Fortran compiler to honour the -B
+  # option in fortran_args, as documented). Needed for building the MATLAB
+  # Online package.
+  if get_option('prefer_static') and host_machine.system() == 'linux'
+    slicot_dep_tmp = fortran_compiler.find_library('slicot64_pic', required : false)
+    if not slicot_dep_tmp.found()
+      slicot_dep_tmp = c_compiler.find_library('slicot64_pic')
+    endif
+    slicot_dep = declare_dependency(dependencies : [ slicot_dep_tmp, blas_dep, lapack_dep ])
+  else
+    slicot_dep = declare_dependency(dependencies : [ fortran_compiler.find_library('slicot64_pic'), blas_dep, lapack_dep ])
+  endif
 else # Octave build
   octave_exe = find_program('octave', required : not meson.is_cross_build(), disabler : true)
   mkoctfile_exe = find_program('mkoctfile')
