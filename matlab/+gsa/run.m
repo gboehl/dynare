@@ -13,7 +13,7 @@ function x0=run(M_,oo_,options_,bayestopt_,estim_params_,options_gsa)
 % M. Ratto (2008), Analysing DSGE Models with Global Sensitivity Analysis, 
 % Computational Economics (2008), 31, pp. 115–139
 
-% Copyright © 2008-2023 Dynare Team
+% Copyright © 2008-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -149,6 +149,11 @@ if M_.exo_nbr==0
 end
 
 [~,~,~,~,oo_.dr,M_.params] = dynare_resolve(M_,options_,oo_.dr,oo_.steady_state,oo_.exo_steady_state,oo_.exo_det_steady_state);
+
+if isfield(oo_.dr,'eigval') && any(abs(oo_.dr.eigval-1)<abs(1-options_.qz_criterium)) && options_.qz_criterium<1
+    fprintf('\ngsa: The model features a unit root, but qz_criterium<1. Check whether that is intended.')
+    fprintf('\ngsa: If not, use the diffuse_filter option.\n')
+end
 
 options_gsa = set_default_option(options_gsa,'identification',0);
 if options_gsa.identification
