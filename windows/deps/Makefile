@@ -1,4 +1,4 @@
-# Copyright © 2017-2023 Dynare Team
+# Copyright © 2017-2024 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -55,22 +55,24 @@ sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer: tarballs/slicot-$(SLICOT_
 	rm -rf sources64/slicot-*-with-64bit-integer
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
+	patch -d $@ -p1 < slicot-build-system.patch
 	touch $@
 
 sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore: tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf sources64/slicot-*-with-32bit-integer-and-underscore
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
+	patch -d $@ -p1 < slicot-build-system.patch
 	touch $@
 
 lib64/Slicot/without-underscore/libslicot64_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-64bit-integer
-	make -C $< lib SLICOTLIB=../libslicot64_pic.a OPTS="$(FFLAGS) -fno-underscoring -fdefault-integer-8" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
+	make -C $< -f makefile_Unix lib SLICOTLIB=../libslicot64_pic.a FFLAGS="$(FFLAGS) -fno-underscoring -fdefault-integer-8" FC=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
 	x86_64-w64-mingw32-strip --strip-debug $</libslicot64_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot64_pic.a $@
 
 lib64/Slicot/with-underscore/libslicot_pic.a: sources64/slicot-$(SLICOT_VERSION)-with-32bit-integer-and-underscore
-	make -C $< lib SLICOTLIB=../libslicot_pic.a OPTS="$(FFLAGS)" FORTRAN=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
+	make -C $< -f makefile_Unix lib SLICOTLIB=../libslicot_pic.a FFLAGS="$(FFLAGS)" FC=x86_64-w64-mingw32-gfortran LOADER=x86_64-w64-mingw32-gfortran ARCH=x86_64-w64-mingw32-ar
 	x86_64-w64-mingw32-strip --strip-debug $</libslicot_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot_pic.a $@

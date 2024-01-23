@@ -1,4 +1,4 @@
-# Copyright © 2019-2023 Dynare Team
+# Copyright © 2019-2024 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -59,10 +59,11 @@ $(DEPS_ARCH)/sources64/slicot-$(SLICOT_VERSION): tarballs/slicot-$(SLICOT_VERSIO
 	rm -rf $(DEPS_ARCH)/sources64/slicot-*
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
+	patch -d $@ -p1 < ../../windows/deps/slicot-build-system.patch
 	touch $@
 
 $(DEPS_ARCH)/lib64/slicot/libslicot64_pic.a: $(DEPS_ARCH)/sources64/slicot-$(SLICOT_VERSION)
-	make -C $< FORTRAN=$(BREWDIR)/bin/gfortran LOADER=$(BREWDIR)/bin/gfortran SLICOTLIB=../libslicot64_pic.a OPTS="-O3 -fdefault-integer-8" lib -j$(NTHREADS)
+	make -C $< -f makefile_Unix FC=$(BREWDIR)/bin/gfortran LOADER=$(BREWDIR)/bin/gfortran SLICOTLIB=../libslicot64_pic.a FFLAGS="-O3 -fdefault-integer-8" lib -j$(NTHREADS)
 	strip -S $</libslicot64_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot64_pic.a $@
