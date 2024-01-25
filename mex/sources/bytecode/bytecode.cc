@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2023 Dynare Team
+ * Copyright © 2007-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -262,6 +262,22 @@ mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
       if (!shock_str_date_)
         mexErrMsgTxt(
             "The extended_path description structure does not contain the member: shock_str_date_");
+      mxArray* shock_perfect_foresight_
+          = mxGetField(extended_path_struct, 0, "shock_perfect_foresight_");
+      if (!shock_perfect_foresight_)
+        mexErrMsgTxt("The extended_path description structure does not contain the member: "
+                     "shock_perfect_foresight_");
+
+      // Check that there is no 'perfect_foresight' shocks, which are not implemented
+      double* constrained_pf = mxGetPr(constrained_perfect_foresight_);
+      double* shock_pf = mxGetPr(shock_perfect_foresight_);
+      if (auto is_pf = [](double v) { return v != 0; };
+          any_of(constrained_pf,
+                 constrained_pf + mxGetNumberOfElements(constrained_perfect_foresight_), is_pf)
+          || any_of(shock_pf, shock_pf + mxGetNumberOfElements(shock_perfect_foresight_), is_pf))
+        mexErrMsgTxt(
+            "Shocks of type 'perfect_foresight' are not supported with the bytecode option.");
+
       int nb_constrained = mxGetM(constrained_vars_) * mxGetN(constrained_vars_);
       int nb_controlled = 0;
       mxArray* options_cond_fcst_ = mxGetField(extended_path_struct, 0, "options_cond_fcst_");
