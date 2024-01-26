@@ -2,7 +2,7 @@
 **
 ** Pseudo code of the algorithm is given at http://home.online.no/~pjacklam/notes/invnorm
 **
-** Copyright © 2010-2023 Dynare Team
+** Copyright © 2010-2024 Dynare Team
 **
 ** This file is part of Dynare.
 **
@@ -104,9 +104,8 @@ icdf(const T uniform)
   return gaussian;
 }
 
-template<typename T>
 void
-icdfm(int n, T* U)
+icdfm(int n, auto* U)
 {
 #pragma omp parallel for
   for (int i = 0; i < n; i++)
@@ -114,9 +113,8 @@ icdfm(int n, T* U)
   return;
 }
 
-template<typename T>
 void
-icdfmSigma(int d, int n, T* U, const double* LowerCholSigma)
+icdfmSigma(int d, int n, auto* U, const double* LowerCholSigma)
 {
   double one = 1.0;
   double zero = 0.0;
@@ -128,9 +126,8 @@ icdfmSigma(int d, int n, T* U, const double* LowerCholSigma)
   copy_n(tmp.begin(), d * n, U);
 }
 
-template<typename T>
 void
-usphere(int d, int n, T* U)
+usphere(int d, int n, auto* U)
 {
   icdfm(n * d, U);
 #pragma omp parallel for
@@ -147,9 +144,8 @@ usphere(int d, int n, T* U)
     }
 }
 
-template<typename T>
 void
-usphereRadius(int d, int n, double radius, T* U)
+usphereRadius(int d, int n, double radius, auto* U)
 {
   icdfm(n * d, U);
 #pragma omp parallel for
