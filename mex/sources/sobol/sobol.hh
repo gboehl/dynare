@@ -1,6 +1,6 @@
 /* Interface to quasi Monte Carlo sequences (à la Sobol) routines.
  *
- * Copyright © 2010-2023 Dynare Team
+ * Copyright © 2010-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -21,6 +21,7 @@
 #ifndef SOBOL_HH
 #define SOBOL_HH
 
+#include <concepts>
 #include <cstdint>
 #include <dynblas.h> // For the FORTRAN_WRAPPER macro
 
@@ -48,7 +49,7 @@ sobol_block(int dimension, int block_size, int64_t seed, double* block)
   return seed;
 }
 
-template<typename T>
+template<floating_point T>
 void
 expand_unit_hypercube(int dimension, int block_size, T* block, const T* lower_bound,
                       const T* upper_bound)

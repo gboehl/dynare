@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <concepts>
 #include <limits>
 #include <numbers>
 #include <vector>
@@ -41,7 +42,7 @@ using namespace std;
 constexpr double lb = .02425;
 constexpr double ub = .97575;
 
-template<typename T>
+template<floating_point T>
 T
 icdf(const T uniform)
 /*
@@ -105,7 +106,7 @@ icdf(const T uniform)
 }
 
 void
-icdfm(int n, auto* U)
+icdfm(int n, floating_point auto* U)
 {
 #pragma omp parallel for
   for (int i = 0; i < n; i++)
@@ -114,7 +115,7 @@ icdfm(int n, auto* U)
 }
 
 void
-icdfmSigma(int d, int n, auto* U, const double* LowerCholSigma)
+icdfmSigma(int d, int n, floating_point auto* U, const double* LowerCholSigma)
 {
   double one = 1.0;
   double zero = 0.0;
@@ -127,7 +128,7 @@ icdfmSigma(int d, int n, auto* U, const double* LowerCholSigma)
 }
 
 void
-usphere(int d, int n, auto* U)
+usphere(int d, int n, floating_point auto* U)
 {
   icdfm(n * d, U);
 #pragma omp parallel for
@@ -145,7 +146,7 @@ usphere(int d, int n, auto* U)
 }
 
 void
-usphereRadius(int d, int n, double radius, auto* U)
+usphereRadius(int d, int n, double radius, floating_point auto* U)
 {
   icdfm(n * d, U);
 #pragma omp parallel for
