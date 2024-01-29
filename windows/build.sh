@@ -5,7 +5,7 @@
 # The binaries are cross compiled for Windows (64-bit), Octave and MATLAB
 # (all supported versions).
 
-# Copyright © 2017-2023 Dynare Team
+# Copyright © 2017-2024 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -127,8 +127,8 @@ mkdir "$ZIPDIR"/preprocessor
 cp -p build-win-matlab/preprocessor/src/dynare-preprocessor.exe "$ZIPDIR"/preprocessor
 cp -pr matlab "$ZIPDIR"
 cp -p build-win-matlab/dynare_version.m "$ZIPDIR"/matlab
-mkdir -p "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
-cp -p windows/deps/lib64/x13as/x13as.exe "$ZIPDIR"/matlab/modules/dseries/externals/x13/windows/64
+mkdir -p "$ZIPDIR"/matlab/dseries/externals/x13/windows/64
+cp -p windows/deps/lib64/x13as/x13as.exe "$ZIPDIR"/matlab/dseries/externals/x13/windows/64
 cp -pr examples "$ZIPDIR"
 mkdir -p "$ZIPDIR"/scripts
 cp -p scripts/dynare.el "$ZIPDIR"/scripts
