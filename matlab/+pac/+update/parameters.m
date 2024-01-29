@@ -13,7 +13,7 @@ function M_ = parameters(pacname, M_, oo_, verbose)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2018-2023 Dynare Team
+% Copyright © 2018-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -78,6 +78,11 @@ else
     numberofcomponents = 0;
 end
 
+% Makes no sense to have a composite PAC target with a trend component auxiliary model (where all the variables are non stationnary)
+if numberofcomponents>0 && strcmp(M_.pac.pacman.auxiliary_model_type, 'trend_component')
+    error('Composite PAC target not allowed with trend component model.')
+end
+
 % Build the vector of PAC parameters (ECM parameter + autoregressive parameters).
 pacvalues = M_.params([pacmodel.ec.params; pacmodel.ar.params(1:pacmodel.max_lag)']);
 
@@ -90,7 +95,7 @@ if numberofcomponents
             % Find the auxiliary variables if any
             ad = find(cell2mat(cellfun(@(x) isauxiliary(x, [8 10]), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
             if isempty(ad)
-                error('Cannot find the trend variable in the Companion VAR/VECM model.')
+                error('Cannot find the trend variable in the Companion VAR model.')
             else
                 for j=1:length(ad)
                     auxinfo = M_.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(j)}));
@@ -105,7 +110,7 @@ if numberofcomponents
                 end
             end
             if isempty(id{i})
-                error('Cannot find the trend variable in the Companion VAR/VECM model.')
+                error('Cannot find the trend variable in the Companion VAR model.')
             end
         end
     end
@@ -115,7 +120,7 @@ else
         % Find the auxiliary variables if any
         ad = find(cell2mat(cellfun(@(x) isauxiliary(x, [8 10]), varmodel.list_of_variables_in_companion_var, 'UniformOutput', false)));
         if isempty(ad)
-            error('Cannot find the trend variable in the Companion VAR/VECM model.')
+            error('Cannot find the trend variable in the auxiliary VAR / Trend component model.')
         else
             for i=1:length(ad)
                 auxinfo = M_.aux_vars(get_aux_variable_id(varmodel.list_of_variables_in_companion_var{ad(i)}));
@@ -130,7 +135,7 @@ else
             end
         end
         if isempty(id{1})
-            error('Cannot find the trend variable in the Companion VAR/VECM model.')
+            error('Cannot find the trend variable in the auxiliary VAR / Trend component model.')
         end
     end
 end
