@@ -234,23 +234,92 @@ Dynare misc commands
 
    *Example*
 
-   Assuming that we already ran a `.mod` file and that the workspace has not
-   been cleaned after, we can search for all the equations containing variable `X`
+      Assuming that we already ran a `.mod` file and that the workspace has not
+      been cleaned after, we can search for all the equations containing variable `X`
 
-   ::
+      ::
 
-      >> search X
+         >> search X
 
-      Y = alpha*X/(1-X)+e;
+         Y = alpha*X/(1-X)+e;
 
-      diff(X) = beta*(X(-1)-mX) + gamma1*Z + gamma2*R + u;
+         diff(X) = beta*(X(-1)-mX) + gamma1*Z + gamma2*R + u;
 
-   To replace the parameters with estimated or calibrated parameters:
+      To replace the parameters with estimated or calibrated parameters:
 
-   ::
+      ::
 
-      >> search X withparamvalues
+         >> search X withparamvalues
 
-      Y = 1.254634*X/(1-X)+e;
+         Y = 1.254634*X/(1-X)+e;
 
-      diff(X) = -0.031459*(X(-1)-mX) + 0.1*Z - 0.2*R + u;
+         diff(X) = -0.031459*(X(-1)-mX) + 0.1*Z - 0.2*R + u;
+
+   |br|
+
+
+.. matcomm:: dplot [OPTION VALUE[ ...]]
+
+   Plot expressions extracting data from different dseries objects.
+
+   *Options*
+
+   .. option:: --expression EXPRESSION
+
+      ``EXPRESSION`` is a mathematical expression involving variables
+      available in the dseries objects, dseries methods, numbers or
+      parameters. All the referenced objects are supposed to be
+      available in the calling workspace.
+
+   .. option:: --dseries NAME
+
+      ``NAME`` is the name of a dseries object from which the
+      variables involved in ``EXPRESSION`` will be extracted.
+
+   .. option:: --range DATE1:DATE2
+
+      This option is not mandatory and allows to plot the expressions
+      only over a sub-range. ``DATE1`` and ``DATE2`` must be dates as
+      defined in :ref:`dates in mod file`.
+
+   .. option:: --style MATLAB_SCRIPT_NAME
+
+      Name of a Matlab script (without extension) containing Matlab
+      commands to customize the produced figure.
+
+   .. option:: --title MATLAB_STRING
+
+      Adds a title to the figure.
+
+   .. option:: --with-legend
+
+      Prints a legend below the produced plot.
+
+   *Remarks*
+
+    - More than one --expression argument is allowed, and they must come first.
+
+    - For each dseries object we plot all the expressions. We use two
+      nested loops, the outer loop is over the dseries objects and the
+      inner loop over the expressions. This determines the ordering of
+      the plotted lines.
+
+    - All dseries objects must be defined in the calling workspace, if a
+      dseries object is missing the routine throws a warning (we only
+      build the plots for the available dseries objects), if all dseries
+      objects are missing the routine throws an error.
+
+    - If the range is not provided, the expressions cannot involve leads or lags.
+
+   *Example*
+
+      ::
+
+         >> toto = dseries(randn(100,3), dates('2000Q1'), {'x','y','z'});
+         >> noddy = dseries(randn(100,3), dates('2000Q1'), {'x','y','z'});
+         >> b = 3;
+         >> dplot --expression 2/b*cumsum(x/y(-1)-1) --dseries toto --dseries noddy --range 2001Q1:2024Q1 --title 'This is my plot'
+
+      will produce plots for ``2/b*cumsum(x/y(-1)-1)``, where ``x`` and
+      ``y`` are variables in dseries objects ``toto`` and ``noddy``, in
+      the same figure.

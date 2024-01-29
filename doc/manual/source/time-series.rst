@@ -22,6 +22,8 @@ Dates
 =====
 .. highlight:: matlab
 
+.. _dates in a mod file:
+
 Dates in a mod file
 -------------------
 
