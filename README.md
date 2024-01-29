@@ -149,9 +149,10 @@ Note that running the testsuite with Octave requires the additional packages `ps
 
 Often, it does not make sense to run the complete testsuite. For instance, if you modify codes only related to the perfect foresight model solver, you can decide to run only a subset of the integration tests, with:
 ```sh
-meson test -C <builddir> deterministic_simulations
+meson test -C <builddir> --suite deterministic_simulations
 ```
 This will run all the integration tests in `tests/deterministic_simulations`.
+This syntax also works with a nested directory (e.g. `--suite deterministic_simulations/purely_forward`).
 
 Finally if you want to run a single integration test, e.g. `deterministic_simulations/lbj/rbc.mod`:
 ```sh
