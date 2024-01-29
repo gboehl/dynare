@@ -14704,7 +14704,7 @@ simply add the exogenous variables to the PAC equation (without the weight
     ``trend_component_model``, to compute the VAR based expectations for the
     expected changes in the target, *i.e.* to evaluate
     :math:`\sum_{i=0}^{\infty} d_i \Delta y^{\star}_{t+i}`. The infinite sum
-    will then be replaced by a linear combination of the variables involved in
+    will then be replaced by a linear combination, defined by a vector :math:`h`,  of the variables involved in
     the companion representation of the auxiliary model. The weights defining
     the linear combination are nonlinear functions of the
     :math:`(a_i)_{i=0}^{m-1}` coefficients in the PAC equation. This option is
@@ -14724,6 +14724,16 @@ simply add the exogenous variables to the PAC equation (without the weight
     or expression is given) is consistent with the asymptotic growth rate of the
     endogenous variable.
 
+    .. option:: kind = dd | dl
+
+    Instructs Dynare how to compute the vector :math:`h`, the weights
+    defining the linear combination of the companion VAR
+    variables. The default value ``dd`` must be used if the target
+    appears in first difference in the auxiliary model, see equation
+    (A.79) in *Brayton et alii (2000)*, while value ``dl`` must be
+    used if the target shows up in level in the auxiliary model,
+    equation (A.74) in *Brayton et alii (2000)*.
+
 
 .. operator:: pac_expectation (NAME_OF_PAC_MODEL);
 
@@ -14734,7 +14744,89 @@ simply add the exogenous variables to the PAC equation (without the weight
    the variables involved in the companion representation of the auxiliary model
    or by a recursive forward equation.
 
-   |br|
+
+The PAC equation target can be composite and defined as a weighted sum
+of stationary and non stationary components. Such a target requires an
+additional equation in the model block, with the target variable on
+the left hand-side and the components in the right hand-side. Each
+component must be an endogenous variable in the auxiliary model. The
+characteristics of each component must be described in the
+``pac_target_info`` block, see below, and the
+``pac_target_nonstationary`` operator must be used in the error
+correction term of the PAC equation to link the target to the provided
+description. Note that composite targets make only sense if the
+auxiliary model is not a trend component model (where all the
+variables are non stationary).
+
+.. block:: pac_target_info (NAME_OF_PAC_MODEL);
+
+   |br| This block enables the user to provide the properties of each
+   component of a target in PAC models with a composite target. The
+   ``NAME_OF_PAC_MODEL`` argument refers to a PAC model (must match
+   the value of option ``model_name`` in the declaration of a PAC
+   model).
+
+   On the first line of the block, the name of the composite target
+   variable must be provided using the following syntax::
+
+     target VARIABLE_NAME ;
+
+   where ``VARIABLE_NAME`` is a declared endogenous variable, its
+   associated equation is not part of the auxiliary model but all the
+   components (the variables on the right hand-side) must be defined
+   in the auxiliary model. Next, the following line declares the name
+   of the auxilary variable that will appear in the error correction
+   term, this variable contains only the non stationary components of
+   the target::
+
+     auxname_target_nonstationary NAME ;
+
+   The block should contain the following group of lines for each
+   stationary component::
+
+       component STATIONARY_VARIABLE_NAME ;
+       kind ll ;
+       auxname AUX_VAR_NAME ;
+
+
+   where ``STATIONARY_VARIABLE_NAME`` is the name of a stationary
+   variable appearing in the right hand-side of the equation defining
+   the target ``VARIABLE_NAME``. The second line instructs Dynare that
+   the component appears in levels in the auxiliary model and in the
+   PAC expectations. The third line specifies the name of the
+   auxiliary variable created by Dynare for the component of the PAC
+   expectation related to ``STATIONARY_VARIABLE_NAME``.
+
+   The block should contain the following group of lines for each
+   nonstationary component::
+
+     component NONSTATIONARY_VARIABLE_NAME ;
+     kind dd | dl ;
+     auxname AUX_VAR_NAME ;
+     growth PARAMETER_NAME | VARIABLE_NAME | EXPRESSION | DOUBLE ;
+
+   where ``NONSTATIONARY_VARIABLE_NAME`` is the name of a
+   nonstationary variable appearing in the right hand-side of the
+   equation defining the target ``VARIABLE_NAME``. The second line
+   instructs Dynare on how to calculate the weights that define the linear
+   combination of the companion VAR variables. Use value ``dd`` if the
+   target appears in first difference in the auxiliary model, or
+   ``dl`` if the target shows up in level in the auxiliary model. The
+   third line sets the name of the auxiliary variable created by
+   Dynare for the component of the PAC expectation related to
+   ``NONSTATIONARY_VARIABLE_NAME``. The fourth line is mandatory if a
+   growth neutrality correction is required. The provided value for
+   this option must be consistent with the asymptotic growth rate of
+   the PAC endogenous variable.
+
+
+.. operator:: pac_target_nonstationary (NAME_OF_PAC_MODEL);
+
+   |br| This operator is only required in presence of a composite
+   target in the PAC equation. The operator, used in the error
+   correction term of the PAC equation, selects the non stationary
+   components of the target.
+
 
 .. matcomm::  pac.initialize(NAME_OF_PAC_MODEL);
 .. matcomm::  pac.update(NAME_OF_PAC_MODEL);
@@ -14747,33 +14839,33 @@ simply add the exogenous variables to the PAC equation (without the weight
   the infinite sum in the MCE case).
 
 
-*Example*
+*Example (trend component auxiliary model)*
 
     ::
 
          trend_component_model(model_name=toto, eqtags=['eq:x1', 'eq:x2', 'eq:x1bar', 'eq:x2bar'], targets=['eq:x1bar', 'eq:x2bar']);
 
-         pac_model(auxiliary_model_name=toto, discount=beta, growth=diff(x1(-1)), model_name=pacman);
+         pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman);
 
          model;
 
-         [name='eq:y']
-         y = rho_1*y(-1) + rho_2*y(-2) + ey;
+           [name='eq:y']
+           y = (1-rho_1-rho_2)*diff(x2(-1)) + rho_1*y(-1) + rho_2*y(-2) + ey;
 
-         [name='eq:x1']
-         diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;
+           [name='eq:x1']
+           diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;
 
-         [name='eq:x2']
-         diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
+           [name='eq:x2']
+           diff(x2) = a_x2_0*(x2(-1)-x2bar(-1)) + a_x2_1*diff(x1(-1)) + a_x2_2*diff(x1(-2)) + a_x2_x1_1*diff(x2(-1)) + a_x2_x1_2*diff(x2(-2)) + ex2;
 
-         [name='eq:x1bar']
-         x1bar = x1bar(-1) + ex1bar;
+           [name='eq:x1bar']
+           x1bar = x1bar(-1) + ex1bar;
 
-         [name='eq:x2bar']
-         x2bar = x2bar(-1) + ex2bar;
+           [name='eq:x2bar']
+           x2bar = x2bar(-1) + ex2bar;
 
-         [name='zpac']
-         diff(z) = e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
+           [name='zpac']
+           diff(z) = e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
 
          end;
 
@@ -14781,6 +14873,51 @@ simply add the exogenous variables to the PAC equation (without the weight
 
          pac.update.expectation('pacman');
 
+
+*Example (VAR auxiliary model and composite target)*
+
+    ::
+
+       var_model(model_name=toto, eqtags=['eq:x', 'eq:y']);
+
+       pac_model(auxiliary_model_name=toto, discount=beta, model_name=pacman);
+
+       pac_target_info(pacman);
+
+         target v;
+         auxname_target_nonstationary vns;
+
+         component y;
+         auxname pv_y_;
+         kind ll;
+
+         component x;
+         growth diff(x(-1));
+         auxname pv_dx_;
+         kind dd;
+
+       end;
+
+       model;
+
+         [name='eq:y']
+         y = a_y_1*y(-1) + a_y_2*diff(x(-1)) + b_y_1*y(-2) + b_y_2*diff(x(-2)) + ey ;
+
+
+         [name='eq:x']
+         diff(x) = b_x_1*y(-2) + b_x_2*diff(x(-1)) + ex ;
+
+         [name='eq:v']
+         v = x + d_y*y ;  // Composite PAC target, no residuals here only variables defined in the auxiliary model.
+
+         [name='zpac']
+         diff(z) = e_c_m*(pac_target_nonstationary(pacman)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + ez;
+
+       end;
+
+       pac.initialize('pacman');
+
+       pac.update.expectation('pacman');
 
 Estimation of a PAC equation
 ----------------------------

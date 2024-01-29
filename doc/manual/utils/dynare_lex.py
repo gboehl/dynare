@@ -60,7 +60,7 @@ class DynareLexer(RegexLexer):
         "addSeries","addParagraph","addVspace","write","compile")
 
     operators = (
-        "STEADY_STATE","EXPECTATION","var_expectation","pac_expectation")
+        "STEADY_STATE","EXPECTATION","var_expectation","pac_expectation","pac_target_nonstationary")
 
     macro_dirs = (
         "@#includepath", "@#include", "@#define", "@#if",
@@ -83,7 +83,8 @@ class DynareLexer(RegexLexer):
                 'osr_params_bounds','ramsey_constraints','irf_calibration',
                 'moment_calibration','identification','svar_identification',
                 'matched_moments','occbin_constraints','surprise','overwrite','bind','relax',
-                'verbatim','end','node','cluster','paths','hooks'), prefix=r'\b', suffix=r'\s*\b'),Keyword.Reserved),
+                'verbatim','end','node','cluster','paths','hooks','target','pac_target_info','auxname_target_nonstationary',
+                'component', 'growth', 'auxname', 'kind'), prefix=r'\b', suffix=r'\s*\b'),Keyword.Reserved),
 
             # FIXME: Commands following multiline comments are not highlighted properly.
             (words(commands + report_commands,
