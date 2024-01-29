@@ -1,4 +1,4 @@
-function [out, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
+function [out, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist,get_decomp_only)
 % function plot_shock_decomposition(M_,oo_,options_,varlist)
 % Plots the results of shock_decomposition
 %
@@ -7,11 +7,12 @@ function [out, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 %    oo_:         [structure]  Storage of results
 %    options_:    [structure]  Options
 %    varlist:     [char]       List of variables
-%
+%    get_decomp_only    [bool] indicator on whether to only return with
+%                               basic decomposition (required for e.g. annualized_shock_decomposition)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2016-2019 Dynare Team
+% Copyright © 2016-2023 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -27,6 +28,10 @@ function [out, steady_state] = plot_shock_decomposition(M_,oo_,options_,varlist)
 %
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
+
+if nargin<5
+    get_decomp_only=false;
+end
 
 options_.nodisplay = options_.plot_shock_decomp.nodisplay;
 options_.graph_format = options_.plot_shock_decomp.graph_format;
@@ -532,7 +537,7 @@ if steadystate
     options_.plot_shock_decomp.steady_state=steady_state;
 end
 
-if nargout == 2
+if get_decomp_only
     out=z(i_var,:,:);
     steady_state = steady_state(i_var);
     return
