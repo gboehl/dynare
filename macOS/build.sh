@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright © 2019-2023 Dynare Team
+# Copyright © 2019-2024 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -150,8 +150,8 @@ cp     "$ROOTDIR"/build-doc/*.pdf                                    "$PKGFILES"
 cp     "$ROOTDIR"/build-doc/preprocessor/doc/*.pdf                   "$PKGFILES"/doc
 cp -r  "$ROOTDIR"/build-doc/dynare-manual.html                       "$PKGFILES"/doc
 
-mkdir -p                                                             "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
-cp -p  "$ROOTDIR"/macOS/deps/"$PKG_ARCH"/lib64/x13as/x13as           "$PKGFILES"/matlab/modules/dseries/externals/x13/macOS/64
+mkdir -p                                                             "$PKGFILES"/matlab/dseries/externals/x13/macOS/64
+cp -p  "$ROOTDIR"/macOS/deps/"$PKG_ARCH"/lib64/x13as/x13as           "$PKGFILES"/matlab/dseries/externals/x13/macOS/64
 
 
 cd "$ROOTDIR"/macOS/pkg
