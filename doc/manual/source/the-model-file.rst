@@ -6497,8 +6497,8 @@ observed variables.
 
        Do not use the kalman filter to evaluate the likelihood, but instead
        evaluate the conditional likelihood, based on the first order reduced
-       form of the model, by assuming that the initial state vector is 0 for all
-       the endogenous variables. This approach requires that:
+       form of the model, by assuming that the initial state vector is at its 
+       steady state. This approach requires that:
 
        1. The number of structural innovations be equal to the number of observed variables.
 

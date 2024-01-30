@@ -230,7 +230,8 @@ Dynare misc commands
    Searches all occurrences of a variable in a model, and prints the
    equations where the variable appear in the command line window. If OPTION is
    set to `withparamvalues`, the values of the parameters (if available) are
-   displayed instead of the name of the parameters.
+   displayed instead of the name of the parameters. Requires the `json` command
+   line option to be set.
 
    *Example*
 
