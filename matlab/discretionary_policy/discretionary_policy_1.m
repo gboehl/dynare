@@ -13,7 +13,7 @@ function [dr, info, params]=discretionary_policy_1(M_, options_, dr, endo_steady
 % - info          [integer]       scalar or vector, error code.
 % - params        [double]        vector of potentially updated parameters
 
-% Copyright © 2007-2020 Dynare Team
+% Copyright © 2007-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -49,7 +49,9 @@ else
 end
 params=M_.params;
 
-[~,Uy,W] = feval([M_.fname,'.objective.static'],zeros(M_.endo_nbr,1),[], M_.params);
+y = zeros(M_.endo_nbr,1);
+[Uy, T_order, T] = feval([M_.fname,'.objective.sparse.static_g1'], y, [], params, M_.objective_g1_sparse_rowval, M_.objective_g1_sparse_colval, M_.objective_g1_sparse_colptr);
+
 if any(any(isnan(Uy)))
     info = 64 ; %the derivatives of the objective function contain NaN
     return;
@@ -70,6 +72,8 @@ if any(any(Uy~=0))
     return;
 end
 
+g2_v = feval([M_.fname,'.objective.sparse.static_g2'], y, [], params, T_order, T);
+W = build_two_dim_hessian(M_.objective_g2_sparse_indices, g2_v, 1, M_.endo_nbr);
 W=reshape(W,M_.endo_nbr,M_.endo_nbr);
 
 klen = M_.maximum_lag + M_.maximum_lead + 1;
