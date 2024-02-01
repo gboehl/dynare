@@ -75,7 +75,7 @@ latex_elements = {
 
 latex_documents = [
     (master_doc, 'dynare-manual.tex', u'Dynare Reference Manual',
-     u'Dynare team', 'manual'),
+     u'Dynare Team', 'manual'),
 ]
 
 man_pages = [
