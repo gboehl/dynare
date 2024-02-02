@@ -94,26 +94,24 @@ Citing Dynare in your research
 You should cite Dynare if you use it in your research. The
 recommended way todo this is to cite the present manual, as:
 
-    Stéphane Adjemian, Houtan Bastani, Michel Juillard, Frédéric Karamé,
-    Ferhat Mihoubi, Willi Mutschler, Johannes Pfeifer, Marco Ratto,
-    Normann Rion and Sébastien Villemot (2022), “Dynare: Reference Manual,
-    Version 5,” *Dynare Working Papers*, 72, CEPREMAP
+    Stéphane Adjemian, Michel Juillard, Frédéric Karamé, Willi Mutschler,
+    Johannes Pfeifer, Marco Ratto, Normann Rion and Sébastien Villemot (2024),
+    “Dynare: Reference Manual, Version 6,” *Dynare Working Papers*, 80, CEPREMAP
 
 For convenience, you can copy and paste the following into your BibTeX file:
 
     .. code-block:: bibtex
 
-        @TechReport{Adjemianetal2022,
-          author      = {Adjemian, St\'ephane and Bastani, Houtan and
-                         Juillard, Michel and Karam\'e, Fr\'ederic and
-                         Mihoubi, Ferhat and Mutschler, Willi
-                         and Pfeifer, Johannes and Ratto, Marco and
+        @TechReport{Adjemianetal2024,
+          author      = {Adjemian, St\'ephane and Juillard, Michel and
+                         Karam\'e, Fr\'ederic and Mutschler, Willi and
+                         Pfeifer, Johannes and Ratto, Marco and
                          Rion, Normann and Villemot, S\'ebastien},
-          title       = {Dynare: Reference Manual Version 5},
-          year        = {2022},
+          title       = {Dynare: Reference Manual, Version 6},
+          year        = {2024},
           institution = {CEPREMAP},
           type        = {Dynare Working Papers},
-          number      = {72},
+          number      = {80},
         }
 
 If you want to give a URL, use the address of the Dynare website:
