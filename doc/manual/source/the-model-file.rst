@@ -5781,6 +5781,14 @@ All of these elements are discussed in the following.
 
         See :opt:`simul_check_ahead_periods <simul_check_ahead_periods = INTEGER>`.
 
+    .. option:: simul_reset_check_ahead_periods
+
+        See :opt:`simul_reset_check_ahead_periods`.
+
+    .. option:: simul_max_check_ahead_periods
+
+        See :opt:`simul_max_check_ahead_periods <simul_max_check_ahead_periods = INTEGER>`.
+
     .. option:: simul_curb_retrench
 
         See :opt:`simul_curb_retrench`.
