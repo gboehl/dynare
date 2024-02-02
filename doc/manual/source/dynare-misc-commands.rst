@@ -281,7 +281,7 @@ Dynare misc commands
 
       This option is not mandatory and allows to plot the expressions
       only over a sub-range. ``DATE1`` and ``DATE2`` must be dates as
-      defined in :ref:`dates in mod file`.
+      defined in :ref:`dates in a mod file`.
 
    .. option:: --style MATLAB_SCRIPT_NAME
 

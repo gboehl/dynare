@@ -3738,7 +3738,7 @@ speed-up on large models.
                solvers available through option ``solve_algo``, applied on the
                stacked system of all equations in all periods (See
                :ref:`solve_algo <solvalg>` for a list of possible values, note
-               that values 5, 6, 7 and 8, which require ``bytecode`` and/or
+               that values ``5``, ``6``, ``7`` and ``8``, which require ``bytecode`` and/or
                ``block`` options, are not allowed). For instance, the following
                commands::
 
@@ -6513,7 +6513,7 @@ observed variables.
        Note however that the conditional likelihood is sensitive to the choice
        for the initial condition, which can be an issue if the data are
        initially far from the steady state. This option is not compatible with
-       ``analytical_derivation``.
+       ``analytic_derivation``.
 
     .. option:: conf_sig = DOUBLE
 
