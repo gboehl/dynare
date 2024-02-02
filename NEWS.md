@@ -1,3 +1,405 @@
+Announcement for Dynare 6.0 (on 2024-02-02)
+===========================================
+
+We are pleased to announce the release of Dynare 6.0.
+
+This major release adds new features and fixes various bugs.
+
+The Windows, macOS, MATLAB Online and source packages are already available for
+download at [the Dynare website](https://www.dynare.org/download/).
+
+This release is compatible with MATLAB versions ranging from 9.5 (R2018b) to
+23.2 (R2023b), and with GNU Octave versions ranging from 7.1.0 to 8.4.0 (NB:
+the Windows package requires version 8.4.0 specifically).
+
+Major user-visible changes
+--------------------------
+
+ - The Sequential Monte Carlo sampler as described by Herbst and Schorfheide
+   (2014) is now available under value `hssmc` for option
+   `posterior_sampling_method`.
+
+ - New routines for perfect foresight simulation with expectation errors. In
+   such a scenario, agents make expectation errors in that the path they had
+   anticipated in period 1 is not realized exactly. More precisely, in some
+   simulation periods, they may receive new information that makes them revise
+   their anticipation for the path of future shocks. Also, under this scenario,
+   it is assumed that agents behave as under perfect foresight, *i.e.* they
+   make their decisions as if there were no uncertainty and they knew exactly
+   the path of future shocks; the new information that they may receive comes
+   as a total surprise to them. Available under new
+   `perfect_foresight_with_expectation_errors_setup` and
+   `perfect_foresight_with_expectation_errors_solver` commands, and
+   `shocks(learnt_in=…)`, `mshocks(learnt_in=…)` and `endval(learnt_in=…)`
+   blocks.
+
+ - New routines for IRF matching with stochastic simulations:
+
+   - Both frequentist (as in Christiano, Eichenbaum, and Evans, 2005) and
+     Bayesian (as in Christiano, Trabandt, and Walentin, 2010) IRF matching
+     approaches are implemented. The core idea of IRF matching is to treat
+     empirical impulse responses (*e.g.* given from an SVAR or local projection
+     estimation) as data and select model parameters that align the model’s
+     IRFs closely with their empirical counterparts.
+
+   - Available under option `mom_method = irf_matching` option to the
+     `method_of_moments` command.
+
+   - New blocks `matched_irfs` and `matched_irfs_weights` for specifying the
+     values and weights of the empirical impulse response functions.
+
+ - Pruning à la Andreasen et al. (2018) is now available at an arbitrary
+   approximation order when performing stochastic simulations with
+   `stoch_simul`, and at 3rd order when performing particle filtering.
+
+ - New `log` option to the `var` statement. In addition to the endogenous
+   variable(s) thus declared, this option also triggers the creation of
+   auxiliary variable(s) equal to the log of the corresponding endogenous
+   variable(s). For example, given a `var(log) y;` statement, two endogenous
+   will be created (`y` and `LOG_y`), and an auxiliary equation linking the two
+   will also be added (equal to `y = exp(LOG_y);`). Moreover, every occurrence
+   of `y` in the model will be replaced by `exp(LOG_y)`. This option is, for
+   example, useful for performing a loglinear approximation of some variable(s)
+   in the context of a first-order stochastic approximation; or for ensuring
+   that the variable(s) stay(s) in the definition domain of the function
+   defining the steady state or the dynamic residuals when the nonlinear solver
+   is used.
+
+ - New model editing features
+
+   - Multiple `model` blocks are now supported (this was already working but
+     not explicitly documented).
+
+   - Multiple `estimated_params` blocks now concatenate their contents (instead
+     of overwriting previous ones, which was the former undocumented behavior);
+     an `overwrite` option has been added to provide the old behavior.
+
+   - New `model_options` statement to set model options in a global fashion.
+
+   - New `model_remove` command to remove equations.
+
+   - New `model_replace` block to replace equations.
+
+   - New `var_remove` command to remove variables (or parameters).
+
+   - New `estimated_params_remove` block to remove estimated parameters.
+
+ - Stochastic simulations
+
+   - Performance improvements for simulation of the solution under perturbation
+     and for particle filtering at higher order (⩾ 3).
+
+   - Performance improvement for the first order perturbation solution using
+     either cycle reduction (`dr=cycle_reduction` option) or logarithmic
+     reduction (`dr=logarithmic_reduction`).
+
+   - New `nomodelsummary` option to the `stoch_simul` command, to suppress the
+     printing of the model summary and the covariance of the exogenous shocks.
+
+ - Estimation
+
+   - A truncated normal distribution can now be specified as a prior, using the
+     3rd and 4th parameters of the `estimated_params` block as the bounds.
+
+   - New `conditional_likelihood` option to the `estimation` command. When the
+     option is set, instead of using the Kalman filter to evaluate the
+     likelihood, Dynare will evaluate the conditional likelihood based on the
+     first-order reduced form of the model by assuming that the initial state
+     vector is at its steady state.
+
+   - New `additional_optimizer_steps` option to the `estimation` command to
+     trigger the sequential execution of several optimizers when looking for
+     the posterior mode.
+
+   - The `generate_trace_plots` command now allows comparing multiple chains.
+
+   - The Geweke and Raftery-Lewis convergence diagnostics will now also be
+     displayed when `mh_nblocks>1`.
+
+   - New `robust`, `TolGstep`, and `TolGstepRel` options to the optimizer
+     available under `mode_compute=5` (“newrat”).
+
+   - New `brooks_gelman_plotrows` option to the `estimation` command for
+     controlling the number of parameters to depict along the rows of the
+     figures depicting the Brooks and Gelman (1998) convergence diagnostics.
+
+   - New `mh_init_scale_factor` option to the `estimation` command tor govern
+     the overdispersion of the starting draws when initializing several Monte
+     Carlo Markov Chains. This option supersedes the `mh_init_scale` option,
+     which is now deprecated.
+
+ - Steady state computation
+
+   - Steady state computation now accounts for occasionally-binding constraints
+     of mixed-complementarity problems (as defined by `mcp` tags).
+
+   - New `tolx` option to the `steady` command for governing the termination
+     based on the step tolerance.
+
+   - New `fsolve_options` option to the `steady` command for passing options to
+     `fsolve` (in conjunction with the `solve_algo=0` option).
+
+   - New option `from_initval_to_endval` option to the `homotopy_setup` block,
+     for easily computing homotopy from initial to terminal steady state (when
+     the former is already computed).
+
+   - New `non_zero` option to `resid` command to restrict display to non-zero
+     residuals.
+
+ - Perfect foresight
+
+   - Significant performance improvement of the `stack_solve_algo=1` option to
+     the `perfect_foresight_solver` command (Laffargue-Boucekkine-Juillard
+     algorithm) when used in conjunction with options `block` and/or `bytecode`
+     of the `model` block.
+
+   - New `relative_to_initval` option to the `mshocks` block, to use the
+     initial steady state as a basis for the multiplication when there is an
+     `endval` block.
+
+   - New `static_mfs` option to the `model` block (and to the `model_options`
+     command), for controlling the minimum feedback set computation for the
+     static model. It defaults to `0` (corresponding to the behavior in Dynare
+     version 5).
+
+   - Various improvements to homotopy
+
+     - New `endval_steady` option to the `perfect_foresight_setup` command for
+       computing the terminal steady state at the same time as the transitory
+       dynamics (and new options `steady_solve_algo`, `steady_tolf`,
+       `steady_tolx`, `steady_maxit` and `steady_markowitz` for controlling the
+       steady state nonlinear solver).
+
+     - New `homotopy_linearization_fallback` and
+       `homotopy_marginal_linearization_fallback` options to the
+       `perfect_foresight_solver` command to get an approximate solution when
+       homotopy fails to go to 100%.
+
+     - New `homotopy_initial_step_size`, `homotopy_min_step_size`,
+       `homotopy_step_size_increase_success_count` and
+       `homotopy_max_completion_share` options to the
+       `perfect_foresight_solver` command to fine tune the homotopy behavior.
+
+     - Purely backward, forward and static models are now supported by the
+       homotopy procedure.
+
+   - The `stack_solve_algo=1` and `stack_solve_algo=6` options of the
+     `perfect_foresight_solver` command were merged and are now synonymous.
+     They both provide the Laffargue-Boucekkine-Juillard algorithm and work
+     with and without the `block` and `bytecode` options of the `model` block.
+     Using `stack_solve_algo=1` is now recommended, but `stack_solve_algo=6` is
+     kept for backward compatibility.
+
+ - OccBin
+
+   - New `simul_reset_check_ahead_periods` option to the `occbin_setup` and
+     `occbin_solver` commands, for resetting `check_ahead_periods` in each
+     simulation period.
+
+   - new `simul_max_check_ahead_periods`, `likelihood_max_check_ahead_periods`,
+     and `smoother_max_check_ahead_periods` options to the `occbin_setup`
+     command, for truncating the number of periods for which agents check ahead
+     which regime is present.
+
+ - Optimal policy
+
+   - The `osr` command now accepts the `analytic_derivation` and
+     `analytic_derivation_mode` options.
+
+   - The `evaluate_planner_objective` command now computes the unconditional
+     welfare for higher-order approximations (⩾ 3).
+
+   - New `periods` and `drop` options to the `evaluate_planner_objective`
+     command.
+
+ - Semi-structural models
+
+   - New `pac_target_info` block for decomposing the PAC target into an
+     arbitrary number of components. Furthermore, in the presence of such a
+     block, the new `pac_target_nonstationary` operator can be used to select
+     the non stationary part of the target (typically useful in the error
+     correction term of the PAC equation).
+
+   - New `kind` option to the `pac_model` command. This option allows the user
+     to select the formula used to compute the weights on the VAR companion
+     matrix variables that are used to form PAC expectations.
+
+   - Performance improvement to `solve_algo=12` and `solve_algo=14`, which
+     significantly accelerates the simulation of purely backward, forward and
+     static models with the `perfect_foresight_solver` command and the routines
+     for semi-structural models.
+
+ - dseries classes
+
+   - The `remove` and `remove_` methods now accept a list of variables (they
+     would previously only accept a single variable).
+   
+   - New MATLAB/Octave command `dplot` to plot mathematical expressions
+     generated from variables fetched from (different) dseries objects.
+
+ - Misc
+
+   - New `display_parameter_values` command to print the parameter values in
+     the command window.
+
+   - New `collapse_figures_in_tabgroup` command to dock all figures.
+
+   - Performance improvement for the `use_dll` option of the `model` block. The
+     preprocessor now takes advantage of parallelization when compiling the MEX
+     files.
+
+   - New mathematical primitives available: complementary error function
+     (`erfc`), hyperbolic functions (`cosh`, `sinh`, `tanh`, `acosh`, `asinh`,
+     `atanh`).
+
+   - New `last_simulation_period` option to the `initval_file` command.
+
+   - The `calib_smoother` command now accepts the `nobs` and
+     `heteroskedastic_filter` options.
+
+   - Under the MATLAB Desktop, autocompletion is now available for the `dynare`
+     command and other CLI commands (thanks to Eduard Benet Cerda from
+     MathWorks).
+
+   - Model debugging: The preprocessor now creates files for evaluating the
+     left- and right-hand sides of model equations separately. For a model file
+     called `ramst.mod`, you can call
+     `[lhs,rhs]=ramst.debug.static_resid(y,x,params);` (for the static model)
+     and `[lhs,rhs]=ramst.debug.dynamic_resid(y,x,params,steady_state);` (for
+     the dynamic model), where `y` are the endogenous, `x` the exogenous,
+     `params` the parameters, and `steady_state` is self-explanatory. NB: In
+     the dynamic case, the vector `y` of endogenous must have 3n elements
+     where n is the number of endogenous (including auxiliary ones); the
+     first n elements correspond to the lagged values, the middle n
+     elements to the contemporaneous values, and the last n elements to the
+     lead values.
+
+   - New interactive MATLAB/Octave command `search` for listing the equations
+     in which given variable(s) appear (requires `json` command line option).
+
+   - The `model_info` command allows to print the block decomposition even if
+     the `block` option of the `model` block has not been used, by specifying
+     the new options `block_static` and `block_dynamic`.
+
+   - There is now a default value for the global initialization file
+     (`GlobalInitFile` option of the configuration file): the `global_init.m`
+     in the Dynare configuration directory (typically
+     `$HOME/.config/dynare/global_init.m` under Linux and macOS, and
+     `c:\Users\USERNAME\AppData\Roaming\dynare\global_init.m` under Windows).
+
+   - For those compiling Dynare from source, the build system has been entirely
+     rewritten and now uses Meson; as a consequence, it is now faster and
+     easier to understand.
+
+- References:
+
+  - Andreasen, Martin M., Jesús Fernández-Villaverde, and Juan Rubio-Ramírez
+    (2018): “The Pruned State-Space System for Non-Linear DSGE Models: Theory
+    and Empirical Applications,” *Review of Economic Studies*, 85(1), 1-49.
+  - Brooks, Stephen P., and Andrew Gelman (1998): “General methods for
+    monitoring convergence of iterative simulations,” *Journal of Computational
+    and Graphical Statistics*, 7, pp. 434–455.
+  - Christiano, Eichenbaum and Charles L. Evans (2005): “Nominal Rigidities and
+    the Dynamic Effects of a Shock to Monetary Policy,” *Journal of Political
+    Economy*, 113(1), 1–45.
+  - Christiano, Lawrence J., Mathias Trabandt, and Karl Walentin (2010): “DSGE
+    Models for Monetary Policy Analysis,” In: *Handbook of Monetary Economics
+    3*, 285–367.
+  - Herbst, Edward and Schorfheide, Frank (2014): "Sequential Monte Carlo
+    Sampling for DSGE Models," *Journal of Applied Econometrics*, 29,
+    1073-1098.
+
+Incompatible changes
+--------------------
+
+ - The default value of the `mode_compute` option of the `estimation` command
+   has been changed to `5` (it was previously `4`).
+
+ - When using block decomposition (with the `block` option of the `model`
+   block), the option `mfs` now defaults to `1`. This setting should deliver
+   better performance in perfect foresight simulation on most models.
+
+ - The default location for the configuration file has changed. On Linux and
+   macOS, the configuration file is now searched by default under
+   `dynare/dynare.ini` in the configuration directories defined by the XDG
+   specification (typically `$HOME/.config/dynare/dynare.ini` for the
+   user-specific configuration and `/etc/xdg/dynare/dynare.ini` for the
+   system-wide configuration, the former having precedence over the latter).
+   Under Windows, the configuration file is now searched by default in
+   `%APPDATA%\dynare\dynare.ini` (typically
+   `c:\Users\USERNAME\AppData\Roaming\dynare\dynare.ini`).
+
+ - The information stored in `oo_.endo_simul, oo_.exo_simul`, and `oo_.irfs` is
+   no longer duplicated in the base workspace. New helper functions
+   `send_endogenous_variables_to_workspace`,
+   `send_exogenous_variables_to_workspace`, and `send_irfs_to_workspace` have
+   been introduced to explicitly request these outputs and to mimic the old
+   behavior.
+
+ - The `dynare_sensitivity` command has been renamed `sensitivity`. The old
+   name is still accepted but triggers a warning.
+
+ - The syntax `resid(1)` is no longer supported.
+
+ - The `mode_compute=6` option to the `estimation` command now recursively
+   updates the covariance matrix across the `NumberOfMh` Metropolis-Hastings
+   runs, starting with the `InitialCovarianceMatrix` in the first run, instead
+   of computing it from scratch in every Metropolis-Hastings run.
+
+ - The `periods` command has been removed.
+
+ - The `Sigma_e` command has been removed.
+
+ - The `block` option of the `model` block no longer has an effect when used in
+   conjunction with `stoch_simul` or `estimation` commands.
+
+ - The Dynare++ executable is no longer distributed since almost all of its
+   functionalities have been integrated inside Dynare for MATLAB/Octave.
+
+ - A macro-processor variable defined without a value (such as `@#define var`
+   in the `.mod` file or alternatively `-Dvar` on the `dynare` command line) is
+   now assigned the `true` logical value (it was previously assigned `1`).
+
+ - The `parallel_slave_open_mode` option of the `dynare` command has been
+   renamed `parallel_follower_open_mode`.
+
+ - The `static` option of the `model_info` command is now deprecated and is
+   replaced by the `block_static` option.
+
+Bugs that were present in 5.5 and that have been fixed in 6.0
+-------------------------------------------------------------
+
+* The `mh_initialize_from_previous_mcmc` option of the `estimation` command
+  would not work if estimation was conducted with a different prior and the
+  last draw in the previous MCMC fell outside the new prior bounds
+* When specifying a generalized inverse Gamma prior, the hyperparameter
+  computation would erroneously ignore the resulting mean shift
+* When using the `mh_recover` option of the `estimation` command, the status
+  bar always started at zero instead of showing the overall progress of the
+  recovered chain
+* The `model_diagnostics` command would fail to check the correctness of
+  user-defined steady state files
+* GSA: LaTeX output was not working as expected
+* Forecasts and filtered variables could not be retrieved with the
+ `heteroskedastic_shocks` block
+* The OccBin smoother would potentially not display all smoothed shocks with
+  `heteroskedastic_filter` option
+* The OccBin smoother would crash if the number of requested periods was
+  smaller than the data length
+* The multivariate OccBin smoother would return wrong results if the constraint
+  was binding in the first period
+* The `plot_shock_decomposition` command would fail with the `init2shocks`
+  block if the `initial_condition_decomposition` was not run before
+* LaTeX output under Windows failed to compile for `plot_priors=1` option of
+  the `estimation` command and Brooks and Gelman (1998) convergence diagnostics
+* The plot produced by the `shock_decomposition` command was too big, making
+  the close button inaccessible
+* Monthly dates for October, November and December (*i.e.* with a 2-digit month
+  number) were not properly interpreted by the preprocessor
+* Theoretical moments computed by `stoch_simul` at `order=2` with `pruning`
+  would not contain unconditional and conditional variance decomposition
+
+
 Announcement for Dynare 5.5 (on 2023-10-23)
 ===========================================
 
