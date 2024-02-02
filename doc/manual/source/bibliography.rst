@@ -49,7 +49,7 @@ Bibliography
 * Hansen, Lars P. (1982): “Large sample properties of generalized method of moments estimators,” Econometrica, 50(4), 1029–1054.
 * Hansen, Nikolaus and Stefan Kern (2004): “Evaluating the CMA Evolution Strategy on Multimodal Test Functions”. In: *Eighth International Conference on Parallel Problem Solving from Nature PPSN VIII*, Proceedings, Berlin: Springer, 282–291.
 * Harvey, Andrew C. and Garry D.A. Phillips (1979): “Maximum likelihood estimation of regression models with autoregressive-moving average disturbances,” *Biometrika*, 66(1), 49–58.
-* Herbst, Edward and Schorfheide, Frank (2014): "Sequential monte-carlo sampling for DSGE models," *Journal of Applied Econometrics*, 29, 1073-1098.
+* Herbst, Edward and Schorfheide, Frank (2014): "Sequential Monte Carlo Sampling for DSGE Models," *Journal of Applied Econometrics*, 29, 1073-1098.
 * Herbst, Edward (2015): “Using the “Chandrasekhar Recursions” for Likelihood Evaluation of DSGE Models,” *Computational Economics*, 45(4), 693–705.
 * Ireland, Peter (2004): “A Method for Taking Models to the Data,” *Journal of Economic Dynamics and Control*, 28, 1205–26.
 * Iskrev, Nikolay (2010): “Local identification in DSGE models,” *Journal of Monetary Economics*, 57(2), 189–202.
