@@ -3003,19 +3003,23 @@ Finding the steady state with Dynare nonlinear solver
                 blocks that can be evaluated rather than solved; and evaluations
                 of the residual and Jacobian of the model are more efficient
                 because only the relevant elements are recomputed at every
-                iteration.
+                iteration. This option is typically used with the
+                ``perfect_foresight_solver`` command with purely backward,
+                forward or static models, or with routines for semi-structural
+                models, and it must *not* be combined with option ``block`` of
+                the ``model`` block. Also note that for those models, the block
+                decomposition is performed as if ``mfs=3`` had been passed to
+                the ``model`` block, and the decomposition is slightly
+                different because it is computed in a time-recursive fashion
+                (*i.e.* in such a way that the simulation is meant to be done
+                with the outer loop on periods and the inner loop on blocks;
+                while for models with both leads and lags, the outer loop is on
+                blocks and the inner loop is on periods).
 
            ``14``
 
-                Computes a block decomposition and then applies a trust region
-                solver with autoscaling on those smaller blocks rather than on
-                the full nonlinear system. This is similar to ``4``, but is
-                typically more efficient. The block decomposition is done at
-                the preprocessor level, which brings two benefits: it
-                identifies blocks that can be evaluated rather than solved; and
-                evaluations of the residual and Jacobian of the model are more
-                efficient because only the relevant elements are recomputed at
-                every iteration.
+                Same as ``12``, except that it applies a trust region solver
+                (similar to ``4``) to the blocks.
 
        |br| Default value is ``4``.
 
@@ -3756,7 +3760,10 @@ speed-up on large models.
     .. option:: solve_algo
 
        See :ref:`solve_algo <solvalg>`. Allows selecting the solver
-       used with ``stack_solve_algo=7``.
+       used with ``stack_solve_algo=7``. Also used for purely backward, forward
+       and static models (when neither the ``block`` nor the ``bytecode`` option
+       of the ``model`` block is specified); for those models, the values
+       ``12`` and ``14`` are especially relevant.
 
     .. option:: no_homotopy
 
@@ -14257,7 +14264,7 @@ assumed that each equation is written as ``VARIABLE = EXPRESSION`` or
 ``T(VARIABLE) = EXPRESSION`` where ``T(VARIABLE)`` stands for a transformation
 of an endogenous variable (``log`` or ``diff``). This representation, where each
 equation determines the endogenous variable on the LHS, can be exploited when
-simulating the model (see algorithms 12 and 14 in :ref:`solve_algo <solvalg>`)
+simulating the model (see algorithms ``12`` and ``14`` in :ref:`solve_algo <solvalg>`)
 and is mandatory to define auxiliary models used for computing expectations (see
 below).
 
