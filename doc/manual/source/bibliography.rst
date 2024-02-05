@@ -16,8 +16,8 @@ Bibliography
 * Bini, Dario A., Guy Latouche, and Beatrice Meini (2002): “Solving matrix polynomial equations arising in queueing problems,” *Linear Algebra and its Applications*, 340, 225–244.
 * Born, Benjamin and Johannes Pfeifer (2014): “Policy risk and the business cycle”, *Journal of Monetary Economics*, 68, 68-85.
 * Boucekkine, Raouf (1995): “An alternative methodology for solving nonlinear forward-looking models,” *Journal of Economic Dynamics and Control*, 19, 711–734.
-* Brayton, Flint and Peter Tinsley (1996): "A Guide to FRB/US: A Macroeconomic Model of the United States", *Finance and Economics Discussion Series*, 1996-42.
-* Brayton, Flint, Morris Davis and Peter Tulip (2000): "Polynomial Adjustment Costs in FRB/US", *Unpublished manuscript*.
+* Brayton, Flint and Peter Tinsley (1996): “A Guide to FRB/US: A Macroeconomic Model of the United States,” *Finance and Economics Discussion Series*, 1996-42.
+* Brayton, Flint, Morris Davis and Peter Tulip (2000): “Polynomial Adjustment Costs in FRB/US,” *Unpublished manuscript*.
 * Brooks, Stephen P., and Andrew Gelman (1998): “General methods for monitoring convergence of iterative simulations,” *Journal of Computational and Graphical Statistics*, 7, pp. 434–455.
 * Cardoso, Margarida F., R. L. Salcedo and S. Feyo de Azevedo (1996): “The simplex simulated annealing approach to continuous non-linear optimization,” *Computers & Chemical Engineering*, 20(9), 1065-1080.
 * Chib, Siddhartha and Srikanth Ramamurthy (2010): “Tailored randomized block MCMC methods with application to DSGE models,” *Journal of Econometrics*, 155, 19–38.
@@ -29,7 +29,7 @@ Bibliography
 * Collard, Fabrice and Michel Juillard (2001a): “Accuracy of stochastic perturbation methods: The case of asset pricing models,” *Journal of Economic Dynamics and Control*, 25, 979–999.
 * Collard, Fabrice and Michel Juillard (2001b): “A Higher-Order Taylor Expansion Approach to Simulation of Stochastic Forward-Looking Models with an Application to a Non-Linear Phillips Curve,” *Computational Economics*, 17, 125–139.
 * Corana, Angelo, M. Marchesi, Claudio Martini, and Sandro Ridella (1987): “Minimizing multimodal functions of continuous variables with the “simulated annealing” algorithm”, *ACM Transactions on Mathematical Software*, 13(3), 262–280.
-* Cuba-Borda, Pablo, Luca Guerrieri, Matteo Iacoviello, and Molin Zhong (2019): "Likelihood evaluation of models with occasionally binding constraints", Journal of Applied Econometrics, 34(7), 1073-1085
+* Cuba-Borda, Pablo, Luca Guerrieri, Matteo Iacoviello, and Molin Zhong (2019): “Likelihood evaluation of models with occasionally binding constraints,” Journal of Applied Econometrics, 34(7), 1073-1085
 * Del Negro, Marco and Frank Schorfheide (2004): “Priors from General Equilibrium Models for VARs”, *International Economic Review*, 45(2), 643–673.
 * Dennis, Richard (2007): “Optimal Policy In Rational Expectations Models: New Solution Algorithms”, *Macroeconomic Dynamics*, 11(1), 31–55.
 * Duffie, Darrel and Kenneth J. Singleton (1993): “Simulated Moments Estimation of Markov Models of Asset Prices”, *Econometrica*, 61(4), 929-952.
@@ -49,7 +49,7 @@ Bibliography
 * Hansen, Lars P. (1982): “Large sample properties of generalized method of moments estimators,” Econometrica, 50(4), 1029–1054.
 * Hansen, Nikolaus and Stefan Kern (2004): “Evaluating the CMA Evolution Strategy on Multimodal Test Functions”. In: *Eighth International Conference on Parallel Problem Solving from Nature PPSN VIII*, Proceedings, Berlin: Springer, 282–291.
 * Harvey, Andrew C. and Garry D.A. Phillips (1979): “Maximum likelihood estimation of regression models with autoregressive-moving average disturbances,” *Biometrika*, 66(1), 49–58.
-* Herbst, Edward and Schorfheide, Frank (2014): "Sequential Monte Carlo Sampling for DSGE Models," *Journal of Applied Econometrics*, 29, 1073-1098.
+* Herbst, Edward and Schorfheide, Frank (2014): “Sequential Monte Carlo Sampling for DSGE Models,” *Journal of Applied Econometrics*, 29, 1073-1098.
 * Herbst, Edward (2015): “Using the “Chandrasekhar Recursions” for Likelihood Evaluation of DSGE Models,” *Computational Economics*, 45(4), 693–705.
 * Ireland, Peter (2004): “A Method for Taking Models to the Data,” *Journal of Economic Dynamics and Control*, 28, 1205–26.
 * Iskrev, Nikolay (2010): “Local identification in DSGE models,” *Journal of Monetary Economics*, 57(2), 189–202.
