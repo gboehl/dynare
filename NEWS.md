@@ -233,7 +233,7 @@ Major user-visible changes
 
    - The `remove` and `remove_` methods now accept a list of variables (they
      would previously only accept a single variable).
-   
+
    - New MATLAB/Octave command `dplot` to plot mathematical expressions
      generated from variables fetched from (different) dseries objects.
 
