@@ -25,7 +25,7 @@ function [dr,info]=PCL_resol(ys,check_flag)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2001-2017 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -65,7 +65,13 @@ end
 dr.ys = ys;
 check1 = 0;
 % testing for steadystate file
-fh = str2func([M_.fname '.static']);
+static_resid = str2func(sprintf('%s.sparse.static_resid', M_.fname));
+static_g1 = str2func(sprintf('%s.sparse.static_g1', M_.fname));
+function [resid, g1] = static_resid_g1(y, x, params)
+    [resid, T_order, T] = static_resid(y, x, params);
+    g1 = static_g1(y, x, params, M_.static_g1_sparse_rowval, M_.static_g1_sparse_colval, M_.static_g1_sparse_colptr, T_order, T);
+end
+
 if options_.steadystate_flag
     [dr.ys,check1] = feval([M_.fname '_steadystate'],dr.ys,...
                            [oo_.exo_steady_state; ...
@@ -87,17 +93,17 @@ else
     if ~options_.ramsey_policy
         if options_.linear == 0
             % nonlinear models
-            if max(abs(feval(fh,dr.ys,[oo_.exo_steady_state; ...
-                                    oo_.exo_det_steady_state], M_.params))) > options_.solve_tolf
+            if max(abs(static_resid_g1(dr.ys, [oo_.exo_steady_state; ...
+                                               oo_.exo_det_steady_state], M_.params))) > options_.solve_tolf
                 opt = options_;
                 opt.jacobian_flag = false;
-                [dr.ys, check1] = dynare_solve(fh,dr.ys, options.steady_.maxit, options_.solve_tolf, options_.solve_tolx, ...
+                [dr.ys, check1] = dynare_solve(static_resid_g1, dr.ys, options.steady_.maxit, options_.solve_tolf, options_.solve_tolx, ...
                                                opt, [oo_.exo_steady_state; oo_.exo_det_steady_state], M_.params);
             end
         else
             % linear models
-            [fvec,jacob] = feval(fh,dr.ys,[oo_.exo_steady_state;...
-                                oo_.exo_det_steady_state], M_.params);
+            [fvec,jacob] = static_resid_g1(dr.ys, [oo_.exo_steady_state;...
+                                                   oo_.exo_det_steady_state], M_.params);
             if max(abs(fvec)) > 1e-12
                 dr.ys = dr.ys-jacob\fvec;
             end
@@ -111,7 +117,7 @@ if check1
         resid = check1 ;
     else
         info(1)= 20;
-        resid = feval(fh,ys,oo_.exo_steady_state, M_.params);
+        resid = static_resid(ys, oo_.exo_steady_state, M_.params);
     end
     info(2) = resid'*resid ;
     return
@@ -139,6 +145,8 @@ if M_.exo_det_nbr > 0
 end
 oo_.exo_simul = tempex;
 tempex = [];
+
+end
 
 % 01/01/2003 MJ added dr_algo == 1
 % 08/24/2001 MJ uses Schmitt-Grohe and Uribe (2001) constant correction
