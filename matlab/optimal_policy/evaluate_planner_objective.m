@@ -59,7 +59,7 @@ function planner_objective_value = evaluate_planner_objective(M_,options_,oo_)
 
 % In the deterministic case, resorting to approximations for welfare is no longer required as it is possible to simulate the model given initial conditions for pre-determined variables and terminal conditions for forward-looking variables, whether these initial and terminal conditions are explicitly or implicitly specified. Assuming that the number of simulated periods is high enough for the new steady-state to be reached, the new unconditional welfare is thus the last period's welfare. As for the conditional welfare, it can be derived using backward recursions on the equation W = U + beta*W(+1) starting from the final unconditional steady-state welfare.
 
-% Copyright © 2007-2022 Dynare Team
+% Copyright © 2007-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -92,11 +92,11 @@ end
 
 if options_.ramsey_policy && oo_.gui.ran_perfect_foresight
     T = size(oo_.endo_simul,2);
-    [U_term] = feval([M_.fname '.objective.static'],oo_.endo_simul(:,T-M_.maximum_lead),oo_.exo_simul(T-M_.maximum_lead,:), M_.params);
+    U_term = feval([M_.fname '.objective.sparse.static_resid'], oo_.endo_simul(:,T-M_.maximum_lead), oo_.exo_simul(T-M_.maximum_lead,:), M_.params);
     EW = U_term/(1-beta);
     W = EW;
     for t=T-M_.maximum_lead:-1:1+M_.maximum_lag
-        [U] = feval([M_.fname '.objective.static'],oo_.endo_simul(:,t),oo_.exo_simul(t,:), M_.params);
+        U = feval([M_.fname '.objective.sparse.static_resid'], oo_.endo_simul(:,t), oo_.exo_simul(t,:), M_.params);
         W = U + beta*W;
     end
     planner_objective_value = struct('conditional', W, 'unconditional', EW);
@@ -108,7 +108,8 @@ else
         ys = oo_.dr.ys;
     end
     if options_.order == 1 && ~options_.discretionary_policy
-        [U,Uy] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
+        [U, T_order, T] = feval([M_.fname '.objective.sparse.static_resid'], ys, zeros(1,exo_nbr), M_.params);
+        Uy = feval([M_.fname '.objective.sparse.static_g1'], ys, zeros(1,exo_nbr), M_.params, M_.objective_g1_sparse_rowval, M_.objective_g1_sparse_colval, M_.objective_g1_sparse_colptr, T_order, T);
 
         Gy = dr.ghx(nstatic+(1:nspred),:);
         Gu = dr.ghu(nstatic+(1:nspred),:);
@@ -137,7 +138,9 @@ else
         planner_objective_value.conditional.zero_initial_multiplier = W_L_0;
 
     elseif options_.order == 2 && ~M_.hessian_eq_zero %full second order approximation
-        [U,Uy,Uyy] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
+        [U, T_order, T] = feval([M_.fname '.objective.sparse.static_resid'], ys, zeros(1,exo_nbr), M_.params);
+        [Uy, T_order, T] = feval([M_.fname '.objective.sparse.static_g1'], ys, zeros(1,exo_nbr), M_.params, M_.objective_g1_sparse_rowval, M_.objective_g1_sparse_colval, M_.objective_g1_sparse_colptr, T_order, T);
+        Uyy_v = feval([M_.fname '.objective.sparse.static_g2'], ys, zeros(1,exo_nbr), M_.params, T_order, T);
 
         Gy = dr.ghx(nstatic+(1:nspred),:);
         Gu = dr.ghu(nstatic+(1:nspred),:);
@@ -153,6 +156,7 @@ else
         guu(dr.order_var,:) = dr.ghuu;
         gss(dr.order_var,:) = dr.ghs2;
 
+        Uyy = build_two_dim_hessian(M_.objective_g2_sparse_indices, Uyy_v, 1, M_.endo_nbr);
         Uyy = full(Uyy);
 
         Uyygygy = A_times_B_kronecker_C(Uyy,gy,gy);
@@ -228,13 +232,16 @@ else
         planner_objective_value.conditional.steady_initial_multiplier = W_L_SS;
         planner_objective_value.conditional.zero_initial_multiplier = W_L_0;
     elseif (options_.order == 2 && M_.hessian_eq_zero) || options_.discretionary_policy %linear quadratic problem
-        [U,Uy,Uyy] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
+        [U, T_order, T] = feval([M_.fname '.objective.sparse.static_resid'], ys, zeros(1,exo_nbr), M_.params);
+        [Uy, T_order, T] = feval([M_.fname '.objective.sparse.static_g1'], ys, zeros(1,exo_nbr), M_.params, M_.objective_g1_sparse_rowval, M_.objective_g1_sparse_colval, M_.objective_g1_sparse_colptr, T_order, T);
+        Uyy_v = feval([M_.fname '.objective.sparse.static_g2'], ys, zeros(1,exo_nbr), M_.params, T_order, T);
 
         Gy = dr.ghx(nstatic+(1:nspred),:);
         Gu = dr.ghu(nstatic+(1:nspred),:);
         gy(dr.order_var,:) = dr.ghx;
         gu(dr.order_var,:) = dr.ghu;
 
+        Uyy = build_two_dim_hessian(M_.objective_g2_sparse_indices, Uyy_v, 1, M_.endo_nbr);
         Uyy = full(Uyy);
 
         Uyygygy = A_times_B_kronecker_C(Uyy,gy,gy);
@@ -305,7 +312,7 @@ else
             dr.(['g_' num2str(i)]) = [dr.(['g_' num2str(i)]); W.(['W_' num2str(i)])];
         end
         % Amends the steady-state vector accordingly
-        [U] = feval([M_.fname '.objective.static'],ys,zeros(1,exo_nbr), M_.params);
+        U = feval([M_.fname '.objective.sparse.static_resid'], ys, zeros(1,exo_nbr), M_.params);
         ysteady = [ys(oo_.dr.order_var); U/(1-beta)];
 
         % Generates the sequence of shocks to compute unconditional welfare
