@@ -23,7 +23,7 @@ function [oo_, ts]=perfect_foresight_solver(M_, options_, oo_, no_error_if_learn
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 1996-2023 Dynare Team
+% Copyright © 1996-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -55,7 +55,7 @@ end
 periods = options_.periods;
 
 if options_.debug
-    model_static = str2func([M_.fname,'.static']);
+    model_static = str2func([M_.fname,'.sparse.static_resid']);
     for ii=1:size(oo_.exo_simul,1)
         [residual(:,ii)] = model_static(oo_.steady_state, oo_.exo_simul(ii,:),M_.params);
     end
