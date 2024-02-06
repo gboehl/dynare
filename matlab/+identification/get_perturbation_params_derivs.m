@@ -93,7 +93,8 @@ function DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, dr
 % This function calls
 %   * [fname,'.dynamic']
 %   * [fname,'.dynamic_params_derivs']
-%   * [fname,'.static']
+%   * [fname,'.sparse.static_g1']
+%   * [fname,'.sparse.static_g2']
 %   * [fname,'.static_params_derivs']
 %   * commutation
 %   * dyn_vech
@@ -109,7 +110,7 @@ function DERIVS = get_perturbation_params_derivs(M_, options_, estim_params_, dr
 %   * sylvester3a
 %   * get_perturbation_params_derivs_numerical_objective
 % =========================================================================
-% Copyright © 2019-2020 Dynare Team
+% Copyright © 2019-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -454,12 +455,13 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
         error('For analytical parameter derivatives ''dynamic_params_derivs.m'' file is needed, this can be created by putting identification(order=%d) into your mod file.',order)
     end
     %% Analytical computation of Jacobian and Hessian (wrt selected model parameters) of steady state, i.e. dYss and d2Yss
-    [~, g1_static] = feval([fname,'.static'], ys, exo_steady_state', params); %g1_static is [endo_nbr by endo_nbr] first-derivative (wrt all endogenous variables) of static model equations f, i.e. df/dys, in declaration order
+    [g1_static, T_order_static, T_static] = feval([fname,'.sparse.static_g1'], ys, exo_steady_state', params, M_.static_g1_sparse_rowval, M_.static_g1_sparse_colval, M_.static_g1_sparse_colptr); %g1_static is [endo_nbr by endo_nbr] first-derivative (wrt all endogenous variables) of static model equations f, i.e. df/dys, in declaration order
     rp_static = feval([fname,'.static_params_derivs'], ys, exo_steady_state', params); %rp_static is [endo_nbr by param_nbr] first-derivative (wrt all model parameters) of static model equations f, i.e. df/dparams, in declaration order
     dys = -g1_static\rp_static; %use implicit function theorem (equation 5 of Ratto and Iskrev (2012) to compute [endo_nbr by param_nbr] first-derivative (wrt all model parameters) of steady state for all endogenous variables analytically, note that dys is in declaration order
     d2ys = zeros(endo_nbr, param_nbr, param_nbr); %initialize in tensor notation, note that d2ys is only needed for d2flag, i.e. for g1pp
     if d2flag
-        [~, ~, g2_static] = feval([fname,'.static'], ys, exo_steady_state', params); %g2_static is [endo_nbr by endo_nbr^2] second derivative (wrt all endogenous variables) of static model equations f, i.e. d(df/dys)/dys, in declaration order
+        g2_static_v = feval([fname,'.sparse.static_g2'], ys, exo_steady_state', params, T_order_static, T_static);
+        g2_static = build_two_dim_hessian(M_.static_g2_sparse_indices, g2_static_v, endo_nbr, endo_nbr); %g2_static is [endo_nbr by endo_nbr^2] second derivative (wrt all endogenous variables) of static model equations f, i.e. d(df/dys)/dys, in declaration order
         if order < 3
             [~, g1, g2, g3] = feval([fname,'.dynamic'], ys(I), exo_steady_state', params, ys, 1); %note that g3 does not contain symmetric elements
             g3 = identification.unfold_g3(g3, yy0ex0_nbr); %add symmetric elements to g3
@@ -505,7 +507,7 @@ elseif (analytic_derivation_mode == 0 || analytic_derivation_mode == 1)
     end
     %handling of steady state for nonstationary variables
     if any(any(isnan(dys)))
-        [U,T] = schur(g1_static);
+        [U,T] = schur(full(g1_static));
         e1 = abs(ordeig(T)) < qz_criterium-1;
         k = sum(e1);       % Number of non stationary variables.
                            % Number of stationary variables: n = length(e1)-k
