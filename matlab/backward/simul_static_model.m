@@ -15,7 +15,7 @@ function simulation = simul_static_model(samplesize, innovations)
 % [2] The last input argument is not mandatory. If absent we use random draws and rescale them with the informations provided
 %     through the shocks block.
 
-% Copyright © 2019-2022 Dynare Team
+% Copyright © 2019-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -83,12 +83,17 @@ else
     oo_.exo_simul = Innovations;
 end
 
-staticmodel = str2func(sprintf('%s.static', M_.fname));
+static_resid = str2func(sprintf('%s.sparse.static_resid', M_.fname));
+static_g1 = str2func(sprintf('%s.sparse.static_g1', M_.fname));
+function [resid, g1] = staticmodel(y, x, params)
+    [resid, T_order, T] = static_resid(y, x, params);
+    g1 = static_g1(y, x, params, M_.static_g1_sparse_rowval, M_.static_g1_sparse_colval, M_.static_g1_sparse_colptr, T_order, T);
+end
 
 % Simulations (call a Newton-like algorithm for each period).
 for t=1:samplesize
     y = zeros(M_.endo_nbr, 1);
-    [oo_.endo_simul(:,t), errorflag, ~, ~, errorcode] = dynare_solve(staticmodel, y, options_.simul.maxit, options_.dynatol.f, options_.dynatol.x, options_, oo_.exo_simul(t,:), M_.params);
+    [oo_.endo_simul(:,t), errorflag, ~, ~, errorcode] = dynare_solve(@staticmodel, y, options_.simul.maxit, options_.dynatol.f, options_.dynatol.x, options_, oo_.exo_simul(t,:), M_.params);
     if errorflag
         dprintf('simul_static_mode: Nonlinear solver failed with errorcode=%i in period %i.', errorcode, t)
         oo_.endo_simul(:,t) = nan;
@@ -104,3 +109,5 @@ if isdseries(innovations)
 end
 
 simulation = [dseries(ysim', initperiod, M_.endo_names(1:M_.orig_endo_nbr)), dseries(xsim, initperiod, M_.exo_names)];
+
+end
