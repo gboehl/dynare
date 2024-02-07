@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Dynare Team
+ * Copyright © 2021-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -18,13 +18,12 @@
  */
 
 #include "k_ord_objective.hh"
-#include "objective_abstract_class.hh"
 
 #include <cassert>
 #include <utility>
 
 KordwDynare::KordwDynare(KordpDynare& m, ConstVector& NNZD_arg, Journal& jr, Vector& inParams,
-                         std::unique_ptr<ObjectiveAC> objectiveFile_arg,
+                         std::unique_ptr<ObjectiveMFile> objectiveFile_arg,
                          const std::vector<int>& dr_order) :
     model {m},
     NNZD {NNZD_arg},

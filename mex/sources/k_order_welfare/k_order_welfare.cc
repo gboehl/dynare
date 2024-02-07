@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2022 Dynare Team
+ * Copyright © 2021-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -87,8 +87,8 @@ The routine proceeds in several steps:
    to the approxAtSteady method in the ApproximationWelfare class carries out the necessary
    operation
    - Importing the derivatives of the felicity function with the calcDerivativesAtSteady() method of
-     the KordwDynare class. It relies on the Matlab-generated files, which are handled by the
-     ObjectiveAC and ObjectiveMFile classes
+     the KordwDynare class. It relies on the MATLAB-generated files, which are handled by the
+     ObjectiveMFile class
    - Pinpointing the derivatives of the felicity and welfare functions. The performStep method of
      the KOrderWelfare class carries out the calculations,resorting to the FaaDiBruno class and its
      methods to get the needed intermediary results.
@@ -301,7 +301,7 @@ extern "C"
                                         mxGetPr(objective_tmp_nbr_mx) + kOrder + 1, 0);
 
     // Getting derivatives of the planner's objective function
-    std::unique_ptr<ObjectiveAC> objectiveFile;
+    std::unique_ptr<ObjectiveMFile> objectiveFile;
     objectiveFile = std::make_unique<ObjectiveMFile>(fname, ntt_objective);
 
     // make KordwDynare object

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Dynare Team
+ * Copyright © 2021-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -27,7 +27,7 @@
 #include "objective_m.hh"
 
 ObjectiveMFile::ObjectiveMFile(const std::string& modName, int ntt_arg) :
-    ObjectiveAC(ntt_arg), ObjectiveMFilename {modName + ".objective.static"}
+    ntt {ntt_arg}, ObjectiveMFilename {modName + ".objective.static"}
 {
 }
 

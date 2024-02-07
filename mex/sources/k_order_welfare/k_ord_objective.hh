@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Dynare Team
+ * Copyright © 2021-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -21,7 +21,7 @@
 #define K_ORD_OBJECTIVE_HH
 
 #include "k_ord_dynare.hh"
-#include "objective_abstract_class.hh"
+#include "objective_m.hh"
 
 class KordwDynare;
 
@@ -38,11 +38,11 @@ private:
   TensorContainer<FSSparseTensor> ud; // planner's objective derivatives, in Dynare++ form
   std::vector<int> dynppToDyn;        // Maps Dynare++ jacobian variable indices to Dynare ones
   std::vector<int> dynToDynpp;        // Maps Dynare jacobian variable indices to Dynare++ ones
-  std::unique_ptr<ObjectiveAC> objectiveFile;
+  std::unique_ptr<ObjectiveMFile> objectiveFile;
 
 public:
   KordwDynare(KordpDynare& m, ConstVector& NNZD_arg, Journal& jr, Vector& inParams,
-              std::unique_ptr<ObjectiveAC> objectiveFile_arg, const std::vector<int>& varOrder);
+              std::unique_ptr<ObjectiveMFile> objectiveFile_arg, const std::vector<int>& varOrder);
   void calcDerivativesAtSteady();
   void populateDerivativesContainer(const std::vector<TwoDMatrix>& dyn_ud, int ord);
   [[nodiscard]] const TensorContainer<FSSparseTensor>&

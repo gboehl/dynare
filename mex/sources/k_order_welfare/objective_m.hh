@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021-2023 Dynare Team
+ * Copyright © 2021-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -20,24 +20,23 @@
 #ifndef OBJECTIVE_M_HH
 #define OBJECTIVE_M_HH
 
-#include "objective_abstract_class.hh"
+#include <vector>
 
-#include "mex.h"
 #include <dynmex.h>
 
-/**
- * handles calls to <model>/+objective/static.m
- *
- **/
-class ObjectiveMFile : public ObjectiveAC
+#include "twod_matrix.hh"
+
+// Handles calls to <model>/+objective/static.m
+class ObjectiveMFile
 {
 private:
+  int ntt; // Size of vector of temporary terms
   const std::string ObjectiveMFilename;
   static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray* sparseMat, TwoDMatrix& tdm);
 
 public:
   explicit ObjectiveMFile(const std::string& modName, int ntt_arg);
   void eval(const Vector& y, const Vector& x, const Vector& params, Vector& residual,
-            std::vector<TwoDMatrix>& md) override;
+            std::vector<TwoDMatrix>& md);
 };
 #endif
