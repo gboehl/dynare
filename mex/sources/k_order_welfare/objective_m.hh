@@ -22,21 +22,32 @@
 
 #include <vector>
 
-#include <dynmex.h>
+#include "dynmex.h"
 
-#include "twod_matrix.hh"
+#include "Vector.hh"
+#include "sparse_tensor.hh"
+#include "t_container.hh"
 
-// Handles calls to <model>/+objective/static.m
+// Handles calls to <model>/+objective/+sparse/static*.m
 class ObjectiveMFile
 {
 private:
-  int ntt; // Size of vector of temporary terms
   const std::string ObjectiveMFilename;
-  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray* sparseMat, TwoDMatrix& tdm);
+  const int kOrder;
+  const mxArray *const objective_g1_sparse_rowval_mx, *const objective_g1_sparse_colval_mx,
+                                                          *const objective_g1_sparse_colptr_mx;
+  // Stores M_.objective_gN_sparse_indices, starting from N=2
+  const std::vector<const mxArray*> objective_gN_sparse_indices;
 
 public:
-  explicit ObjectiveMFile(const std::string& modName, int ntt_arg);
+  ObjectiveMFile(const std::string& modName, int kOrder_arg,
+                 const mxArray* objective_g1_sparse_rowval_mx_arg,
+                 const mxArray* objective_g1_sparse_colval_mx_arg,
+                 const mxArray* objective_g1_sparse_colptr_mx_arg,
+                 const std::vector<const mxArray*> objective_gN_sparse_indices_arg);
   void eval(const Vector& y, const Vector& x, const Vector& params, Vector& residual,
-            std::vector<TwoDMatrix>& md);
+            const std::vector<int>& dynToDynpp, TensorContainer<FSSparseTensor>& derivatives) const
+      noexcept(false);
 };
+
 #endif

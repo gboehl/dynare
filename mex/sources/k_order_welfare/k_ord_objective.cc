@@ -22,21 +22,19 @@
 #include <cassert>
 #include <utility>
 
-KordwDynare::KordwDynare(KordpDynare& m, ConstVector& NNZD_arg, Journal& jr, Vector& inParams,
+KordwDynare::KordwDynare(KordpDynare& m, Journal& jr, Vector& inParams,
                          std::unique_ptr<ObjectiveMFile> objectiveFile_arg,
                          const std::vector<int>& dr_order) :
     model {m},
-    NNZD {NNZD_arg},
     journal {jr},
     params {inParams},
     resid(1),
     ud {1},
     objectiveFile {std::move(objectiveFile_arg)}
 {
-  dynppToDyn = dr_order;
   dynToDynpp.resize(model.ny());
   for (int i = 0; i < model.ny(); i++)
-    dynToDynpp[dynppToDyn[i]] = i;
+    dynToDynpp[dr_order[i]] = i;
 }
 
 void
@@ -45,71 +43,10 @@ KordwDynare::calcDerivativesAtSteady()
 
   assert(ud.begin() == ud.end());
 
-  std::vector<TwoDMatrix> dyn_ud;     // Planner's objective derivatives, in Dynare form
-  dyn_ud.emplace_back(1, model.ny()); // Allocate Jacobian
-  dyn_ud.back().zeros();
-
-  for (int i = 2; i <= model.order(); i++)
-    {
-      // Higher order derivatives, as sparse (3-column) matrices
-      dyn_ud.emplace_back(static_cast<int>(NNZD[i - 1]), 3);
-      dyn_ud.back().zeros();
-    }
-
   Vector xx(model.nexog());
   xx.zeros();
   resid.zeros();
-  objectiveFile->eval(model.getSteady(), xx, params, resid, dyn_ud);
-
-  for (int i = 1; i <= model.order(); i++)
-    populateDerivativesContainer(dyn_ud, i);
-}
-
-void
-KordwDynare::populateDerivativesContainer(const std::vector<TwoDMatrix>& dyn_ud, int ord)
-{
-  const TwoDMatrix& u = dyn_ud[ord - 1];
-
-  // utility derivatives FSSparseTensor instance
-  auto udTi = std::make_unique<FSSparseTensor>(ord, model.ny(), 1);
-
-  IntSequence s(ord, 0);
-
-  if (ord == 1)
-    for (int i = 0; i < u.ncols(); i++)
-      {
-        for (int j = 0; j < u.nrows(); j++)
-          {
-            double x = u.get(j, dynppToDyn[s[0]]);
-            if (x != 0.0)
-              udTi->insert(s, j, x);
-          }
-        s[0]++;
-      }
-  else // ord ≥ 2
-    for (int i = 0; i < u.nrows(); i++)
-      {
-        int j = static_cast<int>(u.get(i, 0)) - 1;
-        int i1 = static_cast<int>(u.get(i, 1)) - 1;
-        if (j < 0 || i1 < 0)
-          continue; // Discard empty entries (see comment in DynamicModelAC::unpackSparseMatrix())
-
-        for (int k = 0; k < ord; k++)
-          {
-            s[k] = dynToDynpp[i1 % model.ny()];
-            i1 /= model.ny();
-          }
-
-        if (ord == 2 && !s.isSorted())
-          continue; // Skip symmetric elements (only needed at order 2)
-        else if (ord > 2)
-          s.sort(); // For higher order, canonicalize the multi-index
-
-        double x = u.get(i, 2);
-        udTi->insert(s, j, x);
-      }
-
-  ud.insert(std::move(udTi));
+  objectiveFile->eval(model.getSteady(), xx, params, resid, dynToDynpp, ud);
 }
 
 template<>

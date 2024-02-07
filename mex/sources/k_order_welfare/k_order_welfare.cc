@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <string>
 
 #include "dynmex.h"
 
@@ -214,15 +215,6 @@ extern "C"
       mexErrMsgTxt("The derivatives were not computed for the required order. Make sure that you "
                    "used the right order option inside the `stoch_simul' command");
 
-    const mxArray* nnzderivatives_obj_mx = mxGetField(M_mx, 0, "NNZDerivatives_objective");
-    if (!(nnzderivatives_obj_mx && mxIsDouble(nnzderivatives_obj_mx)
-          && !mxIsComplex(nnzderivatives_obj_mx) && !mxIsSparse(nnzderivatives_obj_mx)))
-      mexErrMsgTxt("M_.NNZDerivatives should be a real dense array");
-    ConstVector NNZD_obj {nnzderivatives_obj_mx};
-    if (NNZD.length() < kOrder || NNZD_obj[kOrder - 1] == -1)
-      mexErrMsgTxt("The derivatives were not computed for the required order. Make sure that you "
-                   "used the right order option inside the `stoch_simul' command");
-
     const mxArray* endo_names_mx = mxGetField(M_mx, 0, "endo_names");
     if (!(endo_names_mx && mxIsCell(endo_names_mx)
           && mxGetNumberOfElements(endo_names_mx) == static_cast<size_t>(nEndo)))
@@ -261,6 +253,32 @@ extern "C"
     std::transform(mxGetPr(order_var_mx), mxGetPr(order_var_mx) + nEndo, dr_order.begin(),
                    [](double x) { return static_cast<int>(x) - 1; });
 
+    const mxArray* objective_g1_sparse_rowval_mx
+        = mxGetField(M_mx, 0, "objective_g1_sparse_rowval");
+    if (!(objective_g1_sparse_rowval_mx && mxIsInt32(objective_g1_sparse_rowval_mx)))
+      mexErrMsgTxt("M_.objective_g1_sparse_rowval should be an int32 array");
+
+    const mxArray* objective_g1_sparse_colval_mx
+        = mxGetField(M_mx, 0, "objective_g1_sparse_colval");
+    if (!(objective_g1_sparse_colval_mx && mxIsInt32(objective_g1_sparse_colval_mx)))
+      mexErrMsgTxt("M_.objective_g1_sparse_colval should be an int32 array");
+
+    const mxArray* objective_g1_sparse_colptr_mx
+        = mxGetField(M_mx, 0, "objective_g1_sparse_colptr");
+    if (!(objective_g1_sparse_colptr_mx && mxIsInt32(objective_g1_sparse_colptr_mx)))
+      mexErrMsgTxt("M_.objective_g1_sparse_colptr should be an int32 array");
+
+    std::vector<const mxArray*> objective_gN_sparse_indices;
+    for (int o {2}; o <= kOrder; o++)
+      {
+        using namespace std::string_literals;
+        auto fieldname {"objective_g"s + std::to_string(o) + "_sparse_indices"};
+        const mxArray* indices = mxGetField(M_mx, 0, fieldname.c_str());
+        if (!(indices && mxIsInt32(indices)))
+          mexErrMsgTxt(("M_."s + fieldname + " should be an int32 array").c_str());
+        objective_gN_sparse_indices.push_back(indices);
+      }
+
     const int nSteps
         = 0; // Dynare++ solving steps, for time being default to 0 = deterministic steady state
 
@@ -291,21 +309,14 @@ extern "C"
     // run stochastic steady
     app.walkStochSteady();
 
-    const mxArray* objective_tmp_nbr_mx = mxGetField(M_mx, 0, "objective_tmp_nbr");
-    if (!(objective_tmp_nbr_mx && mxIsDouble(objective_tmp_nbr_mx)
-          && !mxIsComplex(objective_tmp_nbr_mx) && !mxIsSparse(objective_tmp_nbr_mx)
-          && mxGetNumberOfElements(objective_tmp_nbr_mx) >= static_cast<size_t>(kOrder + 1)))
-      mexErrMsgTxt("M_.objective_tmp_nbr should be a real dense array with strictly more elements "
-                   "than the order of derivation");
-    int ntt_objective = std::accumulate(mxGetPr(objective_tmp_nbr_mx),
-                                        mxGetPr(objective_tmp_nbr_mx) + kOrder + 1, 0);
-
     // Getting derivatives of the planner's objective function
     std::unique_ptr<ObjectiveMFile> objectiveFile;
-    objectiveFile = std::make_unique<ObjectiveMFile>(fname, ntt_objective);
+    objectiveFile = std::make_unique<ObjectiveMFile>(
+        fname, kOrder, objective_g1_sparse_rowval_mx, objective_g1_sparse_colval_mx,
+        objective_g1_sparse_colptr_mx, objective_gN_sparse_indices);
 
     // make KordwDynare object
-    KordwDynare welfare(dynare, NNZD_obj, journal, modParams, std::move(objectiveFile), dr_order);
+    KordwDynare welfare(dynare, journal, modParams, std::move(objectiveFile), dr_order);
 
     // construct main K-order approximation class of welfare
     ApproximationWelfare appwel(welfare, discount_factor, app.get_rule_ders(),

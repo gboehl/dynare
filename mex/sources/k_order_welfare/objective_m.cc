@@ -26,88 +26,41 @@
 
 #include "objective_m.hh"
 
-ObjectiveMFile::ObjectiveMFile(const std::string& modName, int ntt_arg) :
-    ntt {ntt_arg}, ObjectiveMFilename {modName + ".objective.static"}
+ObjectiveMFile::ObjectiveMFile(const std::string& modName, int kOrder_arg,
+                               const mxArray* objective_g1_sparse_rowval_mx_arg,
+                               const mxArray* objective_g1_sparse_colval_mx_arg,
+                               const mxArray* objective_g1_sparse_colptr_mx_arg,
+                               const std::vector<const mxArray*> objective_gN_sparse_indices_arg) :
+    ObjectiveMFilename {modName + ".objective.sparse.static"},
+    kOrder {kOrder_arg},
+    objective_g1_sparse_rowval_mx {objective_g1_sparse_rowval_mx_arg},
+    objective_g1_sparse_colval_mx {objective_g1_sparse_colval_mx_arg},
+    objective_g1_sparse_colptr_mx {objective_g1_sparse_colptr_mx_arg},
+    objective_gN_sparse_indices {objective_gN_sparse_indices_arg}
 {
-}
-
-void
-ObjectiveMFile::unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray* sparseMat, TwoDMatrix& tdm)
-{
-  int totalCols = mxGetN(sparseMat);
-  mwIndex* rowIdxVector = mxGetIr(sparseMat);
-  mwIndex* colIdxVector = mxGetJc(sparseMat);
-
-  assert(tdm.ncols() == 3);
-  /* Under MATLAB, the following check always holds at equality; under Octave,
-     there may be an inequality, because Octave diminishes nzmax if one gives
-     zeros in the values vector when calling sparse(). */
-  assert(tdm.nrows() >= static_cast<int>(mxGetNzmax(sparseMat)));
-
-  double* ptr = mxGetPr(sparseMat);
-
-  int rind = 0;
-  int output_row = 0;
-
-  for (int i = 0; i < totalCols; i++)
-    for (int j = 0; j < static_cast<int>((colIdxVector[i + 1] - colIdxVector[i])); j++, rind++)
-      {
-        tdm.get(output_row, 0) = rowIdxVector[rind] + 1;
-        tdm.get(output_row, 1) = i + 1;
-        tdm.get(output_row, 2) = ptr[rind];
-        output_row++;
-      }
-
-  /* If there are less elements than expected (that might happen if some
-     derivative is symbolically not zero but numerically zero at the evaluation
-     point), then fill in the matrix with empty entries, that will be
-     recognized as such by KordpDynare::populateDerivativesContainer() */
-  while (output_row < tdm.nrows())
-    {
-      tdm.get(output_row, 0) = 0;
-      tdm.get(output_row, 1) = 0;
-      tdm.get(output_row, 2) = 0;
-      output_row++;
-    }
 }
 
 void
 ObjectiveMFile::eval(const Vector& y, const Vector& x, const Vector& modParams, Vector& residual,
-                     std::vector<TwoDMatrix>& md) noexcept(false)
+                     const std::vector<int>& dynToDynpp,
+                     TensorContainer<FSSparseTensor>& derivatives) const
 {
-  mxArray* T_m = mxCreateDoubleMatrix(ntt, 1, mxREAL);
+  mxArray* y_mx = mxCreateDoubleMatrix(y.length(), 1, mxREAL);
+  std::copy_n(y.base(), y.length(), mxGetPr(y_mx));
 
-  mxArray* y_m = mxCreateDoubleMatrix(y.length(), 1, mxREAL);
-  std::copy_n(y.base(), y.length(), mxGetPr(y_m));
+  mxArray* x_mx = mxCreateDoubleMatrix(1, x.length(), mxREAL);
+  std::copy_n(x.base(), x.length(), mxGetPr(x_mx));
 
-  mxArray* x_m = mxCreateDoubleMatrix(1, x.length(), mxREAL);
-  std::copy_n(x.base(), x.length(), mxGetPr(x_m));
+  mxArray* params_mx = mxCreateDoubleMatrix(modParams.length(), 1, mxREAL);
+  std::copy_n(modParams.base(), modParams.length(), mxGetPr(params_mx));
 
-  mxArray* params_m = mxCreateDoubleMatrix(modParams.length(), 1, mxREAL);
-  std::copy_n(modParams.base(), modParams.length(), mxGetPr(params_m));
-
-  mxArray* T_flag_m = mxCreateLogicalScalar(false);
-
-  {
-    // Compute temporary terms (for all orders)
-    std::string funcname = ObjectiveMFilename + "_g" + std::to_string(md.size()) + "_tt";
-    std::array<mxArray*, 1> plhs;
-    std::array prhs {T_m, y_m, x_m, params_m};
-
-    int retVal
-        = mexCallMATLAB(plhs.size(), plhs.data(), prhs.size(), prhs.data(), funcname.c_str());
-    if (retVal != 0)
-      throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
-
-    mxDestroyArray(T_m);
-    T_m = plhs[0];
-  }
+  mxArray *T_order_mx, *T_mx;
 
   {
     // Compute residuals
     std::string funcname = ObjectiveMFilename + "_resid";
-    std::array<mxArray*, 1> plhs;
-    std::array prhs {T_m, y_m, x_m, params_m, T_flag_m};
+    std::array<mxArray*, 3> plhs;
+    std::array prhs {y_mx, x_mx, params_mx};
 
     int retVal
         = mexCallMATLAB(plhs.size(), plhs.data(), prhs.size(), prhs.data(), funcname.c_str());
@@ -116,35 +69,103 @@ ObjectiveMFile::eval(const Vector& y, const Vector& x, const Vector& modParams, 
 
     residual = Vector {plhs[0]};
     mxDestroyArray(plhs[0]);
+
+    T_order_mx = plhs[1];
+    T_mx = plhs[2];
   }
 
-  for (size_t i = 1; i <= md.size(); i++)
+  {
+    // Compute Jacobian
+    std::string funcname = ObjectiveMFilename + "_g1";
+    std::array<mxArray*, 3> plhs;
+    std::array prhs {y_mx,
+                     x_mx,
+                     params_mx,
+                     const_cast<mxArray*>(objective_g1_sparse_rowval_mx),
+                     const_cast<mxArray*>(objective_g1_sparse_colval_mx),
+                     const_cast<mxArray*>(objective_g1_sparse_colptr_mx),
+                     T_order_mx,
+                     T_mx};
+
+    int retVal
+        = mexCallMATLAB(plhs.size(), plhs.data(), prhs.size(), prhs.data(), funcname.c_str());
+    if (retVal != 0)
+      throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
+
+    assert(static_cast<int>(mxGetN(plhs[0])) == y.length());
+    double* g1_v {mxGetPr(plhs[0])};
+    mwIndex* g1_ir {mxGetIr(plhs[0])};
+    mwIndex* g1_jc {mxGetJc(plhs[0])};
+
+    IntSequence s(1, 0);
+    auto tensor = std::make_unique<FSSparseTensor>(1, y.length(), 1);
+
+    for (int j {0}; j < y.length(); j++)
+      for (mwIndex k {g1_jc[j]}; k < g1_jc[j + 1]; k++)
+        {
+          s[0] = dynToDynpp[j];
+          tensor->insert(s, g1_ir[k], g1_v[k]);
+        }
+
+    mxDestroyArray(plhs[0]);
+
+    mxDestroyArray(T_order_mx);
+    T_order_mx = plhs[1];
+
+    mxDestroyArray(T_mx);
+    T_mx = plhs[2];
+
+    derivatives.insert(std::move(tensor));
+  }
+
+  for (int o {2}; o <= kOrder; o++)
     {
-      // Compute model derivatives
-      std::string funcname = ObjectiveMFilename + "_g" + std::to_string(i);
-      std::array<mxArray*, 1> plhs;
-      std::array prhs {T_m, y_m, x_m, params_m, T_flag_m};
+      // Compute higher derivatives
+      std::string funcname = ObjectiveMFilename + "_g" + std::to_string(o);
+      std::array<mxArray*, 3> plhs;
+      std::array prhs {y_mx, x_mx, params_mx, T_order_mx, T_mx};
 
       int retVal
           = mexCallMATLAB(plhs.size(), plhs.data(), prhs.size(), prhs.data(), funcname.c_str());
       if (retVal != 0)
         throw DynareException(__FILE__, __LINE__, "Trouble calling " + funcname);
 
-      if (i == 1)
+      const mxArray* sparse_indices_mx {objective_gN_sparse_indices[o - 2]};
+      size_t nnz {mxGetM(sparse_indices_mx)};
+#if MX_HAS_INTERLEAVED_COMPLEX
+      const int32_T* sparse_indices {mxGetInt32s(sparse_indices_mx)};
+#else
+      const int32_T* sparse_indices {static_cast<const int32_T*>(mxGetData(sparse_indices_mx))};
+#endif
+
+      assert(mxGetNumberOfElements(plhs[0]) == nnz);
+      double* gN_v {mxGetPr(plhs[0])};
+
+      IntSequence s(o, 0);
+      auto tensor = std::make_unique<FSSparseTensor>(o, y.length(), 1);
+
+      for (size_t k {0}; k < nnz; k++)
         {
-          assert(static_cast<int>(mxGetM(plhs[0])) == md[i - 1].nrows());
-          assert(static_cast<int>(mxGetN(plhs[0])) == md[i - 1].ncols());
-          std::copy_n(mxGetPr(plhs[0]), mxGetM(plhs[0]) * mxGetN(plhs[0]), md[i - 1].base());
+          for (int i {0}; i < o; i++)
+            s[i] = dynToDynpp[sparse_indices[k + (i + 1) * nnz] - 1];
+          assert(s.isSorted());
+          tensor->insert(s, sparse_indices[k] - 1, gN_v[k]);
         }
-      else
-        unpackSparseMatrixAndCopyIntoTwoDMatData(plhs[0], md[i - 1]);
 
       mxDestroyArray(plhs[0]);
+
+      mxDestroyArray(T_order_mx);
+      T_order_mx = plhs[1];
+
+      mxDestroyArray(T_mx);
+      T_mx = plhs[2];
+
+      derivatives.insert(std::move(tensor));
     }
 
-  mxDestroyArray(T_m);
-  mxDestroyArray(y_m);
-  mxDestroyArray(x_m);
-  mxDestroyArray(params_m);
-  mxDestroyArray(T_flag_m);
+  mxDestroyArray(y_mx);
+  mxDestroyArray(x_mx);
+  mxDestroyArray(params_mx);
+  mxDestroyArray(T_order_mx);
+  mxDestroyArray(T_mx);
 }

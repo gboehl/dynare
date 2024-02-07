@@ -29,22 +29,19 @@ class KordwDynare
 {
 public:
   KordpDynare& model;
-  const ConstVector& NNZD;
 
 private:
   Journal& journal;
   Vector& params;
   Vector resid;
   TensorContainer<FSSparseTensor> ud; // planner's objective derivatives, in Dynare++ form
-  std::vector<int> dynppToDyn;        // Maps Dynare++ jacobian variable indices to Dynare ones
   std::vector<int> dynToDynpp;        // Maps Dynare jacobian variable indices to Dynare++ ones
   std::unique_ptr<ObjectiveMFile> objectiveFile;
 
 public:
-  KordwDynare(KordpDynare& m, ConstVector& NNZD_arg, Journal& jr, Vector& inParams,
+  KordwDynare(KordpDynare& m, Journal& jr, Vector& inParams,
               std::unique_ptr<ObjectiveMFile> objectiveFile_arg, const std::vector<int>& varOrder);
   void calcDerivativesAtSteady();
-  void populateDerivativesContainer(const std::vector<TwoDMatrix>& dyn_ud, int ord);
   [[nodiscard]] const TensorContainer<FSSparseTensor>&
   getPlannerObjDerivatives() const
   {
