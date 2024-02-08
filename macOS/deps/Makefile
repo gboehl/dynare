@@ -53,17 +53,16 @@ clean-all: clean-lib clean-src clean-tar
 #
 tarballs/slicot-$(SLICOT_VERSION).tar.gz:
 	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://deb.debian.org/debian/pool/main/s/slicot/slicot_$(SLICOT_VERSION).orig.tar.gz
+	wget $(WGET_OPTIONS) -O $@ https://deb.debian.org/debian/pool/main/s/slicot/slicot_$(SLICOT_VERSION).orig.tar.xz
 
 $(DEPS_ARCH)/sources64/slicot-$(SLICOT_VERSION): tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf $(DEPS_ARCH)/sources64/slicot-*
 	mkdir -p $@
 	tar xf $< --directory $@ --strip-components=1
-	patch -d $@ -p1 < ../../windows/deps/slicot-build-system.patch
 	touch $@
 
 $(DEPS_ARCH)/lib64/slicot/libslicot64_pic.a: $(DEPS_ARCH)/sources64/slicot-$(SLICOT_VERSION)
-	make -C $< -f makefile_Unix FC=$(BREWDIR)/bin/gfortran LOADER=$(BREWDIR)/bin/gfortran SLICOTLIB=../libslicot64_pic.a FFLAGS="-O3 -fdefault-integer-8" lib -j$(NTHREADS)
+	make -C $< -f makefile_Unix FORTRAN=$(BREWDIR)/bin/gfortran LOADER=$(BREWDIR)/bin/gfortran SLICOTLIB=../libslicot64_pic.a OPTS="-O3 -fdefault-integer-8" lib -j$(NTHREADS)
 	strip -S $</libslicot64_pic.a
 	mkdir -p $(dir $@)
 	cp $</libslicot64_pic.a $@
