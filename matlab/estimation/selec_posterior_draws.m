@@ -26,7 +26,7 @@ function SampleAddress = selec_posterior_draws(M_,options_,dr,endo_steady_state,
 %   None.
 %
 
-% Copyright © 2006-2022 Dynare Team
+% Copyright © 2006-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -146,7 +146,7 @@ if info
             pdraws(linee,1) = {x2(SampleAddress(i,4),:)};
             if info==2
                 M_ = set_parameters_locally(M_,pdraws{i,1});
-                [dr,~,M_.params] = compute_decision_rules(M_,options_,oo_.dr, oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
+                [dr,~,M_.params] = compute_decision_rules(M_,options_,dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
                 pdraws(linee,2) = { dr };
             end
             old_mhfile = mhfile;
