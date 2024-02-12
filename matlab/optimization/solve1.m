@@ -123,7 +123,11 @@ for its = 1:maxit
         fjac2=fjac'*fjac;
         temp=max(sum(abs(fjac2)));
         if temp>0
-            p=-(fjac2+sqrt(nn*eps)*temp*eye(nn))\(fjac'*fvec);
+            if issparse(fjac)
+                p=-(fjac2+sqrt(nn*eps)*temp*speye(nn))\(fjac'*fvec);
+            else
+                p=-(fjac2+sqrt(nn*eps)*temp*eye(nn))\(fjac'*fvec);
+            end
         else
             errorflag = true;
             errorcode = 5;
