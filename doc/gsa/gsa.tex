@@ -22,7 +22,7 @@
 \begin{document}
 
 % ----------------------------------------------------------------
-\title{Sensitivity Analysis Toolbox for DYNARE\thanks{Copyright \copyright~2012 Dynare
+\title{Sensitivity Analysis Toolbox for Dynare\thanks{Copyright \copyright~2012-2024 Dynare
     Team. Permission is granted to copy, distribute and/or modify
     this document under the terms of the GNU Free Documentation
     License, Version 1.3 or any later version published by the Free
@@ -32,9 +32,9 @@
 
 \author{Marco Ratto\\
 European Commission, Joint Research Centre \\
-TP361, IPSC, \\21027 Ispra
+TP581\\21027 Ispra
 (VA) Italy\\
-\texttt{marco.ratto@jrc.ec.europa.eu}
+\texttt{Marco.Ratto@ec.europa.eu}
 \thanks{The author gratefully thanks Christophe Planas, Kenneth Judd, Michel Juillard,
 Alessandro Rossi, Frank Schorfheide and the participants to the
 Courses on Global Sensitivity Analysis for Macroeconomic
@@ -52,21 +52,21 @@ helpful suggestions.}}
 
 %-----------------------------------------------------------------------
 \begin{abstract}
-\noindent The Sensitivity Analysis Toolbox for DYNARE is a set of
+\noindent The Sensitivity Analysis Toolbox for Dynare is a set of
 MATLAB routines for the analysis of DSGE models with global
 sensitivity analysis. The routines are thought to be used within
-the DYNARE v4 environment.
+the Dynare 6 environment.
 
 
 \begin{description}
   \item \textbf{Keywords}: Stability Mapping , Reduced form solution, DSGE models,
-  Monte Carlo filtering,   Global Sensitivity Analysis.
+  Monte Carlo filtering, Global Sensitivity Analysis.
 \end{description}
 \end{abstract}
 \newpage
 % ----------------------------------------------------------------
 \section{Introduction} \label{s:intro}
-The Sensitivity Analysis Toolbox for DYNARE is a collection of
+The Sensitivity Analysis Toolbox for Dynare is a collection of
 MATLAB routines implemented to answer the following questions: (i)
 Which is the domain of structural coefficients assuring the
 stability and determinacy of a DSGE model? (ii) Which parameters
@@ -81,20 +81,18 @@ described in \cite{Ratto_CompEcon_2008}.
 
 
 \section{Use of the Toolbox}
-The DYNARE parser now recognizes sensitivity analysis commands.
+The Dynare parser now recognizes sensitivity analysis commands.
 The syntax is based on a single command:
 \vspace{0.5cm}
 
-\verb"dynare_sensitivity(option1=<opt1_val>,option2=<opt2_val>,...)"
+\verb"sensitivity(option1=<opt1_val>,option2=<opt2_val>,...)"
 
 \vspace{0.5cm} \noindent with a list of options described in the
 next section.
 
-With respect to the previous version of the toolbox, in order to
-work properly, the sensitivity analysis Toolbox \emph{no longer}
-needs that the DYNARE estimation environment is set-up.
-
-Therefore, \verb"dynare_sensitivity" is the only command to run to
+In order to work properly, the sensitivity analysis Toolbox does not need
+a Dynare estimation environment to be set up. Rather, \verb"sensitivity"
+is the only command to run to
 make a sensitivity analysis on a DSGE model\footnote{Of course,
 when the user needs to perform the mapping of the fit with a
 posterior sample, a Bayesian estimation has to be performed
@@ -208,16 +206,17 @@ a multivariate normal MC sample, with covariance matrix based on
 the inverse Hessian at the optimum: this analysis is useful when
 ML estimation is done (i.e. no Bayesian estimation);
 \item when \verb"ppost=1" the Toolbox analyses
-the RMSE's for the posterior sample obtained by DYNARE's
+the RMSE's for the posterior sample obtained by Dynare's
 Metropolis procedure.
 \end{enumerate}
 
-The use of cases 2. and 3. requires an estimation step beforehand!
+The use of cases 2. and 3. require an estimation step beforehand!
 To facilitate the sensitivity analysis after estimation, the
-\verb"dynare_sensitivity" command also allows to indicate some
-options of \verb"dynare_estimation". These are:
+\verb"sensitivity" command also allows to indicate some
+options of \verb"estimation". These are:
 \begin{itemize}
   \item \verb"datafile"
+  \item \verb"diffuse_filter"
   \item \verb"mode_file"
   \item \verb"first_obs"
   \item \verb"lik_init"
@@ -278,10 +277,10 @@ identifiable.
 \end{tabular}
 
 \vspace{1cm}
-\noindent For example, the following commands in the DYNARE model file
+\noindent For example, the following commands in the Dynare model file
 
 \vspace{1cm}
-\noindent\verb"dynare_sensitivity(identification=1, morris=2);"
+\noindent\verb"sensitivity(identification=1, morris=2);"
 
 \vspace{1cm}
 \noindent trigger the identification analysis using \cite{Iskrev2010,Iskrev2011}, jointly with the mapping of the acceptable region.
@@ -293,75 +292,75 @@ Sensitivity analysis results are saved on the hard-disk of the
 computer. The Toolbox uses a dedicated folder called \verb"GSA",
 located in \\
 \\
-\verb"<DYNARE_file>\GSA", \\
+\verb"<Dynare_file>\GSA", \\
 \\
-where \verb"<DYNARE_file>.mod" is the name of the DYNARE model
+where \verb"<Dynare_file>.mod" is the name of the Dynare model
 file.
 
 \subsection{Binary data files}
 A set of binary data files is saved in the \verb"GSA" folder:
 \begin{description}
-\item[]\verb"<DYNARE_file>_prior.mat": this file stores
+\item[]\verb"<Dynare_file>_prior.mat": this file stores
 information about the analyses performed sampling from the prior
 ranges, i.e. \verb"pprior=1" and \verb"ppost=0";
-\item[]\verb"<DYNARE_file>_mc.mat": this file stores
+\item[]\verb"<Dynare_file>_mc.mat": this file stores
 information about the analyses performed sampling from
 multivariate normal, i.e. \verb"pprior=0" and \verb"ppost=0";
-\item[]\verb"<DYNARE_file>_post.mat": this file stores information
+\item[]\verb"<Dynare_file>_post.mat": this file stores information
 about analyses performed using the Metropolis posterior sample,
 i.e. \verb"ppost=1".
 \end{description}
 
 \begin{description}
-\item[]\verb"<DYNARE_file>_prior_*.mat": these files store
+\item[]\verb"<Dynare_file>_prior_*.mat": these files store
 the filtered and smoothed variables for the prior MC sample,
 generated when doing  RMSE analysis (\verb"pprior=1" and
 \verb"ppost=0");
-\item[]\verb"<DYNARE_file>_mc_*.mat": these files store
+\item[]\verb"<Dynare_file>_mc_*.mat": these files store
 the filtered and smoothed variables for the multivariate normal MC
 sample, generated when doing  RMSE analysis (\verb"pprior=0" and
 \verb"ppost=0").
 \end{description}
 
 \subsection{Stability analysis}
-Figure files \verb"<DYNARE_file>_prior_*.fig" store results for
+Figure files \verb"<Dynare_file>_prior_*.fig" store results for
 the stability mapping from prior MC samples:
 \begin{description}
-\item[]\verb"<DYNARE_file>_prior_stab_SA_*.fig": plots of the Smirnov
-test analyses confronting the cdf of the sample fulfilling
-Blanchard-Kahn conditions with the cdf of the rest of the sample;
-\item[]\verb"<DYNARE_file>_prior_stab_indet_SA_*.fig": plots of the Smirnov
-test analyses confronting the cdf of the sample producing
-indeterminacy with the cdf of the original prior sample;
-\item[]\verb"<DYNARE_file>_prior_stab_unst_SA_*.fig": plots of the Smirnov
-test analyses confronting the cdf of the sample producing unstable
-(explosive roots) behaviour with the cdf of the original prior
+\item[]\verb"<Dynare_file>_prior_stab_SA_*.fig": plots of the Smirnov
+test analyses confronting the CDF of the sample fulfilling
+Blanchard-Kahn conditions with the CDF of the rest of the sample;
+\item[]\verb"<Dynare_file>_prior_stab_indet_SA_*.fig": plots of the Smirnov
+test analyses confronting the CDF of the sample producing
+indeterminacy with the CDF of the original prior sample;
+\item[]\verb"<Dynare_file>_prior_stab_unst_SA_*.fig": plots of the Smirnov
+test analyses confronting the CDF of the sample producing unstable
+(explosive roots) behaviour with the CDF of the original prior
 sample;
-\item[]\verb"<DYNARE_file>_prior_stable_corr_*.fig": plots of
+\item[]\verb"<Dynare_file>_prior_stable_corr_*.fig": plots of
 bivariate projections of the sample fulfilling Blanchard-Kahn
 conditions;
-\item[]\verb"<DYNARE_file>_prior_indeterm_corr_*.fig": plots of
+\item[]\verb"<Dynare_file>_prior_indeterm_corr_*.fig": plots of
 bivariate projections of the sample producing indeterminacy;
-\item[]\verb"<DYNARE_file>_prior_unstable_corr_*.fig":  plots of
+\item[]\verb"<Dynare_file>_prior_unstable_corr_*.fig":  plots of
 bivariate projections of the sample producing instability;
-\item[]\verb"<DYNARE_file>_prior_unacceptable_corr_*.fig": plots of
+\item[]\verb"<Dynare_file>_prior_unacceptable_corr_*.fig": plots of
 bivariate projections of the sample producing unacceptable
 solutions, i.e. either instability or indeterminacy or the
 solution could not be found (e.g. the steady state solution could
 not be found by the solver).
 \end{description}
-Similar conventions apply for \verb"<DYNARE_file>_mc_*.fig" files,
+Similar conventions apply for \verb"<Dynare_file>_mc_*.fig" files,
 obtained when samples from multivariate normal are used.
 
 \subsection{RMSE analysis}
-Figure files \verb"<DYNARE_file>_rmse_*.fig" store results for the
+Figure files \verb"<Dynare_file>_rmse_*.fig" store results for the
 RMSE analysis.
 \begin{description}
-\item[]\verb"<DYNARE_file>_rmse_prior*.fig": save results for
+\item[]\verb"<Dynare_file>_rmse_prior*.fig": save results for
 the analysis using prior MC samples;
-\item[]\verb"<DYNARE_file>_rmse_mc*.fig": save results for
+\item[]\verb"<Dynare_file>_rmse_mc*.fig": save results for
 the analysis using multivariate normal MC samples;
-\item[]\verb"<DYNARE_file>_rmse_post*.fig": save results for
+\item[]\verb"<Dynare_file>_rmse_post*.fig": save results for
 the analysis using Metropolis posterior samples.
 \end{description}
 
@@ -369,33 +368,33 @@ The following types of figures are saved (we show prior sample to
 fix ideas, but the same conventions are used for multivariate
 normal and posterior):
 \begin{description}
-\item[]\verb"<DYNARE_file>_rmse_prior_*.fig": for each parameter, plots the cdf's
+\item[]\verb"<Dynare_file>_rmse_prior_*.fig": for each parameter, plots the CDF's
 corresponding to the best 10\% RMES's of each observed series;
-\item[]\verb"<DYNARE_file>_rmse_prior_dens_*.fig": for each parameter, plots the pdf's
+\item[]\verb"<Dynare_file>_rmse_prior_dens_*.fig": for each parameter, plots the pdf's
 corresponding to the best 10\% RMES's of each observed series;
-\item[]\verb"<DYNARE_file>_rmse_prior_<name of observedseries>_corr_*.fig": for each observed series plots the
+\item[]\verb"<Dynare_file>_rmse_prior_<name of observedseries>_corr_*.fig": for each observed series plots the
 bi-dimensional projections of samples with the best 10\% RMSE's,
 when the correlation is significant;
-\item[]\verb"<DYNARE_file>_rmse_prior_lnlik*.fig": for each observed
-series, plots \emph{in red} the cdf of the log-likelihood
-corresponding to the best 10\% RMSE's, \emph{in green} the cdf of
-the rest of the sample and \emph{in blue }the cdf of the full
+\item[]\verb"<Dynare_file>_rmse_prior_lnlik*.fig": for each observed
+series, plots \emph{in red} the CDF of the log-likelihood
+corresponding to the best 10\% RMSE's, \emph{in green} the CDF of
+the rest of the sample and \emph{in blue }the CDF of the full
 sample; this allows to see the  presence of some idiosyncratic
 behaviour;
-\item[]\verb"<DYNARE_file>_rmse_prior_lnpost*.fig": for each observed
-series, plots \emph{in red} the cdf of the log-posterior
-corresponding to the best 10\% RMSE's, \emph{in green} the cdf of
-the rest of the sample and \emph{in blue }the cdf of the full
+\item[]\verb"<Dynare_file>_rmse_prior_lnpost*.fig": for each observed
+series, plots \emph{in red} the CDF of the log-posterior
+corresponding to the best 10\% RMSE's, \emph{in green} the CDF of
+the rest of the sample and \emph{in blue }the CDF of the full
 sample; this allows to see idiosyncratic behaviour;
-\item[]\verb"<DYNARE_file>_rmse_prior_lnprior*.fig": for each observed
-series, plots \emph{in red} the cdf of the log-prior corresponding
-to the best 10\% RMSE's, \emph{in green} the cdf of the rest of
-the sample and \emph{in blue }the cdf of the full sample; this
+\item[]\verb"<Dynare_file>_rmse_prior_lnprior*.fig": for each observed
+series, plots \emph{in red} the CDF of the log-prior corresponding
+to the best 10\% RMSE's, \emph{in green} the CDF of the rest of
+the sample and \emph{in blue }the CDF of the full sample; this
 allows to see idiosyncratic behaviour;
-\item[]\verb"<DYNARE_file>_rmse_prior_lik_SA_*.fig": when
+\item[]\verb"<Dynare_file>_rmse_prior_lik_SA_*.fig": when
 \verb"lik_only=1", this shows the Smirnov tests for the filtering
 of the best 10\% log-likelihood values;
-\item[]\verb"<DYNARE_file>_rmse_prior_post_SA_*.fig": when
+\item[]\verb"<Dynare_file>_rmse_prior_post_SA_*.fig": when
 \verb"lik_only=1", this shows the Smirnov test for the filtering
 of the best 10\% log-posterior values.
 \end{description}
@@ -405,19 +404,19 @@ In the case of the mapping of the reduced form solution, synthetic
 figures are saved in the \verb"\GSA" folder:
 
 \begin{description}
-\item[]\verb"<DYNARE_file>_redform_<endo name>_vs_lags_*.fig":
+\item[]\verb"<Dynare_file>_redform_<endo name>_vs_lags_*.fig":
 shows bar charts of the sensitivity indices for the \emph{ten most
 important} parameters driving the reduced form coefficients of the
 selected endogenous variables (\verb"namendo") versus lagged
 endogenous variables (\verb"namlagendo"); suffix \verb"log"
 indicates the results for  log-transformed entries;
-\item[]\verb"<DYNARE_file>_redform_<endo name>_vs_shocks_*.fig":
+\item[]\verb"<Dynare_file>_redform_<endo name>_vs_shocks_*.fig":
 shows bar charts of the sensitivity indices for the \emph{ten most
 important} parameters driving the reduced form coefficients of the
 selected endogenous variables (\verb"namendo") versus exogenous
 variables (\verb"namexo"); suffix \verb"log" indicates the results
 for  log-transformed entries;
-\item[]\verb"<DYNARE_file>_redform_GSA(_log).fig": shows bar chart of
+\item[]\verb"<Dynare_file>_redform_GSA(_log).fig": shows bar chart of
 all sensitivity indices for each  parameter: this allows to notice
 parameters that have a minor effect for \emph{any} of the reduced
 form coefficients,
@@ -449,24 +448,24 @@ without the need of any user's intervention.
 \subsection{Screening analysis}
 The results of the screening analysis with Morris sampling design
 are stored in the subfolder \verb"\GSA\SCREEN". The data file
-\verb"<DYNARE_file>_prior" stores all the information of the
+\verb"<Dynare_file>_prior" stores all the information of the
 analysis (Morris sample, reduced form coefficients, etc.).
 
 Screening analysis merely concerns reduced form coefficients.
 Similar synthetic bar charts as for the reduced form analysis with
 MC samples are saved:
 \begin{description}
-\item[]\verb"<DYNARE_file>_redform_<endo name>_vs_lags_*.fig":
+\item[]\verb"<Dynare_file>_redform_<endo name>_vs_lags_*.fig":
 shows bar charts of the elementary effect tests for the \emph{ten
 most important} parameters driving the reduced form coefficients
 of the selected endogenous variables (\verb"namendo") versus
 lagged endogenous variables (\verb"namlagendo");
-\item[]\verb"<DYNARE_file>_redform_<endo name>_vs_shocks_*.fig":
+\item[]\verb"<Dynare_file>_redform_<endo name>_vs_shocks_*.fig":
 shows bar charts of the elementary effect tests for the \emph{ten
 most important} parameters driving the reduced form coefficients
 of the selected endogenous variables (\verb"namendo") versus
 exogenous variables (\verb"namexo");
-\item[]\verb"<DYNARE_file>_redform_screen.fig": shows bar chart of
+\item[]\verb"<Dynare_file>_redform_screen.fig": shows bar chart of
 all elementary effect tests for each  parameter: this allows to
 identify parameters that have a minor effect for \emph{any} of the
 reduced form coefficients.
