@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2023 Dynare Team
+ * Copyright © 2010-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -22,9 +22,6 @@
 
 #include "dynamic_abstract_class.hh"
 
-#include "mex.h"
-#include <dynmex.h>
-
 /**
  * handles calls to <model>_dynamic.m
  *
@@ -33,10 +30,6 @@ class DynamicModelMFile : public DynamicModelAC
 {
 private:
   const std::string DynamicMFilename;
-  /* Unpack a sparse matrix (of double floats) into a TwoDMatrix object.
-     Real elements of the original matrix are copied as-is to the new one.
-     Complex elements are replaced by NaNs. */
-  static void unpackSparseMatrixAndCopyIntoTwoDMatData(mxArray* sparseMat, TwoDMatrix& tdm);
   /* Given a complex dense matrix (of double floats), returns a real dense matrix of same size.
      Real elements of the original matrix are copied as-is to the new one.
      Complex elements are replaced by NaNs.
@@ -44,8 +37,14 @@ private:
   static mxArray* cmplxToReal(mxArray* m);
 
 public:
-  explicit DynamicModelMFile(const std::string& modName, int ntt_arg);
+  DynamicModelMFile(const std::string& modName, int order_arg,
+                    const mxArray* dynamic_g1_sparse_rowval_mx_arg,
+                    const mxArray* dynamic_g1_sparse_colval_mx_arg,
+                    const mxArray* dynamic_g1_sparse_colptr_mx_arg,
+                    const std::vector<const mxArray*> dynamic_gN_sparse_indices_arg);
   void eval(const Vector& y, const Vector& x, const Vector& params, const Vector& ySteady,
-            Vector& residual, std::vector<TwoDMatrix>& md) override;
+            Vector& residual, const std::map<int, int>& dynToDynpp,
+            TensorContainer<FSSparseTensor>& derivatives) noexcept(false) override;
 };
+
 #endif

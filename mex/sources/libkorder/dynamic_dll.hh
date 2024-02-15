@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2023 Dynare Team
+ * Copyright © 2008-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -37,15 +37,10 @@
 
 #include "dynamic_abstract_class.hh"
 
-using dynamic_tt_fct
-    = void (*)(const double* y, const double* x, int nb_row_x, const double* params,
-               const double* steady_state, int it_, double* T);
-using dynamic_resid_or_g1_fct
-    = void (*)(const double* y, const double* x, int nb_row_x, const double* params,
-               const double* steady_state, int it_, const double* T, double* resid_or_g1);
-using dynamic_higher_deriv_fct = void (*)(const double* y, const double* x, int nb_row_x,
-                                          const double* params, const double* steady_state, int it_,
-                                          const double* T, double* g_i, double* g_j, double* g_v);
+using dynamic_tt_fct = void (*)(const double* y, const double* x, const double* params,
+                                const double* steady_state, double* T);
+using dynamic_fct = void (*)(const double* y, const double* x, const double* params,
+                             const double* steady_state, const double* T, double* values);
 
 /**
  * creates pointer to Dynamic function inside <model>_dynamic.dll
@@ -54,56 +49,38 @@ using dynamic_higher_deriv_fct = void (*)(const double* y, const double* x, int 
 class DynamicModelDLL : public DynamicModelAC
 {
 private:
-  std::vector<dynamic_tt_fct> dynamic_tt;
-  dynamic_resid_or_g1_fct dynamic_resid, dynamic_g1;
-  std::vector<dynamic_higher_deriv_fct> dynamic_higher_deriv; // Index 0 is g2
+  using mex_handle_t =
 #if defined(_WIN32) || defined(__CYGWIN32__)
-  HINSTANCE dynamicHinstance; // DLL instance pointer in Windows
+      HINSTANCE
 #else
-  void* dynamicHinstance; // and in Linux or Mac
+      void*
 #endif
-  std::vector<double> tt; // Vector of temporary terms
-
-  template<typename T>
-  std::pair<T, dynamic_tt_fct>
-  getSymbolsFromDLL(const std::string& funcname, const std::string& fName)
-  {
-    dynamic_tt_fct tt;
-    T deriv;
-#if defined(__CYGWIN32__) || defined(_WIN32)
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wcast-function-type"
-    deriv = reinterpret_cast<T>(GetProcAddress(dynamicHinstance, funcname.c_str()));
-    tt = reinterpret_cast<dynamic_tt_fct>(
-        GetProcAddress(dynamicHinstance, (funcname + "_tt").c_str()));
-# pragma GCC diagnostic pop
-#else
-    deriv = reinterpret_cast<T>(dlsym(dynamicHinstance, funcname.c_str()));
-    tt = reinterpret_cast<dynamic_tt_fct>(dlsym(dynamicHinstance, (funcname + "_tt").c_str()));
-#endif
-    if (!deriv || !tt)
-      {
-#if defined(__CYGWIN32__) || defined(_WIN32)
-        FreeLibrary(dynamicHinstance);
-#else
-        dlclose(dynamicHinstance);
-#endif
-        throw DynareException(__FILE__, __LINE__,
-                              "Error when loading symbols from " + fName
-#if !defined(__CYGWIN32__) && !defined(_WIN32)
-                                  + ": " + dlerror()
-#endif
-        );
-      }
-    return {deriv, tt};
-  }
+      ;
+  std::vector<mex_handle_t> mex_handles;
+  std::vector<dynamic_fct> dynamic_fcts; // Index 0 is resid
+  std::vector<dynamic_tt_fct> dynamic_fcts_tt;
+  std::vector<double> tt_tmp; // Vector of temporary terms
+  std::vector<std::vector<double>> derivatives_tmp;
 
 public:
   // construct and load Dynamic model DLL
-  explicit DynamicModelDLL(const std::string& fname, int ntt_arg, int order);
+  DynamicModelDLL(const std::string& fname, int order_arg,
+                  const mxArray* dynamic_g1_sparse_rowval_mx_arg,
+                  const mxArray* dynamic_g1_sparse_colval_mx_arg,
+                  const mxArray* dynamic_g1_sparse_colptr_mx_arg,
+                  const std::vector<const mxArray*> dynamic_gN_sparse_indices_arg, int ntt);
   ~DynamicModelDLL() override;
 
   void eval(const Vector& y, const Vector& x, const Vector& params, const Vector& ySteady,
-            Vector& residual, std::vector<TwoDMatrix>& md) override;
+            Vector& residual, const std::map<int, int>& dynToDynpp,
+            TensorContainer<FSSparseTensor>& derivatives) noexcept(false) override;
+
+private:
+  // Returns a non-null pointer on success
+  static mex_handle_t load_mex(const std::string& mex_filename);
+  static void unload_mex(mex_handle_t handle);
+  // Returns non-null pointers on success
+  static std::pair<dynamic_fct, dynamic_tt_fct> getSymbolsFromDLL(const std::string& func_name,
+                                                                  mex_handle_t handle);
 };
 #endif

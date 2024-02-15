@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2023 Dynare Team
+ * Copyright © 2008-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -22,76 +22,159 @@
 #include <cassert>
 #include <iostream>
 
-DynamicModelDLL::DynamicModelDLL(const std::string& modName, int ntt_arg, int order) :
-    DynamicModelAC(ntt_arg)
+DynamicModelDLL::DynamicModelDLL(const std::string& modName, int order_arg,
+                                 const mxArray* dynamic_g1_sparse_rowval_mx_arg,
+                                 const mxArray* dynamic_g1_sparse_colval_mx_arg,
+                                 const mxArray* dynamic_g1_sparse_colptr_mx_arg,
+                                 const std::vector<const mxArray*> dynamic_gN_sparse_indices_arg,
+                                 int ntt) :
+    DynamicModelAC {order_arg, dynamic_g1_sparse_rowval_mx_arg, dynamic_g1_sparse_colval_mx_arg,
+                    dynamic_g1_sparse_colptr_mx_arg, dynamic_gN_sparse_indices_arg},
+    dynamic_fcts(order + 1),
+    dynamic_fcts_tt(order + 1),
+    tt_tmp(ntt),
+    derivatives_tmp(order)
 {
-  std::string fName;
+  using namespace std::string_literals;
+
+  for (int o {0}; o <= order; o++)
+    {
+      std::string func_name {"dynamic_"s + (o == 0 ? "resid" : "g"s + std::to_string(o))};
+      std::string mex_filename
+      {
 #if !defined(__CYGWIN32__) && !defined(_WIN32)
-  fName = "./";
+        "./"s +
 #endif
-  fName += "+" + modName + "/dynamic" + MEXEXT;
+            "+"s + modName + "/+sparse/" + func_name + MEXEXT
+      };
 
-#if defined(__CYGWIN32__) || defined(_WIN32)
-  dynamicHinstance = LoadLibrary(fName.c_str());
-#else // GNU/Linux or Mac
-  dynamicHinstance = dlopen(fName.c_str(), RTLD_NOW);
-#endif
-  if (!dynamicHinstance)
-    throw DynareException(__FILE__, __LINE__,
-                          "Error when loading " + fName
+      mex_handle_t handle {load_mex(mex_filename)};
+      if (handle)
+        mex_handles.push_back(handle);
+      else
+        {
+          std::ranges::for_each(mex_handles, unload_mex);
+
+          throw DynareException(__FILE__, __LINE__,
+                                "Error when loading " + mex_filename
 #if !defined(__CYGWIN32__) && !defined(_WIN32)
-                              + ": " + dlerror()
+                                    + ": " + dlerror()
 #endif
-    );
+          );
+        }
 
-  dynamic_tt.resize(order + 1);
+      std::tie(dynamic_fcts[o], dynamic_fcts_tt[o])
+          = getSymbolsFromDLL(func_name, mex_handles.back());
+      if (!dynamic_fcts[o] || !dynamic_fcts_tt[o])
+        {
+          std::ranges::for_each(mex_handles, unload_mex);
 
-  std::tie(dynamic_resid, dynamic_tt[0])
-      = getSymbolsFromDLL<dynamic_resid_or_g1_fct>("dynamic_resid", fName);
-  std::tie(dynamic_g1, dynamic_tt[1])
-      = getSymbolsFromDLL<dynamic_resid_or_g1_fct>("dynamic_g1", fName);
+          throw DynareException(__FILE__, __LINE__,
+                                "Error when loading symbols from " + mex_filename
+#if !defined(__CYGWIN32__) && !defined(_WIN32)
+                                    + ": " + dlerror()
+#endif
+          );
+        }
+    }
 
-  dynamic_higher_deriv.resize(std::max(0, order - 1));
-  for (int i = 2; i <= order; i++)
-    std::tie(dynamic_higher_deriv[i - 2], dynamic_tt[i])
-        = getSymbolsFromDLL<dynamic_higher_deriv_fct>("dynamic_g" + std::to_string(i), fName);
-
-  tt.resize(ntt);
+  derivatives_tmp[0].resize(mxGetNumberOfElements(dynamic_g1_sparse_rowval_mx));
+  for (int o {2}; o <= order; o++)
+    derivatives_tmp[o - 1].resize(mxGetM(dynamic_gN_sparse_indices[o - 2]));
 }
 
 DynamicModelDLL::~DynamicModelDLL()
 {
+  std::ranges::for_each(mex_handles, unload_mex);
+}
+
+DynamicModelDLL::mex_handle_t
+DynamicModelDLL::load_mex(const std::string& mex_filename)
+{
 #if defined(__CYGWIN32__) || defined(_WIN32)
-  auto result = FreeLibrary(dynamicHinstance);
-  if (result == 0)
-    {
-      std::cerr << "Can't free the *_dynamic DLL" << std::endl;
-      exit(EXIT_FAILURE);
-    }
+  return LoadLibrary(mex_filename.c_str());
+#else // GNU/Linux or Mac
+  return dlopen(mex_filename.c_str(), RTLD_NOW);
+#endif
+}
+
+void
+DynamicModelDLL::unload_mex(mex_handle_t handle)
+{
+#if defined(__CYGWIN32__) || defined(_WIN32)
+  FreeLibrary(handle);
 #else
-  dlclose(dynamicHinstance);
+  dlclose(handle);
+#endif
+}
+
+std::pair<dynamic_fct, dynamic_tt_fct>
+DynamicModelDLL::getSymbolsFromDLL(const std::string& func_name, mex_handle_t handle)
+{
+#if defined(__CYGWIN32__) || defined(_WIN32)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wcast-function-type"
+  return {reinterpret_cast<dynamic_fct>(GetProcAddress(handle, func_name.c_str())),
+          reinterpret_cast<dynamic_tt_fct>(GetProcAddress(handle, (func_name + "_tt").c_str()))};
+# pragma GCC diagnostic pop
+#else
+  return {reinterpret_cast<dynamic_fct>(dlsym(handle, func_name.c_str())),
+          reinterpret_cast<dynamic_tt_fct>(dlsym(handle, (func_name + "_tt").c_str()))};
 #endif
 }
 
 void
 DynamicModelDLL::eval(const Vector& y, const Vector& x, const Vector& modParams,
-                      const Vector& ySteady, Vector& residual,
-                      std::vector<TwoDMatrix>& md) noexcept(false)
+                      const Vector& ySteady, Vector& residual, const std::map<int, int>& dynToDynpp,
+                      TensorContainer<FSSparseTensor>& derivatives) noexcept(false)
 {
-  assert(md.size() == dynamic_tt.size() - 1);
-
-  for (size_t i = 0; i < dynamic_tt.size(); i++)
+  for (int o {0}; o <= order; o++)
     {
-      dynamic_tt[i](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.data());
-      if (i == 0)
-        dynamic_resid(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.data(),
-                      residual.base());
-      else if (i == 1)
-        dynamic_g1(y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0, tt.data(),
-                   md[0].base());
-      else
-        dynamic_higher_deriv[i - 2](y.base(), x.base(), 1, modParams.base(), ySteady.base(), 0,
-                                    tt.data(), &md[i - 1].get(0, 0), &md[i - 1].get(0, 1),
-                                    &md[i - 1].get(0, 2));
+      dynamic_fcts_tt[o](y.base(), x.base(), modParams.base(), ySteady.base(), tt_tmp.data());
+      dynamic_fcts[o](y.base(), x.base(), modParams.base(), ySteady.base(), tt_tmp.data(),
+                      o == 0 ? residual.base() : derivatives_tmp[o - 1].data());
+
+      if (o >= 1)
+        {
+          IntSequence s(o, 0);
+          auto tensor = std::make_unique<FSSparseTensor>(o, dynToDynpp.size(), residual.length());
+          size_t nnz {derivatives_tmp[o - 1].size()};
+
+          for (size_t k {0}; k < nnz; k++)
+            {
+              int rowval;
+              if (o == 1)
+                {
+#if MX_HAS_INTERLEAVED_COMPLEX
+                  const int32_T* sparse_rowval {mxGetInt32s(dynamic_g1_sparse_rowval_mx)};
+                  const int32_T* sparse_colval {mxGetInt32s(dynamic_g1_sparse_colval_mx)};
+#else
+                  const int32_T* sparse_rowval {
+                      static_cast<const int32_T*>(mxGetData(dynamic_g1_sparse_rowval_mx))};
+                  const int32_T* sparse_colval {
+                      static_cast<const int32_T*>(mxGetData(dynamic_g1_sparse_colval_mx))};
+#endif
+                  s[0] = dynToDynpp.at(sparse_colval[k] - 1);
+                  rowval = sparse_rowval[k] - 1;
+                }
+              else
+                {
+                  const mxArray* sparse_indices_mx {dynamic_gN_sparse_indices[o - 2]};
+#if MX_HAS_INTERLEAVED_COMPLEX
+                  const int32_T* sparse_indices {mxGetInt32s(sparse_indices_mx)};
+#else
+                  const int32_T* sparse_indices {
+                      static_cast<const int32_T*>(mxGetData(sparse_indices_mx))};
+#endif
+                  for (int i {0}; i < o; i++)
+                    s[i] = dynToDynpp.at(sparse_indices[k + (i + 1) * nnz] - 1);
+                  s.sort();
+                  rowval = sparse_indices[k] - 1;
+                }
+              tensor->insert(s, rowval, derivatives_tmp[o - 1][k]);
+            }
+
+          derivatives.insert(std::move(tensor));
+        }
     }
 }

@@ -199,14 +199,6 @@ extern "C"
     const int nEndo = get_int_field(M_mx, "endo_nbr");
     const int nPar = get_int_field(M_mx, "param_nbr");
 
-    const mxArray* lead_lag_incidence_mx = mxGetField(M_mx, 0, "lead_lag_incidence");
-    if (!(lead_lag_incidence_mx && mxIsDouble(lead_lag_incidence_mx)
-          && mxGetM(lead_lag_incidence_mx) == 3
-          && mxGetN(lead_lag_incidence_mx) == static_cast<size_t>(nEndo)))
-      mexErrMsgTxt("M_.lead_lag_incidence should be a double precision matrix with 3 rows and "
-                   "M_.endo_nbr columns");
-    ConstTwoDMatrix llincidence {lead_lag_incidence_mx};
-
     const mxArray* nnzderivatives_mx = mxGetField(M_mx, 0, "NNZDerivatives");
     if (!(nnzderivatives_mx && mxIsDouble(nnzderivatives_mx)))
       mexErrMsgTxt("M_.NNZDerivatives should be a double precision array");
@@ -253,6 +245,33 @@ extern "C"
     std::transform(mxGetPr(order_var_mx), mxGetPr(order_var_mx) + nEndo, dr_order.begin(),
                    [](double x) { return static_cast<int>(x) - 1; });
 
+    // Retrieve sparse indices for dynamic model
+
+    const mxArray* dynamic_g1_sparse_rowval_mx = mxGetField(M_mx, 0, "dynamic_g1_sparse_rowval");
+    if (!(dynamic_g1_sparse_rowval_mx && mxIsInt32(dynamic_g1_sparse_rowval_mx)))
+      mexErrMsgTxt("M_.dynamic_g1_sparse_rowval should be an int32 array");
+
+    const mxArray* dynamic_g1_sparse_colval_mx = mxGetField(M_mx, 0, "dynamic_g1_sparse_colval");
+    if (!(dynamic_g1_sparse_colval_mx && mxIsInt32(dynamic_g1_sparse_colval_mx)))
+      mexErrMsgTxt("M_.dynamic_g1_sparse_colval should be an int32 array");
+
+    const mxArray* dynamic_g1_sparse_colptr_mx = mxGetField(M_mx, 0, "dynamic_g1_sparse_colptr");
+    if (!(dynamic_g1_sparse_colptr_mx && mxIsInt32(dynamic_g1_sparse_colptr_mx)))
+      mexErrMsgTxt("M_.dynamic_g1_sparse_colptr should be an int32 array");
+
+    std::vector<const mxArray*> dynamic_gN_sparse_indices;
+    for (int o {2}; o <= kOrder; o++)
+      {
+        using namespace std::string_literals;
+        auto fieldname {"dynamic_g"s + std::to_string(o) + "_sparse_indices"};
+        const mxArray* indices = mxGetField(M_mx, 0, fieldname.c_str());
+        if (!(indices && mxIsInt32(indices)))
+          mexErrMsgTxt(("M_."s + fieldname + " should be an int32 array").c_str());
+        dynamic_gN_sparse_indices.push_back(indices);
+      }
+
+    // Retrieve sparse indices for objective model
+
     const mxArray* objective_g1_sparse_rowval_mx
         = mxGetField(M_mx, 0, "objective_g1_sparse_rowval");
     if (!(objective_g1_sparse_rowval_mx && mxIsInt32(objective_g1_sparse_rowval_mx)))
@@ -289,9 +308,13 @@ extern "C"
 
     std::unique_ptr<DynamicModelAC> dynamicModelFile;
     if (use_dll)
-      dynamicModelFile = std::make_unique<DynamicModelDLL>(fname, ntt, kOrder);
+      dynamicModelFile = std::make_unique<DynamicModelDLL>(
+          fname, kOrder, dynamic_g1_sparse_rowval_mx, dynamic_g1_sparse_colval_mx,
+          dynamic_g1_sparse_colptr_mx, dynamic_gN_sparse_indices, ntt);
     else
-      dynamicModelFile = std::make_unique<DynamicModelMFile>(fname, ntt);
+      dynamicModelFile = std::make_unique<DynamicModelMFile>(
+          fname, kOrder, dynamic_g1_sparse_rowval_mx, dynamic_g1_sparse_colval_mx,
+          dynamic_g1_sparse_colptr_mx, dynamic_gN_sparse_indices);
 
     // intiate tensor library
     TLStatic::init(kOrder, nStat + 2 * nPred + 3 * nBoth + 2 * nForw + nExog);
@@ -302,7 +325,7 @@ extern "C"
     // make KordpDynare object
     KordpDynare dynare(endoNames, exoNames, nExog, nPar, ySteady, vCov, modParams, nStat, nPred,
                        nForw, nBoth, NNZD, nSteps, kOrder, journal, std::move(dynamicModelFile),
-                       dr_order, llincidence);
+                       dr_order);
 
     // construct main K-order approximation class
     Approximation app(dynare, journal, nSteps, false, pruning, qz_criterium);

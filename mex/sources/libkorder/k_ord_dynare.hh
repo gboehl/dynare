@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2023 Dynare Team
+ * Copyright © 2008-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -101,9 +101,7 @@ private:
   TensorContainer<FSSparseTensor> md; // Model derivatives, in Dynare++ form
   DynareNameList dnl, denl;
   DynareStateNameList dsnl;
-  const ConstTwoDMatrix& ll_Incidence;
-  std::vector<int> dynppToDyn; // Maps Dynare++ jacobian variable indices to Dynare ones
-  std::vector<int> dynToDynpp; // Maps Dynare jacobian variable indices to Dynare++ ones
+  std::map<int, int> dynToDynpp; // Maps Dynare jacobian variable indices to Dynare++ ones
 
   std::unique_ptr<DynamicModelAC> dynamicModelFile;
 
@@ -112,7 +110,7 @@ public:
               int num_exo, int num_par, Vector& ySteady, TwoDMatrix& vCov, Vector& params,
               int nstat, int nPred, int nforw, int nboth, const ConstVector& NNZD, int nSteps,
               int ord, Journal& jr, std::unique_ptr<DynamicModelAC> dynamicModelFile_arg,
-              const std::vector<int>& varOrder, const ConstTwoDMatrix& ll_Incidence);
+              const std::vector<int>& dr_order);
 
   [[nodiscard]] int
   nstat() const override
@@ -153,16 +151,6 @@ public:
   order() const override
   {
     return nOrder;
-  }
-  [[nodiscard]] const std::vector<int>&
-  getDynppToDyn() const
-  {
-    return dynppToDyn;
-  }
-  [[nodiscard]] const std::vector<int>&
-  getDynToDynpp() const
-  {
-    return dynToDynpp;
   }
   [[nodiscard]] const NameList&
   getAllEndoNames() const override
@@ -214,14 +202,9 @@ public:
   }
 
 private:
-  // Given the steady state in yS, returns in llxSteady the steady state extended with leads and
-  // lags
-  void LLxSteady(const Vector& yS, Vector& llxSteady);
   /* Computes the permutations mapping back and forth between Dynare and
      Dynare++ orderings of variables */
-  void computeJacobianPermutation(const std::vector<int>& var_order);
-  // Fills model derivatives in Dynare++ form (at a given order) given the Dynare form
-  void populateDerivativesContainer(const std::vector<TwoDMatrix>& dyn_md, int ord);
+  void computeJacobianPermutation(const std::vector<int>& dr_order);
 };
 
 #endif

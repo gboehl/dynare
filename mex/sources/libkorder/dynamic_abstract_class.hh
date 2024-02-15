@@ -1,5 +1,5 @@
 /*
- * Copyright © 2010-2023 Dynare Team
+ * Copyright © 2010-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -22,17 +22,36 @@
 
 #include <vector>
 
-#include "twod_matrix.hh"
+#include "dynmex.h"
+
+#include "Vector.hh"
+#include "sparse_tensor.hh"
+#include "t_container.hh"
 
 class DynamicModelAC
 {
 protected:
-  int ntt; // Size of vector of temporary terms
+  const int order;
+  const mxArray *const dynamic_g1_sparse_rowval_mx, *const dynamic_g1_sparse_colval_mx,
+                                                        *const dynamic_g1_sparse_colptr_mx;
+  // Stores M_.dynamic_gN_sparse_indices, starting from N=2
+  const std::vector<const mxArray*> dynamic_gN_sparse_indices;
+
 public:
-  DynamicModelAC(int ntt_arg) : ntt {ntt_arg} {};
+  DynamicModelAC(int order_arg, const mxArray* dynamic_g1_sparse_rowval_mx_arg,
+                 const mxArray* dynamic_g1_sparse_colval_mx_arg,
+                 const mxArray* dynamic_g1_sparse_colptr_mx_arg,
+                 const std::vector<const mxArray*> dynamic_gN_sparse_indices_arg) :
+      order {order_arg},
+      dynamic_g1_sparse_rowval_mx {dynamic_g1_sparse_rowval_mx_arg},
+      dynamic_g1_sparse_colval_mx {dynamic_g1_sparse_colval_mx_arg},
+      dynamic_g1_sparse_colptr_mx {dynamic_g1_sparse_colptr_mx_arg},
+      dynamic_gN_sparse_indices {dynamic_gN_sparse_indices_arg} {};
   virtual ~DynamicModelAC() = default;
   virtual void eval(const Vector& y, const Vector& x, const Vector& params, const Vector& ySteady,
-                    Vector& residual, std::vector<TwoDMatrix>& md)
+                    Vector& residual, const std::map<int, int>& dynToDynpp,
+                    TensorContainer<FSSparseTensor>& derivatives) noexcept(false)
       = 0;
 };
+
 #endif
