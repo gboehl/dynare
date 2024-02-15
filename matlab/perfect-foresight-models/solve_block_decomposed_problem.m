@@ -45,7 +45,7 @@ switch options_.stack_solve_algo
     case 4
         mthd='Sparse LU solver with optimal path length on stacked system';
     case 7
-        mthd='Solver from solve_algo option on stacked system'
+        mthd='Solver from solve_algo option on stacked system';
     otherwise
         error('Unsupported stack_solve_algo value')
 end
