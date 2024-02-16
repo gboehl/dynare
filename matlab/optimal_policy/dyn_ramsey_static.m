@@ -25,7 +25,7 @@ function [steady_state, params, check] = dyn_ramsey_static(ys_init, exo_ss, M_, 
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2003-2023 Dynare Team
+% Copyright © 2003-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -137,7 +137,7 @@ end
 % Compute the value of the Lagrange multipliers that minimizes the norm of the
 % residuals, given the other endogenous
 if options_.bytecode
-    res = bytecode('static', M_, options, xx, exo_ss, M_.params, 'evaluate');
+    res = bytecode('static', M_, options_, xx, exo_ss, M_.params, 'evaluate');
 else
     res = feval([M_.fname '.sparse.static_resid'], xx, exo_ss, M_.params);
 end
@@ -167,7 +167,7 @@ end
 function result = check_static_model(ys,exo_ss,M_,options_)
 result = false;
 if (options_.bytecode)
-    res = bytecode('static', M_, options, ys, exo_ss, M_.params, 'evaluate');
+    res = bytecode('static', M_, options_, ys, exo_ss, M_.params, 'evaluate');
 else
     res = feval([M_.fname '.sparse.static_resid'], ys, exo_ss, M_.params);
 end
