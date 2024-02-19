@@ -493,52 +493,66 @@ if issmc(options_) || (any(bayestopt_.pshape>0) && options_.mh_replic) ||  (any(
         end
         if ~issmc(options_)
             [error_flag, ~, options_]= metropolis_draw(1, options_, estim_params_, M_);
+        else
+            error_flag=false;
         end
         if ~(~isempty(options_.sub_draws) && options_.sub_draws==0)
             if options_.bayesian_irf
-                if error_flag
-                    error('%s: I cannot compute the posterior IRFs!',dispString)
+                if ~issmc(options_)
+                    if error_flag
+                        error('%s: I cannot compute the posterior IRFs!',dispString)
+                    end
+                    oo_=PosteriorIRF('posterior',options_,estim_params_,oo_,M_,bayestopt_,dataset_,dataset_info,dispString);
+                else
+                    fprintf('%s: SMC does not yet support the bayesian_irf option. Skipping computation.\n',dispString);
                 end
-                oo_=PosteriorIRF('posterior',options_,estim_params_,oo_,M_,bayestopt_,dataset_,dataset_info,dispString);
             end
             if options_.moments_varendo
-                if error_flag
-                    error('%s: I cannot compute the posterior moments for the endogenous variables!',dispString)
-                end
-                if options_.load_mh_file && options_.mh_replic==0 %user wants to recompute results
-                    [MetropolisFolder, info] = CheckPath('metropolis',M_.dname);
-                    if ~info
-                        generic_post_data_file_name={'Posterior2ndOrderMoments','decomposition','PosteriorVarianceDecomposition','correlation','PosteriorCorrelations','conditional decomposition','PosteriorConditionalVarianceDecomposition'};
-                        for ii=1:length(generic_post_data_file_name)
-                            delete_stale_file([MetropolisFolder filesep M_.fname '_' generic_post_data_file_name{1,ii} '*']);
-                        end
-                        % restore compatibility for loading pre-4.6.2 runs where estim_params_ was not saved; see 6e06acc7 and !1944
-                        NumberOfDrawsFiles = length(dir([M_.dname '/metropolis/' M_.fname '_posterior_draws*' ]));
-                        if NumberOfDrawsFiles>0
-                            temp=load([M_.dname '/metropolis/' M_.fname '_posterior_draws1']);
-                            if ~isfield(temp,'estim_params_')
-                                for file_iter=1:NumberOfDrawsFiles
-                                    save([M_.dname '/metropolis/' M_.fname '_posterior_draws' num2str(file_iter)],'estim_params_','-append')
+                if ~issmc(options_)
+                    if error_flag
+                        error('%s: I cannot compute the posterior moments for the endogenous variables!',dispString)
+                    end
+                    if options_.load_mh_file && options_.mh_replic==0 %user wants to recompute results
+                        [MetropolisFolder, info] = CheckPath('metropolis',M_.dname);
+                        if ~info
+                            generic_post_data_file_name={'Posterior2ndOrderMoments','decomposition','PosteriorVarianceDecomposition','correlation','PosteriorCorrelations','conditional decomposition','PosteriorConditionalVarianceDecomposition'};
+                            for ii=1:length(generic_post_data_file_name)
+                                delete_stale_file([MetropolisFolder filesep M_.fname '_' generic_post_data_file_name{1,ii} '*']);
+                            end
+                            % restore compatibility for loading pre-4.6.2 runs where estim_params_ was not saved; see 6e06acc7 and !1944
+                            NumberOfDrawsFiles = length(dir([M_.dname '/metropolis/' M_.fname '_posterior_draws*' ]));
+                            if NumberOfDrawsFiles>0
+                                temp=load([M_.dname '/metropolis/' M_.fname '_posterior_draws1']);
+                                if ~isfield(temp,'estim_params_')
+                                    for file_iter=1:NumberOfDrawsFiles
+                                        save([M_.dname '/metropolis/' M_.fname '_posterior_draws' num2str(file_iter)],'estim_params_','-append')
+                                    end
                                 end
                             end
                         end
                     end
+                    oo_ = compute_moments_varendo('posterior',options_,M_,oo_,estim_params_,var_list_);
+                else
+                    fprintf('%s: SMC does not yet support the moments_varendo option. Skipping computation.\n',dispString);
                 end
-                oo_ = compute_moments_varendo('posterior',options_,M_,oo_,estim_params_,var_list_);
             end
             if options_.smoother || ~isempty(options_.filter_step_ahead) || options_.forecast
-                if error_flag
-                    error('%s: I cannot compute the posterior statistics!',dispString)
-                end
-                if options_.order==1 && ~options_.particle.status
-                    oo_=prior_posterior_statistics('posterior',dataset_,dataset_info,M_,oo_,options_,estim_params_,bayestopt_,dispString); %get smoothed and filtered objects and forecasts
+                if ~ishssmc(options_)
+                    if error_flag
+                        error('%s: I cannot compute the posterior statistics!',dispString)
+                    end
+                    if options_.order==1 && ~options_.particle.status
+                        oo_=prior_posterior_statistics('posterior',dataset_,dataset_info,M_,oo_,options_,estim_params_,bayestopt_,dispString); %get smoothed and filtered objects and forecasts
+                    else
+                        error('%s: Particle Smoothers are not yet implemented.',dispString)
+                    end
                 else
-                    error('%s: Particle Smoothers are not yet implemented.',dispString)
+                    fprintf('%s: SMC does not yet support the smoother and forecast options. Skipping computation.\n',dispString);
                 end
             end
-            else
-                fprintf('%s: sub_draws was set to 0. Skipping posterior computations.',dispString);
-            end
+        else
+            fprintf('%s: sub_draws was set to 0. Skipping posterior computations.\n',dispString);
+        end
         xparam1 = get_posterior_parameters('mean',M_,estim_params_,oo_,options_);
         M_ = set_all_parameters(xparam1,estim_params_,M_);
     end
