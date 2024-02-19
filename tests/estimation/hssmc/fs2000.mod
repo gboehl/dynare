@@ -86,6 +86,8 @@ estimation(order=1, datafile='../fsdat_simul.m', nobs=192, loglinear,
            posterior_sampling_method='hssmc',
            posterior_sampler_options=('steps',10,
                                       'lambda',2,
-                                      'particles', 20000,
+                                      'particles', 5000,
                                       'scale',.5,
-                                      'target', .25));
+                                      'target', .25),
+bayesian_irf, smoother, moments_varendo,consider_all_endogenous
+);
