@@ -7490,7 +7490,8 @@ observed variables.
 
                Instructs Dynare to use the *Herbst and Schorfheide (2014)*
                version of the Sequential Monte-Carlo sampler instead of the
-               standard Random-Walk Metropolis-Hastings.
+               standard Random-Walk Metropolis-Hastings. Does not yet support
+               ``moments_varendo``, ``bayesian_irf``, and ``smoother``.
 
            ``'dsmh'``
 
