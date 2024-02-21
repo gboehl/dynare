@@ -84,7 +84,7 @@ function [LIK, lik,a,P] = univariate_kalman_filter(data_index,number_of_observat
 %   Second Edition, Ch. 6.4 + 7.2.5
 
 
-% Copyright © 2004-2021 Dynare Team
+% Copyright © 2004-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -212,8 +212,18 @@ while notsteady && t<=last %loop over t
             a = a + Ki*prediction_error; %filtering according to (6.13) in DK (2012)
             P = P - PZ*Ki';              %filtering according to (6.13) in DK (2012)
         else
-            % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
-            % p. 157, DK (2012)
+            if Fi<0
+                %pathological numerical case where variance is negative
+                if analytic_derivation
+                    LIK={NaN,DLIK,Hess};
+                else
+                    LIK = NaN;
+                end
+                return
+            else
+                % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
+                % p. 157, DK (2012)
+            end
         end
     end
     if analytic_derivation

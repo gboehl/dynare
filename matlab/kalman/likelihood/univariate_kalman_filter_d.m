@@ -87,7 +87,7 @@ function [dLIK, dlikk, a, Pstar, llik] = univariate_kalman_filter_d(data_index, 
 %   Series Analysis by State Space Methods", Oxford University Press,
 %   Second Edition, Ch. 5, 6.4 + 7.2.5
 
-% Copyright © 2004-2021 Dynare Team
+% Copyright © 2004-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -155,8 +155,14 @@ while newRank && (t<=last)
             a = a+Kstar*(prediction_error/Fstar);
             Pstar = Pstar-Kstar*(Kstar'/Fstar);
         else
-            % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
-            % p. 157, DK (2012)
+            if Fstar<0 || Finf<0
+                %pathological numerical case where variance is negative
+                dLIK = NaN;
+                return
+            else
+                % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
+                % p. 157, DK (2012)
+            end
         end
     end
     if newRank
