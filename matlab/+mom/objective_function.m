@@ -105,10 +105,10 @@ end
 
 
 %--------------------------------------------------------------------------
-% Call resol to compute steady state and model solution
+% Compute steady state and model solution
 %--------------------------------------------------------------------------
 % Compute linear approximation around the deterministic steady state
-[dr, info, M_.params] = resol(0, M_, options_mom_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
+[dr, info, M_.params] = compute_decision_rules(M_,options_mom_, dr, endo_steady_state, exo_steady_state, exo_det_steady_state);
 % Return, with endogenous penalty when possible, if resol issues an error code
 if info(1)
     if info(1) == 3 || info(1) == 4 || info(1) == 5 || info(1)==6 ||info(1) == 19 ||...

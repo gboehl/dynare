@@ -318,6 +318,11 @@ options_mom_.varobs = options_.varobs;              % observable variables in or
 options_mom_.varobs_id = options_.varobs_id;        % index for observable variables in M_.endo_names
 options_mom_.obs_nbr = length(options_mom_.varobs); % number of observed variables
 
+%related to discretionary policy
+options_mom_.discretionary_policy = options_.discretionary_policy; % whether discretionary policy is used
+options_mom_.discretionary_tol = options_.discretionary_tol;       % tolerance of discretionary policy
+options_mom_.dp = options_.dp;                                     % other options
+
 % related to call of dynare
 options_mom_.console_mode = options_.console_mode;
 if options_mom_.console_mode
