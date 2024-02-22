@@ -1017,6 +1017,7 @@ mod_and_m_tests = [
   { 'test' : [ 'optimal_policy/nk_ramsey.mod' ] },
   { 'test' : [ 'optimal_policy/nk_ramsey_model.mod' ] },
   { 'test' : [ 'optimal_policy/nk_ramsey_det.mod' ] },
+  { 'test' : [ 'optimal_policy/neo_ramsey_det_bytecode.mod' ] },
   { 'test' : [ 'optimal_policy/nk_ramsey_expectation.mod',
                'optimal_policy/nk_ramsey_expectation_a.mod' ] },
   { 'test' : [ 'optimal_policy/mult_elimination_test.mod' ] },
