@@ -84,7 +84,7 @@ function [LIK, lik,a,P] = univariate_kalman_filter(data_index,number_of_observat
 %   Second Edition, Ch. 6.4 + 7.2.5
 
 
-% Copyright © 2004-2021 Dynare Team
+% Copyright © 2004-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -126,7 +126,6 @@ QQ   = R*Q*transpose(R);   % Variance of R times the vector of structural innova
 t    = start;              % Initialization of the time index.
 lik  = zeros(smpl,pp);     % Initialization of the matrix gathering the densities at each time and each observable
 LIK  = Inf;                % Default value of the log likelihood.
-oldP = Inf;
 l2pi = log(2*pi);
 notsteady = 1;
 
@@ -149,11 +148,9 @@ else
     else
         C=Z;
     end
-    dC = zeros(pp,mm,k);   % either selection matrix or schur have zero derivatives
     if analytic_derivation==2
         Hess  = zeros(k,k);                             % Initialization of the Hessian
         D2a    = zeros(mm,k,k);                             % State vector.
-        d2C = zeros(pp,mm,k,k);
     else
         asy_hess=D2T;
         Hess=[];
@@ -178,7 +175,6 @@ while notsteady && t<=last %loop over t
     else
         z = Z(d_index);
     end
-    oldP = P(:);
     for i=1:rows(z) %loop over i
         if Zflag
             prediction_error = Y(d_index(i),t) - z(i,:)*a;  % nu_{t,i} in 6.13 in DK (2012)
@@ -212,8 +208,18 @@ while notsteady && t<=last %loop over t
             a = a + Ki*prediction_error; %filtering according to (6.13) in DK (2012)
             P = P - PZ*Ki';              %filtering according to (6.13) in DK (2012)
         else
-            % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
-            % p. 157, DK (2012)
+            if Fi<0
+                %pathological numerical case where variance is negative
+                if analytic_derivation
+                    LIK={NaN,DLIK,Hess};
+                else
+                    LIK = NaN;
+                end
+                return
+            else
+                % do nothing as a_{t,i+1}=a_{t,i} and P_{t,i+1}=P_{t,i}, see
+                % p. 157, DK (2012)
+            end
         end
     end
     if analytic_derivation
