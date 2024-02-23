@@ -29,7 +29,12 @@ function tf = ver_less_than(ver1, ver2)
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <http://www.gnu.org/licenses/>.
 
-tf = true;
+if strcmp(ver1,ver2)
+    tf = false;
+    return
+else
+    tf = true;
+end
 ver1 = strsplit(ver1, {'.', '-'});
 ver2 = strsplit(ver2, {'.', '-'});
 
@@ -131,3 +136,10 @@ ver2='6-unstable-2021-12-19-1953-d841fc7c';
 t(1)=dassert(ver_less_than(ver1,ver2),true);
 T = all(t);
 %@eof:4
+
+%@test:5
+ver1='5.5';
+ver2='5.5';
+t(1)=dassert(ver_less_than(ver1,ver2),false);
+T = all(t);
+%@eof:5
