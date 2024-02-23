@@ -60,3 +60,10 @@ ver1='6-unstable-2021-12-19-1953-d841fc7c';
 t(1)=dassert(ver_greater_than(ver1,ver2),true);
 T = all(t);
 %@eof:4
+
+%@test:5
+ver2='5.5';
+ver1='5.5';
+t(1)=dassert(ver_greater_than(ver1,ver2),false);
+T = all(t);
+%@eof:5
