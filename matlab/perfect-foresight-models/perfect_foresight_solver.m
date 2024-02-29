@@ -460,12 +460,12 @@ function [steady_success, endo_simul, exo_simul, steady_state, exo_steady_state]
 %   exo_steady_state [vector]    steady state of exogenous corresponding to the scenario (equal to the input if terminal steady state not recomputed)
 
 % Compute convex combination for the path of exogenous
-exo_simul = exoorig*share/shareorig + exobase*(1-share);
+exo_simul = exoorig*share/shareorig + exobase*(1-share/shareorig);
 
 % Compute convex combination for the initial condition
 % In most cases, the initial condition is a steady state and this does nothing
 % This is for cases when the initial condition is out of equilibrium
-endo_simul(:, initperiods) = share/shareorig*endoorig(:, initperiods)+(1-share)*endobase(:, initperiods);
+endo_simul(:, initperiods) = share/shareorig*endoorig(:, initperiods)+(1-share/shareorig)*endobase(:, initperiods);
 
 % If there is a permanent shock, ensure that the rescaled terminal condition is
 % a steady state (if the user asked for this recomputation, or if the original
@@ -518,7 +518,7 @@ if recompute_final_steady_state
     options_.markowitz = saved_steady_markowitz;
 else
     % The terminal condition is not a steady state, compute a convex combination
-    endo_simul(:, lastperiods) = share/shareorig*endoorig(:, lastperiods)+(1-share)*endobase(:, lastperiods);
+    endo_simul(:, lastperiods) = share/shareorig*endoorig(:, lastperiods)+(1-share/shareorig)*endobase(:, lastperiods);
 end
 
 
