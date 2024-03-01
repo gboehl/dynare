@@ -1374,6 +1374,7 @@ mod_and_m_tests = [
   { 'test' : [ 'deterministic_simulations/homotopy_histval.mod' ] },
   { 'test' : [ 'deterministic_simulations/homotopy_endval_steady_linearization.mod' ] },
   { 'test' : [ 'deterministic_simulations/homotopy_marginal_linearization.mod' ] },
+  { 'test' : [ 'deterministic_simulations/homotopy_exclude_varexo.mod' ] },
   { 'test' : [ 'deterministic_simulations/rbc_det_exo_lag_2a.mod',
                'deterministic_simulations/rbc_det_exo_lag_2b.mod',
                'deterministic_simulations/rbc_det_exo_lag_2c.mod' ] },

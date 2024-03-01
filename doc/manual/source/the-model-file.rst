@@ -3848,6 +3848,12 @@ speed-up on large models.
        beyond a certain point, so as to save computing time, while at the same
        time getting an approximate solution.
 
+    .. option:: homotopy_exclude_varexo = (VARIABLE_NAME...)
+
+       A list of exogenous variables which are to be excluded from the homotopy
+       procedure, *i.e.* which must be kept at their value corresponding to
+       100% of the shock during all homotopy iterations.
+
     .. option:: markowitz = DOUBLE
 
        Value of the Markowitz criterion, used to select the
