@@ -461,6 +461,13 @@ function [steady_success, endo_simul, exo_simul, steady_state, exo_steady_state]
 
 % Compute convex combination for the path of exogenous
 exo_simul = exoorig*share/shareorig + exobase*(1-share/shareorig);
+if ~isempty(options_.simul.homotopy_exclude_varexo)
+    [is_exo, excluded_exo_ids] = ismember(options_.simul.homotopy_exclude_varexo, M_.exo_names);
+    if ~all(is_exo)
+        error('Option homotopy_exclude_varexo must be given exogenous variable names')
+    end
+    exo_simul(:, excluded_exo_ids) = exoorig(:, excluded_exo_ids);
+end
 
 % Compute convex combination for the initial condition
 % In most cases, the initial condition is a steady state and this does nothing

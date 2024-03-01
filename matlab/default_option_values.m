@@ -335,6 +335,7 @@ options_.simul.homotopy_step_size_increase_success_count = 3;
 options_.simul.homotopy_initial_step_size = 1;
 options_.simul.homotopy_linearization_fallback = false;
 options_.simul.homotopy_marginal_linearization_fallback = 0; % Size of the step used for the marginal linearization; 0 means disabled
+options_.simul.homotopy_exclude_varexo = [];
 
 % Options used by perfect_foresight_* commands when they compute the steady
 % state corresponding to a terminal condition
