@@ -67,16 +67,16 @@ diff(v) = .5*diff(v(-1)) + ev;
 [name='eq:u']
 u = .5*u(-1) - .2*u(-2) + eu;
 
-[name='eq:y']
+[name='eq:y', blockname='B2']
 y = rho_1*y(-1) + rho_2*y(-2) + ey;
 
-[name='eq:x']
+[name='eq:x', blockname='B2']
 x = rho_3*x(-1) + rho_4*x(-2) + ex;
 
 [name='eq:azertyuiopiop', rename='azertyuiopiop->qsdfghjklm']
 azertyuiopiop = x + y;
 
-[name='eq:x1']
+[name='eq:x1', blockname='B2']
 diff(x1) = a_x1_0*(x1(-1)-x1bar(-1)) + a_x1_1*diff(x1(-1)) + a_x1_2*diff(x1(-2)) + a_x1_x2_1*diff(x2(-1)) + a_x1_x2_2*diff(x2(-2)) + ex1;
 
 [name='eq:x2']
@@ -88,16 +88,16 @@ x1bar = x1bar(-1) + ex1bar;
 [name='eq:x2bar']
 x2bar = x2bar(-1) + ex2bar;
 
-[name='zpac']
+[name='zpac', blockname='B2']
 diff(z) = lambda*(e_c_m*(x1(-1)-z(-1)) + c_z_1*diff(z(-1))  + c_z_2*diff(z(-2)) + pac_expectation(pacman) + c_z_s*s + c_z_dv*diff(v) ) + (1-lambda)*( cy*y + cx*x) + c_z_u*u + c_z_dx2*diff(x2) + ez;
 
-[name='z1']
+[name='z1', blockname='B1']
 z1 = z+y-x+u;
 
-[name='z2']
+[name='z2', blockname='B1']
 z2 = z-y+x-u;
 
-[name='z3']
+[name='z3', blockname='B1']
 z3 = u-diff(v);
 
 end;
