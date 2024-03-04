@@ -15,7 +15,7 @@ function [ys,params,check] = NK_baseline_steadystate(ys,exo,M_,options_)
 %   - check     [scalar] set to 0 if steady state computation worked and to
 %                    1 of not (allows to impose restrictions on parameters)
 
-% Copyright © 2013-2020 Dynare Team
+% Copyright © 2013-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,8 +52,6 @@ u=1;
 q=1;
 d=1;
 phi=1;
-m=0;
-zeta=1;
 LambdaYd= (LambdaA+alppha*Lambdamu)/(1-alppha);
 mu_z=exp(LambdaYd);
 mu_I=exp(Lambdamu);
