@@ -14556,9 +14556,9 @@ Finite discounted sums can also be considered.
 
    .. math ::
 
-             \sum_{h=a}^b \mathbb \beta^{h-\tau}\mathbb E[y_{t+h}|\mathcal{Y}_{\underline{t-\tau}}]
+             \sum_{h=a}^b \beta^{h-\tau}\mathbb E[y_{t+h}|\mathcal{Y}_{\underline{t-\tau}}]
 
-   where :math:`(a,b)\in\mathbb N^2` with :math:`a<b`, :math:`\beta\in(0,1]` is a discount factor,
+   where :math:`(a,b)\in\mathbb N^2` with :math:`a<b` and :math:`a<\infty`, :math:`\beta\in(0,1]` is a discount factor,
    and :math:`\tau` is a finite positive integer.
 
    *Options*
@@ -14581,13 +14581,18 @@ Finite discounted sums can also be considered.
 
     .. option:: horizon = INTEGER | [INTEGER:INTEGER]
 
-    The upper limit :math:`b` of the horizon :math:`h` (in which case :math:`a=0`), or range of periods
-    :math:`a:b` over which the discounted sum is computed (the upper bound can be ``Inf``).
+    If the value of ``horizon`` is a finite integer scalar,  the following expectation is computed:
+
+                .. math ::
+
+                          \beta^{h-\tau}\mathbb E[y_{t+h}|\mathcal{Y}_{\underline{t-\tau}}]
+
+
+    otherwise the value is a range of periods :math:`a:b` over which the expected discounted sum is computed (the upper bound can be ``Inf``).
 
     .. option:: time_shift = INTEGER
 
     Shift of the information set (:math:`\tau`), default value is 0.
-
 
 .. operator:: var_expectation (NAME_OF_VAR_EXPECTATION_MODEL);
 
