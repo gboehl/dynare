@@ -79,7 +79,7 @@ else
 end
 
 % Makes no sense to have a composite PAC target with a trend component auxiliary model (where all the variables are non stationnary)
-if numberofcomponents>0 && strcmp(M_.pac.pacman.auxiliary_model_type, 'trend_component')
+if numberofcomponents>0 && strcmp(pacmodel.auxiliary_model_type, 'trend_component')
     error('Composite PAC target not allowed with trend component model.')
 end
 
