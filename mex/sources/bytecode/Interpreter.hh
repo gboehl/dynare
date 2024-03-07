@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2023 Dynare Team
+ * Copyright © 2007-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -132,9 +132,10 @@ private:
   int nb_row_x;
   int y_kmin, y_kmax, periods;
   double *x, *params;
+  double g1; // The derivative of a simple (single-equation) block in simulate mode
   double* u;
   double* steady_y;
-  double *g1, *r, *res;
+  double *r, *res;
   vector<mxArray*> jacobian_block, jacobian_exo_block, jacobian_det_exo_block;
   mxArray* GlobalTemporaryTerms;
   int it_;

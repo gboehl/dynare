@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2023 Dynare Team
+ * Copyright © 2007-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -98,10 +98,10 @@ public:
 
   void evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
                      double* __restrict__ x, int nb_row_x, double* __restrict__ params,
-                     const double* __restrict__ steady_y, double* __restrict__ u, int Per_u_,
-                     double* __restrict__ T, int T_nrows, map<int, double>& TEF,
+                     const double* __restrict__ steady_y, double& g1, double* __restrict__ u,
+                     int Per_u_, double* __restrict__ T, int T_nrows, map<int, double>& TEF,
                      map<pair<int, int>, double>& TEFD, map<tuple<int, int, int>, double>& TEFDD,
-                     double* __restrict__ r, double* __restrict__ g1, double* __restrict__ jacob,
+                     double* __restrict__ r, double* __restrict__ jacob,
                      double* __restrict__ jacob_exo, double* __restrict__ jacob_exo_det,
                      bool evaluate, bool no_derivatives);
 

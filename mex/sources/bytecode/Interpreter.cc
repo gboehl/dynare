@@ -149,7 +149,7 @@ Interpreter::solve_simple_one_periods()
                   if (verbosity >= 2)
                     mexPrintf("Reducing the path length in Newton step slowc=%f\n", slowc);
                   feclearexcept(FE_ALL_EXCEPT);
-                  y[Block_Contain[0].Variable + Per_y_] = ya - slowc * (r[0] / g1[0]);
+                  y[Block_Contain[0].Variable + Per_y_] = ya - slowc * (r[0] / g1);
                   if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
                     {
                       res1 = numeric_limits<double>::quiet_NaN();
@@ -165,7 +165,7 @@ Interpreter::solve_simple_one_periods()
       if (cvg)
         continue;
       feclearexcept(FE_ALL_EXCEPT);
-      y[Block_Contain[0].Variable + Per_y_] += -slowc * (rr / g1[0]);
+      y[Block_Contain[0].Variable + Per_y_] += -slowc * (rr / g1);
       if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
         {
           res1 = numeric_limits<double>::quiet_NaN();
@@ -183,8 +183,6 @@ Interpreter::solve_simple_one_periods()
 void
 Interpreter::solve_simple_over_periods(bool forward)
 {
-  g1 = static_cast<double*>(mxMalloc(sizeof(double)));
-  test_mxMalloc(g1, __LINE__, __FILE__, __func__, sizeof(double));
   r = static_cast<double*>(mxMalloc(sizeof(double)));
   test_mxMalloc(r, __LINE__, __FILE__, __func__, sizeof(double));
   if (steady_state)
@@ -207,7 +205,6 @@ Interpreter::solve_simple_over_periods(bool forward)
           it_ = y_kmin; // Do not leave it_ in inconsistent state (see #1727)
         }
     }
-  mxFree(g1);
   mxFree(r);
 }
 
@@ -280,8 +277,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
         }
       break;
     case BlockSimulationType::solveForwardSimple:
-      g1 = static_cast<double*>(mxMalloc(size * size * sizeof(double)));
-      test_mxMalloc(g1, __LINE__, __FILE__, __func__, size * size * sizeof(double));
       r = static_cast<double*>(mxMalloc(size * sizeof(double)));
       test_mxMalloc(r, __LINE__, __FILE__, __func__, size * sizeof(double));
       if (steady_state)
@@ -308,7 +303,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
                   residual[(it_ - y_kmin) * size + j] = r[j];
             }
         }
-      mxFree(g1);
       mxFree(r);
       break;
     case BlockSimulationType::solveForwardComplete:
@@ -380,8 +374,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
         }
       break;
     case BlockSimulationType::solveBackwardSimple:
-      g1 = static_cast<double*>(mxMalloc(size * size * sizeof(double)));
-      test_mxMalloc(g1, __LINE__, __FILE__, __func__, size * size * sizeof(double));
       r = static_cast<double*>(mxMalloc(size * sizeof(double)));
       test_mxMalloc(r, __LINE__, __FILE__, __func__, size * sizeof(double));
       if (steady_state)
@@ -408,7 +400,6 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
                   residual[(it_ - y_kmin) * size + j] = r[j];
             }
         }
-      mxFree(g1);
       mxFree(r);
       break;
     case BlockSimulationType::solveBackwardComplete:
@@ -2634,9 +2625,9 @@ Interpreter::compute_block_time(int my_Per_u_, bool evaluate, bool no_derivative
 
   try
     {
-      evaluator.evaluateBlock(it_, y_kmin, y, y_size, x, nb_row_x, params, steady_y, u, my_Per_u_,
-                              T, periods, TEF, TEFD, TEFDD, r, g1, jacob, jacob_exo, jacob_exo_det,
-                              evaluate, no_derivatives);
+      evaluator.evaluateBlock(it_, y_kmin, y, y_size, x, nb_row_x, params, steady_y, g1, u,
+                              my_Per_u_, T, periods, TEF, TEFD, TEFDD, r, jacob, jacob_exo,
+                              jacob_exo_det, evaluate, no_derivatives);
     }
   catch (FloatingPointException& e)
     {
@@ -4464,8 +4455,6 @@ Interpreter::solve_non_linear()
 void
 Interpreter::Simulate_Newton_One_Boundary(bool forward)
 {
-  g1 = static_cast<double*>(mxMalloc(size * size * sizeof(double)));
-  test_mxMalloc(g1, __LINE__, __FILE__, __func__, size * size * sizeof(double));
   r = static_cast<double*>(mxMalloc(size * sizeof(double)));
   test_mxMalloc(r, __LINE__, __FILE__, __func__, size * sizeof(double));
   iter = 0;
@@ -4520,7 +4509,6 @@ Interpreter::Simulate_Newton_One_Boundary(bool forward)
       mxFree(Ax_save);
       mxFree(b_save);
     }
-  mxFree(g1);
   mxFree(r);
 }
 
