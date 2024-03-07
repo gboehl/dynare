@@ -323,6 +323,8 @@ Evaluate::error_location(it_code_type expr_begin, it_code_type faulty_op, int it
     case ExpressionType::FirstEndoDerivative:
       Error_loc << " with respect to endogenous variable "
                 << symbol_table.getName(SymbolType::endogenous, EQN_dvar1);
+      if (EQN_lag1 != 0)
+        Error_loc << "(" << EQN_lag1 << ")";
       break;
     case ExpressionType::FirstExoDerivative:
       Error_loc << " with respect to exogenous variable "
