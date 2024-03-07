@@ -174,12 +174,6 @@ Evaluate::Evaluate(const filesystem::path& codfile, bool steady_state_arg,
 #endif
           code += sizeof(FSTPG2);
           break;
-        case Tag::FSTPG3:
-#ifdef DEBUGL
-          mexPrintf("FSTPG3\n");
-#endif
-          code += sizeof(FSTPG3);
-          break;
         case Tag::FUNARY:
 #ifdef DEBUGL
           mexPrintf("FUNARY\n");
@@ -581,16 +575,7 @@ Evaluate::print_expression(const Evaluate::it_code_type& expr_begin,
         case Tag::FSTPG2:
           {
             int eq {static_cast<FSTPG2*>(*it_code)->row};
-            int var {static_cast<FSTPG2*>(*it_code)->col};
-            assign_lhs("jacob(" + to_string(eq + 1) + ", " + to_string(var + 1) + ")");
-          }
-          break;
-        case Tag::FSTPG3:
-          {
-            int eq {static_cast<FSTPG3*>(*it_code)->row};
-            int var {static_cast<FSTPG3*>(*it_code)->col};
-            int lag {static_cast<FSTPG3*>(*it_code)->lag};
-            int col_pos {static_cast<FSTPG3*>(*it_code)->col_pos};
+            int col {static_cast<FSTPG2*>(*it_code)->col};
             string matrix_name {[&] {
               switch (equation_type)
                 {
@@ -606,8 +591,7 @@ Evaluate::print_expression(const Evaluate::it_code_type& expr_begin,
                 }
             }()};
 
-            assign_lhs(matrix_name + "(" + to_string(eq + 1) + ", " + to_string(col_pos + 1)
-                       + " [var=" + to_string(var + 1) + ", lag=" + to_string(lag) + "])");
+            assign_lhs(matrix_name + "(" + to_string(eq + 1) + ", " + to_string(col + 1) + ")");
           }
           break;
         case Tag::FUNARY:
@@ -1003,7 +987,7 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
   UnaryOpcode op1;
   BinaryOpcode op2;
   TrinaryOpcode op3;
-  unsigned int eq, pos_col;
+  unsigned int eq, jacob_col;
 #ifdef DEBUG
   ostringstream tmp_out;
 #endif
@@ -1457,23 +1441,8 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
 
         case Tag::FSTPG2:
           // store in the jacobian matrix
-          rr = Stack.top();
-          if (EQN_type != ExpressionType::FirstEndoDerivative)
-            throw FatalException {"In compute_block_time, impossible case "
-                                  + to_string(static_cast<int>(EQN_type))
-                                  + " not implement in static jacobian"};
-          eq = static_cast<FSTPG2*>(*it_code)->row;
-          var = static_cast<FSTPG2*>(*it_code)->col;
 #ifdef DEBUG
-          mexPrintf("FSTPG2 eq=%d, var=%d\n", eq, var);
-          mexEvalString("drawnow;");
-#endif
-          jacob[eq + size * var] = rr;
-          break;
-        case Tag::FSTPG3:
-          // store in derivative (g) variable from the processor
-#ifdef DEBUG
-          mexPrintf("FSTPG3 Evaluate=%d\n", evaluate);
+          mexPrintf("FSTPG2 Evaluate=%d\n", evaluate);
           mexEvalString("drawnow;");
           if (!evaluate)
             {
@@ -1486,34 +1455,32 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
           switch (EQN_type)
             {
             case ExpressionType::FirstEndoDerivative:
-              eq = static_cast<FSTPG3*>(*it_code)->row;
-              pos_col = static_cast<FSTPG3*>(*it_code)->col_pos;
+              eq = static_cast<FSTPG2*>(*it_code)->row;
+              jacob_col = static_cast<FSTPG2*>(*it_code)->col;
 #ifdef DEBUG
-              mexPrintf("Endo eq=%d, pos_col=%d, size=%d, jacob=%x\n", eq, pos_col, size, jacob);
+              mexPrintf("Endo eq=%d, col=%d, size=%d, jacob=%x\n", eq, jacob_col, size, jacob);
               mexPrintf("jacob=%x\n", jacob);
 #endif
-              jacob[eq + size * pos_col] = rr;
+              jacob[eq + size * jacob_col] = rr;
               break;
             case ExpressionType::FirstExoDerivative:
-              // eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
               eq = EQN_equation;
-              pos_col = static_cast<FSTPG3*>(*it_code)->col_pos;
+              jacob_col = static_cast<FSTPG2*>(*it_code)->col;
 #ifdef DEBUG
-              mexPrintf("Exo eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
+              mexPrintf("Exo eq=%d, col=%d, size=%d\n", eq, jacob_col, size);
               mexEvalString("drawnow;");
 #endif
-              jacob_exo[eq + size * pos_col] = rr;
+              jacob_exo[eq + size * jacob_col] = rr;
               break;
             case ExpressionType::FirstExodetDerivative:
-              // eq = static_cast<FSTPG3_ *>(*it_code)->get_row();
               eq = EQN_equation;
-              pos_col = static_cast<FSTPG3*>(*it_code)->col_pos;
+              jacob_col = static_cast<FSTPG2*>(*it_code)->col;
 #ifdef DEBUG
-              mexPrintf("Exo det eq=%d, pos_col=%d, size=%d\n", eq, pos_col, size);
+              mexPrintf("Exo det eq=%d, col=%d, size=%d\n", eq, jacob_col, size);
               mexEvalString("drawnow;");
 #endif
 
-              jacob_exo_det[eq + size * pos_col] = rr;
+              jacob_exo_det[eq + size * jacob_col] = rr;
               break;
             default:
               throw FatalException {"In compute_block_time, variable "
