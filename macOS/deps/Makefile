@@ -53,7 +53,7 @@ clean-all: clean-lib clean-src clean-tar
 #
 tarballs/slicot-$(SLICOT_VERSION).tar.gz:
 	mkdir -p tarballs
-	wget $(WGET_OPTIONS) -O $@ https://deb.debian.org/debian/pool/main/s/slicot/slicot_$(SLICOT_VERSION).orig.tar.xz
+	wget $(WGET_OPTIONS) -O $@ https://github.com/SLICOT/SLICOT-Reference/archive/refs/tags/v$(SLICOT_VERSION).tar.gz
 
 $(DEPS_ARCH)/sources64/slicot-$(SLICOT_VERSION): tarballs/slicot-$(SLICOT_VERSION).tar.gz
 	rm -rf $(DEPS_ARCH)/sources64/slicot-*
