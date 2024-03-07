@@ -17,6 +17,18 @@ cpp_compiler = meson.get_compiler('cpp')
 fortran_compiler = meson.get_compiler('fortran')
 c_compiler = meson.get_compiler('c')
 
+# If this is GCC, enforce minimal version
+# Other compilers are unsupported, but do not fail in that case
+gcc_minimal_version = 10
+if ((cpp_compiler.get_id() == 'gcc'
+     and cpp_compiler.version().version_compare('<' + gcc_minimal_version.to_string()))
+    or (fortran_compiler.get_id() == 'gcc'
+        and fortran_compiler.version().version_compare('<' + gcc_minimal_version.to_string()))
+    or (c_compiler.get_id() == 'gcc'
+        and c_compiler.version().version_compare('<' + gcc_minimal_version.to_string())))
+  error('GCC is too old. Version ' + gcc_minimal_version.to_string() + ' or higher is required.')
+endif
+
 ### Preprocessor
 
 subdir('preprocessor/src')
