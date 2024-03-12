@@ -5584,11 +5584,22 @@ All of these elements are discussed in the following.
     or the piecewise Kalman filter (default). An issue that can arise in the context of
     estimation is a structural shock dropping out of the model in a particular regime.
     For example, at the zero lower bound on interest rates, the monetary policy shock
-    in the Taylor rule will not appear anymore. This may create a problem
-    of stochastic singularity if there are then more observables than shocks. To
-    avoid this issue, the data points for the zero interest rate should be set
-    to NaN and the standard deviation of the associated shock set to 0 for the
-    corresponding periods using the ``heteroskedastic_shocks`` block.
+    in the Taylor rule will not appear anymore. This may create a problem if there are 
+    then more observables than shocks. The way to handle this issue depends on the type of filter used.
+    The first step is to set the data points for the zero interest rate period to NaN. For the piecewise 
+    Kalman filter, the standard deviation of the associated shock needs to be set to 0 for the
+    corresponding periods using the ``heteroskedastic_shocks`` block. This avoids stochastic singularity.
+    However, this approach does not work for the inversion filter as the ``heteroskedastic_shocks`` block
+    does not do anything here. For the inversion filter, as many shocks as observables are required 
+    at each point in time. Dynare assumes a one-to-one mapping between the declared shocks in 
+    ``varexo`` and declared observables in ``varobs``. For example, if the second declared observable 
+    is NaN in a given period, Dynare will drop the second declared shock.
+
+    .. warning:: If there are missing values, it is imperative for the inversion filter that the 
+        declaration order of shocks and observables is conformable. Sticking with our example, if the nominal 
+        interest is the second ``varobs`` and is set to NaN, the inversion filter will drop the second 
+        declared shock. If that second declared shock is, e.g., a TFP shock, it will be dropped instead 
+        of the intended monetary policy shock.
 
     Note that models with unit roots will require the user to specify the ``diffuse_filter`` option as 
     otherwise Blanchard-Kahn errors will be triggered. For the piecewise Kalman filter, the 
