@@ -14766,6 +14766,11 @@ simply add the exogenous variables to the PAC equation (without the weight
     used if the target shows up in level in the auxiliary model,
     equation (A.74) in *Brayton et alii (2000)*.
 
+    .. option:: auxname = STRING
+
+    Name the auxiliary variable, created by the preprocessor, that
+    will define the expectation term in the PAC equation.
+
 
 .. operator:: pac_expectation (NAME_OF_PAC_MODEL);
 
