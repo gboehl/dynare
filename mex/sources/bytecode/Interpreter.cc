@@ -1240,8 +1240,8 @@ Interpreter::Simple_Init()
   test_mxMalloc(pivotv, __LINE__, __FILE__, __func__, size * sizeof(double));
   pivotva = static_cast<double*>(mxMalloc(size * sizeof(double)));
   test_mxMalloc(pivotva, __LINE__, __FILE__, __func__, size * sizeof(double));
-  b = static_cast<int*>(mxMalloc(size * sizeof(int)));
-  test_mxMalloc(b, __LINE__, __FILE__, __func__, size * sizeof(int));
+  b_perm = static_cast<int*>(mxMalloc(size * sizeof(int)));
+  test_mxMalloc(b_perm, __LINE__, __FILE__, __func__, size * sizeof(int));
   line_done = static_cast<bool*>(mxMalloc(size * sizeof(bool)));
   test_mxMalloc(line_done, __LINE__, __FILE__, __func__, size * sizeof(bool));
 
@@ -1301,7 +1301,7 @@ Interpreter::Simple_Init()
   double cum_abs_sum = 0;
   for (int i = 0; i < size; i++)
     {
-      b[i] = i;
+      b_perm[i] = i;
       cum_abs_sum += fabs(u[i]);
     }
   bool zero_solution {cum_abs_sum < 1e-20};
@@ -1849,8 +1849,8 @@ Interpreter::Init_Gaussian_Elimination()
   test_mxMalloc(pivotv, __LINE__, __FILE__, __func__, size * periods * sizeof(double));
   pivotva = static_cast<double*>(mxMalloc(size * periods * sizeof(double)));
   test_mxMalloc(pivotva, __LINE__, __FILE__, __func__, size * periods * sizeof(double));
-  b = static_cast<int*>(mxMalloc(size * periods * sizeof(int)));
-  test_mxMalloc(b, __LINE__, __FILE__, __func__, size * periods * sizeof(int));
+  b_perm = static_cast<int*>(mxMalloc(size * periods * sizeof(int)));
+  test_mxMalloc(b_perm, __LINE__, __FILE__, __func__, size * periods * sizeof(int));
   line_done = static_cast<bool*>(mxMalloc(size * periods * sizeof(bool)));
   test_mxMalloc(line_done, __LINE__, __FILE__, __func__, size * periods * sizeof(bool));
   mem_mngr.init_CHUNK_BLCK_SIZE(u_count);
@@ -1871,7 +1871,7 @@ Interpreter::Init_Gaussian_Elimination()
 
   for (int i = 0; i < periods * size; i++)
     {
-      b[i] = 0;
+      b_perm[i] = 0;
       line_done[i] = false;
     }
   for (int i = 0; i < (periods + y_kmax + 1) * size; i++)
@@ -1935,8 +1935,8 @@ Interpreter::Init_Gaussian_Elimination()
             }
           else /* ...and store it in the u vector*/
             {
-              b[eq] = value + u_count_init * t;
-              u[b[eq]] += tmp_b;
+              b_perm[eq] = value + u_count_init * t;
+              u[b_perm[eq]] += tmp_b;
               tmp_b = 0;
             }
         }
@@ -1996,7 +1996,7 @@ Interpreter::End_Gaussian_Elimination()
   mxFree(FNZE_C);
   mxFree(NbNZRow);
   mxFree(NbNZCol);
-  mxFree(b);
+  mxFree(b_perm);
   mxFree(line_done);
   mxFree(pivot);
   mxFree(pivot_save);
@@ -2188,7 +2188,7 @@ Interpreter::complete(int beg_t)
           first = first->NZE_R_N;
         }
       save_code[nop] = IFADD;
-      save_code[nop + 1] = b[pos];
+      save_code[nop + 1] = b_perm[pos];
       save_code[nop + 2] = 0;
       save_code[nop + 3] = 0;
 #ifdef DEBUG
@@ -2234,7 +2234,7 @@ Interpreter::complete(int beg_t)
           nop1 += 4;
           first = first->NZE_R_N;
         }
-      diff[nopa] = save_code[nop1 + 1] - (b[pos]);
+      diff[nopa] = save_code[nop1 + 1] - (b_perm[pos]);
       diff[nopa + 1] = 0;
 #ifdef DEBUG
       if ((nop1 + 3) >= size_of_save_code)
@@ -2318,7 +2318,7 @@ Interpreter::bksub(int tbreak, int last_period)
               yy += y[index_vara[first->c_index] + cal_y] * u[first->u_index];
               first = first->NZE_R_N;
             }
-          yy = -(yy + y[eq] + u[b[pos]]);
+          yy = -(yy + y[eq] + u[b_perm[pos]]);
           direction[eq] = yy;
           y[eq] += slowc * yy;
         }
@@ -2343,7 +2343,7 @@ Interpreter::simple_bksub()
           yy += y[index_vara[first->c_index] + it_ * y_size] * u[first->u_index];
           first = first->NZE_R_N;
         }
-      yy = -(yy + y[eq + it_ * y_size] + u[b[pos]]);
+      yy = -(yy + y[eq + it_ * y_size] + u[b_perm[pos]]);
       direction[eq + it_ * y_size] = yy;
       y[eq + it_ * y_size] += slowc * yy;
     }
@@ -3516,7 +3516,7 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination()
           u[first->u_index] /= piv;
           first = first->NZE_R_N;
         }
-      u[b[pivj]] /= piv;
+      u[b_perm[pivj]] /= piv;
       /*subtract the elements on the non treated lines*/
       tie(nb_eq, first) = At_Col(i);
       auto [nb_var_piva, first_piva] = At_Row(pivj);
@@ -3598,7 +3598,7 @@ Interpreter::Solve_ByteCode_Sparse_GaussianElimination()
                     l_piv++;
                   }
               }
-          u[b[row]] -= u[b[pivj]] * first_elem;
+          u[b_perm[row]] -= u[b_perm[pivj]] * first_elem;
         }
     }
   for (int i = 0; i < y_size; i++)
@@ -3821,7 +3821,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
                   first = first->NZE_R_N;
                 }
               nop += nb_var * 2;
-              u[b[pivj]] /= piv;
+              u[b_perm[pivj]] /= piv;
               if (nop + 1 >= nopa)
                 {
                   nopa = static_cast<long>(mem_increasing_factor * static_cast<double>(nopa));
@@ -3829,7 +3829,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
                 }
               save_op_s = reinterpret_cast<t_save_op_s*>(&save_op[nop]);
               save_op_s->operat = IFDIV;
-              save_op_s->first = b[pivj];
+              save_op_s->first = b_perm[pivj];
               save_op_s->lag = 0;
               nop += 2;
               // Subtract the elements on the non treated lines
@@ -3961,7 +3961,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
                             }
                         }
                     }
-                  u[b[row]] -= u[b[pivj]] * first_elem;
+                  u[b_perm[row]] -= u[b_perm[pivj]] * first_elem;
 
                   if (nop + 3 >= nopa)
                     {
@@ -3970,8 +3970,8 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
                     }
                   save_op_s_l = reinterpret_cast<t_save_op_s*>(&save_op[nop]);
                   save_op_s_l->operat = IFSUB;
-                  save_op_s_l->first = b[row];
-                  save_op_s_l->second = b[pivj];
+                  save_op_s_l->first = b_perm[row];
+                  save_op_s_l->second = b_perm[pivj];
                   save_op_s_l->lag = abs(tmp_lag);
                   nop += 3;
                 }
@@ -3998,7 +3998,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
                   first = first->NZE_R_N;
                 }
               nop += nb_var * 2;
-              u[b[pivj]] /= piv;
+              u[b_perm[pivj]] /= piv;
               nop += 2;
               // Subtract the elements on the non treated lines
               tie(nb_eq, first) = At_Col(i);
@@ -4095,7 +4095,7 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
                             }
                         }
                     }
-                  u[b[row]] -= u[b[pivj]] * first_elem;
+                  u[b_perm[row]] -= u[b_perm[pivj]] * first_elem;
                   nop += 3;
                 }
             }

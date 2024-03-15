@@ -95,7 +95,7 @@ private:
 
   int *pivot, *pivotk, *pivot_save;
   double *pivotv, *pivotva;
-  int* b;
+  int* b_perm;
   bool* line_done;
   bool symbolic, alt_symbolic;
   int alt_symbolic_count;
