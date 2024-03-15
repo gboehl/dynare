@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2023 Dynare Team
+ * Copyright © 2007-2024 Dynare Team
  *
  * This file is part of Dynare.
  *
@@ -109,6 +109,8 @@ test_mxMalloc(void* z, int line, const string& file, const string& func, int amo
 
 #ifdef MATLAB_MEX_FILE
 extern "C" bool utIsInterruptPending();
+#else
+# include <octave/quit.h>
 #endif
 
 #endif

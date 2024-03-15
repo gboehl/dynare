@@ -3642,6 +3642,8 @@ Interpreter::Solve_ByteCode_Symbolic_Sparse_GaussianElimination(bool symbolic)
 #ifdef MATLAB_MEX_FILE
       if (utIsInterruptPending())
         throw UserException {};
+#else
+      OCTAVE_QUIT;
 #endif
 
       if (record && symbolic)

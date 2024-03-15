@@ -417,6 +417,8 @@ Evaluate::print_expression(const Evaluate::it_code_type& expr_begin,
 #ifdef MATLAB_MEX_FILE
       if (utIsInterruptPending())
         throw UserException {};
+#else
+      OCTAVE_QUIT;
 #endif
       switch ((*it_code)->tag)
         {
@@ -1004,6 +1006,8 @@ Evaluate::evaluateBlock(int it_, int y_kmin, double* __restrict__ y, int y_size,
 #ifdef MATLAB_MEX_FILE
   if (utIsInterruptPending())
     throw UserException {};
+#else
+  OCTAVE_QUIT;
 #endif
 
   while (go_on)
