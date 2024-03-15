@@ -17,7 +17,7 @@ function [y, success, maxerror, iter, per_block_status] = perfect_foresight_solv
 % - iter                [integer] Number of iterations of the underlying nonlinear solver (empty for non-iterative methods)
 % - per_block_status    [struct] In the case of block decomposition, provides per-block solver status information (empty if no block decomposition)
 
-% Copyright © 2015-2023 Dynare Team
+% Copyright © 2015-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -96,8 +96,11 @@ else
             [y, success] = sim1_purely_static(y, exo_simul, steady_state, M_, options_);
         else % General case
             switch options_.stack_solve_algo
-              case 0
+              case {0 2 3}
                 if options_.linear_approximation
+                    if ismember(options_.stack_solve_algo, [2 3])
+                        error('Invalid value of stack_solve_algo option!')
+                    end
                     [y, success, maxerror] = sim1_linear(y, exo_simul, steady_state, exo_steady_state, M_, options_);
                 else
                     [y, success, maxerror, iter] = sim1(y, exo_simul, steady_state, M_, options_);

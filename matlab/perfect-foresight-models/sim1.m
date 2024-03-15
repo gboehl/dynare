@@ -16,7 +16,7 @@ function [endogenousvariables, success, err, iter] = sim1(endogenousvariables, e
 %   - err                 [double] ∞-norm of the residual
 %   - iter                [integer] Number of iterations
 
-% Copyright © 1996-2023 Dynare Team
+% Copyright © 1996-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -128,7 +128,7 @@ for iter = 1:options_.simul.maxit
     if options_.simul.robust_lin_solve
         dy = -lin_solve_robust(A, res, verbose, options_);
     else
-        dy = -lin_solve(A, res, verbose);
+        dy = -lin_solve(A, res, verbose, options_);
     end
     if any(isnan(dy)) || any(isinf(dy))
         if verbose
@@ -180,13 +180,26 @@ if verbose
     skipline();
 end
 
-function x = lin_solve(A, b, verbose)
+function x = lin_solve(A, b, verbose, options_)
 if norm(b) < sqrt(eps) % then x = 0 is a solution
     x = 0;
     return
 end
 
-x = A\b;
+if options_.stack_solve_algo == 0
+    x = A\b;
+else
+    ilu_setup.type = 'ilutp';
+    ilu_setup.droptol = 1e-10;
+    [L1, U1] = ilu(A, ilu_setup);
+    if options_.stack_solve_algo == 2
+        x = gmres(A, b, [], [], [], L1, U1);
+    elseif options_.stack_solve_algo == 3
+        x = bicgstab(A, b, [], [], L1, U1);
+    else
+        error('sim1: invalid value for options_.stack_solve_algo')
+    end
+end
 x(~isfinite(x)) = 0;
 relres = norm(b - A*x) / norm(b);
 if relres > 1e-6 && verbose

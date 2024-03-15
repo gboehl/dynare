@@ -3706,15 +3706,13 @@ speed-up on large models.
 
                Use a Newton algorithm with a Generalized Minimal Residual
                (GMRES) solver at each iteration, applied on the stacked system
-               of all equations in all periods (requires ``bytecode`` and/or
-               ``block`` option, see :ref:`model-decl`)
+               of all equations in all periods.
 
            ``3``
 
                Use a Newton algorithm with a Stabilized Bi-Conjugate Gradient
                (BiCGStab) solver at each iteration, applied on the stacked
-               system of all equations in all periods (requires ``bytecode``
-               and/or ``block`` option, see :ref:`model-decl`).
+               system of all equations in all periods.
 
            ``4``
 

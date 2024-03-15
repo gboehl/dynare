@@ -7,7 +7,7 @@ function check_input_arguments(options_, M_, oo_)
 %   M_                  [structure] describing the model
 %   oo_                 [structure] storing the results
 
-% Copyright © 2015-2023 Dynare Team
+% Copyright © 2015-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -28,10 +28,8 @@ if options_.stack_solve_algo < 0 || options_.stack_solve_algo > 7
     error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: stack_solve_algo must be between 0 and 7')
 end
 
-if ~options_.block && ~options_.bytecode && options_.stack_solve_algo ~= 0 ...
-        && options_.stack_solve_algo ~= 1 && options_.stack_solve_algo ~= 6 ...
-        && options_.stack_solve_algo ~= 7
-    error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: you must use stack_solve_algo={0,1,6,7} when not using block nor bytecode option')
+if ~options_.block && ~options_.bytecode && ~ismember(options_.stack_solve_algo, [0:3 6 7])
+    error('perfect_foresight_solver:ArgCheck','PERFECT_FORESIGHT_SOLVER: you must use stack_solve_algo={0,1,2,3,6,7} when not using block nor bytecode option')
 end
 
 if options_.block && ~options_.bytecode && options_.stack_solve_algo == 5
