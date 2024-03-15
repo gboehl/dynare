@@ -135,7 +135,7 @@ Interpreter::solve_simple_one_periods()
   while (!(cvg || iter >= maxit_))
     {
       Per_y_ = it_ * y_size;
-      ya = y[Block_Contain[0].Variable + Per_y_];
+      ya = y[variables[0] + Per_y_];
       compute_block_time(0, false, false);
       if (!isfinite(res1))
         {
@@ -149,7 +149,7 @@ Interpreter::solve_simple_one_periods()
                   if (verbosity >= 2)
                     mexPrintf("Reducing the path length in Newton step slowc=%f\n", slowc);
                   feclearexcept(FE_ALL_EXCEPT);
-                  y[Block_Contain[0].Variable + Per_y_] = ya - slowc * (r[0] / g1);
+                  y[variables[0] + Per_y_] = ya - slowc * (r[0] / g1);
                   if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
                     {
                       res1 = numeric_limits<double>::quiet_NaN();
@@ -165,7 +165,7 @@ Interpreter::solve_simple_one_periods()
       if (cvg)
         continue;
       feclearexcept(FE_ALL_EXCEPT);
-      y[Block_Contain[0].Variable + Per_y_] += -slowc * (rr / g1);
+      y[variables[0] + Per_y_] += -slowc * (rr / g1);
       if (fetestexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW))
         {
           res1 = numeric_limits<double>::quiet_NaN();
@@ -251,11 +251,10 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           compute_block_time(0, true, false);
           if (single_block)
             for (int j = 0; j < size; j++)
-              residual[j] = y[Block_Contain[j].Variable] - ya[Block_Contain[j].Variable];
+              residual[j] = y[variables[j]] - ya[variables[j]];
           else
             for (int j = 0; j < size; j++)
-              residual[Block_Contain[j].Equation]
-                  = y[Block_Contain[j].Variable] - ya[Block_Contain[j].Variable];
+              residual[equations[j]] = y[variables[j]] - ya[variables[j]];
         }
       else
         {
@@ -266,13 +265,11 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               if (single_block)
                 for (int j = 0; j < size; j++)
                   residual[(it_ - y_kmin) * size + j]
-                      = y[it_ * y_size + Block_Contain[j].Variable]
-                        - ya[it_ * y_size + Block_Contain[j].Variable];
+                      = y[it_ * y_size + variables[j]] - ya[it_ * y_size + variables[j]];
               else
                 for (int j = 0; j < size; j++)
-                  residual[(it_ - y_kmin) * y_size + Block_Contain[j].Equation]
-                      = y[it_ * y_size + Block_Contain[j].Variable]
-                        - ya[it_ * y_size + Block_Contain[j].Variable];
+                  residual[(it_ - y_kmin) * y_size + equations[j]]
+                      = y[it_ * y_size + variables[j]] - ya[it_ * y_size + variables[j]];
             }
         }
       break;
@@ -284,7 +281,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           compute_block_time(0, true, false);
           if (!single_block)
             for (int j = 0; j < size; j++)
-              residual[Block_Contain[j].Equation] = r[j];
+              residual[equations[j]] = r[j];
           else
             for (int j = 0; j < size; j++)
               residual[j] = r[j];
@@ -297,7 +294,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
-                  residual[(it_ - y_kmin) * y_size + Block_Contain[j].Equation] = r[j];
+                  residual[(it_ - y_kmin) * y_size + equations[j]] = r[j];
               else
                 for (int j = 0; j < size; j++)
                   residual[(it_ - y_kmin) * size + j] = r[j];
@@ -321,7 +318,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           compute_block_time(0, true, false);
           if (!single_block)
             for (int j = 0; j < size; j++)
-              residual[Block_Contain[j].Equation] = r[j];
+              residual[equations[j]] = r[j];
           else
             for (int j = 0; j < size; j++)
               residual[j] = r[j];
@@ -334,7 +331,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
-                  residual[(it_ - y_kmin) * y_size + Block_Contain[j].Equation] = r[j];
+                  residual[(it_ - y_kmin) * y_size + equations[j]] = r[j];
               else
                 for (int j = 0; j < size; j++)
                   residual[(it_ - y_kmin) * size + j] = r[j];
@@ -348,11 +345,10 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           compute_block_time(0, true, false);
           if (single_block)
             for (int j = 0; j < size; j++)
-              residual[j] = y[Block_Contain[j].Variable] - ya[Block_Contain[j].Variable];
+              residual[j] = y[variables[j]] - ya[variables[j]];
           else
             for (int j = 0; j < size; j++)
-              residual[Block_Contain[j].Equation]
-                  = y[Block_Contain[j].Variable] - ya[Block_Contain[j].Variable];
+              residual[equations[j]] = y[variables[j]] - ya[variables[j]];
         }
       else
         {
@@ -363,13 +359,11 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               if (single_block)
                 for (int j = 0; j < size; j++)
                   residual[(it_ - y_kmin) * size + j]
-                      = y[it_ * y_size + Block_Contain[j].Variable]
-                        - ya[it_ * y_size + Block_Contain[j].Variable];
+                      = y[it_ * y_size + variables[j]] - ya[it_ * y_size + variables[j]];
               else
                 for (int j = 0; j < size; j++)
-                  residual[(it_ - y_kmin) * y_size + Block_Contain[j].Equation]
-                      = y[it_ * y_size + Block_Contain[j].Variable]
-                        - ya[it_ * y_size + Block_Contain[j].Variable];
+                  residual[(it_ - y_kmin) * y_size + equations[j]]
+                      = y[it_ * y_size + variables[j]] - ya[it_ * y_size + variables[j]];
             }
         }
       break;
@@ -381,7 +375,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           compute_block_time(0, true, false);
           if (!single_block)
             for (int j = 0; j < size; j++)
-              residual[Block_Contain[j].Equation] = r[j];
+              residual[equations[j]] = r[j];
           else
             for (int j = 0; j < size; j++)
               residual[j] = r[j];
@@ -394,7 +388,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
-                  residual[(it_ - y_kmin) * y_size + Block_Contain[j].Equation] = r[j];
+                  residual[(it_ - y_kmin) * y_size + equations[j]] = r[j];
               else
                 for (int j = 0; j < size; j++)
                   residual[(it_ - y_kmin) * size + j] = r[j];
@@ -415,7 +409,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           compute_block_time(0, true, false);
           if (!single_block)
             for (int j = 0; j < size; j++)
-              residual[Block_Contain[j].Equation] = r[j];
+              residual[equations[j]] = r[j];
           else
             for (int j = 0; j < size; j++)
               residual[j] = r[j];
@@ -428,7 +422,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
               compute_block_time(0, true, false);
               if (!single_block)
                 for (int j = 0; j < size; j++)
-                  residual[(it_ - y_kmin) * y_size + Block_Contain[j].Equation] = r[j];
+                  residual[(it_ - y_kmin) * y_size + equations[j]] = r[j];
               else
                 for (int j = 0; j < size; j++)
                   residual[(it_ - y_kmin) * size + j] = r[j];
@@ -453,7 +447,7 @@ Interpreter::evaluate_a_block(bool initialization, bool single_block, const stri
           compute_block_time(Per_u_, true, false);
           if (!single_block)
             for (int j = 0; j < size; j++)
-              residual[(it_ - y_kmin) * y_size + Block_Contain[j].Equation] = r[j];
+              residual[(it_ - y_kmin) * y_size + equations[j]] = r[j];
           else
             for (int j = 0; j < size; j++)
               residual[(it_ - y_kmin) * size + j] = r[j];
@@ -663,7 +657,7 @@ void
 Interpreter::check_for_controlled_exo_validity(const vector<s_plan>& sconstrained_extended_path)
 {
   vector<int> exogenous {evaluator.getCurrentBlockExogenous()};
-  vector<int> endogenous {evaluator.getCurrentBlockEndogenous()};
+  vector<int> endogenous {evaluator.getCurrentBlockVariables()};
   for (auto& it : sconstrained_extended_path)
     {
       if (find(endogenous.begin(), endogenous.end(), it.exo_num) != endogenous.end()
@@ -738,7 +732,8 @@ Interpreter::MainLoop(const string& bin_basename, bool evaluate, int block, bool
       size = evaluator.getCurrentBlockSize();
       type = evaluator.getCurrentBlockType();
       is_linear = evaluator.isCurrentBlockLinear();
-      Block_Contain = evaluator.getCurrentBlockEquationsAndVariables();
+      variables = evaluator.getCurrentBlockVariables();
+      equations = evaluator.getCurrentBlockEquations();
       u_count_int = evaluator.getCurrentBlockUCount();
 
       if (constrained)

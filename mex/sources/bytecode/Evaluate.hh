@@ -128,9 +128,14 @@ public:
     return currentBlockTag()->get_is_linear();
   }
   [[nodiscard]] auto
-  getCurrentBlockEquationsAndVariables() const
+  getCurrentBlockVariables() const
   {
-    return currentBlockTag()->get_Block_Contain();
+    return currentBlockTag()->get_variables();
+  }
+  [[nodiscard]] auto
+  getCurrentBlockEquations() const
+  {
+    return currentBlockTag()->get_equations();
   }
   [[nodiscard]] auto
   getCurrentBlockUCount() const
@@ -141,11 +146,6 @@ public:
   getCurrentBlockExogenous() const
   {
     return currentBlockTag()->get_exogenous();
-  }
-  [[nodiscard]] auto
-  getCurrentBlockEndogenous() const
-  {
-    return currentBlockTag()->get_endogenous();
   }
   [[nodiscard]] auto
   getCurrentBlockNbColJacob() const
