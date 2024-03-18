@@ -317,8 +317,8 @@ mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
       vector_table_conditional_local_type vv3 = table_conditional_global[0];
       for (int i = 0; i < nb_constrained; i++)
         {
-          sconditional_extended_path[i].exo_num = ceil(constrained_var_value[i]);
-          sconditional_extended_path[i].var_num = ceil(controlled_varexo_value[i]);
+          sconditional_extended_path[i].exo_num = ceil(constrained_var_value[i]) - 1;
+          sconditional_extended_path[i].var_num = ceil(controlled_varexo_value[i]) - 1;
           mxArray* Array_constrained_paths_ = mxGetCell(constrained_paths_, i);
           double* specific_constrained_paths_ = mxGetPr(Array_constrained_paths_);
           double* specific_constrained_int_date_ = mxGetPr(mxGetCell(constrained_int_date_, i));
@@ -341,11 +341,11 @@ mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
             {
               constrained_int_date[j] = static_cast<int>(specific_constrained_int_date_[j]) - 1;
               conditional_local.is_cond = true;
-              conditional_local.var_exo = sconditional_extended_path[i].var_num - 1;
-              conditional_local.var_endo = sconditional_extended_path[i].exo_num - 1;
+              conditional_local.var_exo = sconditional_extended_path[i].var_num;
+              conditional_local.var_endo = sconditional_extended_path[i].exo_num;
               conditional_local.constrained_value = specific_constrained_paths_[j];
               table_conditional_global[constrained_int_date[j]]
-                                      [sconditional_extended_path[i].exo_num - 1]
+                                      [sconditional_extended_path[i].exo_num]
                   = conditional_local;
               sconditional_extended_path[i].per_value[j]
                   = {constrained_int_date[j], specific_constrained_paths_[j]};
