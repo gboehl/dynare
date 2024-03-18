@@ -178,8 +178,6 @@ private:
   void Read_SparseMatrix(const string& file_name, bool two_boundaries);
   void Singular_display();
   void End_Solver();
-  static int find_exo_num(const vector<s_plan>& sconstrained_extended_path, int value);
-  static int find_int_date(const vector<pair<int, double>>& per_value, int value);
   void Init_Gaussian_Elimination();
   void Init_Matlab_Sparse_Two_Boundaries(const mxArray* A_m, const mxArray* b_m,
                                          const mxArray* x0_m) const;

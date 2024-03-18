@@ -1468,27 +1468,6 @@ Interpreter::Init_UMFPACK_Sparse_One_Boundary(const mxArray* x0_m) const
   return {zero_solution, Ap, Ai, Ax, b};
 }
 
-int
-Interpreter::find_exo_num(const vector<s_plan>& sconstrained_extended_path, int value)
-{
-  auto it = find_if(sconstrained_extended_path.begin(), sconstrained_extended_path.end(),
-                    [=](auto v) { return v.exo_num == value; });
-  if (it != sconstrained_extended_path.end())
-    return it - sconstrained_extended_path.begin();
-  else
-    return -1;
-}
-
-int
-Interpreter::find_int_date(const vector<pair<int, double>>& per_value, int value)
-{
-  auto it = find_if(per_value.begin(), per_value.end(), [=](auto v) { return v.first == value; });
-  if (it != per_value.end())
-    return it - per_value.begin();
-  else
-    return -1;
-}
-
 tuple<SuiteSparse_long*, SuiteSparse_long*, double*, double*>
 Interpreter::Init_UMFPACK_Sparse_Two_Boundaries(
     const mxArray* x0_m,
