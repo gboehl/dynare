@@ -100,7 +100,7 @@ Section "MinGW compiler for MATLAB 64-bit"
  File /r deps\mingw64\*
 SectionEnd
 
-Section "MEX files for Octave 8.4.0 (64-bit)"
+Section "MEX files for Octave 9.1.0 (64-bit)"
  SetOutPath $INSTDIR\mex\octave\win64
  File ..\build-win-octave\*.mex
 SectionEnd
