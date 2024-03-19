@@ -9,7 +9,7 @@ function [x, errorflag, errorcode] = solve1(func, x, j1, j2, jacobian_flag, gste
 %    j2:              unknown variables index
 %    jacobian_flag=true: jacobian given by the 'func' function
 %    jacobian_flag=false: jacobian obtained numerically
-%    gstep            increment multiplier in numercial derivative
+%    gstep            increment multiplier in numerical derivative
 %                     computation
 %    tolf             tolerance for residuals
 %    tolx             tolerance for solution variation
@@ -20,12 +20,9 @@ function [x, errorflag, errorcode] = solve1(func, x, j1, j2, jacobian_flag, gste
 %
 % OUTPUTS
 %    x:               results
-%    errorflag=1:     the model can not be solved
-%
-% SPECIAL REQUIREMENTS
-%    none
+%    errorflag=true:  the model can not be solved
 
-% Copyright © 2001-2022 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,8 +41,6 @@ function [x, errorflag, errorcode] = solve1(func, x, j1, j2, jacobian_flag, gste
 
 nn = length(j1);
 g = zeros(nn,1) ;
-
-tolmin = tolx ;
 
 stpmx = 100 ;
 
@@ -91,7 +86,6 @@ if max(abs(fvec))<tolf*tolf
 end
 
 stpmax = stpmx*max([sqrt(x'*x);nn]) ;
-first_time = 1;
 if ~jacobian_flag
     fjac = zeros(nn,nn);
 end
@@ -155,7 +149,7 @@ for its = 1:maxit
     if lnsearchflag
         errorflag = true;
         den = max([f;0.5*nn]) ;
-        if max(abs(g).*max([abs(x(j2)') ones(1,nn)])')/den < tolmin
+        if max(abs(g).*max([abs(x(j2)') ones(1,nn)])')/den < tolx
             if max(abs(x(j2)-xold(j2))./max([abs(x(j2)') ones(1,nn)])') < tolx
                 errorcode = 3;
                 if nargout<3
@@ -189,9 +183,3 @@ if nargout<3
     skipline()
     disp('SOLVE: maxit has been reached')
 end
-
-% 01/14/01 MJ lnsearch is now a separate function
-% 01/16/01 MJ added varargin to function evaluation
-% 04/13/01 MJ added test  f < tolf !!
-% 05/11/01 MJ changed tests for 'check' so as to remove 'continue' which is
-%             an instruction which appears only in version 6
