@@ -22,7 +22,7 @@ function [ys,params,info] = evaluate_steady_state(ys_init,exo_ss,M_,options_,ste
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2001-2023 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -41,11 +41,6 @@ function [ys,params,info] = evaluate_steady_state(ys_init,exo_ss,M_,options_,ste
 
 if options_.solve_algo < 0 || options_.solve_algo > 14
     error('STEADY: solve_algo must be between 0 and 14')
-end
-
-if ~options_.bytecode && ~options_.block && options_.solve_algo > 4 && ...
-        options_.solve_algo < 9
-    error('STEADY: you can''t use solve_algo = {5,6,7,8} without block nor bytecode options_')
 end
 
 if ~options_.bytecode && options_.block && options_.solve_algo == 5

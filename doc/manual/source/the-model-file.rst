@@ -2954,20 +2954,17 @@ Finding the steady state with Dynare nonlinear solver
            ``6``
 
                 Newton algorithm with a sparse LU solver at each
-                iteration (requires ``bytecode`` and/or ``block``
-                option, see :ref:`model-decl`).
+                iteration.
 
            ``7``
 
                 Newton algorithm with a Generalized Minimal Residual
-                (GMRES) solver at each iteration (requires ``bytecode``
-                and/or ``block`` option, see :ref:`model-decl`).
+                (GMRES) solver at each iteration.
 
            ``8``
 
                 Newton algorithm with a Stabilized Bi-Conjugate
-                Gradient (BiCGStab) solver at each iteration (requires
-                bytecode and/or block option, see :ref:`model-decl`).
+                Gradient (BiCGStab) solver at each iteration.
 
            ``9``
 

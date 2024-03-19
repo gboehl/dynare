@@ -293,6 +293,9 @@ elseif options_.solve_algo==3
         errorflag = true;
     end
     [fvec, fjac] = feval(f, x, varargin{:});
+elseif ismember(options_.solve_algo, [6 7 8])
+    [x, errorflag, errorcode] = newton_solve(f, x, jacobian_flag, options_.gstep, tolf, tolx, maxit, options_.solve_algo, varargin{:});
+    [fvec, fjac] = feval(f, x, varargin{:});
 elseif options_.solve_algo==10
     % LMMCP
     olmmcp = options_.lmmcp;
@@ -337,5 +340,5 @@ elseif ismember(options_.solve_algo, [13, 14])
                                                    options_.debug, varargin{:});
     [fvec, fjac] = feval(f, x, varargin{:});
 else
-    error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,7,8,9,10,11,12,13,14]')
+    error('DYNARE_SOLVE: option solve_algo must be one of [0:4,6:14]')
 end
