@@ -1,4 +1,4 @@
-function [x, errorflag, fvec, fjac, errorcode] = dynare_solve(f, x, maxit, tolf, tolx, options, varargin)
+function [x, errorflag, fvec, fjac, errorcode] = dynare_solve(f, x, maxit, tolf, tolx, options_, varargin)
 
 % Solves a nonlinear system of equations, f(x) = 0 with n unknowns
 % and n equations.
@@ -6,7 +6,7 @@ function [x, errorflag, fvec, fjac, errorcode] = dynare_solve(f, x, maxit, tolf,
 % INPUTS
 % - f            [char, fhandle]    function to be solved
 % - x            [double]           n×1 vector, initial guess.
-% - options      [struct]           Dynare options, aka options_.
+% - options_     [struct]           Dynare options
 % - varargin                        list of additional arguments to be passed to func.
 %
 % OUTPUTS
@@ -22,7 +22,7 @@ function [x, errorflag, fvec, fjac, errorcode] = dynare_solve(f, x, maxit, tolf,
 %        -10  -> System of equation ill-behaved at the initial guess (Inf, Nans or complex numbers).
 %        -11  -> Initial guess is a solution of the system of equations.
 
-% Copyright © 2001-2023 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -39,7 +39,7 @@ function [x, errorflag, fvec, fjac, errorcode] = dynare_solve(f, x, maxit, tolf,
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-jacobian_flag = options.jacobian_flag; % true iff Jacobian is returned by f routine (as a second output argument).
+jacobian_flag = options_.jacobian_flag; % true iff Jacobian is returned by f routine (as a second output argument).
 
 errorflag = false; % Let's be optimistic!
 nn = size(x,1);
@@ -63,17 +63,17 @@ if jacobian_flag
     [fvec, fjac] = feval(f, x, varargin{:});
     wrong_initial_guess_flag = false;
     if ~all(isfinite(fvec)) || any(isinf(fjac(:))) || any(isnan((fjac(:)))) || any(~isreal(fvec)) || any(~isreal(fjac(:)))
-        if ~ismember(options.solve_algo,[10,11]) && ~any(isnan(fvec)) && max(abs(fvec))< tolf
+        if ~ismember(options_.solve_algo,[10,11]) && ~any(isnan(fvec)) && max(abs(fvec))< tolf
             % return if initial value solves the problem except if a mixed complementarity problem is to be solved (complementarity conditions may not be satisfied)
             % max([NaN, 0])=0, so explicitly exclude the case where fvec contains a NaN
             errorcode = -11;
             return;
         end
-        if options.solve_randomize_initial_guess
+        if options_.solve_randomize_initial_guess
             if any(~isreal(fvec)) || any(~isreal(fjac(:)))
-                disp_verbose('dynare_solve: starting value results in complex values. Randomize initial guess...', options.verbosity)
+                disp_verbose('dynare_solve: starting value results in complex values. Randomize initial guess...', options_.verbosity)
             else
-                disp_verbose('dynare_solve: starting value results in nonfinite/NaN value. Randomize initial guess...', options.verbosity)
+                disp_verbose('dynare_solve: starting value results in nonfinite/NaN value. Randomize initial guess...', options_.verbosity)
             end
             % Let's try random numbers for the variables initialized with the default value.
             wrong_initial_guess_flag = true;
@@ -106,7 +106,7 @@ if jacobian_flag
 else
     fvec = feval(f, x, varargin{:});
     fjac = zeros(nn, nn);
-    if ~ismember(options.solve_algo,[10,11]) && ~any(isnan(fvec)) && max(abs(fvec)) < tolf
+    if ~ismember(options_.solve_algo,[10,11]) && ~any(isnan(fvec)) && max(abs(fvec)) < tolf
         % return if initial value solves the problem except if a mixed complementarity problem is to be solved (complementarity conditions may not be satisfied)
         % max([NaN, 0])=0, so explicitly exclude the case where fvec contains a NaN
         errorcode = -11;
@@ -151,7 +151,7 @@ if wrong_initial_guess_flag
     return
 end
 
-if options.solve_algo == 0
+if options_.solve_algo == 0
     if ~isoctave
         if ~user_has_matlab_license('optimization_toolbox')
             error('You can''t use solve_algo=0 since you don''t have MATLAB''s Optimization Toolbox')
@@ -180,17 +180,17 @@ if options.solve_algo == 0
         options4fsolve.SpecifyObjectiveGradient = jacobian_flag;
     end
     %% NB: The Display option is accepted but not honoured under Octave (as of version 7)
-    if options.debug
+    if options_.debug
         options4fsolve.Display = 'final';
     else
         options4fsolve.Display = 'off';
     end
     %% This one comes last, so that the user can override Dynare
-    if ~isempty(options.fsolve_options)
+    if ~isempty(options_.fsolve_options)
         if isoctave
-            eval(['options4fsolve = optimset(options4fsolve,' options.fsolve_options ');']);
+            eval(['options4fsolve = optimset(options4fsolve,' options_.fsolve_options ');']);
         else
-            eval(['options4fsolve = optimoptions(options4fsolve,' options.fsolve_options ');']);
+            eval(['options4fsolve = optimoptions(options4fsolve,' options_.fsolve_options ');']);
         end
     end
 
@@ -216,22 +216,22 @@ if options.solve_algo == 0
     else
         errorflag = true;
     end
-elseif ismember(options.solve_algo, [1, 12])
+elseif ismember(options_.solve_algo, [1, 12])
     %% NB: It is the responsibility of the caller to deal with the block decomposition if solve_algo=12
-    [x, errorflag, errorcode] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, [], options.debug, varargin{:});
+    [x, errorflag, errorcode] = solve1(f, x, 1:nn, 1:nn, jacobian_flag, options_.gstep, tolf, tolx, maxit, [], options_.debug, varargin{:});
     [fvec, fjac] = feval(f, x, varargin{:});
-elseif options.solve_algo==9
-    [x, errorflag, errorcode] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options.gstep, tolf, tolx, maxit, options.trust_region_initial_step_bound_factor, options.debug, varargin{:});
+elseif options_.solve_algo==9
+    [x, errorflag, errorcode] = trust_region(f, x, 1:nn, 1:nn, jacobian_flag, options_.gstep, tolf, tolx, maxit, options_.trust_region_initial_step_bound_factor, options_.debug, varargin{:});
     [fvec, fjac] = feval(f, x, varargin{:});
-elseif ismember(options.solve_algo, [2, 4])
-    if options.solve_algo == 2
+elseif ismember(options_.solve_algo, [2, 4])
+    if options_.solve_algo == 2
         solver = @solve1;
     else
         solver = @trust_region;
     end
     if ~jacobian_flag
         fjac = zeros(nn,nn) ;
-        dh = max(abs(x), options.gstep(1)*ones(nn,1))*eps^(1/3);
+        dh = max(abs(x), options_.gstep(1)*ones(nn,1))*eps^(1/3);
         for j = 1:nn
             xdh = x ;
             xdh(j) = xdh(j)+dh(j) ;
@@ -239,7 +239,7 @@ elseif ismember(options.solve_algo, [2, 4])
         end
     end
     [j1,j2,r,s] = dmperm(fjac);
-    if options.debug
+    if options_.debug
         disp(['DYNARE_SOLVE (solve_algo=2|4): number of blocks = ' num2str(length(r)-1)]);
     end
     for i=length(r)-1:-1:1
@@ -258,10 +258,10 @@ elseif ismember(options.solve_algo, [2, 4])
         if blockcolumns>=blocklength
             %(under-)determined block
             [x, errorflag, errorcode] = solver(f, x, j1(j), j2(j), jacobian_flag, ...
-                options.gstep, ...
-                tolf, options.solve_tolx, maxit, ...
-                options.trust_region_initial_step_bound_factor, ...
-                options.debug, varargin{:});
+                options_.gstep, ...
+                tolf, options_.solve_tolx, maxit, ...
+                options_.trust_region_initial_step_bound_factor, ...
+                options_.debug, varargin{:});
         else
             fprintf('\nDYNARE_SOLVE (solve_algo=2|4): the Dulmage-Mendelsohn decomposition returned a non-square block. This means that the Jacobian is singular. You may want to try another value for solve_algo.\n')
             %overdetermined block
@@ -274,14 +274,14 @@ elseif ismember(options.solve_algo, [2, 4])
     end
     fvec = feval(f, x, varargin{:});
     if max(abs(fvec))>tolf
-        disp_verbose('Call solver on the full nonlinear problem.',options.verbosity)
+        disp_verbose('Call solver on the full nonlinear problem.',options_.verbosity)
         [x, errorflag, errorcode] = solver(f, x, 1:nn, 1:nn, jacobian_flag, ...
-                                           options.gstep, tolf, options.solve_tolx, maxit, ...
-                                           options.trust_region_initial_step_bound_factor, ...
-                                           options.debug, varargin{:});
+                                           options_.gstep, tolf, options_.solve_tolx, maxit, ...
+                                           options_.trust_region_initial_step_bound_factor, ...
+                                           options_.debug, varargin{:});
     end
     [fvec, fjac] = feval(f, x, varargin{:});
-elseif options.solve_algo==3
+elseif options_.solve_algo==3
     if jacobian_flag
         [x, errorcode] = csolve(f, x, f, tolf, maxit, varargin{:});
     else
@@ -293,9 +293,9 @@ elseif options.solve_algo==3
         errorflag = true;
     end
     [fvec, fjac] = feval(f, x, varargin{:});
-elseif options.solve_algo==10
+elseif options_.solve_algo==10
     % LMMCP
-    olmmcp = options.lmmcp;
+    olmmcp = options_.lmmcp;
     [x, fvec, errorcode, ~, fjac] = lmmcp(f, x, olmmcp.lb, olmmcp.ub, olmmcp, varargin{:});
     eq_to_check=find(isfinite(olmmcp.lb) | isfinite(olmmcp.ub));
     eq_to_ignore=eq_to_check(x(eq_to_check,:)<=olmmcp.lb(eq_to_check)+eps | x(eq_to_check,:)>=olmmcp.ub(eq_to_check)-eps);
@@ -305,7 +305,7 @@ elseif options.solve_algo==10
     else
         errorflag = true;
     end
-elseif options.solve_algo == 11
+elseif options_.solve_algo == 11
     % PATH mixed complementary problem
     % PATH linear mixed complementary problem
     if ~exist('mcppath')
@@ -313,7 +313,7 @@ elseif options.solve_algo == 11
                'yourself and add its location to Matlab/Octave path before ' ...
                'running Dynare'])
     end
-    omcppath = options.mcppath;
+    omcppath = options_.mcppath;
     global mcp_data
     mcp_data.func = f;
     mcp_data.args = varargin;
@@ -326,16 +326,16 @@ elseif options.solve_algo == 11
     eq_to_check=find(isfinite(omcppath.lb) | isfinite(omcppath.ub));
     eq_to_ignore=eq_to_check(x(eq_to_check,:)<=omcppath.lb(eq_to_check)+eps | x(eq_to_check,:)>=omcppath.ub(eq_to_check)-eps);
     fvec(eq_to_ignore)=0;
-elseif ismember(options.solve_algo, [13, 14])
+elseif ismember(options_.solve_algo, [13, 14])
     %% NB: It is the responsibility of the caller to deal with the block decomposition if solve_algo=14
     if ~jacobian_flag
         error('DYNARE_SOLVE: option solve_algo=13 needs computed Jacobian')
     end
-    [x, errorflag, errorcode] = block_trust_region(f, x, tolf, options.solve_tolx, maxit, ...
-                                                   options.trust_region_initial_step_bound_factor, ...
-                                                   options.solve_algo == 13, ... % Only block-decompose with Dulmage-Mendelsohn for 13, not for 14
-                                                   options.debug, varargin{:});
+    [x, errorflag, errorcode] = block_trust_region(f, x, tolf, options_.solve_tolx, maxit, ...
+                                                   options_.trust_region_initial_step_bound_factor, ...
+                                                   options_.solve_algo == 13, ... % Only block-decompose with Dulmage-Mendelsohn for 13, not for 14
+                                                   options_.debug, varargin{:});
     [fvec, fjac] = feval(f, x, varargin{:});
 else
-    error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,9,10,11,12,13,14]')
+    error('DYNARE_SOLVE: option solve_algo must be one of [0,1,2,3,4,7,8,9,10,11,12,13,14]')
 end
