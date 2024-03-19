@@ -145,7 +145,10 @@ public:
   [[nodiscard]] auto
   getCurrentBlockEndogenous() const
   {
-    return currentBlockTag()->get_endogenous();
+    vector<int> endos;
+    for (auto& [eq, var, deriv] : getCurrentBlockEquationsAndVariables())
+      endos.push_back(var);
+    return endos;
   }
   [[nodiscard]] auto
   getCurrentBlockNbColJacob() const
