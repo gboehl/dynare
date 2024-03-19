@@ -132,13 +132,13 @@ initval;
   nstbs=1;
   nsfs=1;
   nsbs=1;
-  nstbc_y = 1.08068253095672;
-  nstbc_c = 0.80359242014163;
-  nstbc_h = 0.29175631001732;
-  nstbc_k = 11.08360443260358;
+  nstbc_y = 1.1;
+  nstbc_c = 0.8;
+  nstbc_h = 0.3;
+  nstbc_k = 11.1;
 end;
 
-steady(solve_algo = @{solve_algo});
+steady(solve_algo = @{solve_algo}, tolf = 1e-11);
 
 @#if block
 model_info;
