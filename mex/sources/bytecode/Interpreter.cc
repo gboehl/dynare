@@ -3138,16 +3138,13 @@ Interpreter::Solve_Matlab_BiCGStab(mxArray* A_m, mxArray* b_m, bool is_two_bound
   else if (preconditioner == 1)
     {
       /*[L1, U1] = ilu(g1a=;*/
-      std::array field_names {"type", "droptol", "milu", "udiag", "thresh"};
-      const int type = 0, droptol = 1, milu = 2, udiag = 3, thresh = 4;
+      std::array field_names {"type", "droptol"};
+      const int type {0}, droptol {1};
       std::array dims {static_cast<mwSize>(1)};
       mxArray* Setup
           = mxCreateStructArray(dims.size(), dims.data(), field_names.size(), field_names.data());
       mxSetFieldByNumber(Setup, 0, type, mxCreateString("ilutp"));
       mxSetFieldByNumber(Setup, 0, droptol, mxCreateDoubleScalar(lu_inc_tol));
-      mxSetFieldByNumber(Setup, 0, milu, mxCreateString("off"));
-      mxSetFieldByNumber(Setup, 0, udiag, mxCreateDoubleScalar(0));
-      mxSetFieldByNumber(Setup, 0, thresh, mxCreateDoubleScalar(1));
       std::array<mxArray*, 2> lhs0;
       std::array rhs0 {A_m, Setup};
       if (mexCallMATLAB(lhs0.size(), lhs0.data(), rhs0.size(), rhs0.data(), "ilu"))

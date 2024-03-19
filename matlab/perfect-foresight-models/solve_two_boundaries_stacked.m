@@ -25,7 +25,7 @@ function [y, T, success, max_res, iter] = solve_two_boundaries_stacked(fh, y, x,
 % ALGORITHM
 %   Newton with LU or GMRES or BiCGStab
 
-% Copyright © 1996-2023 Dynare Team
+% Copyright © 1996-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -59,10 +59,6 @@ iter=0;
 correcting_factor=0.01;
 ilu_setup.droptol=1e-10;
 ilu_setup.type = 'ilutp';
-%ilu_setup.milu = 'col';
-ilu_setup.milu = 'off';
-ilu_setup.thresh = 1;
-ilu_setup.udiag = 0;
 max_resa=1e100;
 lambda = 1; % Length of Newton step (unused for stack_solve_algo=4)
 reduced = 0;
