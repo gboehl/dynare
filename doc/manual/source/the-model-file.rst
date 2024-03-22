@@ -3622,6 +3622,20 @@ speed-up on large models.
        Used to specify path for all endogenous and exogenous variables.
        Strictly equivalent to :comm:`initval_file`.
 
+    .. option:: endval_steady
+
+       In scenarios with a permanent shock, specifies that the terminal
+       condition is a steady state, even if the ``steady`` command has not been
+       called after the ``endval`` block. As a consequence, the subsequent
+       ``perfect_foresight_solver`` command will compute the terminal steady
+       state itself (given the value of the exogenous variables given in the
+       ``endval`` block). In practice, this option is useful when the permanent
+       shock is very large, in which case the homotopy procedure inside
+       ``perfect_foresight_solver`` will find both the terminal steady state
+       and the transitional dynamics within the same loop (which is less costly
+       than first computing the terminal steady state by homotopy, then
+       computing the transitional dynamics by homotopy).
+
     *Output*
 
     The paths for the exogenous variables are stored into
@@ -3944,20 +3958,6 @@ speed-up on large models.
        last defined steady state, which can derive from ``initval``,
        ``endval`` or a subsequent ``steady``. Only available with option
        ``stack_solve_algo==0`` or ``stack_solve_algo==7``.
-
-    .. option:: endval_steady
-
-       In scenarios with a permanent shock, specifies that the terminal
-       condition is a steady state, even if the ``steady`` command has not been
-       called after the ``endval`` block. As a consequence, the
-       ``perfect_foresight_solver`` command will compute the terminal steady
-       state itself (given the value of the exogenous variables given in the
-       ``endval`` block). In practice, this option is useful when the permanent
-       shock is very large, in which case the homotopy procedure inside
-       ``perfect_foresight_solver`` will find both the terminal steady state
-       and the transitional dynamics within the same loop (which is less costly
-       than first computing the terminal steady state by homotopy, then
-       computing the transitional dynamics by homotopy).
 
     .. option:: steady_solve_algo = INTEGER
 
