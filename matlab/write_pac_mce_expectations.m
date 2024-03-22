@@ -41,7 +41,7 @@ betaid = expectationmodel.discount_index;
 target = M_.endo_names{targetid};
 transformations = {};
 
-if isauxiliary(targetid)
+if isauxiliary(target)
     ida = get_aux_variable_id(target);
     op = 0;
     while ida
