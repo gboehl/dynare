@@ -21,7 +21,7 @@ function [dr, info] = dyn_first_order_solver(jacobia, M_, dr, options_, task)
 %                                     info=5 -> Blanchard and Kahn conditions are not satisfied: indeterminacy due to rank failure,
 %                                     info=7 -> One of the eigenvalues is close to 0/0 (infinity of complex solutions)
 
-% Copyright © 2001-2023 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -136,18 +136,18 @@ else
     aa = jacobia;
 end
 
-A = aa(:,index_m);  % Jacobain matrix for lagged endogeneous variables
-B(:,cols_b) = aa(:,index_c);  % Jacobian matrix for contemporaneous endogeneous variables
-C = aa(:,index_p);  % Jacobain matrix for led endogeneous variables
+A = aa(:,index_m);  % Jacobian matrix for lagged endogenous variables
+B(:,cols_b) = aa(:,index_c);  % Jacobian matrix for contemporaneous endogenous variables
+C = aa(:,index_p);  % Jacobian matrix for led endogenous variables
 
 info = 0;
 if task ~= 1 && (options_.dr_cycle_reduction || options_.dr_logarithmic_reduction)
     if n_current < M_.endo_nbr
         if options_.dr_cycle_reduction
-            error(['The cycle reduction algorithme can''t be used when the ' ...
+            error(['The cycle reduction algorithm can''t be used when the ' ...
                    'coefficient matrix for current variables isn''t invertible'])
         elseif options_.dr_logarithmic_reduction
-            error(['The logarithmic reduction algorithme can''t be used when the ' ...
+            error(['The logarithmic reduction algorithm can''t be used when the ' ...
                    'coefficient matrix for current variables isn''t invertible'])
         end
     end
@@ -160,7 +160,7 @@ if task ~= 1 && (options_.dr_cycle_reduction || options_.dr_logarithmic_reductio
         [ghx, info] = logarithmic_reduction(C1, B1, A1, options_.dr_logarithmic_reduction_tol, options_.dr_logarithmic_reduction_maxiter);
     end
     if info
-        % cycle_reduction or logarithmic redution failed and set info
+        % cycle_reduction or logarithmic reduction failed and set info
         return
     end
     ghx = ghx(:,index_m);
