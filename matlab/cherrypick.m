@@ -189,7 +189,7 @@ try
             else
                 % MCE version of the PAC equation.
                 [rhs, growthneutralitycorrection] = write_pac_mce_expectations(eqtags{i}, ispac.name);
-                auxlhs = sprintf('%s_Z', eqtags{i});
+                auxlhs = M_.endo_names{M_.pac.(ispac.name).mce.z1};
                 if isempty(growthneutralitycorrection)
                     RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), auxlhs);
                 else
