@@ -22,7 +22,7 @@ function [y_,int_width,int_width_ME]=simultxdet(y0,ex,ex_det, iorder,var_list,M_
 % The condition size(ex,1)+M_.maximum_lag=size(ex_det,1) must be verified
 %  for consistency.
 
-% Copyright © 2008-2018 Dynare Team
+% Copyright © 2008-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -54,12 +54,7 @@ nx = size(dr.ghu,2);
 y_ = zeros(size(y0,1),iter+ykmin);
 y_(:,1:ykmin) = y0;
 k1 = ykmin:-1:1;
-k2 = dr.kstate(find(dr.kstate(:,2) <= ykmin+1),[1 2]);
-k2 = k2(:,1)+(ykmin+1-k2(:,2))*endo_nbr;
-k3 = M_.lead_lag_incidence(1:ykmin,:)';
-k3 = find(k3(:));
-k4 = dr.kstate(find(dr.kstate(:,2) < ykmin+1),[1 2]);
-k4 = k4(:,1)+(ykmin+1-k4(:,2))*endo_nbr;
+k2 = nstatic+(1:nspred);
 
 nvar = length(var_list);
 if nvar == 0

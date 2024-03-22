@@ -5,9 +5,7 @@ order=options_.order;
 dr=oo_.dr;
 nx =size(dr.ghx,2);
 nu =size(dr.ghu,2);
-k = find(dr.kstate(:,2) <= M_.maximum_lag+1);
-klag = dr.kstate(k,[1 2]);
-state_vars=dr.order_var(klag(:,1));
+state_vars=dr.order_var(M_.nstatic+(1:M_.nspred));
 %order of endogenous variables in FV et al. paper: c, invest, y, h, r, dp, kp, lambda, pi
 varlist_FV={'C';'I';'Y';'H';'r';'D';'K';'lambda';'phi'};
 for ii=1: length(varlist_FV)

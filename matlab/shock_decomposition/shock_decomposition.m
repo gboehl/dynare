@@ -23,7 +23,7 @@ function [oo_,M_] = shock_decomposition(M_,oo_,options_,varlist,bayestopt_,estim
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2009-2023 Dynare Team
+% Copyright © 2009-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -112,8 +112,7 @@ z(:,end,:) = Smoothed_Variables_deviation_from_mean;
 
 maximum_lag = M_.maximum_lag;
 
-k2 = dr.kstate(find(dr.kstate(:,2) <= maximum_lag+1),[1 2]);
-i_state = order_var(k2(:,1))+(min(i,maximum_lag)+1-k2(:,2))*M_.endo_nbr;
+i_state = order_var(M_.nstatic+(1:M_.nspred));
 for i=1:gend
     if i > 1 && i <= maximum_lag+1
         lags = min(i-1,maximum_lag):-1:1;

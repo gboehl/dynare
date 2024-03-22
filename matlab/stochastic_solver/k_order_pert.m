@@ -65,11 +65,9 @@ dr.ghx = dyn_derivs.gy;
 dr.ghu = dyn_derivs.gu;
 
 if options_.loglinear
-    k = find(dr.kstate(:,2) <= M_.maximum_endo_lag+1);
-    klag = dr.kstate(k,[1 2]);
     k1 = dr.order_var;
     dr.ghx = repmat(1./dr.ys(k1),1,size(dr.ghx,2)).*dr.ghx.* ...
-             repmat(dr.ys(k1(klag(:,1)))',size(dr.ghx,1),1);
+             repmat(dr.ys(k1(M_.nstatic+(1:M_.nspred)))',size(dr.ghx,1),1);
     dr.ghu = repmat(1./dr.ys(k1),1,size(dr.ghu,2)).*dr.ghu;
 end
 

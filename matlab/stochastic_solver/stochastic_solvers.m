@@ -25,7 +25,7 @@ function [dr, info] = stochastic_solvers(dr, task, M_, options_, exo_steady_stat
 %                                 info=6 -> The jacobian matrix evaluated at the steady state is complex.
 %                                 info=9 -> k_order_pert was unable to compute the solution
 
-% Copyright © 1996-2023 Dynare Team
+% Copyright © 1996-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -192,14 +192,13 @@ if ~isempty(nanrow)
     return
 end
 
-kstate = dr.kstate;
 nstatic = M_.nstatic;
 nfwrd = M_.nfwrd;
 nspred = M_.nspred;
 nboth = M_.nboth;
 nsfwrd = M_.nsfwrd;
 order_var = dr.order_var;
-nd = size(kstate,1);
+nd = M_.nspred+M_.nsfwrd;
 nz = nnz(M_.lead_lag_incidence);
 
 sdyn = M_.endo_nbr - nstatic;
@@ -212,13 +211,12 @@ b(:,cols_b) = jacobia_(:,cols_j);
 if M_.maximum_endo_lead == 0
     % backward models: simplified code exist only at order == 1
     if local_order == 1
-        [k1,~,k2] = find(kstate(:,4));
         if M_.maximum_endo_lag
             dr.state_var = find(M_.lead_lag_incidence(1,:));
         else
             dr.state_var = [];
         end
-        dr.ghx(:,k1) = -b\jacobia_(:,k2);
+        dr.ghx = -b\jacobia_(:,1:nspred);
         if M_.exo_nbr
             dr.ghu =  -b\jacobia_(:,nz+1:end);
         end

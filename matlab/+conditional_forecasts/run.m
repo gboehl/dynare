@@ -33,7 +33,7 @@ function forecasts=run(M_,options_,oo_,bayestopt_,estim_params_,constrained_path
 % [1] Results are stored in oo_.conditional_forecast.
 % [2] Use the function conditional_forecasts.plot to plot the results.
 
-% Copyright © 2006-2023 Dynare Team
+% Copyright © 2006-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -161,7 +161,7 @@ else
         options_.qz_criterium = 1+1e-6;
     end
     graph_title='Calibration';
-    if ~isfield(oo_.dr,'kstate')
+    if ~isfield(oo_.dr,'ghx')
         error('You need to call stoch_simul before conditional_forecast')
     end
 end

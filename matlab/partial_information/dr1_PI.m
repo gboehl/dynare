@@ -40,7 +40,7 @@ function [dr,info,M_,options_,oo_] = dr1_PI(dr,task,M_,options_,oo_)
 %   none.
 %
 
-% Copyright © 1996-2018 Dynare Team
+% Copyright © 1996-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -158,13 +158,12 @@ if options_.debug
 end
 
 dr=set_state_space(dr,M_);
-kstate = dr.kstate;
 nstatic = M_.nstatic;
 nfwrd = M_.nfwrd;
 nspred = M_.nspred;
 nboth = M_.nboth;
 order_var = dr.order_var;
-nd = size(kstate,1);
+nd = M_.nspred+M_.nsfwrd;
 nz = nnz(M_.lead_lag_incidence);
 
 sdyn = M_.endo_nbr - nstatic;

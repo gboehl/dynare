@@ -19,7 +19,7 @@ function [oo_] = UnivariateSpectralDensity(M_,oo_,options_,var_list)
 
 % Adapted from th_autocovariances.m.
 
-% Copyright © 2006-2023 Dynare Team
+% Copyright © 2006-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -68,29 +68,11 @@ ghx = oo_.dr.ghx;
 ghu = oo_.dr.ghu;
 nspred = M_.nspred;
 nstatic = M_.nstatic;
-kstate = oo_.dr.kstate;
 order = oo_.dr.order_var;
 iv(order) = 1:length(order);
 nx = size(ghx,2);
-ikx = nstatic+1:nstatic+nspred;
-k0 = kstate(find(kstate(:,2) <= M_.maximum_lag+1),:);
-i0 = find(k0(:,2) == M_.maximum_lag+1);
-i00 = i0;
-AS = ghx(:,i0);
-ghu1 = zeros(nx,M_.exo_nbr);
-ghu1(i0,:) = ghu(ikx,:);
-for i=M_.maximum_lag:-1:2
-    i1 = find(k0(:,2) == i);
-    n1 = size(i1,1);
-    j1 = zeros(n1,1);
-    j2 = j1;
-    for k1 = 1:n1
-        j1(k1) = find(k0(i00,1)==k0(i1(k1),1));
-        j2(k1) = find(k0(i0,1)==k0(i1(k1),1));
-    end
-    AS(:,j1) = AS(:,j1)+ghx(:,i1);
-    i0 = i1;
-end
+ikx = nstatic+(1:nspred);
+ghu1 = ghu(ikx,:);
 
 [A,B] = kalman_transition_matrix(oo_.dr,ikx',1:nx);
 [~, u] =  lyapunov_symm(A,B*M_.Sigma_e*B',options_.lyapunov_fixed_point_tol,options_.qz_criterium,options_.lyapunov_complex_threshold,[],options_.debug);

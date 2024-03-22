@@ -34,7 +34,7 @@ function [dr, info, params] = resol(check_flag, M_, options_, dr_in, endo_steady
 %   info(1)=24    ->    M_.params has been updated in the steadystate routine and has some NaNs.
 %   info(1)=30    ->    Ergodic variance can't be computed.
 
-% Copyright © 2001-2023 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -52,9 +52,6 @@ function [dr, info, params] = resol(check_flag, M_, options_, dr_in, endo_steady
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 %preserve only the following fields:
-if isfield(dr_in,'kstate')
-    dr.kstate = dr_in.kstate;
-end
 if isfield(dr_in,'inv_order_var')
     dr.inv_order_var = dr_in.inv_order_var;
 end

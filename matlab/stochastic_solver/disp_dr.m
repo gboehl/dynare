@@ -12,7 +12,7 @@ function disp_dr(M_,options_,dr,order,var_list)
 % OUTPUTS
 % none
 
-% Copyright © 2001-2023 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -36,8 +36,6 @@ end
 
 nx =size(dr.ghx,2);
 nu =size(dr.ghu,2);
-k = find(dr.kstate(:,2) <= M_.maximum_lag+1);
-klag = dr.kstate(k,[1 2]);
 k1 = dr.order_var;
 
 if isempty(var_list)
@@ -142,7 +140,7 @@ for k=1:nx
     if isfield(dr,'state_var')
         str1 = subst_auxvar(dr.state_var(k),-1,M_);
     else
-        str1 = subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2,M_);
+        str1 = subst_auxvar(k1(M_.nstatic+k),-1,M_);
     end
     if options_.loglinear
         str = sprintf(label_format,['log(',str1,')']);
@@ -177,8 +175,8 @@ if order > 1
     for k = 1:nx
         for j = 1:k
             flag = 0;
-            str1 = sprintf('%s,%s',subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2,M_), ...
-                           subst_auxvar(k1(klag(j,1)),klag(j,2)-M_.maximum_lag-2,M_));
+            str1 = sprintf('%s,%s',subst_auxvar(k1(M_.nstatic+k),-1,M_), ...
+                           subst_auxvar(k1(M_.nstatic+j),-1,M_));
             str = sprintf(label_format, str1);
             for i=1:nvar
                 if k == j
@@ -219,7 +217,7 @@ if order > 1
     for k = 1:nx
         for j = 1:nu
             flag = 0;
-            str1 = sprintf('%s,%s',subst_auxvar(k1(klag(k,1)),klag(k,2)-M_.maximum_lag-2,M_), M_.exo_names{j});
+            str1 = sprintf('%s,%s',subst_auxvar(k1(M_.nstatic+k),-1,M_), M_.exo_names{j});
             str = sprintf(label_format,str1);
             for i=1:nvar
                 x = dr.ghxu(ivar(i),(k-1)*nu+j);

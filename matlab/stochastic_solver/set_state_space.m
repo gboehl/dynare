@@ -1,6 +1,8 @@
 function dr=set_state_space(dr,M_)
 % dr=set_state_space(dr,M_)
-% Write the state space representation of the reduced form solution.
+% This function computes the DR ordering and inverse ordering.
+% It used to compute stuff related to the state-space representation of the reduced form, hence
+%  its name.
 
 %@info:
 %! @deftypefn {Function File} {[@var{dr} =} set_state_space (@var{dr},@var{M_})
@@ -33,7 +35,7 @@ function dr=set_state_space(dr,M_)
 %! @end deftypefn
 %@eod:
 
-% Copyright © 1996-2023 Dynare Team
+% Copyright © 1996-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -68,48 +70,8 @@ else
     both_var = [];
     stat_var = setdiff([1:endo_nbr]',fwrd_var);
 end
-order_var = [ stat_var(:); pred_var(:); both_var(:); fwrd_var(:)];
-inv_order_var(order_var) = (1:endo_nbr);
 
-% building kmask for z state vector in t+1
-if max_lag > 0
-    kmask = [];
-    if max_lead > 0
-        kmask = lead_lag_incidence(max_lag+2,order_var) ;
-    end
-    kmask = [kmask; lead_lag_incidence(1,order_var)] ;
-else
-    if max_lead==0 %%in this case lead_lag_incidence has no entry max_lag+2
-        error('Dynare currently does not allow to solve purely static models in a stochastic context.')
-    end
-    kmask = lead_lag_incidence(max_lag+2,order_var) ;
-end
-
-kmask = kmask';
-kmask = kmask(:);
-i_kmask = find(kmask);
-nd = nnz(kmask);           % size of the state vector
-kmask(i_kmask) = (1:nd);
-% auxiliary equations
-
-% composition of state vector
-% col 1: variable (index in DR-order);  col 2: lead/lag in z(t+1);
-% col 3: A cols for t+1 (D);            col 4: A cols for t (E)
-kstate = [ repmat([1:endo_nbr]',klen-1,1) kron([klen:-1:2]',ones(endo_nbr,1)) ...
-           zeros((klen-1)*endo_nbr,2)];
-kiy = flipud(lead_lag_incidence(:,order_var))';
-kiy = kiy(:);
-if max_lead > 0
-    kstate(1:endo_nbr,3) = kiy(1:endo_nbr)-nnz(lead_lag_incidence(max_lag+1,:));
-    kstate(kstate(:,3) < 0,3) = 0;
-    kstate(endo_nbr+1:end,4) = kiy(2*endo_nbr+1:end);
-else
-    kstate(:,4) = kiy(endo_nbr+1:end);
-end
-kstate = kstate(i_kmask,:);
-
-dr.order_var = order_var;
-dr.inv_order_var = inv_order_var';
-dr.kstate = kstate;
+dr.order_var = [ stat_var(:); pred_var(:); both_var(:); fwrd_var(:)];
+dr.inv_order_var(dr.order_var) = 1:endo_nbr;
 
 dr.transition_auxiliary_variables = [];

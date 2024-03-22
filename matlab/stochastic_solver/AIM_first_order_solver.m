@@ -51,7 +51,7 @@ function [dr,info]=AIM_first_order_solver(jacobia,M_,dr,qz_criterium)
 %! @end deftypefn
 %@eod:
 
-% Copyright © 2001-2017 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -80,7 +80,7 @@ end
 A = kalman_transition_matrix(dr,M_.nstatic+(1:M_.nspred), 1:M_.nspred);
 dr.eigval = eig(A);
 disp(dr.eigval)
-nd = size(dr.kstate,1);
+nd = M_.nspred+M_.nsfwrd;
 nba = nd-sum( abs(dr.eigval) < qz_criterium );
 
 nsfwrd = M_.nsfwrd;

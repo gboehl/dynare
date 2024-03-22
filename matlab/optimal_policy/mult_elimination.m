@@ -12,7 +12,7 @@ function dr=mult_elimination(varlist,M_, options_, oo_)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2003-2018 Dynare Team
+% Copyright © 2003-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -87,12 +87,6 @@ k = find(lead_lag_incidence1');
 lead_lag_incidence1 = zeros(size(lead_lag_incidence1'));
 lead_lag_incidence1(k) = 1:length(k);
 lead_lag_incidence1 = lead_lag_incidence1';
-
-kstate = zeros(0,2);
-for i=maximum_lag:-1:1
-    k = find(lead_lag_incidence(i,:));
-    kstate = [kstate; [k' repmat(i+1,length(k),1)]];
-end
 
 dr.M1 = M1;
 dr.M2 = M2;
