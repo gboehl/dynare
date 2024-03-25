@@ -62,7 +62,7 @@ function [a, a1, P, P1, v, T, R, C, regimes_, error_flag, M_, lik, etahat, alpha
 % You should have received a copy of the GNU General Public License
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
-warning off
+orig_warning_state = warning;
 
 options_.noprint = true;
 R=NaN(size(RR));
@@ -148,6 +148,7 @@ else
 end
 if error_flag
     etahat=NaN(size(QQQ,1),1);
+    warning(orig_warning_state);
     return;
 end
 
@@ -183,6 +184,7 @@ if out.error_flag
     error_flag = out.error_flag;
     etahat=etahat(:,2);
     lik=inf;
+    warning(orig_warning_state);
     return;
 end
 
@@ -239,6 +241,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
             error_flag = out.error_flag;
             etahat=etahat(:,2);
             lik=inf;
+            warning(orig_warning_state);
             return;
         end
         regimes0=regimes_;
@@ -268,6 +271,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                         error_flag = out.error_flag;
                         etahat=etahat(:,2);
                         lik=inf;
+                        warning(orig_warning_state);
                         return;
                     else
                         regimes_ = out.regime_history;
@@ -280,6 +284,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     error_flag = 330;
                     etahat=etahat(:,2);
                     lik=inf;
+                    warning(orig_warning_state);
                     return;
                 end
             end
@@ -306,7 +311,8 @@ if nargout>=13
     etahat=etahat(:,2);
 end
 
-warning_config;
+%reset warning state
+warning(orig_warning_state);
 end
 
 function [a, a1, P, P1, v, alphahat, etahat, lik, V, error_flag] = occbin_kalman_update0(a,a1,P,P1,data_index,Z,v,Y,H,QQQ,TT,RR,CC,iF,L,mm, rescale_prediction_error_covariance, IF_likelihood, state_uncertainty_flag)
@@ -322,7 +328,7 @@ else
     V=[];
 end
 
-warning off
+orig_warning_state = warning;
 if nargin<18
     IF_likelihood=0;
 end
@@ -352,6 +358,7 @@ else
     sig=sqrt(diag(F));
     if any(any(isnan(F)))
         error_flag=1;
+        warning(orig_warning_state);
         return;
     end
     if rank(F)<size(F,1) 
@@ -434,5 +441,6 @@ while t > 1
     end
 end
 
-warning_config;
+%reset warning state
+warning(orig_warning_state);
 end

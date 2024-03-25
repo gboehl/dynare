@@ -74,6 +74,7 @@ fname = M_.fname; %model name
 dname = M_.dname; %model name
 
 %turn warnings off, either globally or only relevant ids
+orig_warning_state = warning;
 if isoctave
     %warning('off'),
     warning('off','Octave:singular-matrix');
@@ -498,6 +499,7 @@ if iload <=0
                 fprintf('The model did not solve for any of 50 attempts of random samples from the prior\n');
             end
             fprintf('-----------\n');
+            warning(orig_warning_state);
             return
         else
             % found a (random) point that solves the model
@@ -976,6 +978,6 @@ if SampleSize > 1
 end
 
 %reset warning state
-warning_config;
+warning(orig_warning_state);
 
 fprintf('\n==== Identification analysis completed ====\n\n')
