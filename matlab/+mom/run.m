@@ -95,7 +95,6 @@ function [oo_, options_mom_, M_] = run(bayestopt_, options_, oo_, estim_params_,
 %  o skipline
 %  o test_for_deep_parameters_calibration
 %  o transform_prior_to_laplace_prior
-%  o warning_config
 
 % Copyright © 2020-2023 Dynare Team
 %
@@ -182,6 +181,8 @@ end
 % -------------------------------------------------------------------------
 % initializations
 % -------------------------------------------------------------------------
+%save warning state for restoring later on
+orig_warning_state = warning;
 % create output directories to store results
 M_.dname = options_mom_.dirname;
 CheckPath(M_.dname,'.');
@@ -689,6 +690,7 @@ if do_bayesian_estimation_mcmc
         % skip optimizer-based mode-finding and instead compute the mode based on a run of a MCMC
         [~,~,posterior_mode,~] = compute_mh_covariance_matrix(bayestopt_,M_.fname,M_.dname,'method_of_moments');
         oo_.mom = fill_mh_mode(posterior_mode',NaN(length(posterior_mode),1),M_,options_mom_,estim_params_,bayestopt_,oo_.mom,'posterior');
+        warning(orig_warning_state);
         return
     else
         % get stored results if required
@@ -812,7 +814,7 @@ fprintf('\n==== Method of Moments Estimation (%s) Completed ====\n\n',options_mo
 % -------------------------------------------------------------------------
 % clean up
 % -------------------------------------------------------------------------
-warning_config; %reset warning state
+warning(orig_warning_state); %reset warning state
 if isoctave && isfield(options_mom_, 'prior_restrictions') && ...
    isfield(options_mom_.prior_restrictions, 'routine')
     % Octave crashes if it tries to save function handles (to the _results.mat file)
