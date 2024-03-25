@@ -116,6 +116,8 @@ for j=1:nvar
         end
     end
 
+    %save warning state for restoring later on
+    orig_warning_state = warning;
     warning off
     fig_name1 = strrep(fig_name1,' ','_');
     fig_name1 = strrep(fig_name1,'.','');
@@ -125,7 +127,7 @@ for j=1:nvar
     else
         writetable(cell2table(d0), [OutputDirectoryName,filesep,M_.fname,'_shock_decomposition',fig_mode,fig_name1 '.xls'], 'Sheet', endo_names{i_var(j)},'WriteVariableNames',false);
     end
-    warning_config;
+    warning(orig_warning_state);
 
     clear d0
 
