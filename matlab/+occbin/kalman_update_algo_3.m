@@ -55,7 +55,7 @@ function [a, a1, P, P1, v, Fi, Ki, T, R, C, regimes_, error_flag, M_, lik, alpha
 % constraints, Working Papers 2021-03, Joint Research Centre, European Commission 
 
 
-% Copyright © 2021-2023 Dynare Team
+% Copyright © 2021-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -256,7 +256,7 @@ if any(myregime) || ~isequal(regimes_(1),regimes0(1))
                     opts_simul.periods = max(opts_simul.periods,max(myregimestart));
                     opts_simul.maxit=1;
                     options_.occbin.simul=opts_simul;
-                    [~, out, ss] = occbin.solver(M_,oo_,options_);
+                    [~, out, ss] = occbin.solver(M_,options_,dr,endo_steady_state,exo_steady_state,exo_det_steady_state);
                     if out.error_flag
                         error_flag = out.error_flag;
                         etahat=etahat(:,2);
