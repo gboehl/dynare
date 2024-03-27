@@ -241,3 +241,13 @@ deploy_snapshot_unstable:
     - f=(macOS/pkg/*-x86_64.pkg) && cp ${f[0]} /srv/www.dynare.org/snapshot/macos-x86_64/ && ln -sf ${f[0]##*/} /srv/www.dynare.org/snapshot/macos-x86_64/dynare-latest-macos-x86_64.pkg
     - ~/update-snapshot-list.sh
     - curl -X POST -F token="$WEBSITE_PIPELINE_TRIGGER_TOKEN" -F ref=master https://git.dynare.org/api/v4/projects/40/trigger/pipeline
+
+deploy_snapshot_madysson:
+  stage: deploy
+  tags:
+    - deploy
+  dependencies:
+    - pkg_windows
+  script:
+    - cp windows/zip/* /srv/www.dynare.org/madysson/windows-zip/
+  when: manual
