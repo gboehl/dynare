@@ -1,5 +1,5 @@
-function []=display_problematic_vars_Jacobian(problemrow,problemcol,M_,x,type,caller_string)
-% []=display_problematic_vars_Jacobian(problemrow,problemcol,M_,x,caller_string)
+function display_problematic_vars_Jacobian(problemrow, problemcol, M_, x, type, caller_string)
+% display_problematic_vars_Jacobian(problemrow,problemcol,M_,x,caller_string)
 % print the equation numbers and variables associated with problematic entries
 % of the Jacobian
 %
@@ -11,12 +11,8 @@ function []=display_problematic_vars_Jacobian(problemrow,problemcol,M_,x,type,ca
 %   type            [string] 'static' or 'dynamic' depending on the type of
 %                               Jacobian
 %   caller_string   [string] contains name of calling function for printing
-%
-% OUTPUTS
-%   none.
-%
 
-% Copyright © 2014-2023 Dynare Team
+% Copyright © 2014-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -40,20 +36,24 @@ end
 initial_aux_eq_nbr=M_.ramsey_orig_endo_nbr;
 if strcmp(type,'dynamic')
     for ii=1:length(problemrow)
-        if problemcol(ii)>max(M_.lead_lag_incidence)
-            var_row=2;
-            var_index=problemcol(ii)-max(max(M_.lead_lag_incidence));
-        else
-            [var_row,var_index]=find(M_.lead_lag_incidence==problemcol(ii));
+        if problemcol(ii) <= 3*M_.endo_nbr % Endogenous
+            endo = true;
+            var_index = mod(problemcol(ii)-1, M_.endo_nbr)+1;
+            if problemcol(ii) <= M_.endo_nbr
+                type_string='lag of';
+            elseif problemcol(ii) <= 2*M_.endo_nbr
+                type_string='';
+            else
+                type_string='lead of';
+            end
+        elseif problemcol(ii) <= 3*M_.endo_nbr+M_.exo_nbr % Exogenous
+            endo = false;
+            var_index = problemcol(ii) - 3*M_.endo_nbr;
+        else % Exogenous deterministic, ignore
+            continue
         end
-        if var_row==2
-            type_string='';
-        elseif var_row==1
-            type_string='lag of';
-        elseif var_row==3
-            type_string='lead of';
-        end
-        if problemcol(ii)<=max(max(M_.lead_lag_incidence)) && var_index<=M_.orig_endo_nbr
+
+        if endo && var_index <= M_.orig_endo_nbr
             if problemrow(ii)<=initial_aux_eq_nbr
                 eq_nbr = problemrow(ii);
                 fprintf('Derivative of Auxiliary Equation %d with respect to %s Variable %s  (initial value of %s: %g) \n', ...
@@ -63,16 +63,16 @@ if strcmp(type,'dynamic')
                 fprintf('Derivative of Equation %d with respect to %s Variable %s  (initial value of %s: %g) \n', ...
                         eq_nbr, type_string, M_.endo_names{var_index}, M_.endo_names{var_index}, x(var_index));
             end
-        elseif problemcol(ii)<=max(max(M_.lead_lag_incidence)) && var_index>M_.orig_endo_nbr % auxiliary vars
-            if M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).type==6 %Ramsey Lagrange Multiplier
+        elseif endo && var_index > M_.orig_endo_nbr % auxiliary vars
+            if M_.aux_vars(1, var_index - M_.orig_endo_nbr).type==6 %Ramsey Lagrange Multiplier
                 if problemrow(ii)<=initial_aux_eq_nbr
                     eq_nbr = problemrow(ii);
-                    fprintf('Derivative of Auxiliary Equation %d with respect to %s of Langrange multiplier of equation %s (initial value: %g) \n', ...
-                            eq_nbr, type_string, M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr, x(problemcol(ii)));
+                    fprintf('Derivative of Auxiliary Equation %d with respect to %s of Lagrange multiplier of equation %s (initial value: %g) \n', ...
+                            eq_nbr, type_string, M_.aux_vars(1, var_index-M_.orig_endo_nbr).eq_nbr, x(var_index));
                 else
                     eq_nbr = problemrow(ii)-initial_aux_eq_nbr;
-                    fprintf('Derivative of Equation %d with respect to %s of Langrange multiplier of equation %s (initial value: %g) \n', ...
-                            eq_nbr, type_string, M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr, x(problemcol(ii)));
+                    fprintf('Derivative of Equation %d with respect to %s of Lagrange multiplier of equation %s (initial value: %g) \n', ...
+                            eq_nbr, type_string, M_.aux_vars(1, var_index-M_.orig_endo_nbr).eq_nbr, x(var_index));
                 end
             else
                 if problemrow(ii)<=initial_aux_eq_nbr
@@ -87,7 +87,7 @@ if strcmp(type,'dynamic')
                             eq_nbr, type_string, M_.endo_names{orig_var_index}, M_.endo_names{orig_var_index}, x(orig_var_index));
                 end
             end
-        elseif problemcol(ii)>max(max(M_.lead_lag_incidence)) && var_index<=M_.exo_nbr
+        else % Exogenous
             if problemrow(ii)<=initial_aux_eq_nbr
                 eq_nbr = problemrow(ii);
                 fprintf('Derivative of Auxiliary Equation %d with respect to %s shock %s \n', ...
@@ -97,8 +97,6 @@ if strcmp(type,'dynamic')
                 fprintf('Derivative of Equation %d with respect to %s shock %s \n', ...
                         eq_nbr, type_string, M_.exo_names{var_index});
             end
-        else
-            error('display_problematic_vars_Jacobian:: The error should not happen. Please contact the developers')
         end
     end
     fprintf('\n%s  The problem most often occurs, because a variable with\n', caller_string)

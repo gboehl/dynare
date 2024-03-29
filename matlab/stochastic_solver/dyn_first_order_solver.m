@@ -1,9 +1,9 @@
-function [dr, info] = dyn_first_order_solver(jacobia, M_, dr, options_, task)
-% [dr, info] = dyn_first_order_solver(jacobia, M_, dr, options_, task)
+function [dr, info] = dyn_first_order_solver(g1, M_, dr, options_, task)
+% [dr, info] = dyn_first_order_solver(g1, M_, dr, options_, task)
 % Computes the first order reduced form of a DSGE model.
 %
 % INPUTS
-% - jacobia       [double]    matrix, the jacobian of the dynamic model.
+% - g1            [double]    sparse Jacobian of the dynamic model
 % - M_            [struct]    Matlab's structre describing the model
 % - dr            [struct]    Matlab's structure describing the reduced form model.
 % - options_      [struct]    Matlab's structure containing the current state of the options
@@ -63,6 +63,7 @@ if isempty(reorder_jacobian_columns)
     npred    = M_.npred;
     nstatic  = M_.nstatic;
     ndynamic = M_.ndynamic;
+    nspred   = M_.nspred;
     nsfwrd   = M_.nsfwrd;
 
     k1 = 1:(npred+nboth);
@@ -118,8 +119,10 @@ if isempty(reorder_jacobian_columns)
 
     [~,cols_b] = find(lead_lag_incidence(maximum_lag+1, order_var));
 
-    reorder_jacobian_columns = [nonzeros(lead_lag_incidence(:,order_var)'); ...
-                        nz+(1:exo_nbr)'];
+    reorder_jacobian_columns = [order_var(nstatic+(1:nspred));
+                                M_.endo_nbr+order_var(cols_b); ...
+                                2*M_.endo_nbr+order_var(nstatic+npred+(1:nsfwrd));
+                                3*M_.endo_nbr+(1:exo_nbr)'];
 end
 
 dr.ghx = [];
@@ -127,7 +130,7 @@ dr.ghu = [];
 
 dr.state_var = state_var;
 
-jacobia = jacobia(:,reorder_jacobian_columns);
+jacobia = full(g1(:,reorder_jacobian_columns));
 
 if nstatic > 0
     [Q, ~] = qr(jacobia(:,index_s));

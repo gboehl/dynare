@@ -16,7 +16,7 @@ function model_diagnostics(M_,options_,oo_)
 %   none.
 %
 
-% Copyright © 1996-2023 Dynare Team
+% Copyright © 1996-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -271,51 +271,53 @@ if singularity_problem
 end
 
 %%check dynamic Jacobian
-klen = M_.maximum_lag + M_.maximum_lead + 1;
-exo_simul = [repmat(oo_.exo_steady_state',klen,1) repmat(oo_.exo_det_steady_state',klen,1)];
-iyv = M_.lead_lag_incidence';
-iyv = iyv(:);
-iyr0 = find(iyv) ;
-it_ = M_.maximum_lag + 1;
-z = repmat(dr.ys,1,klen);
+dyn_endo_ss = repmat(dr.ys, 3, 1);
 
 if options_.order == 1
     if (options_.bytecode)
         [~, loc_dr] = bytecode('dynamic','evaluate', M_, options_, z, exo_simul, ...
                                M_.params, dr.ys, 1);
-        jacobia_ = [loc_dr.g1 loc_dr.g1_x loc_dr.g1_xd];
+        % TODO: simplify the following once bytecode MEX has been updated to sparse format
+        g1 = zeros(M_.endo_nbr, 3*M_.endo_nbr+M_.exo_nbr+M_.exo_det_nbr);
+        if M_.maximum_endo_lag > 0
+            g1(:, find(M_.lead_lag_incidence(M_.maximum_endo_lag, :))) = loc_dr.g1(:, 1:M_.nspred);
+        end
+        [~,icurr] = find(M_.lead_lag_incidence(M_.maximum_endo_lag+1, :));
+        g1(:, M_.endo_nbr + icurr) = loc_dr.g1(:, M_.nspred+(1:length(icurr)));
+        if M_.maximum_endo_lead > 0
+            g1(:, 2*M_.endo_nbr + find(M_.lead_lag_incidence(M_.maximum_endo_lag+2, :))) = loc_dr.g1(:, M_.nspred+M_.endo_nbr+(1:M_.nsfwrd));
+        end
+        g1(:, 3*M_.endo_nbr+(1:M_.exo_nbr)) = loc_dr.g1_x;
+        g1(:, 3*M_.endo_nbr+M_.exo_nbr+(1:M_.exo_det_nbr)) = loc_dr.g1_xd;
+        g1 = sparse(g1);
     else
-        [~,jacobia_] = feval([M_.fname '.dynamic'],z(iyr0),exo_simul, ...
-                             M_.params, dr.ys, it_);
+        g1 = feval([M_.fname '.sparse.dynamic_g1'], dyn_endo_ss, exo, M_.params, dr.ys, ...
+                   M_.dynamic_g1_sparse_rowval, M_.dynamic_g1_sparse_colval, ...
+                   M_.dynamic_g1_sparse_colptr);
     end
 elseif options_.order >= 2
-    if (options_.bytecode)
-        [~, loc_dr] = bytecode('dynamic','evaluate', M_, options_, z, exo_simul, ...
-                               M_.params, dr.ys, 1);
-        jacobia_ = [loc_dr.g1 loc_dr.g1_x];
-    else
-        [~,jacobia_,hessian1] = feval([M_.fname '.dynamic'],z(iyr0),...
-                                      exo_simul, ...
-                                      M_.params, dr.ys, it_);
-    end
+    [g1, T_order, T] = feval([M_.fname '.sparse.dynamic_g1'], dyn_endo_ss, exo, M_.params, ...
+                             dr.ys, M_.dynamic_g1_sparse_rowval, M_.dynamic_g1_sparse_colval, ...
+                             M_.dynamic_g1_sparse_colptr);
+    g2_v = feval([M_.fname '.sparse.dynamic_g2'], dyn_endo_ss, exo, M_.params, dr.ys, T_order, T);
 end
 
-if any(any(isinf(jacobia_) | isnan(jacobia_)))
+if any(any(isinf(g1) | isnan(g1)))
     problem_dummy=1;
-    [infrow,infcol]=find(isinf(jacobia_) | isnan(jacobia_));
+    [infrow,infcol]=find(isinf(g1) | isnan(g1));
     fprintf('\nMODEL_DIAGNOSTICS: The Jacobian of the dynamic model contains Inf or NaN. The problem arises from: \n\n')
     display_problematic_vars_Jacobian(infrow,infcol,M_,dr.ys,'dynamic','MODEL_DIAGNOSTICS: ')
 end
-if any(any(~isreal(jacobia_)))
-    [imagrow,imagcol]=find(abs(imag(jacobia_))>1e-15);
+if any(any(~isreal(g1)))
+    [imagrow,imagcol]=find(abs(imag(g1))>1e-15);
     if ~isempty(imagrow)
         problem_dummy=1;
         fprintf('\nMODEL_DIAGNOSTICS: The Jacobian of the dynamic model contains imaginary parts. The problem arises from: \n\n')
         display_problematic_vars_Jacobian(imagrow,imagcol,M_,dr.ys,'dynamic','MODEL_DIAGNOSTICS: ')
     end
 end
-if exist('hessian1','var')
-    if any(any(isinf(hessian1) | isnan(hessian1)))
+if exist('g2_v','var')
+    if any(any(isinf(g2_v) | isnan(g2_v)))
         problem_dummy=1;
         fprintf('\nMODEL_DIAGNOSTICS: The Hessian of the dynamic model contains Inf or NaN.\n')
     end

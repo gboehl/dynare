@@ -1,6 +1,6 @@
-function [dr,aimcode,rts]=dynAIMsolver1(jacobia_,M_,dr)
-% function [dr,aimcode]=dynAIMsolver1(jacobia_,M_,dr)
-% Maps Dynare jacobia to AIM 1st order model solver designed and developed by Gary ANderson
+function [dr, aimcode, rts] = dynAIMsolver1(g1, M_, dr)
+% function [dr, aimcode, rts] = dynAIMsolver1(g1, M_, dr)
+% Maps Dynare jacobian to AIM 1st order model solver designed and developed by Gary ANderson
 % and derives the solution for gy=dr.hgx and gu=dr.hgu from the AIM outputs
 % AIM System is given as a sum:
 % i.e. for i=-$...+&   SUM(Hi*xt+i)= £*zt, t = 0, . . . ,?
@@ -11,7 +11,7 @@ function [dr,aimcode,rts]=dynAIMsolver1(jacobia_,M_,dr)
 % where [fy'-$...  fy'i ... fy'+&]=[H-$...  Hi ... H+&] and fu'= £
 %
 % INPUTS
-%   jacobia_   [matrix]           1st order derivative of the model
+%   g1         [matrix]           sparse Jacobian of the dynamic model
 %   dr         [matlab structure] Decision rules for stochastic simulations.
 %   M_         [matlab structure] Definition of the model.
 %
@@ -46,7 +46,7 @@ function [dr,aimcode,rts]=dynAIMsolver1(jacobia_,M_,dr)
 %
 % GP July 2008
 
-% Copyright © 2008-2017 Dynare Team
+% Copyright © 2008-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -64,69 +64,36 @@ function [dr,aimcode,rts]=dynAIMsolver1(jacobia_,M_,dr)
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 aimcode=-1;
-neq= size(jacobia_,1); % no of equations
-lags=M_.maximum_endo_lag; % no of lags and leads
-leads=M_.maximum_endo_lead;
-klen=(leads+lags+1);  % total lenght
-theAIM_H=zeros(neq, neq*klen); % alloc space
-lli=M_.lead_lag_incidence';
-% "sparse" the compact jacobia into AIM H aray of matrices
-% without exogenous shoc
-theAIM_H(:,find(lli(:)))=jacobia_(:,nonzeros(lli(:)));
+neq= size(g1, 1); % no of equations
 condn  = 1.e-10;%SPAmalg uses this in zero tests
 uprbnd = 1 + 1.e-6;%allow unit roots
-                   % forward only models - AIM must have at least 1 lead and 1 lag.
-if lags ==0
-    theAIM_H =[zeros(neq) theAIM_H];
-    lags=1;
-    klen=(leads+lags+1);
-end
-% backward looking only models
-if leads ==0
-    theAIM_H =[theAIM_H zeros(neq)];
-    leads=1;
-    klen=(leads+lags+1);
-end
+
 %disp('gensysToAMA:running ama');
 try % try to run AIM
-    [bb,rts,~,~,~,~,aimcode] =...
-        SPAmalg(theAIM_H,neq, lags,leads,condn,uprbnd);
+    [bb, rts, ~, ~, ~, ~, aimcode] = SPAmalg(g1(:, 1:3*M_.endo_nbr), neq, 1, 1, condn, uprbnd);
 catch
     err = lasterror;
     disp(['Dynare AIM Solver error:' sprintf('%s; ID:%s',err.message, err.identifier)]);
     rethrow(lasterror);
 end
 if aimcode==1 %if OK
-    col_order=[];
-    for i =1:lags
-        col_order=[((i-1)*neq)+dr.order_var' col_order];
-    end
-    bb_ord= bb(dr.order_var,col_order); % derive ordered gy
+    dr.ghx = bb(dr.order_var, dr.order_var(M_.nstatic+(1:M_.nspred)));
 
-    % variables are present in the state space at the lag at which they
-    % appear and at all smaller lags. The are ordered from smaller to
-    % higher lag (reversed order of M_.lead_lag_incidence rows for lagged
-    % variables)
-    i_lagged_vars = flipud(cumsum(M_.lead_lag_incidence(1:M_.maximum_lag,dr.order_var),1))';
-
-    dr.ghx= bb_ord(:,find(i_lagged_vars(:))); % get columns reported in
-                                              % Dynare solution
     if M_.exo_nbr % if there are exogenous shocks then derive gu for the shocks:
                   %   get H0 and H+1=HM
                   %    theH0= theAIM_H (:,M_.maximum_endo_lag*neq+1: (M_.maximum_endo_lag+1)*neq);
                   %theH0= theAIM_H (:,lags*neq+1: (lags+1)*neq);
                   %    theHP= theAIM_H (:,(M_.maximum_endo_lag+1)*neq+1: (M_.maximum_endo_lag+2)*neq);
                   %theHP= theAIM_H (:,(lags+1)*neq+1: (lags+2)*neq);
-        theAIM_Psi= - jacobia_(:, size(nonzeros(lli(:)))+1:end);%
                                                                 %? = inv(H0 + H1B1)
                                                                 %phi= (theH0+theHP*sparse(bb(:,(lags-1)*neq+1:end)))\eye( neq);
                                                                 %AIM_ghu=phi*theAIM_Psi;
                                                                 %dr.ghu =AIM_ghu(dr.order_var,:); % order gu
                                                                 % Using AIM SPObstruct
-        scof = SPObstruct(theAIM_H,bb,neq,lags,leads);
-        scof1= scof(:,(lags)*neq+1:end);
+        scof = SPObstruct(g1(:, 1:3*M_.endo_nbr), bb, neq, 1, 1);
+        scof1 = scof(:, neq+1:end);
         scof1= scof1(:,dr.order_var);
-        dr.ghu =scof1\theAIM_Psi;
+        dr.ghu = -scof1 \ g1(:, 3*M_.endo_nbr+1:end);
     else
         dr.ghu = [];
     end
