@@ -16,7 +16,7 @@ function []=display_problematic_vars_Jacobian(problemrow,problemcol,M_,x,type,ca
 %   none.
 %
 
-% Copyright © 2014-2023 Dynare Team
+% Copyright © 2014-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -64,15 +64,15 @@ if strcmp(type,'dynamic')
                         eq_nbr, type_string, M_.endo_names{var_index}, M_.endo_names{var_index}, x(var_index));
             end
         elseif problemcol(ii)<=max(max(M_.lead_lag_incidence)) && var_index>M_.orig_endo_nbr % auxiliary vars
-            if M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).type==6 %Ramsey Lagrange Multiplier
+            if M_.aux_vars(1, var_index-M_.orig_endo_nbr).type==6 %Ramsey Lagrange Multiplier
                 if problemrow(ii)<=initial_aux_eq_nbr
                     eq_nbr = problemrow(ii);
-                    fprintf('Derivative of Auxiliary Equation %d with respect to %s of Langrange multiplier of equation %s (initial value: %g) \n', ...
-                            eq_nbr, type_string, M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr, x(problemcol(ii)));
+                    fprintf('Derivative of Auxiliary Equation %d with respect to %s of Lagrange multiplier of equation %s (initial value: %g) \n', ...
+                            eq_nbr, type_string, M_.aux_vars(1, var_index-M_.orig_endo_nbr).eq_nbr, x(var_index));
                 else
                     eq_nbr = problemrow(ii)-initial_aux_eq_nbr;
-                    fprintf('Derivative of Equation %d with respect to %s of Langrange multiplier of equation %s (initial value: %g) \n', ...
-                            eq_nbr, type_string, M_.aux_vars(1,problemcol(ii)-M_.orig_endo_nbr).eq_nbr, x(problemcol(ii)));
+                    fprintf('Derivative of Equation %d with respect to %s of Lagrange multiplier of equation %s (initial value: %g) \n', ...
+                            eq_nbr, type_string, M_.aux_vars(1, var_index-M_.orig_endo_nbr).eq_nbr, x(var_index));
                 end
             else
                 if problemrow(ii)<=initial_aux_eq_nbr
