@@ -48,8 +48,8 @@ stoch_simul(aim_solver, order=1,irf=0);
 benchmark = load(['ls2003_2L0L' filesep 'Output' filesep 'ls2003_2L0L_results']);
 threshold = 1e-8;
  
-if max(max(abs(benchmark.oo_.dr.ghx-oo_.dr.ghx) > threshold));
+if max(max(abs(benchmark.oo_.dr.ghx-oo_.dr.ghx))) > threshold
   error('error in ghx');
-elseif max(max(abs(benchmark.oo_.dr.ghu-oo_.dr.ghu) > threshold));
-  error('error in ghy');
-end;
+elseif max(max(abs(benchmark.oo_.dr.ghu-oo_.dr.ghu))) > threshold
+  error('error in ghu');
+end
