@@ -1,7 +1,7 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   TERM: linux
-  MATLAB_VERSION: R2023b
+  MATLAB_VERSION: R2024a
   OLD_MATLAB_VERSION: R2018b
   # To ensure that "false && true" fails, see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/25394#note_412609647
   FF_ENABLE_BASH_EXIT_CODE_CHECK: 'true'
