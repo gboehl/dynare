@@ -137,7 +137,7 @@ for i=1:length(alphaid)-1
         for k=length(transformations):-1:1
             variable = sprintf('%s(%s)', transformations{k}, variable);
         end
-        expression = sprintf('%s-(%s)*diff(%s(%i))', expression, tmp, variable);
+        expression = sprintf('%s-(%s)*diff(%s)', expression, tmp, variable);
     end
 end
 
