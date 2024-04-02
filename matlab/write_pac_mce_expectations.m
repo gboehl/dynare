@@ -1,4 +1,4 @@
-function [expression, growthneutralitycorrection] = write_pac_mce_expectations(eqname, expectationmodelname)
+function [expression, growthneutralitycorrection] = write_pac_mce_expectations(eqname, expectationmodelname, auxname)
 
 % Prints the expansion of the PAC_EXPECTATION term in files.
 %
@@ -31,8 +31,6 @@ function [expression, growthneutralitycorrection] = write_pac_mce_expectations(e
 global M_
 
 expectationmodel = M_.pac.(expectationmodelname);
-
-auxname = sprintf('%s_Z', eqname);
 
 targetid = expectationmodel.ec.vars((expectationmodel.ec.istarget==true));
 alphaid = expectationmodel.mce.alpha;
