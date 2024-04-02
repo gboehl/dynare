@@ -5,7 +5,7 @@ set -exo pipefail
 # Needs to be run from Ubuntu 22.04 LTS, with the needed packages installed.
 
 X13ASVER=1-1-b60
-MATLABPATH=/opt/MATLAB/R2023b
+MATLABPATH=/opt/MATLAB/R2024a
 # TODO: change size and put white background for better rendering in MATLAB Add-Ons browser
 DYNARE_PNG_LOGO=../../preprocessor/doc/logos/dlogo.png
 
