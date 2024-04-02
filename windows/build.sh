@@ -119,8 +119,8 @@ cp -p windows/README.txt "$ZIPDIR"
 cp -pr windows/deps/mingw64 "$ZIPDIR"
 mkdir -p "$ZIPDIR"/contrib/ms-sbvar/TZcode
 cp -pr contrib/ms-sbvar/TZcode/MatlabFiles "$ZIPDIR"/contrib/ms-sbvar/TZcode
-mkdir -p "$ZIPDIR"/mex/matlab/win64-9.5-23.2
-cp -p build-win-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-9.5-23.2
+mkdir -p "$ZIPDIR"/mex/matlab/win64-9.5-24.1
+cp -p build-win-matlab/*.mexw64 "$ZIPDIR"/mex/matlab/win64-9.5-24.1
 mkdir -p "$ZIPDIR"/mex/octave/win64
 cp -p build-win-octave/*.mex "$ZIPDIR"/mex/octave/win64
 mkdir "$ZIPDIR"/preprocessor

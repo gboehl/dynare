@@ -8,7 +8,7 @@
 # number (in decimal) and mm is the minor revision number (in decimal).
 # E.g. version 9.14 is returned as 0x0914
 
-# Copyright © 2009-2023 Dynare Team
+# Copyright © 2009-2024 Dynare Team
 #
 # This file is part of Dynare.
 #
@@ -58,6 +58,9 @@ fi
 
 # If needed, convert a release number (Rnnnnx) into a version number (x.y)
 case ${MATLAB_VERSION} in
+    *2024[aA])
+        MATLAB_VERSION="24.1"
+        ;;
     *2023[bB])
         MATLAB_VERSION="23.2"
         ;;
