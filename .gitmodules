@@ -10,7 +10,7 @@
 [submodule "matlab/utilities/tests"]
 	path = matlab/utilities/tests
 	url = ../../Dynare/m-unit-tests.git
-[submodule "matlab/modules/dseries"]
+[submodule "matlab/dseries"]
 	path = matlab/dseries
 	url = ../../Dynare/dseries.git
 	branch = master
