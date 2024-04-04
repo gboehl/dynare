@@ -143,6 +143,8 @@ pkg_macOS_arm64:
 test_matlab:
   stage: test
   script:
+    # Workaround for R2024a, that prevents lockups apparently linked to the ServiceHost daemon
+    - rm -rf ~/.MathWorks && ln -s /dev/null ~/.MathWorks
     - meson test -C build-matlab --no-rebuild --num-processes $(($(nproc) * 3 / 4))
   artifacts:
     paths:
