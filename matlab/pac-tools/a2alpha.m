@@ -3,26 +3,26 @@ function alpha = a2alpha(a)
 % Computes the m alpha coefficients from the m a coefficients of the PAC model.
 %
 % INPUTS 
-% - a      [double]   m*1 vector of coefficients.
+% - a      [double]   m×1 vector of coefficients.
 %
 % OUTPUTS 
-% - alpha  [double]   m*1 vector of coefficients.
+% - alpha  [double]   m×1 vector of coefficients.
 %
 % NOTES 
 %
-%  Given the current estimate of the PAC parameters a_0, a_1, ..., a_{m-1}, the routine does the following:
+%  Given the current estimate of the PAC parameters a₀, a₁, ..., aₘ₋₁, the routine does the following:
 %
-%  \alpha_{m} = a_{m-1}
-%  \alpha_{m-1} = a_{m-2}-a_{m-1}
-%  \alpha_{m-2} = a_{m-3}-a_{m-2}
-%  ...
-%  \alpha_3 = a_2-a_3
-%  \alpha_2 = a_1-a_2
-%  \alpha_1 = a_0-a_1-1
+%  αₘ = aₘ₋₁
+%  αₘ₋₁ = aₘ₋₂ - aₘ₋₁
+%  ⋮
+%  αᵢ = aᵢ₋₁ - aᵢ ≡ - Δaᵢ
+%  ⋮
+%  α₂ = a₁ - a₂
+%  α₁ = a₀ - a₁ - 1
 %
-% Note that the last elements of input a are (a_0, a_1, ..., a_{m-1}).
+% Computed coefficients αᵢ define lag polynomial A(L) = 1 + α₁L + α₂L² + … + αₘ Lᵐ such that a₀ = A(1).
 
-% Copyright © 2018 Dynare Team
+% Copyright © 2018-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
