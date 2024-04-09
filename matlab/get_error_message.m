@@ -10,7 +10,7 @@ function message = get_error_message(info, options_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2005-2023 Dynare Team
+% Copyright © 2005-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -129,7 +129,6 @@ switch info(1)
         message = 'Calibrated covariance of the structural errors implies correlation larger than +-1.';
     case 72
         message = 'Calibrated covariance of the measurement errors implies correlation larger than +-1.';
-        % Aim Code Conversions by convertAimCodeToInfo.m
     case 81
         message = ['Ramsey: The solution to the static first order conditions for optimal policy could not be found. Either the model' ...
             ' doesn''t have a steady state, there are an infinity of steady states, ' ...
@@ -163,7 +162,7 @@ switch info(1)
     case 162
         message = 'Aim: too many numeric shiftrights';
     case 163
-        message = 'Aim: A is NAN or INF.';
+        message = 'Aim: A is NaN or Inf.';
     case 164
         message = 'Aim: Problem in SPEIG.';
     case 180

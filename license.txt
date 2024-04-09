@@ -64,7 +64,7 @@ License: public-domain-occbin
  dynamic models with occasionally binding constraints easily"
  Journal of Monetary Economics 70, 22-38
 
-Files: matlab/AIM/SP*
+Files: matlab/AIM/*
 Copyright: none
 License: public-domain-aim
  This code is in the public domain and may be used freely.
