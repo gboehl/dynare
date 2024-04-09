@@ -58,34 +58,36 @@ dr.ghuu = [];
 dr.ghxu = [];
 dr.ghs2 = [];
 
-[~,cols_b] = find(M_.lead_lag_incidence(2, dr.order_var));
-icurr = M_.endo_nbr + dr.order_var(cols_b);
-ilead = 2*M_.endo_nbr + dr.order_var(M_.nstatic+M_.npred+(1:M_.nsfwrd));
+% Indices in the DR-reordered variables
+klag = M_.nstatic+(1:M_.nspred);
+[~, kcurr] = find(M_.lead_lag_incidence(2, dr.order_var));
+klead = M_.nstatic+M_.npred+(1:M_.nsfwrd);
 
-kk1 = [dr.order_var(M_.nstatic+(1:M_.nspred)); icurr; ilead;
+% Indices in the g1 columns that map to DR-order
+ilag = dr.order_var(klag);
+icurr = M_.endo_nbr + dr.order_var(kcurr);
+ilead = 2*M_.endo_nbr + dr.order_var(klead);
+
+kk1 = [ilag; icurr; ilead;
        3*M_.endo_nbr+(1:M_.exo_nbr+M_.exo_det_nbr)'];
 nk = size(g1, 2);
 kk2 = reshape(1:nk^2,nk,nk);
 
-ic = [ M_.nstatic+(1:M_.nspred) ]';
-kcurr = M_.lead_lag_incidence(2,dr.order_var); %columns are in DR order
-klead = M_.lead_lag_incidence(3,dr.order_var); %columns are in DR order
-
 %% ghxx
 A = zeros(M_.endo_nbr,M_.endo_nbr);
-A(:,kcurr~=0) = g1(:, icurr);
-A(:,ic) = A(:,ic) + g1(:, ilead)*dr.ghx(klead~=0,:);
+A(:,kcurr) = g1(:,icurr);
+A(:,klag) = A(:,klag) + g1(:,ilead)*dr.ghx(klead,:);
 B = zeros(M_.endo_nbr,M_.endo_nbr);
 B(:,M_.nstatic+M_.npred+1:end) = g1(:, ilead);
-C = dr.ghx(ic,:);
-zx = [eye(length(ic));
-      dr.ghx(kcurr~=0,:);
-      dr.ghx(klead~=0,:)*dr.ghx(ic,:);
-      zeros(M_.exo_nbr,length(ic));
-      zeros(M_.exo_det_nbr,length(ic))];
-zu = [zeros(length(ic),M_.exo_nbr);
-      dr.ghu(kcurr~=0,:);
-      dr.ghx(klead~=0,:)*dr.ghu(ic,:);
+C = dr.ghx(klag,:);
+zx = [eye(M_.nspred);
+      dr.ghx(kcurr,:);
+      dr.ghx(klead,:)*dr.ghx(klag,:);
+      zeros(M_.exo_nbr,M_.nspred);
+      zeros(M_.exo_det_nbr,M_.nspred)];
+zu = [zeros(M_.nspred,M_.exo_nbr);
+      dr.ghu(kcurr,:);
+      dr.ghx(klead,:)*dr.ghu(klag,:);
       eye(M_.exo_nbr);
       zeros(M_.exo_det_nbr,M_.exo_nbr)];
 rhs = sparse_hessian_times_B_kronecker_C(g2(:,kk2(kk1,kk1)), zx, threads_BC); % g2: reordering to DR order
@@ -96,7 +98,7 @@ dr.ghxx = gensylv(2,A,B,C,rhs);
 %% ghxu
 %rhs
 rhs = sparse_hessian_times_B_kronecker_C(g2(:,kk2(kk1,kk1)), zx, zu, threads_BC); % g2: reordering to DR order
-abcOut = A_times_B_kronecker_C(dr.ghxx, dr.ghx(ic,:), dr.ghu(ic,:));
+abcOut = A_times_B_kronecker_C(dr.ghxx, dr.ghx(klag,:), dr.ghu(klag,:));
 rhs = -rhs-B*abcOut;
 %lhs
 dr.ghxu = A\rhs;
@@ -104,7 +106,7 @@ dr.ghxu = A\rhs;
 %% ghuu
 %rhs
 rhs = sparse_hessian_times_B_kronecker_C(g2(:,kk2(kk1,kk1)), zu, threads_BC); % g2: reordering to DR order
-B1 = A_times_B_kronecker_C(B*dr.ghxx,dr.ghu(ic,:));
+B1 = A_times_B_kronecker_C(B*dr.ghxx,dr.ghu(klag,:));
 rhs = -rhs-B1;
 %lhs
 dr.ghuu = A\rhs;
@@ -114,13 +116,13 @@ dr.ghuu = A\rhs;
 O1 = zeros(M_.endo_nbr,M_.nstatic);
 O2 = zeros(M_.endo_nbr,M_.nfwrd);
 LHS = zeros(M_.endo_nbr,M_.endo_nbr);
-LHS(:,kcurr~=0) = g1(:, icurr);
+LHS(:,kcurr) = g1(:,icurr);
 RHS = zeros(M_.endo_nbr,M_.exo_nbr^2);
 E = eye(M_.endo_nbr);
-B1 = sparse_hessian_times_B_kronecker_C(g2(:,kk2(ilead,ilead)), dr.ghu(klead~=0,:), threads_BC); % g2: focus only on forward variables and reorder to DR order
-RHS = RHS + g1(:, ilead)*dr.ghuu(klead~=0,:)+B1;
+B1 = sparse_hessian_times_B_kronecker_C(g2(:,kk2(ilead,ilead)), dr.ghu(klead,:), threads_BC); % g2: focus only on forward variables and reorder to DR order
+RHS = RHS + g1(:,ilead)*dr.ghuu(klead,:)+B1;
 % LHS
-LHS = LHS + g1(:, ilead)*(E(klead~=0,:)+[O1(klead~=0,:) dr.ghx(klead~=0,:) O2(klead~=0,:)]);
+LHS = LHS + g1(:,ilead)*(E(klead,:)+[O1(klead,:) dr.ghx(klead,:) O2(klead,:)]);
 RHS = RHS*M_.Sigma_e(:);
 dr.fuu = RHS;
 RHS = -RHS;
