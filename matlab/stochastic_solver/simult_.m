@@ -38,35 +38,28 @@ iter = size(ex_,1);
 endo_nbr = M_.endo_nbr;
 exo_nbr = M_.exo_nbr;
 
-y_ = zeros(size(y0,1),iter+M_.maximum_lag);
-y_(:,1) = y0;
-
 if options_.loglinear && ~options_.logged_steady_state
     k = get_all_variables_but_lagged_leaded_exogenous(M_);
     dr.ys(k)=log(dr.ys(k));
 end
 
-if ~options_.k_order_solver || (options_.k_order_solver && options_.pruning) %if k_order_pert is not used or if we do not use Dynare++ with k_order_pert
-    if iorder==1
-        y_(:,1) = y_(:,1)-dr.ys;
-    end
-end
-
-if options_.k_order_solver
+if (iorder > 3) || (iorder == 3 && ~options_.pruning)
     if options_.order~=iorder
-        error(['The k_order_solver requires the specified approximation order to be '...
-                'consistent with the one used for computing the decision rules'])
+        error(['The k_order_simul routine requires the specified approximation order to be '...
+               'consistent with the one used for computing the decision rules'])
     end
     y_ = k_order_simul(iorder,M_.nstatic,M_.npred,M_.nboth,M_.nfwrd,exo_nbr, ...
                        y0(dr.order_var,:),ex_',dr.ys(dr.order_var),dr, ...
                        options_.pruning);
     y_(dr.order_var,:) = y_;
 else
+    y_ = zeros(size(y0,1),iter+M_.maximum_lag);
+    y_(:,1) = y0;
     k2 = M_.nstatic+(1:M_.nspred);
     order_var = dr.order_var;
-
     switch iorder
       case 1
+        y_(:,1) = y_(:,1)-dr.ys;
         if isempty(dr.ghu)% For (linearized) deterministic models.
             for i = 2:iter+M_.maximum_lag
                 yhat = y_(order_var(k2),i-1);
@@ -163,7 +156,5 @@ else
             yhat2 = yhat2(ipred);
             yhat3 = yhat3(ipred);
         end
-      otherwise
-          error(['k_order_solver required for pruning at order = ' int2str(iorder)])
     end
 end
