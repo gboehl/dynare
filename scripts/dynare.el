@@ -1,7 +1,7 @@
 ;;; dynare.el --- major mode for editing Dynare mod files
 
 ;; Copyright © 2010 Yannick Kalantzis
-;; Copyright © 2019-2023 Dynare Team
+;; Copyright © 2019-2024 Dynare Team
 ;;
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -165,6 +165,7 @@
     (modify-syntax-entry ?- "." st)
     (modify-syntax-entry ?/ "." st)
     (modify-syntax-entry ?^ "." st)
+    (modify-syntax-entry ?= "." st)
 
     ;; symbols for the macrolanguage
     (modify-syntax-entry ?@ "." st)
