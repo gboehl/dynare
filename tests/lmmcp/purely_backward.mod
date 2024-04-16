@@ -1,4 +1,5 @@
 // Regression test for bug #1720 (in the purely backward case)
+// Also tests the alternative (ASCII) representation for the perpendicular symbol
 
 var y;
 
@@ -9,8 +10,7 @@ parameters rho;
 rho = 0.9;
 
 model;
-  [ mcp = 'y>1' ]
-  y = y(-1)^rho*exp(eps);
+  y = y(-1)^rho*exp(eps) _|_ y>1;
 end;
 
 initval;

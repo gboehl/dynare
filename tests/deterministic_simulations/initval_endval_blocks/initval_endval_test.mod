@@ -19,8 +19,8 @@ model;
 //[name = 'FOC wrt L', mcp = 'L>0']
 (1-alpha)*A*((K)^alpha)*(L^(-alpha)) = w*(1-eta);
 
-[name = 'FOC wrt K(+1)', mcp = 'q>0']
-beta*alpha*A*(K(+1)^(alpha-1))*(L(+1)^(1-alpha)) + beta*(1-delta)*q(+1) = q;
+[name = 'FOC wrt K(+1)']
+beta*alpha*A*(K(+1)^(alpha-1))*(L(+1)^(1-alpha)) + beta*(1-delta)*q(+1) = q ⟂ q>0;
 
 KL_ratio = K/L;
 

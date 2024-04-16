@@ -59,8 +59,8 @@ model;
     y + d= c + (1+r_bar)*d(-1);
     [name='Endowment']
     y = 1;
-    [name='Euler equation', mcp = 'd<2']
-    beta*(1+r_bar)*1/c(+1)-1/c=0; 
+    [name='Euler equation']
+    beta*(1+r_bar)*1/c(+1)-1/c=0 ⟂ d<2;
 end;
 
 initval;

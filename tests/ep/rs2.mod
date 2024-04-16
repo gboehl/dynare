@@ -65,8 +65,7 @@ exp(lC)^-phi = beta *exp(10*Int1-10*lpi1(+1)) *exp(lC(+1))^-phi *exp(lDZ(+1))^-p
 // Finally; the scaling and unscaling of Valphaexp by the constant VAIMSS and DZBar improves the
 // numerical behavior of the model; without it; the steady-state value of Valphaexp can be minuscule
 // (e.g.; 10^-50); which requires Mathematica to use astronomical levels of precision to solve. *)
-[mcp = 'Valphaexp > 1e-5']
-Valphaexp = (V(+1) *exp(lDZ(+1))^(1-phi) /VAIMSS /DZBar^(1-phi))^(1-alpha);
+Valphaexp = (V(+1) *exp(lDZ(+1))^(1-phi) /VAIMSS /DZBar^(1-phi))^(1-alpha) ⟂ Valphaexp > 1e-5;
 Vkp = VAIMSS *DZBar^(1-phi) *Valphaexp^(1/(1-alpha));
 
 exp(lzn) = (1+theta) *MC *exp(lY) + xi *beta *exp(lC(+1)-lC)^-phi *exp(lDZ(+1))^-phi
@@ -77,8 +76,7 @@ exp(lp0)^(1+(1+theta)/theta *(1-eta)/eta) = exp(lzn-lzd);
 exp(lpi)^(-1/theta) = (1-xi) *exp(lp0+lpi)^(-1/theta) + xi;
 // Marginal cost and real wage 
 MC = exp(lwreal) /eta *exp(lY)^((1-eta)/eta) /exp(lA)^(1/eta) /KBar^((1-eta)/eta);
-[mcp = 'lL < 1.0986']
-chi0 *(LMax-exp(lL))^-chi /exp(lC)^-phi = exp(lwreal);
+chi0 *(LMax-exp(lL))^-chi /exp(lC)^-phi = exp(lwreal) ⟂ lL < 1.0986;
 // Output equations 
 exp(lY) = exp(lA) *KBar^(1-eta) *exp(lL)^eta /exp(lDisp);
 exp(lDisp)^(1/eta) = (1-xi) *exp(lp0)^(-(1+theta)/theta/eta)

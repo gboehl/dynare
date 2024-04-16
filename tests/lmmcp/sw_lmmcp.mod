@@ -45,8 +45,7 @@ model;
 	   +(1-xi_w)*(1-beta_bar*gamma*xi_w)/((1+beta_bar*gamma)*xi_w)*(1/((phi_w-1)*curv_w+1))*
 	   (sigma_l*l + (1/(1-lambda/gamma))*c - ((lambda/gamma)/(1-lambda/gamma))*c(-1) -w)
 	   + 1*eps_w ;
-        [mcp='r > -1.944781619515523']
-        r =  r_pi * (1-rho) * pinf + r_y * (1-rho) * (y-yf) + r_dy * ( y - yf - (y(-1) - yf(-1))) + rho * r(-1) + eps_r;
+        r =  r_pi * (1-rho) * pinf + r_y * (1-rho) * (y-yf) + r_dy * ( y - yf - (y(-1) - yf(-1))) + rho * r(-1) + eps_r ⟂ r > -1.944781619515523;
         eps_a = rho_a * eps_a(-1) + eta_a;
 	eps_b = rho_b * eps_b(-1) + eta_b;
 	eps_g = rho_g * eps_g(-1) + eta_g + rho_ga * eta_a;

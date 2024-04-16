@@ -19,8 +19,7 @@ model(linear,use_dll);
     pi = pi_bar*(1-alpha_1-(1-alpha_1)*alpha_2) + alpha_1*pi(-1) + (1-alpha_1)*alpha_2*pi(+1) + alpha_3*y + e_pi;
     y = beta_1*y(-1) + (1-beta_1)*y(+1) - beta_2*(rl-rr_bar - pi(+1)) + e_y;
     rs_shadow = gamma_r*rs(-1) + (1-gamma_r)*(rr_bar + pi_bar + gamma_pi*(pi-pi_bar) + gamma_y*y);
-    [mcp = 'rs_shadow > 0']
-    rs_1 = rs_shadow;
+    rs_1 = rs_shadow ⟂ rs_shadow > 0;
 //    [mcp = 'pi > 1.4']
     rs = rs_1;
     rl = 400*(((1+rs/400)

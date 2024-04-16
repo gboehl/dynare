@@ -71,6 +71,10 @@ latex_elements = {
                     warningBorderColor={RGB}{255,50,50},OuterLinkColor={RGB}{34,139,34}, \
                     InnerLinkColor={RGB}{51,51,255},TitleColor={RGB}{51,51,255}',
     'papersize': 'a4paper',
+    # Add support for the perpendicular symbol input as UTF-8
+    'preamble': r'''
+\DeclareUnicodeCharacter{27C2}{\ensuremath{\perp}}
+'''
 }
 
 latex_documents = [

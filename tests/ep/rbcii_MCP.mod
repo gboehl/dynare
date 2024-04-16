@@ -18,8 +18,7 @@ model(use_dll);
   beta*(c(+1)^theta*(1-L(+1))^(1-theta))^(1-tau)/c(+1)
   *(alpha*(y(+1)/k)^(1-psi)+1-delta)+mu(+1)*(1-delta);
   i=y-c;
-  [ mcp = 'i > 0' ]
-  mu = 0;
+  mu = 0 ⟂ i > 0;
 end;
 
 

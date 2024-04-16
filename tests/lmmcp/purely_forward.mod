@@ -1,4 +1,5 @@
 // Regression test for bug #1720 (in the purely forward case)
+// Also tests the obsolete “mcp” tag syntax
 
 var y;
 

@@ -13,8 +13,7 @@ lambda2 = 0.1;
 pi_bar = 2.0;
 
 model;
-[mcp = 'i > 0']
-y = beta1*y(-1) + beta2*y(+1) + beta3*(i-pi(+1)) + e_y;
+y = beta1*y(-1) + beta2*y(+1) + beta3*(i-pi(+1)) + e_y ⟂ i > 0;
 pi = lambda1*pi(+1) + (1-lambda1)*pi(-1) + lambda2*y + e_pi;
 end;
 

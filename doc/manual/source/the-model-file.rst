@@ -992,7 +992,7 @@ The model is declared inside a ``model`` block:
 
         model;
 
-        [name='Taylor rule',mcp = 'r > -1.94478']
+        [name='Taylor rule', endogenous='r']
         r = rho*r(-1) + (1-rho)*(gpi*Infl+gy*YGap) + e;
 
         end;
@@ -2975,14 +2975,14 @@ Finding the steady state with Dynare nonlinear solver
 
                 Levenberg-Marquardt mixed complementarity problem
                 (LMMCP) solver (*Kanzow and Petra (2004)*). The complementarity 
-                conditions are specified with an ``mcp`` equation tag, see
+                conditions are specified using the perpendicular symbol, see
                 :opt:`lmmcp`. 
 
            ``11``
 
                 PATH mixed complementarity problem solver of *Ferris
                 and Munson (1999)*. The complementarity conditions are
-                specified with an ``mcp`` equation tag, see
+                specified using the perpendicular symbol, see
                 :opt:`lmmcp`. Dynare only provides the interface for
                 using the solver. Due to licence restrictions, you have
                 to download the solver’s most current version yourself
@@ -3884,18 +3884,18 @@ speed-up on large models.
  
        where :math:`X` denotes the vector of endogenous variables, :math:`F(X)` the equations
        of the model, :math:`LB` denotes a lower bound, and :math:`UB` an upper bound. Such a setup
-       is implemented by attaching an equation tag (see :ref:`model-decl`) 
-       with the ``mcp`` keyword to the affected equations. This tag states that 
-       the equation to which the tag is attached has to hold unless the inequality
-       constraint within the tag is binding. 
+       is implemented by specifying the complementarity condition after the
+       equation to which it is attached, the two being separated by the
+       perpendicular symbol (the latter can be input either in UTF-8, as ⟂,
+       corresponding to Unicode codepoint U+27C2; or alternatively as pure ASCII, as
+       _|_, *i.e.* a vertical bar enclosed within two underscores).
 
        For instance, a ZLB on the nominal interest rate would be specified 
        as follows in the model block::
 
             model;
                ...
-               [mcp = 'r > -1.94478']
-               r = rho*r(-1) + (1-rho)*(gpi*Infl+gy*YGap) + e;
+               r = rho*r(-1) + (1-rho)*(gpi*Infl+gy*YGap) + e  ⟂  r > -1.94478;
                ...
             end;
 
@@ -3906,12 +3906,11 @@ speed-up on large models.
        ``r<=-1.94478``, in which case the ``r`` is fixed at
        ``-1.94478`` (thereby being equivalent to a complementary
        slackness condition). By restricting the value of ``r`` coming
-       out of this equation, the ``mcp`` tag also avoids using
+       out of this equation, the complementarity condition also avoids using
        ``max(r,-1.94478)`` for other occurrences of ``r`` in the rest
-       of the model. Two things are important to keep in mind. First, because the
-       ``mcp`` tag effectively replaces a complementary slackness
-       condition, it cannot be simply attached to any
-       equation. Rather, it must be attached to the correct affected
+       of the model. Two things are important to keep in mind. First, the complementary slackness
+       condition cannot be simply attached to any
+       equation; it must be attached to the correct affected
        equation as otherwise the solver will solve a different problem
        than originally intended. Second, the sign of the residual of the dynamic 
        equation must conform to the MCP setup outlined above. In case of the ZLB,
@@ -3931,7 +3930,7 @@ speed-up on large models.
        would be wrong.
 
        Note that in the current implementation, the content of the
-       ``mcp`` equation tag is not parsed by the preprocessor. The
+       complementarity condition is not parsed by the preprocessor. The
        inequalities must therefore be as simple as possible: an
        endogenous variable, followed by a relational operator,
        followed by a number (not a variable, parameter or expression).
@@ -5182,7 +5181,7 @@ which is described below.
        (2004)*), which allows to consider inequality constraints on
        the endogenous variables (such as a ZLB on the nominal interest
        rate or a model with irreversible investment). For specifying the
-       necessary ``mcp`` tag, see :opt:`lmmcp`.
+       necessary complementarity conditions, see :opt:`lmmcp`.
 
 
 Typology and ordering of variables

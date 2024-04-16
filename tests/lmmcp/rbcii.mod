@@ -21,8 +21,7 @@ model;
  k = y-c+(1-delta)*k(-1);
  i = k-(1-delta)*k(-1);
 
-[ mcp = 'i > 0' ]
- mu = 0;
+ mu = 0 ⟂ i > 0;
 end;
 
 steady_state_model;
