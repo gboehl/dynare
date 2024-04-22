@@ -190,7 +190,7 @@ if ~options_.nodecomposition
         oo_.variance_decomposition(zero_variance_var_index,:)=NaN;
         if ME_present
             oo_.variance_decomposition_ME=oo_.variance_decomposition(index_subset,:)...
-                .*repmat((s2(index_subset)./s2_ME)',1,length(i_exo_var));
+                .*repmat((s2(index_subset)./s2_ME)',1,M_.exo_nbr);
             oo_.variance_decomposition_ME(:,end+1)=var(y_ME_only_filtered)./s2_ME*100;
             oo_.variance_decomposition_ME(ismember(observable_pos_requested_vars,intersect(zero_variance_ME_var_index,zero_variance_var_index)),:)=NaN;
             oo_.variance_decomposition_ME(ismember(observable_pos_requested_vars,setdiff(zero_variance_var_index,zero_variance_ME_var_index)),1:end-1)=0;
