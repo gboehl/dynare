@@ -94,7 +94,7 @@ if max(max(abs(oo0.endo_simul-oo1.endo_simul)))>options_.dynatol.x
     error('stack_solve_algo={0,1} return different paths for the endogenous variables!')
 else
     skipline()
-    fprintf('Maximum (absolute) differrence between paths is %s', num2str(maxabsdiff))
+    fprintf('Maximum (absolute) difference between paths is %s', num2str(maxabsdiff))
     skipline()
 end
 
@@ -115,6 +115,6 @@ if max(max(abs(oo0.endo_simul-oo6.endo_simul)))>options_.dynatol.x
     error('stack_solve_algo={0,6} return different paths for the endogenous variables!')
 else
     skipline()
-    fprintf('Maximum (absolute) differrence between paths is %s', num2str(maxabsdiff))
+    fprintf('Maximum (absolute) difference between paths is %s', num2str(maxabsdiff))
     skipline()
 end

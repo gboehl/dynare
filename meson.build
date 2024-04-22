@@ -1408,6 +1408,7 @@ mod_and_m_tests = [
   { 'test' : [ 'deterministic_simulations/pfwee_multiple_shocks.mod' ] },
   { 'test' : [ 'deterministic_simulations/pfwee_homotopy_linearization.mod' ] },
   { 'test' : [ 'deterministic_simulations/pfwee_homotopy_marginal_linearization.mod' ] },
+  { 'test' : [ 'deterministic_simulations/lbj/rbc.mod' ] },
   { 'test' : [ 'lmmcp/rbc.mod' ] },
   { 'test' : [ 'lmmcp/sw_lmmcp.mod',
                'lmmcp/sw_newton.mod' ],
