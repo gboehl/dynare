@@ -20,7 +20,7 @@ function [endogenousvariables, success, err, iter] = sim1_lbj(endogenousvariable
 % SPECIAL REQUIREMENTS
 %   None.
 
-% Copyright © 1996-2023 Dynare Team
+% Copyright © 1996-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -53,17 +53,26 @@ isf1 = nyp+ny+1:nyf+nyp+ny+1;
 success = false;
 iz = 1:ny+nyp+nyf;
 
-function [r, g1] = bytecode_wrapper(y, xpath, params, ys, it_)
-    ypath = NaN(ny, 3);
-    ypath(find(lead_lag_incidence')) = y;
-    [r, s] = bytecode('dynamic', 'evaluate', M_, options_, ypath, xpath(it_+(-1:1), :), params, ys, 1);
-    g1 = s.g1;
+if ~options_.bytecode
+    dynamic_resid = str2func(sprintf('%s.sparse.dynamic_resid', M_.fname));
+    dynamic_g1 = str2func(sprintf('%s.sparse.dynamic_g1', M_.fname));
 end
 
-if options_.bytecode
-    dynamicmodel = @bytecode_wrapper;
-else
-    dynamicmodel = str2func(sprintf('%s.dynamic', M_.fname));
+% NB: working with dense Jacobian matrices with only the relevant columns turns
+% out to be more efficient than working with sparse Jacobian matrices.
+
+function [r, g1] = dynamicmodel(it_)
+    y3n = endogenousvariables(:, it_+(-1:1));
+    if options_.bytecode
+        x3n = exogenousvariables(it_+(-1:1), :);
+        [r, s] = bytecode('dynamic', 'evaluate', M_, options_, y3n, x3n, M_.params, steadystate, 1);
+        g1 = s.g1;
+    else
+        x = exogenousvariables(it_, :);
+        [r, T_order, T] = dynamic_resid(y3n, x, M_.params, steadystate);
+        g1_sparse = dynamic_g1(y3n, x, M_.params, steadystate, M_.dynamic_g1_sparse_rowval, M_.dynamic_g1_sparse_colval, M_.dynamic_g1_sparse_colptr, T_order, T);
+        g1 = full(g1_sparse(:, find(lead_lag_incidence')));
+    end
 end
 
 verbose = options_.verbosity;
@@ -78,16 +87,13 @@ h1 = clock;
 for iter = 1:options_.simul.maxit
     h2 = clock;
     c = zeros(ny*options_.periods, nrc);
-    it_ = M_.maximum_lag+1;
-    z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
-    [d1, jacobian] = dynamicmodel(z, exogenousvariables, M_.params, steadystate, it_);
+    [d1, jacobian] = dynamicmodel(M_.maximum_lag+1);
     jacobian = [jacobian(:,iz), -d1];
     ic = 1:ny;
     icp = iyp;
     c (ic,:) = jacobian(:,is)\jacobian(:,isf1);
     for it_ = M_.maximum_lag+(2:options_.periods)
-        z = [endogenousvariables(iyp,it_-1) ; endogenousvariables(:,it_) ; endogenousvariables(iyf,it_+1)];
-        [d1, jacobian] = dynamicmodel(z, exogenousvariables, M_.params, steadystate, it_);
+        [d1, jacobian] = dynamicmodel(it_);
         jacobian = [jacobian(:,iz), -d1];
         jacobian(:,[isf nrs]) = jacobian(:,[isf nrs])-jacobian(:,isp)*c(icp,:);
         ic = ic + ny;
