@@ -300,7 +300,7 @@ if info(1) == 0 %no errors in solution
                 derivatives_info.no_DLIK = 1;
                 bounds = prior_bounds(bayestopt_, options_.prior_trunc); %reset bounds as lb and ub must only be operational during mode-finding 
                 %note that for order>1 we do not provide any information on DT,DYss,DOM in derivatives_info, such that dsge_likelihood creates an error. Therefore the computation will be based on simulated_moment_uncertainty for order>1.
-                [~, info, ~, ~, AHess, ~, ~, M_, options_, ~, oo_.dr] = dsge_likelihood(params', dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_.dr, oo_.steady_state,oo_.exo_steady_state, oo_.exo_det_steady_state. derivatives_info); %non-used output variables need to be set for octave for some reason
+                [~, info, ~, ~, AHess, ~, ~, M_, options_, ~, oo_.dr] = dsge_likelihood(params', dataset_, dataset_info, options_, M_, estim_params_, bayestopt_, bounds, oo_.dr, oo_.steady_state,oo_.exo_steady_state, oo_.exo_det_steady_state, derivatives_info); %non-used output variables need to be set for octave for some reason
                     %note that for the order of parameters in AHess we have: stderr parameters come first, corr parameters second, model parameters third. the order within these blocks corresponds to the order specified in the estimated_params block
                 options_.analytic_derivation = analytic_derivation; %reset option
                 AHess = -AHess; %take negative of hessian
