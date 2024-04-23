@@ -17,7 +17,7 @@ function json = cherrypick(infile, outfold, eqtags, noresids, json)
 % It is expected that the file infile.mod has already been run, and
 % that the associated JSON output is available.
 
-% Copyright © 2019-2021 Dynare Team
+% Copyright © 2019-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -188,17 +188,57 @@ try
                 end
             else
                 % MCE version of the PAC equation.
-                auxlhs = M_.endo_names{M_.pac.(ispac.name).mce.z1};
-                [rhs, growthneutralitycorrection] = write_pac_mce_expectations(eqtags{i}, ispac.name, auxlhs);
-                if isempty(growthneutralitycorrection)
-                    RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), auxlhs);
+                if ~isfield(M_.pac.(ispac.name), 'components')
+                    auxlhs = M_.endo_names{M_.pac.(ispac.name).mce.z};
+                    [rhs, growthneutralitycorrection] = write_pac_mce_expectations(eqtags{i}, ispac.name, auxlhs);
+                    if isempty(growthneutralitycorrection)
+                        RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), auxlhs);
+                    else
+                        RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), sprintf('%s+%s', auxlhs, growthneutralitycorrection));
+                    end
                 else
-                    RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), sprintf('%s+%s', auxlhs, growthneutralitycorrection));
+                    n = length(M_.pac.(ispac.name).components);
+                    auxlhs = cell(n, 1);
+                    rhs = cell(n, 1);
+                    growthneutralitycorrection = cell(n, 1);
+                    for c=1:n
+                        auxlhs{c} = M_.endo_names{M_.pac.(ispac.name).mce.z(c)};
+                        [rhs{c}, growthneutralitycorrection{c}] = write_pac_mce_expectations(eqtags{i}, ispac.name, auxlhs{c}, c);
+                    end
+                    if isempty(growthneutralitycorrection{1})
+                        if strcmp(M_.pac.(ispac.name).components(1).coeff_str, '1')
+                            RHS__ =  auxlhs{1};
+                        else
+                            RHS__ =  sprintf('%s*%s', M_.pac.(ispac.name).components(1).coeff_str, auxlhs{1});
+                        end
+                    else
+                        if strcmp(M_.pac.(ispac.name).components(1).coeff_str, '1')
+                            RHS__ = sprintf('%s+%s', auxlhs{1}, growthneutralitycorrection{1});
+                        else
+                            RHS__ = sprintf('%s*(%s+%s)', M_.pac.(ispac.name).components(1).coeff_str, auxlhs{1}, growthneutralitycorrection{1});
+                        end
+                    end
+                    for c=2:n
+                        if isempty(growthneutralitycorrection{c})
+                            if strcmp(M_.pac.(ispac.name).components(c).coeff_str, '1')
+                                RHS__ =  sprintf('%s+%s', RHS__, auxlhs{c});
+                            else
+                                RHS__ =  sprintf('%s+%s*%s', RHS__, M_.pac.(ispac.name).components(c).coeff_str, auxlhs{c});
+                            end
+                        else
+                            if strcmp(M_.pac.(ispac.name).components(c).coeff_str, '1')
+                                RHS__ = sprintf('%s+%s+%s', RHS__,  auxlhs{c}, growthneutralitycorrection{c});
+                            else
+                                RHS__ = sprintf('%s+%s*(%s+%s)', RHS__, M_.pac.(ispac.name).components(c).coeff_str, auxlhs{c}, growthneutralitycorrection{c});
+                            end
+                        end
+                    end
+                    RHS = strrep(RHS, sprintf('pac_expectation(model_name = %s)', ispac.name), RHS__);
                 end
             end
         end
         if ~isempty(istar)
-            RHS = strrep(RHS, sprintf('pac_target_nonstationary(model_name = %s)', ispac.name), sprintf('%s(-1)', M_.endo_names{M_.pac.(ispac.name).ec.vars(M_.pac.(ispac.name).ec.istarget)}));
+            RHS = strrep(RHS, sprintf('pac_target_nonstationary(model_name = %s)', ispac.name), targetexpr());
         end
         % Print equation for unrolled PAC/VAR-expectation and update
         % list of parameters and endogenous variables (if any).
@@ -237,9 +277,23 @@ try
         end
         % Update pnames, enames and xnames if PAC with growth neutrality correction.
         if ~isempty(ispac) && ~isempty(growthneutralitycorrection)
-            [growthneutralitycorrection_pnames, ...
-             growthneutralitycorrection_enames, ...
-             growthneutralitycorrection_xnames] = get_variables_and_parameters_in_equation('', growthneutralitycorrection, M_);
+            if iscell(growthneutralitycorrection)
+                growthneutralitycorrection_pnames = [];
+                growthneutralitycorrection_enames = [];
+                growthneutralitycorrection_xnames = [];
+                for component=1:length(growthneutralitycorrection)
+                    if ~isempty(growthneutralitycorrection{component})
+                        [tmp_pnames, tmp_enames, tmp_xnames] = get_variables_and_parameters_in_equation('', growthneutralitycorrection{component}, M_);
+                        growthneutralitycorrection_pnames = union(growthneutralitycorrection_pnames, tmp_pnames);
+                        growthneutralitycorrection_xnames = union(growthneutralitycorrection_xnames, tmp_xnames);
+                        growthneutralitycorrection_enames = union(growthneutralitycorrection_enames, tmp_enames);
+                    end
+                end
+            else
+                [growthneutralitycorrection_pnames, ...
+                 growthneutralitycorrection_enames, ...
+                 growthneutralitycorrection_xnames] = get_variables_and_parameters_in_equation('', growthneutralitycorrection, M_);
+            end
             if ~isempty(growthneutralitycorrection_pnames)
                 pnames = union(pnames, growthneutralitycorrection_pnames);
             end
@@ -321,6 +375,7 @@ if ~isempty(plist)
     fclose(fid);
 end
 
+
 function printlistofvariables(fid, kind, list, DynareModel, vappend)
     if isfield(DynareModel, sprintf('%s_partitions', kind))
         % Some endogenous variables are tagged.
@@ -385,3 +440,62 @@ function printlistofvariables(fid, kind, list, DynareModel, vappend)
         end
         fprintf(fid, '%s;', vlist);
     end
+end
+
+function expr = targetexpr()
+    if isfield(M_.pac.(ispac.name), 'components')
+        ns = ~strcmp({M_.pac.pacman.components.kind}, 'll'); % non stationary components
+        expr = '';
+        for i=1:length(M_.pac.pacman.components)
+            if ns(i)
+                variable = rmauxiliary(M_.endo_names{M_.pac.(ispac.name).components(i).endo_var}, 1);
+                if isempty(expr)
+                    if strcmp(M_.pac.(ispac.name).components(i).coeff_str, '1')
+                        expr = variable;
+                    else
+                        expr = sprintf('%s*%s', M_.pac.(ispac.name).components(i).coeff_str, variable);
+                    end
+                else
+                    if strcmp(M_.pac.(ispac.name).components(i).coeff_str, '1')
+                        expr = sprintf('%s+%s', expr, variable);
+                    else
+                        expr = sprintf('%s+%s*%s', expr, M_.pac.(ispac.name).components(i).coeff_str, variable);
+                    end
+                end
+            end
+        end
+    else
+        expr = rmauxiliary(M_.endo_names{M_.pac.(ispac.name).ec.vars(M_.pac.(ispac.name).ec.istarget)}, 1);
+    end
+end
+
+
+function variable = rmauxiliary(variable, lag)
+    transformations = {};
+    if isauxiliary(variable)
+        ida = get_aux_variable_id(variable);
+        op = 0;
+        while ida
+            op = op+1;
+            if isequal(M_.aux_vars(ida).type, 8)
+                transformations(op) = {'diff'};
+                variable = M_.endo_names{M_.aux_vars(ida).orig_index};
+                ida = get_aux_variable_id(variable);
+            elseif isequal(M_.aux_vars(ida).type, 10)
+                transformations(op) = {M_.aux_vars(ida).unary_op};
+                variable = M_.endo_names{M_.aux_vars(ida).orig_index};
+                ida = get_aux_variable_id(variable);
+            else
+                error('This case is not implemented.')
+            end
+        end
+    end
+    if nargin>1
+        variable = sprintf('%s(-%u)', variable, lag);
+    end
+    for k=length(transformations):-1:1
+        variable = sprintf('%s(%s)', transformations{k}, variable);
+    end
+end
+
+end

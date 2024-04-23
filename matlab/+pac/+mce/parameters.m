@@ -11,7 +11,7 @@ function parameters(pacname)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2019-2021 Dynare Team
+% Copyright © 2019-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -59,7 +59,9 @@ params(1+(1:pacmodel.max_lag)) = M_.params(pacmodel.ar.params);
 params(end) = M_.params(pacmodel.discount_index);
 [G, alpha, beta] = buildGmatrixWithAlphaAndBeta(params);
 M_.params(pacmodel.mce.alpha) = flip(alpha);
-if isfield(pacmodel, 'growth_neutrality_param_index')
+
+if isfield(pacmodel, 'growth_neutrality_param_index') || ...
+        (isfield(pacmodel, 'components') && isfield(pacmodel.components, 'growth_neutrality_param_index') && any(~cellfun(@isempty, {pacmodel.components.growth_neutrality_param_index})))
     if isfield(pacmodel, 'non_optimizing_behaviour')
         gamma = M_.params(pacmodel.share_of_optimizing_agents_index);
     else
@@ -124,5 +126,14 @@ if isfield(pacmodel, 'growth_neutrality_param_index')
         cc = cc - tmp0/gamma;
         ll = ll - tmp1/gamma; % TODO: ll should be added as a constant in the PAC equation (under the λ part) when unrolling pac_expectation.
     end
-    M_.params(pacmodel.growth_neutrality_param_index) = cc; % Multiplies the variable or expression provided though the growth option in command pac_model.
+    if isfield(pacmodel, 'growth_neutrality_param_index')
+        M_.params(pacmodel.growth_neutrality_param_index) = cc; % Multiplies the variable or expression provided though the growth option in command pac_model.
+    else
+        % TODO: We do not need one parameter per non stationary component, since they all have the same value.
+        for i=1:length(pacmodel.components)
+            if ~isempty(pacmodel.components(i).growth_neutrality_param_index)
+                M_.params(pacmodel.components(i).growth_neutrality_param_index) = cc;
+            end
+        end
+    end
 end

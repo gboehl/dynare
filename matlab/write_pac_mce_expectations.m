@@ -1,4 +1,4 @@
-function [expression, growthneutralitycorrection] = write_pac_mce_expectations(eqname, expectationmodelname, auxname)
+function [expression, growthneutralitycorrection] = write_pac_mce_expectations(eqname, expectationmodelname, auxname, component)
 
 % Prints the expansion of the PAC_EXPECTATION term in files.
 %
@@ -32,7 +32,14 @@ global M_
 
 expectationmodel = M_.pac.(expectationmodelname);
 
-targetid = expectationmodel.ec.vars((expectationmodel.ec.istarget==true));
+if nargin==3 && ischar(eqname) && ischar(expectationmodelname) && ischar(auxname)
+    targetid = expectationmodel.ec.vars((expectationmodel.ec.istarget==true));
+elseif nargin==4  && ischar(eqname) && ischar(expectationmodelname) && ischar(auxname) && isint(component)
+    targetid = expectationmodel.components(component).endo_var;
+else
+    error('Unexpected number/types of input arguments')
+end
+
 alphaid = expectationmodel.mce.alpha;
 betaid = expectationmodel.discount_index;
 
@@ -71,6 +78,12 @@ end
 %        ᵐ                              ᵐ⁻¹ ᵐ⁻¹
 %  Zₜ =  -∑  𝛼ᵢ 𝛽ⁱ⁺¹ Zₜ₊ᵢ + A(1) [ 𝛥 yₜ − ∑   ∑   𝛼ⱼ₊₁𝛽ʲ⁺¹𝛥 yₜ₊ₖ ]
 %        ᵢ₌₁                            ₖ₌₁ ⱼ₌ₖ
+%
+% The previous formula is for each non-stationary component of the target. For each stationary component we have instead:
+%
+%        ᵐ
+%  Zₜ =  -∑  𝛼ᵢ 𝛽ⁱ⁺¹ Zₜ₊ᵢ + A(1)A(β) yₜ
+%        ᵢ₌₁
 
 expression = '';
 A1 = '1';
@@ -93,14 +106,43 @@ for i=1:length(alphaid)
     A1 = sprintf('%s+%s', A1, M_.param_names{alphaid(i)});
 end
 
+if nargin==4
+    % Composite target. We need A(β) for the each stationary component.
+    AB = '1';
+    for i=1:length(alphaid)
+        AB = sprintf('%s+%s*%s^%u', AB, M_.param_names{alphaid(i)}, M_.param_names{betaid}, i);
+    end
+end
+
 % Write
 %
 %     ᵐ
 %    -∑  𝛼ᵢ 𝛽ⁱ⁺¹ Zₜ₊ᵢ + A(1)
 %    ᵢ₌₁
+%
+% or for a stationary component
+%
+%     ᵐ
+%    -∑  𝛼ᵢ 𝛽ⁱ⁺¹ Zₜ₊ᵢ + A(1)A(β)yₜ
+%    ᵢ₌₁
 
 
 expression = sprintf('%s+(%s)', expression, A1);
+
+if nargin==4 && strcmp(expectationmodel.components(component).kind, 'll')
+    if isempty(transformations)
+        expression = sprintf('%s*(%s)*%s', expression, AB, target);
+    else
+        variable = target;
+        for k=length(transformations):-1:1
+            variable = sprintf('%s(%s)', transformations{k}, variable);
+        end
+        expression = sprintf('%s*(%s)*%s', expression, AB, variable);
+    end
+    growthneutralitycorrection = [];
+    % Nothing to do next for a  stationary component.
+    return
+end
 
 % Write
 %
@@ -145,11 +187,17 @@ end
 expression = sprintf('%s)', expression);
 
 % Add growth neutrality correction if required.
-if isfield(expectationmodel, 'growth_neutrality_param_index')
-    if numel(expectationmodel.growth_linear_comb) == 1
-        growthneutralitycorrection = sprintf('%s*%s', M_.param_names{expectationmodel.growth_neutrality_param_index}, expectationmodel.growth_str);
+if nargin==3
+    info = expectationmodel;
+else
+    info = expectationmodel.components(component);
+end
+
+if isfield(info, 'growth_neutrality_param_index')
+    if numel(info.growth_linear_comb) == 1
+        growthneutralitycorrection = sprintf('%s*%s', M_.param_names{info.growth_neutrality_param_index}, info.growth_str);
     else
-        growthneutralitycorrection = sprintf('%s*(%s)', M_.param_names{expectationmodel.growth_neutrality_param_index}, expectationmodel.growth_str);
+        growthneutralitycorrection = sprintf('%s*(%s)', M_.param_names{info.growth_neutrality_param_index}, info.growth_str);
     end
 else
     growthneutralitycorrection = '';
