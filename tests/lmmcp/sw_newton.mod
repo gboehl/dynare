@@ -70,11 +70,15 @@ end;
 perfect_foresight_setup(periods=1000);
 perfect_foresight_solver;
 
-newton_solution_is_wrong = abs(evaluate_max_dynamic_residual(str2func('sw_newton.dynamic'), oo_.endo_simul, oo_.exo_simul, M_.params, oo_.steady_state, 1000, size(oo_.endo_simul, 1), 1, M_.lead_lag_incidence))>options_.dynatol.f;
+
+verbatim;
+
+newton_resid = perfect_foresight_problem(reshape(oo_.endo_simul(:, 2:end-1),[],1), oo_.endo_simul(:, 1), oo_.endo_simul(:, end), oo_.exo_simul, M_.params, oo_.steady_state, options_.periods, M_, options_);
+newton_solution_is_wrong = max(abs(newton_resid)) > options_.dynatol.f;
 
 lmmcp = load(['sw_lmmcp' filesep 'Output' filesep 'sw_lmmcp_results']);
-
-lmmcp_solution_is_wrong = abs(evaluate_max_dynamic_residual(str2func('sw_newton.dynamic'), lmmcp.oo_.endo_simul, lmmcp.oo_.exo_simul, M_.params, oo_.steady_state, 1000, size(oo_.endo_simul, 1), 1, M_.lead_lag_incidence))>options_.dynatol.f;
+lmmcp_resid = perfect_foresight_problem(reshape(lmmcp.oo_.endo_simul(:, 2:end-1),[],1), lmmcp.oo_.endo_simul(:, 1), lmmcp.oo_.endo_simul(:, end), lmmcp.oo_.exo_simul, M_.params, lmmcp.oo_.steady_state, options_.periods, M_, options_);
+lmmcp_solution_is_wrong = max(abs(lmmcp_resid)) > options_.dynatol.f;
 
 solutions_are_different = max(max(abs(lmmcp.oo_.endo_simul-oo_.endo_simul)))>options_.dynatol.x;
 
@@ -89,3 +93,5 @@ end
 if lmmcp_solution_is_wrong
    error('Failed to solve SW with ZLB (using LMMCP algorithm on stacked model)!')
 end
+
+end; // verbatim block
