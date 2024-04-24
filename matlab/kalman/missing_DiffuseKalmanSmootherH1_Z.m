@@ -111,7 +111,7 @@ Pinf            = zeros(spinf(1),spinf(2),smpl+1);
 Pinf(:,:,1)     = Pinf1;
 rr              = size(Q,1);
 isqvec = false;
-if ndim(Q)>2
+if ndims(Q)>2
     Qvec = Q;
     Q=Q(:,:,1);
     isqvec = true;

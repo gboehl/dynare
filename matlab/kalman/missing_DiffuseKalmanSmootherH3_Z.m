@@ -121,7 +121,7 @@ Pstar1          = Pstar;
 Pinf1           = Pinf;
 rr              = size(Q,1); % number of structural shocks
 isqvec = false;
-if ndim(Q)>2
+if ndims(Q)>2
     Qvec = Q;
     Q=Q(:,:,1);
     isqvec = true;

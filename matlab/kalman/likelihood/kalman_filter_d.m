@@ -60,7 +60,7 @@ smpl = last-start+1;
 % Initialize some variables.
 dF   = 1;
 isqvec = false;
-if ndim(Q)>2
+if ndims(Q)>2
     Qvec = Q;
     Q=Q(:,:,1);
     isqvec = true;
