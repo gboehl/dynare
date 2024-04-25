@@ -3925,7 +3925,7 @@ speed-up on large models.
        ``rho*r(-1) + (1-rho)*(gpi*Infl+gy*YGap) + e`` is  
        below ``r=-1.94478``. In contrast, specifying the equation as 
 
-            ``rho*r(-1) + (1-rho)*(gpi*Infl+gy*YGap) + e = r;```
+            ``rho*r(-1) + (1-rho)*(gpi*Infl+gy*YGap) + e = r;``
 
        would be wrong.
 
