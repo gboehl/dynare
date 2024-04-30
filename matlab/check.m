@@ -12,7 +12,7 @@ function [eigenvalues_,result,info] = check(M_, options_, oo_)
 % - result        [integer]       scalar, equal to 1 if Blanchard and Kahn conditions are satisfied, zero otherwise.
 % - info          [integer]       scalar or vector, error code as returned by resol routine.
 
-% Copyright © 2001-2023 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -44,7 +44,7 @@ oo_.dr=set_state_space(oo_.dr,M_);
 
 [dr,info] = resol(1,M_,options_,oo_.dr ,oo_.steady_state, oo_.exo_steady_state, oo_.exo_det_steady_state);
 
-if info(1) ~= 0 && info(1) ~= 3 && info(1) ~= 4
+if ~ismember(info(1),[0,2,3,4]) %exclude BK conditions and QZ failure (2), for 2 throw error later
     print_info(info, 0, options_);
 end
 
@@ -52,7 +52,7 @@ eigenvalues_ = dr.eigval;
 [m_lambda,i]=sort(abs(eigenvalues_));
 
 result = 0;
-if (M_.nsfwrd == dr.edim) && (dr.full_rank)
+if isfield(dr,'edim') && (M_.nsfwrd == dr.edim) && (dr.full_rank)
     result = 1;
 end
 
@@ -62,13 +62,19 @@ if ~options_.noprint
     fprintf('%16s %16s %16s\n','Modulus','Real','Imaginary');
     z=[m_lambda real(eigenvalues_(i)) imag(eigenvalues_(i))]';
     fprintf('%16.4g %16.4g %16.4g\n',z);
-    fprintf('\nThere are %d eigenvalue(s) larger than 1 in modulus ', dr.edim);
-    fprintf('for %d forward-looking variable(s)', M_.nsfwrd);
-    skipline()
-    if result
-        disp('The rank condition is verified.')
-    else
-        disp('The rank condition ISN''T verified!')
+    if isfield(dr,'edim')
+        fprintf('\nThere are %d eigenvalue(s) larger than 1 in modulus ', dr.edim);
+        fprintf('for %d forward-looking variable(s)', M_.nsfwrd);
+        skipline()
+        if result
+            disp('The rank condition is verified.')
+        else
+            disp('The rank condition ISN''T verified!')
+        end
     end
     skipline()
+end
+
+if info(1)==2
+    print_info(info, 0, options_); %print QZ error now
 end
