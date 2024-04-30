@@ -70,4 +70,6 @@ if options_mom_.mom.mom_nbr > length(xparam)
     J_test.p_val           = 1-chi2cdf(J_test.j_stat, J_test.degrees_freedom);
     fprintf('\nValue of J-test statistic: %f\n',J_test.j_stat);
     fprintf('p-value of J-test statistic: %f\n',J_test.p_val);
+else
+    J_test=[];
 end
