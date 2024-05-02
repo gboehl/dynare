@@ -50,6 +50,11 @@ fixed in version 6.1:
   prediction variances due to numerical issues as missing values instead of
   discarding the parameter draw
 
+Moreover, a new `homotopy_exclude_varexo` option to the
+`perfect_foresight_solver` command has been added, to exclude some exogenous
+variables from the homotopy procedure (*i.e.* to keep them at their value
+corresponding to 100% of the shock during all homotopy iterations).
+
 
 Announcement for Dynare 6.0 (on 2024-02-02)
 ===========================================
