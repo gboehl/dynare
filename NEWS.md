@@ -1,3 +1,56 @@
+Announcement for Dynare 6.1 (on 2024-05-02)
+===========================================
+
+We are pleased to announce the release of Dynare 6.1.
+
+This maintenance release fixes various bugs.
+
+The Windows, macOS, MATLAB online and source packages are already available for
+download at [the Dynare website](https://www.dynare.org/download/).
+
+This release is compatible with MATLAB versions ranging from 9.5 (R2018b) to
+24.1 (R2024a), and with GNU Octave versions ranging from 7.1.0 to 9.1.0 (NB:
+the Windows package requires version 9.1.0 specifically).
+
+Here is a list of the problems identified in version 6.0 and that have been
+fixed in version 6.1:
+
+* Identification: simulated moments were triggered instead of theoretical ones
+* Variance decompositions would crash with measurement errors when zero
+  variance shocks were present
+* The handling of Lagrange multipliers in the display of problems with the
+  Jacobian was wrong
+* The option `auxname` was missing in the documentation of the `pac_model`
+  command
+* PAC equation estimation/simulation was crashing in the case of composite
+  target
+* The PAC equation estimation would crash if the PAC target was a transformed
+  variable
+* The `perfect_foresight_with_expectation_errors_solver` command could return
+  incorrect results when used in conjunction with
+  `homotopy_linearization_fallback` or
+  `homotopy_marginal_linearization_fallback` options
+* For scalar values, the description of the `horizon` option of the
+  `var_expectation_model` command was incorrect
+* The steady state computation with the `bytecode` option in a Ramsey model
+  was broken
+* OccBin: the piecewise Kalman filter would crash in case of a periodic
+  solution
+* The `heteroskedastic_filter` option of the `estimation` command would cause a
+  crash if there was only one shock
+* The `method_of_moments` command would crash during the J-test for just and
+  underidentified models
+* User-defined `warning` settings were internally overwritten with the
+  `method_of_moments` command or the piecewise Kalman filter
+* The SMC sampler would crash if any of the `bayesian_irf`, `moments_varendo`,
+  or `smoother` options of the `estimation` command had been specified
+* The `bvar_irf` command would ignore the `SquareRoot` option and instead
+  employ a Cholesky decomposition
+* The univariate Kalman filter erroneously treated observations with negative
+  prediction variances due to numerical issues as missing values instead of
+  discarding the parameter draw
+
+
 Announcement for Dynare 6.0 (on 2024-02-02)
 ===========================================
 
