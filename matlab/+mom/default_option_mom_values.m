@@ -1,5 +1,5 @@
-function options_mom_ = default_option_mom_values(options_mom_, options_, dname, do_bayesian_estimation)
-% options_mom_ = default_option_mom_values(options_mom_, options_, dname, do_bayesian_estimation)
+function options_mom_ = default_option_mom_values(options_mom_, options_, dname, fname, do_bayesian_estimation)
+% options_mom_ = default_option_mom_values(options_mom_, options_, dname, fname, do_bayesian_estimation)
 % -------------------------------------------------------------------------
 % Returns structure containing the options for method_of_moments command.
 % Note 1: options_mom_ is local and contains default and user-specified
@@ -16,6 +16,7 @@ function options_mom_ = default_option_mom_values(options_mom_, options_, dname,
 %  o options_mom_:           [structure]  all user-specified settings (from the method_of_moments command)
 %  o options_:               [structure]  global options
 %  o dname:                  [string]     default name of directory to store results
+%  o fname:                  [string]     default name of mod file
 %  o do_bayesian_estimation  [boolean]    indicator whether we do Bayesian estimation
 % -------------------------------------------------------------------------
 % OUTPUTS
@@ -458,8 +459,8 @@ if strcmp(mom_method,'IRF_MATCHING') && do_bayesian_estimation
         warning('method_of_moments: You specified mh_tune_jscale, but the maximum number of iterations is smaller than the step size. No update will take place.')
     end
     if options_mom_.load_results_after_load_mh
-        if ~exist([options_mom_.dirname filesep 'method_of_moments' filesep M_.fname '_mom_results.mat'],'file')
-            fprintf('\nYou specified the ''load_results_after_load_mh'' option, but no ''%s_mom_results.mat'' file\n',M_.fname);
+        if ~exist([options_mom_.dirname filesep 'method_of_moments' filesep fname '_mom_results.mat'],'file')
+            fprintf('\nYou specified the ''load_results_after_load_mh'' option, but no ''%s_mom_results.mat'' file\n',fname);
             fprintf('was found in the folder %s%smethod_of_moments.\n',options_mom_.dirname,filesep);
             fprintf('Results will be recomputed and option ''load_results_after_load_mh'' is reset to false.\n');
             options_mom_.load_results_after_load_mh = false;
