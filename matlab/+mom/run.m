@@ -161,7 +161,7 @@ check_varobs_are_endo_and_declared_once(options_.varobs,M_.endo_names);
 % The idea is to be independent of options_ and have full control of the
 % estimation instead of possibly having to deal with options chosen somewhere
 % else in the mod file.
-options_mom_ = mom.default_option_mom_values(options_mom_, options_, M_.dname, do_bayesian_estimation);
+options_mom_ = mom.default_option_mom_values(options_mom_, options_, M_.dname, M_.fname, do_bayesian_estimation);
 
 
 % -------------------------------------------------------------------------
