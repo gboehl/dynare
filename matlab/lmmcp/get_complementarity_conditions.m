@@ -12,7 +12,7 @@ function [lb,ub,eq_index] = get_complementarity_conditions(M_,ramsey_policy)
 %                                from complementarity setup used in
 %                                perfect_foresight_mcp_problem.m
 
-% Copyright © 2014-2018 Dynare Team
+% Copyright © 2014-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -60,7 +60,9 @@ for i=1:size(etags,1)
                 error('Complementarity condition %s: variable %s is not recognized', etags{i,3}, strtrim(str(1:kop-1)))
             end
             ub(k) = str2num(str(kop+1:end));
-            eq_index(eq_nbr) = k;
+            swapped_eq_nbr = find(eq_index == eq_nbr);
+            assert(length(swapped_eq_nbr) == 1);
+            eq_index(swapped_eq_nbr) = eq_index(k);
             eq_index(k) = eq_nbr;
         else
             kop = strfind(etags{i,3},'>');
@@ -70,7 +72,9 @@ for i=1:size(etags,1)
                     error('Complementarity condition %s: variable %s is not recognized', etags{i,3}, strtrim(str(1:kop-1)))
                 end
                 lb(k) = str2num(str(kop+1:end));
-                eq_index(eq_nbr) = k;
+                swapped_eq_nbr = find(eq_index == eq_nbr);
+                assert(length(swapped_eq_nbr) == 1);
+                eq_index(swapped_eq_nbr) = eq_index(k);
                 eq_index(k) = eq_nbr;
             else
                 error('Complementarity condition %s can''t be parsed',etags{i,3})
