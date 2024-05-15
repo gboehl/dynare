@@ -14,7 +14,7 @@ function [endogenousvariables, success, maxerror] = solve_stacked_problem(endoge
 % - success             [logical] Whether a solution was found
 % - maxerror            [double] 1-norm of the residual
 
-% Copyright © 2015-2023 Dynare Team
+% Copyright © 2015-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -35,7 +35,7 @@ function [endogenousvariables, success, maxerror] = solve_stacked_problem(endoge
     initialize_stacked_problem(endogenousvariables, options_, M_, steadystate);
 
 if (options_.solve_algo == 10 || options_.solve_algo == 11)% mixed complementarity problem
-    [lb,ub,eq_index] = get_complementarity_conditions(M_,options_.ramsey_policy);
+    [lb, ub] = feval(sprintf('%s.dynamic_complementarity_conditions', M_.fname), M_.params);
     if options_.linear_approximation
         lb = lb - steadystate_y;
         ub = ub - steadystate_y;
@@ -54,7 +54,7 @@ if (options_.solve_algo == 10 || options_.solve_algo == 11)% mixed complementari
                                                exogenousvariables, M_.params, steadystate, ...
                                                M_.maximum_lag, options_.periods, M_.endo_nbr, i_cols, ...
                                                i_cols_J1, i_cols_1, i_cols_T, i_cols_j, i_cols_0, i_cols_J0, ...
-                                               eq_index);
+                                               M_.dynamic_mcp_equations_reordering);
     eq_to_ignore=find(isfinite(lb) | isfinite(ub));
 
 else

@@ -15,7 +15,7 @@ function z = display_static_residuals(M_, options_, oo_,options_resid_)
 % SPECIAL REQUIREMENTS
 %    none
 
-% Copyright © 2001-2023 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -60,15 +60,15 @@ z = evaluate_static_model(oo_.steady_state, [oo_.exo_steady_state; ...
                                              oo_.exo_det_steady_state], ...
                           M_.params, M_, options_);
 
+[lb, ub] = feval(sprintf('%s.static_complementarity_conditions', M_.fname), M_.params);
 if ismember(options_.solve_algo,[10,11])
-    [lb,ub,eq_index] = get_complementarity_conditions(M_,options_.ramsey_policy);
     eq_to_check=find(isfinite(lb) | isfinite(ub));
     eq_to_ignore=eq_to_check(oo_.steady_state(eq_to_check,:)<=lb(eq_to_check)+eps | oo_.steady_state(eq_to_check,:)>=ub(eq_to_check)-eps);
-    z(eq_index(eq_to_ignore))=0;
-    disp_string=' (accounting for MCP tags)';
+    z(M_.static_mcp_equations_reordering(eq_to_ignore))=0;
+    disp_string=' (accounting for complementarity conditions)';
 else
-    if istag && ~isempty(strmatch('mcp',M_.equations_tags(:,2),'exact'))
-        disp_string=' (ignoring MCP tags)';
+    if any(isfinite(lb) | isfinite(ub))
+        disp_string=' (ignoring complementarity conditions)';
     else
         disp_string='';
     end

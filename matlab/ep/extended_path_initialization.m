@@ -16,7 +16,7 @@ function [initial_conditions, innovations, pfm, ep, verbosity, options_, oo_] = 
 %
 % SPECIAL REQUIREMENTS
 
-% Copyright © 2016-2023 Dynare Team
+% Copyright © 2016-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -126,7 +126,8 @@ else
 end
 
 % set boundaries if mcp
-[lb,ub,pfm.eq_index] = get_complementarity_conditions(M_, options_.ramsey_policy);
+[lb, ub] = feval(sprintf('%s.dynamic_complementarity_conditions', M_.fname), M_.params);
+pfm.eq_index = M_.dynamic_mcp_equations_reordering;
 if options_.ep.solve_algo == 10
     options_.lmmcp.lb = repmat(lb,block_nbr,1);
     options_.lmmcp.ub = repmat(ub,block_nbr,1);

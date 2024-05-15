@@ -19,8 +19,8 @@
  */
 
 /*
- * Copyright © 2016-20 Johannes Pfeifer
- * Copyright © 2020 Dynare Team
+ * Copyright © 2016-2020 Johannes Pfeifer
+ * Copyright © 2020-2024 Dynare Team
  *
  * This is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,7 +162,7 @@ model;
     log_A=log(A);
     [name='Definition log preference']
     log_Z=log(Z);
-    [mcp='a']
+
     y_hat=log(Y)-STEADY_STATE(log(Y));
     
     pi=log(Pi)-STEADY_STATE(log(Pi));

@@ -280,7 +280,7 @@ elseif ~options_.bytecode && ~options_.block
     if ~options_.linear
         % non linear model
         if  ismember(options_.solve_algo,[10,11])
-            [lb,ub,eq_index] = get_complementarity_conditions(M_,options_.ramsey_policy);
+            [lb, ub] = feval(sprintf('%s.static_complementarity_conditions', M_.fname), M_.params);
             if options_.solve_algo == 10
                 options_.lmmcp.lb = lb;
                 options_.lmmcp.ub = ub;
@@ -293,7 +293,7 @@ elseif ~options_.bytecode && ~options_.block
                 options_.steady.maxit, options_.solve_tolf, options_.solve_tolx, ...
                 options_, exo_ss, params,...
                 M_.endo_nbr, static_resid, static_g1, ...
-                M_.static_g1_sparse_rowval, M_.static_g1_sparse_colval, M_.static_g1_sparse_colptr, eq_index);
+                M_.static_g1_sparse_rowval, M_.static_g1_sparse_colval, M_.static_g1_sparse_colptr, M_.static_mcp_equations_reordering);
         else
             [ys, check, fvec, fjac, errorcode] = dynare_solve(@static_problem, ys_init, ...
                 options_.steady.maxit, options_.solve_tolf, options_.solve_tolx, ...

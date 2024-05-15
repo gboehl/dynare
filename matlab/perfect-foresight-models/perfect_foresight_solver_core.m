@@ -112,14 +112,8 @@ else
                 [y, success, maxerror, iter] = sim1_lbj(y, exo_simul, steady_state, M_, options_);
               case 7
                 if options_.linear_approximation
-                    if isequal(options_.solve_algo, 10) 
-                        if options_.ramsey_policy && isfield(M_,'ramsey_model_constraints') && ~isempty(M_.ramsey_model_constraints)
-                            warning('Due to ramsey_constraints you should not specify your model as model(linear)!')
-                        elseif options_.lmmcp.status
-                            warning('Due to lmmcp option, you should not specify your model as model(linear)!')
-                        else
-                            warning('It would be more efficient to set option solve_algo equal to 0!')
-                        end
+                    if options_.solve_algo == 10 || options_.solve_algo == 11
+                        warning('Since you are requesting an MCP solver, you should not specify your model as model(linear)!')
                     end
                     [y, success] = solve_stacked_linear_problem(y, exo_simul, steady_state, exo_steady_state, M_, options_);
                 else

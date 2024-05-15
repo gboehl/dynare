@@ -30,7 +30,7 @@ function [options_, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, 
 % - i_cols_J0           [double] indices of contemporaneous variables appearing in M_.lead_lag_incidence (relevant in problems with periods=1)
 % - dynamicmodel        [handle] function handle to _dynamic-file
 
-% Copyright © 2015-2023 Dynare Team
+% Copyright © 2015-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -50,7 +50,7 @@ function [options_, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, 
 periods = options_.periods;
 if (options_.solve_algo == 10)
     if ~isfield(options_.lmmcp,'lb')
-        [lb,ub,pfm.eq_index] = get_complementarity_conditions(M_,options_.ramsey_policy);
+        [lb, ub] = feval(sprintf('%s.dynamic_complementarity_conditions', M_.fname), M_.params);
         if options_.linear_approximation
             lb = lb - steadystate_y;
             ub = ub - steadystate_y;
@@ -60,7 +60,7 @@ if (options_.solve_algo == 10)
     end
 elseif (options_.solve_algo == 11)
     if ~isfield(options_.mcppath,'lb')
-        [lb,ub,pfm.eq_index] = get_complementarity_conditions(M_,options_.ramsey_policy);
+        [lb, ub] = feval(sprintf('%s.dynamic_complementarity_conditions', M_.fname), M_.params);
         if options_.linear_approximation
             lb = lb - steadystate_y;
             ub = ub - steadystate_y;
