@@ -318,7 +318,7 @@ if rank_jacob < size(jacob,1)
                 break
             end
         end
-        fprintf('%s\n',endo_names{mod(k,length(endo_names))})
+        fprintf('%s\n',endo_names{mod(k-1,length(endo_names))+1})
     end
     if (~isoctave && matlab_ver_less_than('9.12')) || isempty(options_.jacobian_tolerance)
         neq = null(jacob'); %can sometimes fail
@@ -337,7 +337,7 @@ if rank_jacob < size(jacob,1)
                 break
             end
         end
-        equation=mod(k,length(endo_names));
+        equation=mod(k-1,length(endo_names))+1;
         period=ceil(k/length(endo_names));
         for ii=1:length(equation)
             fprintf('Equation %5u, period %5u\n',equation(ii),period(ii))
