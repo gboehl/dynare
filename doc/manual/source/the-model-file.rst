@@ -3883,7 +3883,7 @@ speed-up on large models.
        .. math::
              LB = X   &\Rightarrow   F(X)>0\\
  
-             LB\leq X \leq UB &\Rightarrow   F(X)=0\\
+             LB < X < UB &\Rightarrow   F(X)=0\\
 
              X =UB &\Rightarrow   F(X)<0.
  
