@@ -48,27 +48,6 @@ function [options_, y0, yT, z, i_cols, i_cols_J1, i_cols_T, i_cols_j, i_cols_1, 
 % along with Dynare.  If not, see <https://www.gnu.org/licenses/>.
 
 periods = options_.periods;
-if (options_.solve_algo == 10)
-    if ~isfield(options_.lmmcp,'lb')
-        [lb, ub] = feval(sprintf('%s.dynamic_complementarity_conditions', M_.fname), M_.params);
-        if options_.linear_approximation
-            lb = lb - steadystate_y;
-            ub = ub - steadystate_y;
-        end
-        options_.lmmcp.lb = repmat(lb,periods,1);
-        options_.lmmcp.ub = repmat(ub,periods,1);
-    end
-elseif (options_.solve_algo == 11)
-    if ~isfield(options_.mcppath,'lb')
-        [lb, ub] = feval(sprintf('%s.dynamic_complementarity_conditions', M_.fname), M_.params);
-        if options_.linear_approximation
-            lb = lb - steadystate_y;
-            ub = ub - steadystate_y;
-        end
-        options_.mcppath.lb = repmat(lb,periods,1);
-        options_.mcppath.ub = repmat(ub,periods,1);
-    end
-end
 
 if M_.maximum_lag > 0
     y0 = endogenousvariables(:, M_.maximum_lag);
