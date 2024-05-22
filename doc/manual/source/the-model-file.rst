@@ -3929,11 +3929,13 @@ speed-up on large models.
 
        would be wrong.
 
-       Note that in the current implementation, the content of the
-       complementarity condition is not parsed by the preprocessor. The
-       inequalities must therefore be as simple as possible: an
-       endogenous variable, followed by a relational operator,
-       followed by a number (not a variable, parameter or expression).
+       Note that both the lower and the upper bounds can be specified at the
+       same time in a given complementarity condition. Moreover, arbitrary
+       functions of parameters can appear in the bounds. As an example, the
+       following complementarity condition is syntactically correct (assuming
+       that ``alpha`` is a parameter):
+
+            ``… ⟂ -1.94478 < r < 1+2*alpha;``
 
     .. option:: endogenous_terminal_period
 

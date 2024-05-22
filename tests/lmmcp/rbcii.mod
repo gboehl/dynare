@@ -1,3 +1,9 @@
+/* Tests the MCP solver on a RBC model with irreversible investment.
+
+   An additional (dummy) upper bound on investment has been added, to test the
+   extended syntax with both lower and upper bounds, and parameters in the
+   bound. */
+
 var k, y, L, c, i, A, a, mu;
 varexo epsilon;
 parameters beta, theta, tau, alpha, psi, delta, rho, Astar, sigma;
@@ -21,7 +27,7 @@ model;
  k = y-c+(1-delta)*k(-1);
  i = k-(1-delta)*k(-1);
 
- mu = 0 ⟂ i > 0;
+ mu = 0 ⟂ 1+2*alpha > i > 0;
 end;
 
 steady_state_model;
