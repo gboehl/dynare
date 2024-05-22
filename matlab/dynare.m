@@ -16,7 +16,7 @@ function DynareInfo = dynare(fname, varargin)
 % SPECIAL REQUIREMENTS
 %   none
 
-% Copyright © 2001-2023 Dynare Team
+% Copyright © 2001-2024 Dynare Team
 %
 % This file is part of Dynare.
 %
@@ -252,8 +252,8 @@ if isoctave
     clear([fname(1:end-4) '.sparse.dynamic_resid'], [fname(1:end-4) '.sparse.dynamic_g1'], [fname(1:end-4) '.sparse.dynamic_g2'], [fname(1:end-4) '.sparse.dynamic_g3'])
 else
     clear(['+' fname(1:end-4) '/static'], ['+' fname(1:end-4) '/dynamic'])
-    clear(['+' fname(1:end-4) '/sparse/static_resid'], ['+' fname(1:end-4) '/sparse/static_g1'], ['+' fname(1:end-4) '/sparse/static_g2'])
-    clear(['+' fname(1:end-4) '/sparse/dynamic_resid'], ['+' fname(1:end-4) '/sparse/dynamic_g1'], ['+' fname(1:end-4) '/sparse/dynamic_g2'], ['+' fname(1:end-4) '/sparse/dynamic_g3'])
+    clear(['+' fname(1:end-4) '/+sparse/static_resid'], ['+' fname(1:end-4) '/+sparse/static_g1'], ['+' fname(1:end-4) '/+sparse/static_g2'])
+    clear(['+' fname(1:end-4) '/+sparse/dynamic_resid'], ['+' fname(1:end-4) '/+sparse/dynamic_g1'], ['+' fname(1:end-4) '/+sparse/dynamic_g2'], ['+' fname(1:end-4) '/+sparse/dynamic_g3'])
 end
 
 pTic = tic;
