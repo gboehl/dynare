@@ -444,9 +444,9 @@ end
 
 function expr = targetexpr()
     if isfield(M_.pac.(ispac.name), 'components')
-        ns = ~strcmp({M_.pac.pacman.components.kind}, 'll'); % non stationary components
+        ns = ~strcmp({M_.pac.(ispac.name).components.kind}, 'll'); % non stationary components
         expr = '';
-        for i=1:length(M_.pac.pacman.components)
+        for i=1:length(M_.pac.(ispac.name).components)
             if ns(i)
                 variable = rmauxiliary(M_.endo_names{M_.pac.(ispac.name).components(i).endo_var}, 1);
                 if isempty(expr)
