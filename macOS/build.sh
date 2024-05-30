@@ -34,7 +34,7 @@ if [[ "$PKG_ARCH" == arm64 ]]; then
     MATLAB_ARCH=maca64
 else
     BREWDIR=/usr/local
-    # Remove /opt/homebrew/bin from PATH, so it does not intervene with the x86_64 compilations
+    # Remove /opt/homebrew/bin from PATH, so it does not interfere with the x86_64 compilations
     path_remove PATH /opt/homebrew/bin
     MATLAB_ARCH=maci64
 fi
@@ -70,13 +70,13 @@ common_meson_opts=(-Dbuild_for=matlab -Dbuildtype=release -Dprefer_static=true -
                    --native-file macOS/homebrew-native-$PKG_ARCH.ini)
 
 # Build for MATLAB ⩾ R2018b (x86_64) and MATLAB ⩾ R2023b (arm64)
-arch -"$PKG_ARCH" meson setup "${common_meson_opts[@]}" -Dmatlab_path="$MATLAB_PATH" build-matlab --wipe
-arch -"$PKG_ARCH" meson compile -v -C build-matlab
+arch -"$PKG_ARCH" meson setup "${common_meson_opts[@]}" -Dmatlab_path="$MATLAB_PATH" build-macOS-matlab --wipe
+arch -"$PKG_ARCH" meson compile -v -C build-macOS-matlab
 
 # If not in CI, build the docs
 if [[ -z $CI ]]; then
-    arch -"$PKG_ARCH" meson compile -v -C build-matlab doc
-    ln -s build-matlab build-doc
+    arch -"$PKG_ARCH" meson compile -v -C build-macOS-matlab doc
+    ln -s build-macOS-matlab build-doc
 fi
 
 ##
@@ -85,7 +85,7 @@ fi
 
 # Determine Dynare version if not passed by an environment variable as in the CI
 if [[ -z $VERSION ]]; then
-    cd build-matlab
+    cd build-macOS-matlab
     VERSION=$(meson introspect --projectinfo | sed -En 's/^.*"version": "([^"]*)".*$/\1/p')
     cd ..
 fi
@@ -127,20 +127,20 @@ cp -p  "$ROOTDIR"/COPYING                                            "$PKGFILES"
 cp -p  "$ROOTDIR"/license.txt                                        "$PKGFILES"
 
 cp -pr "$ROOTDIR"/matlab                                             "$PKGFILES"
-cp -p  "$ROOTDIR"/build-matlab/dynare_version.m                      "$PKGFILES"/matlab
+cp -p  "$ROOTDIR"/build-macOS-matlab/dynare_version.m                "$PKGFILES"/matlab
 
 cp -pr "$ROOTDIR"/examples                                           "$PKGFILES"
 
-cp -p  "$ROOTDIR"/build-matlab/preprocessor/src/dynare-preprocessor  "$PKGFILES"/preprocessor
+cp -p  "$ROOTDIR"/build-macOS-matlab/preprocessor/src/dynare-preprocessor "$PKGFILES"/preprocessor
 
 # Create backward-compatibility symlink
 mkdir -p                                                             "$PKGFILES"/matlab/preprocessor64
 ln -sf ../../preprocessor/dynare-preprocessor                        "$PKGFILES"/matlab/preprocessor64/dynare_m
 
 if [[ "$PKG_ARCH" == x86_64 ]]; then
-    cp -L  "$ROOTDIR"/build-matlab/*.mex"$MATLAB_ARCH"               "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-9.5-24.1
+    cp -L  "$ROOTDIR"/build-macOS-matlab/*.mex"$MATLAB_ARCH"         "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-9.5-24.1
 else
-    cp -L  "$ROOTDIR"/build-matlab/*.mex"$MATLAB_ARCH"               "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-23.2-24.1
+    cp -L  "$ROOTDIR"/build-macOS-matlab/*.mex"$MATLAB_ARCH"         "$PKGFILES"/mex/matlab/"$MATLAB_ARCH"-23.2-24.1
 fi
 
 cp -p  "$ROOTDIR"/scripts/dynare.el                                  "$PKGFILES"/scripts
