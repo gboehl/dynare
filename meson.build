@@ -386,6 +386,16 @@ qmc_sequence_mex_kwargs = mex_kwargs
 if get_option('prefer_static') and host_machine.system() == 'windows'
   qmc_sequence_mex_kwargs += { 'link_args' : qmc_sequence_mex_kwargs.get('link_args') + [ '-Wl,-Bstatic', '-lgfortran', '-Wl,-Bdynamic' ] }
 endif
+# Hack for statically linking libquadmath
+# Fixes https://forum.dynare.org/t/invalid-mex-file-whe-running-sensitivity-analysis-m1-mac-6-1/25829
+# It seems that meson does not link libquadmath (which is needed by libgfortran).
+# When doing dynamic linking, this is not an issue since the dynamic linker loads
+# libquadmath recursively after loading libgfortran. But when doing static linking,
+# libquadmath needs to be explicitly linked.
+# FIXME: Why isn’t this needed under Linux and Windows?
+if get_option('prefer_static') and host_machine.system() == 'darwin'
+  qmc_sequence_mex_kwargs += { 'link_args' : qmc_sequence_mex_kwargs.get('link_args') + [ '-lquadmath' ] }
+endif
 shared_module('qmc_sequence', qmc_sequence_src, kwargs : qmc_sequence_mex_kwargs, dependencies : [ blas_dep, openmp_dep ])
 
 shared_module('kalman_steady_state', 'mex/sources/kalman_steady_state/kalman_steady_state.cc', kwargs : mex_kwargs, dependencies : slicot_dep)
