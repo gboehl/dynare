@@ -1,4 +1,7 @@
 % Created by Marco Ratto (@rattoma, marco.ratto@ec.europa.eu)
+% based on Kim, Jinill, 2003. "Functional equivalence between intertemporal and 
+% multisectoral investment adjustment costs," Journal of Economic Dynamics 
+% and Control, 27(4), pages 533-549.
 % =========================================================================
 % Copyright © 2010-2020 Dynare Team
 %
