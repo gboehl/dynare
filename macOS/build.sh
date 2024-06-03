@@ -40,6 +40,11 @@ else
 fi
 MATLAB_PATH=/Applications/"$PKG_ARCH"/MATLAB_R2024a.app
 
+# Workaround for bug in Xcode 15.3 which does not include m4
+# See https://github.com/Homebrew/homebrew-core/issues/165388
+# and https://trac.macports.org/ticket/69639
+path_prepend PATH "$BREWDIR"/opt/m4/bin
+
 # Append texbin to PATH to access latexmk and friends
 path_prepend PATH /Library/TeX/texbin
 
