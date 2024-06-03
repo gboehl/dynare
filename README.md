@@ -242,15 +242,15 @@ The documentation packages have slightly different names in CentOS and RHEL, but
 # compile slicot from source and put it into /home/$USER/dynare/slicot/lib/
 mkdir -p /home/$USER/dynare/slicot
 cd /home/$USER/dynare/slicot
-wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
-tar xf slicot_5.0+20101122.orig.tar.gz
-cd slicot-5.0+20101122
+wget https://github.com/SLICOT/SLICOT-Reference/archive/refs/tags/v5.9.tar.gz
+tar xf v5.9.tar.gz
+cd SLICOT-Reference-5.9
 mkdir -p /home/$USER/dynare/slicot/lib
 # The following two lines are only for MATLAB
-make FORTRAN=gfortran OPTS="-O2 -fPIC -fdefault-integer-8" LOADER=gfortran lib
+make -f makefile_Unix FORTRAN=gfortran OPTS="-O2 -fPIC -fdefault-integer-8" LOADER=gfortran lib
 cp slicot.a /home/$USER/dynare/slicot/lib/libslicot64_pic.a
 # The following two lines are only for Octave
-make FORTRAN=gfortran OPTS="-O2 -fPIC" LOADER=gfortran lib
+make -f makefile_Unix FORTRAN=gfortran OPTS="-O2 -fPIC" LOADER=gfortran lib
 cp slicot.a /home/$USER/dynare/slicot/lib/libslicot_pic.a
 
 # compile x13as from source and put it into /usr/bin/
@@ -307,10 +307,10 @@ pacman -S git bison flex make tar mingw-w64-x86_64-meson mingw-w64-x86_64-gcc mi
 ```
 - Compile and install SLICOT
 ```sh
-wget https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
-tar xf slicot_5.0+20101122.orig.tar.gz
-cd slicot-5.0+20101122
-make FORTRAN=gfortran OPTS="-O2 -fno-underscoring -fdefault-integer-8" LOADER=gfortran lib
+wget https://github.com/SLICOT/SLICOT-Reference/archive/refs/tags/v5.9.tar.gz
+tar xf v5.9.tar.gz
+cd SLICOT-Reference-5.9
+make -f makefile_Unix FORTRAN=gfortran OPTS="-O2 -fno-underscoring -fdefault-integer-8" LOADER=gfortran lib
 mkdir -p /usr/local/lib
 cp slicot.a /usr/local/lib/libslicot64_pic.a
 cd ..
@@ -440,13 +440,13 @@ export DYNAREDIR=$HOME/dynare
 ```sh
 mkdir -p $DYNAREDIR/slicot/lib
 cd $DYNAREDIR/slicot
-curl -O https://deb.debian.org/debian/pool/main/s/slicot/slicot_5.0+20101122.orig.tar.gz
-tar xf slicot_5.0+20101122.orig.tar.gz
-cd slicot-5.0+20101122
-make -j$(sysctl -n hw.ncpu) FORTRAN=$BREWDIR/bin/gfortran OPTS="-O2" LOADER=gfortran lib
+curl -O https://github.com/SLICOT/SLICOT-Reference/archive/refs/tags/v5.9.tar.gz
+tar xf v5.9.tar.gz
+cd SLICOT-Reference-5.9
+make -f makefile_Unix -j$(sysctl -n hw.ncpu) FORTRAN=$BREWDIR/bin/gfortran OPTS="-O2" LOADER=gfortran lib
 cp slicot.a $DYNAREDIR/slicot/lib/libslicot_pic.a
 make clean
-make -j$(sysctl -n hw.ncpu) FORTRAN=$BREWDIR/bin/gfortran OPTS="-O2 -fdefault-integer-8" LOADER=gfortran lib
+make -f makefile_Unix -j$(sysctl -n hw.ncpu) FORTRAN=$BREWDIR/bin/gfortran OPTS="-O2 -fdefault-integer-8" LOADER=gfortran lib
 cp slicot.a $DYNAREDIR/slicot/lib/libslicot64_pic.a
 ```
 
